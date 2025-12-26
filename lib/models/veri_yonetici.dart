@@ -140,4 +140,49 @@ class VeriYonetici {
         .toList();
     html.window.localStorage['anilar'] = jsonEncode(data);
   }
+
+  static List<Map<String, dynamic>> getBoyKiloKayitlari() {
+    try {
+      final data = html.window.localStorage['boykilo_kayitlari'];
+      if (data == null || data.isEmpty) return [];
+      final list = jsonDecode(data) as List;
+      return list
+          .map(
+            (e) => Map<String, dynamic>.from({
+              'tarih': DateTime.parse(e['tarih']),
+              'boy': e['boy'],
+              'kilo': e['kilo'],
+              'basCevresi': e['basCevresi'],
+            }),
+          )
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static Future<void> saveBoyKiloKayitlari(
+    List<Map<String, dynamic>> kayitlar,
+  ) async {
+    final data = kayitlar
+        .map(
+          (e) => {
+            'tarih': (e['tarih'] as DateTime).toIso8601String(),
+            'boy': e['boy'],
+            'kilo': e['kilo'],
+            'basCevresi': e['basCevresi'],
+          },
+        )
+        .toList();
+    html.window.localStorage['boykilo_kayitlari'] = jsonEncode(data);
+  }
+
+  // VERİLERİ TEMİZLE
+  static void verileriTemizle() {
+    html.window.localStorage.remove('mama_kayitlari');
+    html.window.localStorage.remove('kaka_kayitlari');
+    html.window.localStorage.remove('uyku_kayitlari');
+    html.window.localStorage.remove('anilar');
+    html.window.localStorage.remove('boykilo_kayitlari');
+  }
 }

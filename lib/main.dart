@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/mama_screen.dart';
-import 'screens/kaka_screen.dart';
-import 'screens/uyku_screen.dart';
-import 'screens/ninni_screen.dart';
-import 'screens/anilar_screen.dart';
+import 'screens/home_screen.dart';
+import 'screens/activities_screen.dart';
+import 'screens/milestones_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/add_screen.dart';
 
 void main() {
   runApp(const BabyTrackerApp());
@@ -23,60 +23,55 @@ class BabyTrackerApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto',
-        cardTheme: CardThemeData(
-          elevation: 4,
-          shadowColor: const Color(0x4DE91E63),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          backgroundColor: const Color(0xFFE91E63),
-          foregroundColor: Colors.white,
-          elevation: 6,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0),
-        navigationBarTheme: NavigationBarThemeData(
-          height: 70,
-          indicatorColor: const Color(0x33E91E63),
-          labelTextStyle: WidgetStateProperty.all(
-            const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-          ),
-        ),
       ),
-      home: const HomeScreen(),
+      home: const MainScreen(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = const [
-    MamaScreen(),
-    KakaScreen(),
-    UykuScreen(),
-    NinniScreen(),
-    AnilarScreen(),
+    HomeScreen(),
+    ActivitiesScreen(),
+    SizedBox(),
+    MilestonesScreen(),
+    SettingsScreen(),
   ];
+
+  void _onItemTapped(int index) {
+    if (index == 2) {
+      _showAddMenu();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _showAddMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const AddScreen(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: _screens),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
+          color: Colors.white,
           boxShadow: [
             BoxShadow(
               color: Color(0x1A000000),
@@ -85,44 +80,69 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        child: NavigationBar(
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.restaurant),
-              selectedIcon: Icon(Icons.restaurant, color: Color(0xFFE91E63)),
-              label: 'Mama',
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.home_rounded, 'Home'),
+                _buildNavItem(1, Icons.bar_chart_rounded, 'Chart'),
+                _buildAddButton(),
+                _buildNavItem(3, Icons.person_outline, 'Milestones'),
+                _buildNavItem(4, Icons.settings_outlined, 'Settings'),
+              ],
             ),
-            NavigationDestination(
-              icon: Icon(Icons.baby_changing_station),
-              selectedIcon: Icon(
-                Icons.baby_changing_station,
-                color: Color(0xFFE91E63),
-              ),
-              label: 'Bez',
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    final isSelected = _selectedIndex == index;
+    return GestureDetector(
+      onTap: () => _onItemTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            color: isSelected ? const Color(0xFFE91E63) : Colors.grey,
+            size: 26,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isSelected ? const Color(0xFFE91E63) : Colors.grey,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
-            NavigationDestination(
-              icon: Icon(Icons.bedtime),
-              selectedIcon: Icon(Icons.bedtime, color: Color(0xFFE91E63)),
-              label: 'Uyku',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.music_note),
-              selectedIcon: Icon(Icons.music_note, color: Color(0xFFE91E63)),
-              label: 'Ninni',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.photo_album),
-              selectedIcon: Icon(Icons.photo_album, color: Color(0xFFE91E63)),
-              label: 'Anılar',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return GestureDetector(
+      onTap: () => _onItemTapped(2),
+      child: Container(
+        width: 50,
+        height: 50,
+        decoration: const BoxDecoration(
+          color: Color(0xFFE91E63),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x40E91E63),
+              blurRadius: 10,
+              offset: Offset(0, 4),
             ),
           ],
         ),
+        child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
   }
