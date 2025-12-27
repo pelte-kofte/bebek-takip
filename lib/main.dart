@@ -5,6 +5,7 @@ import 'screens/milestones_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
 import 'models/veri_yonetici.dart';
+import 'models/dil.dart';
 
 void main() {
   runApp(const BabyTrackerApp());
@@ -38,9 +39,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
 
   void toggleTheme() {
     setState(() {
-      _themeMode = _themeMode == ThemeMode.light
-          ? ThemeMode.dark
-          : ThemeMode.light;
+      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
       VeriYonetici.setDarkMode(_themeMode == ThemeMode.dark);
     });
   }
@@ -54,22 +53,12 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFE91E63),
-          brightness: Brightness.light,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFE91E63), brightness: Brightness.light),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF8F8F8),
-        cardColor: Colors.white,
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFE91E63),
-          brightness: Brightness.dark,
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFE91E63), brightness: Brightness.dark),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF121212),
-        cardColor: const Color(0xFF1E1E1E),
       ),
       home: const MainScreen(),
     );
@@ -80,15 +69,14 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => MainScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   int _refreshKey = 0;
 
-  // Dışarıdan çağırılabilir yenileme fonksiyonu
-  void refreshScreens() {
+  void _refresh() {
     setState(() {
       _refreshKey++;
     });
@@ -108,18 +96,14 @@ class MainScreenState extends State<MainScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => const AddScreen(),
-    ).then((_) {
-      // Modal kapandığında tüm ekranları yenile
-      refreshScreens();
-    });
+      builder: (context) => AddScreen(onSaved: _refresh),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Her yenilemede yeni key ile widgetlar oluştur
     final screens = [
       HomeScreen(key: ValueKey('home_$_refreshKey')),
       ActivitiesScreen(key: ValueKey('activities_$_refreshKey')),
@@ -129,17 +113,11 @@ class MainScreenState extends State<MainScreen> {
     ];
 
     return Scaffold(
-      body: IndexedStack(index: _selectedIndex, children: screens),
+      body: screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? Colors.black26 : const Color(0x1A000000),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
+          boxShadow: [BoxShadow(color: isDark ? Colors.black26 : const Color(0x1A000000), blurRadius: 10, offset: const Offset(0, -5))],
         ),
         child: SafeArea(
           child: Padding(
@@ -147,11 +125,11 @@ class MainScreenState extends State<MainScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.home_rounded, 'Home'),
-                _buildNavItem(1, Icons.bar_chart_rounded, 'Activities'),
+                _buildNavItem(0, Icons.home_rounded, Dil.navAnaSayfa),
+                _buildNavItem(1, Icons.bar_chart_rounded, Dil.navAktiviteler),
                 _buildAddButton(),
-                _buildNavItem(3, Icons.emoji_events_rounded, 'Milestones'),
-                _buildNavItem(4, Icons.settings_outlined, 'Settings'),
+                _buildNavItem(3, Icons.emoji_events_rounded, Dil.navGelisim),
+                _buildNavItem(4, Icons.settings_outlined, Dil.navAyarlar),
               ],
             ),
           ),
@@ -163,30 +141,14 @@ class MainScreenState extends State<MainScreen> {
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isSelected
-                ? const Color(0xFFE91E63)
-                : (isDark ? Colors.grey.shade400 : Colors.grey),
-            size: 26,
-          ),
+          Icon(icon, color: isSelected ? const Color(0xFFE91E63) : (isDark ? Colors.grey.shade400 : Colors.grey), size: 26),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: isSelected
-                  ? const Color(0xFFE91E63)
-                  : (isDark ? Colors.grey.shade400 : Colors.grey),
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
+          Text(label, style: TextStyle(fontSize: 11, color: isSelected ? const Color(0xFFE91E63) : (isDark ? Colors.grey.shade400 : Colors.grey), fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
         ],
       ),
     );
@@ -196,19 +158,8 @@ class MainScreenState extends State<MainScreen> {
     return GestureDetector(
       onTap: () => _onItemTapped(2),
       child: Container(
-        width: 50,
-        height: 50,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE91E63),
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x40E91E63),
-              blurRadius: 10,
-              offset: Offset(0, 4),
-            ),
-          ],
-        ),
+        width: 50, height: 50,
+        decoration: const BoxDecoration(color: Color(0xFFE91E63), shape: BoxShape.circle, boxShadow: [BoxShadow(color: Color(0x40E91E63), blurRadius: 10, offset: Offset(0, 4))]),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );

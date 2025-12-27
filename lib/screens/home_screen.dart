@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/veri_yonetici.dart';
+import '../models/dil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,11 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final uykuKayitlari = VeriYonetici.getUykuKayitlari();
     final boyKiloKayitlari = VeriYonetici.getBoyKiloKayitlari();
 
-    final timeline = _buildTimeline(
-      mamaKayitlari,
-      kakaKayitlari,
-      uykuKayitlari,
-    );
+    final timeline = _buildTimeline(mamaKayitlari, kakaKayitlari, uykuKayitlari);
 
     Map<String, dynamic>? sonOlcum;
     if (boyKiloKayitlari.isNotEmpty) {
@@ -59,43 +56,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 50,
                         height: 50,
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.pink.shade900
-                              : Colors.pink.shade100,
+                          color: isDark ? Colors.pink.shade900 : Colors.pink.shade100,
                           shape: BoxShape.circle,
                         ),
-                        child: const Center(
-                          child: Text('👶', style: TextStyle(fontSize: 28)),
-                        ),
+                        child: const Center(child: Text('👶', style: TextStyle(fontSize: 28))),
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Bebeğim',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                          ),
+                          Text('Bebeğim', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
                           if (sonOlcum != null)
-                            Text(
-                              '${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: subtitleColor,
-                              ),
-                            )
+                            Text('${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg', style: TextStyle(fontSize: 12, color: subtitleColor))
                           else
-                            Text(
-                              '6 ay 12 gün',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: subtitleColor,
-                              ),
-                            ),
+                            Text('6 ay 12 gün', style: TextStyle(fontSize: 14, color: subtitleColor)),
                         ],
                       ),
                       const Spacer(),
@@ -103,34 +77,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.pink.shade900
-                              : Colors.pink.shade50,
+                          color: isDark ? Colors.pink.shade900 : Colors.pink.shade50,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
-                          Icons.notifications_none,
-                          color: Color(0xFFE91E63),
-                        ),
+                        child: const Icon(Icons.notifications_none, color: Color(0xFFE91E63)),
                       ),
                     ],
                   ),
                 ),
 
-                // LAST ACTIONS
+                // SON AKTİVİTELER
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Last actions',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: textColor,
-                    ),
-                  ),
+                  child: Text(Dil.sonAktiviteler, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                 ),
                 const SizedBox(height: 12),
-
+                
                 SizedBox(
                   height: 110,
                   child: ListView(
@@ -138,81 +100,42 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     children: [
                       _buildLastActionCard(
-                        '🍼',
-                        'Last Fed',
-                        mamaKayitlari.isNotEmpty
-                            ? _timeAgo(mamaKayitlari.first['tarih'])
-                            : '-',
-                        mamaKayitlari.isNotEmpty
-                            ? '${mamaKayitlari.first['miktar']} ml'
-                            : '',
-                        const Color(0xFFFFE0B2),
-                        cardColor,
-                        textColor,
-                        subtitleColor,
+                        '🍼', Dil.sonBeslenme,
+                        mamaKayitlari.isNotEmpty ? _timeAgo(mamaKayitlari.first['tarih']) : '-',
+                        _getMamaDetail(mamaKayitlari.isNotEmpty ? mamaKayitlari.first : null),
+                        const Color(0xFFFFE0B2), cardColor, textColor, subtitleColor,
                       ),
                       _buildLastActionCard(
-                        '😴',
-                        'Awake',
-                        uykuKayitlari.isNotEmpty
-                            ? _timeAgo(uykuKayitlari.first['bitis'])
-                            : '-',
-                        uykuKayitlari.isNotEmpty
-                            ? _formatDuration(uykuKayitlari.first['sure'])
-                            : '',
-                        const Color(0xFFE1BEE7),
-                        cardColor,
-                        textColor,
-                        subtitleColor,
+                        '😴', Dil.sonUyku,
+                        uykuKayitlari.isNotEmpty ? _timeAgo(uykuKayitlari.first['bitis']) : '-',
+                        uykuKayitlari.isNotEmpty ? _formatDuration(uykuKayitlari.first['sure']) : '',
+                        const Color(0xFFE1BEE7), cardColor, textColor, subtitleColor,
                       ),
                       _buildLastActionCard(
-                        '👶',
-                        'Changed',
-                        kakaKayitlari.isNotEmpty
-                            ? _timeAgo(kakaKayitlari.first['tarih'])
-                            : '-',
-                        kakaKayitlari.isNotEmpty
-                            ? kakaKayitlari.first['tur']
-                            : '',
-                        const Color(0xFFB3E5FC),
-                        cardColor,
-                        textColor,
-                        subtitleColor,
+                        '👶', Dil.sonBezDegisimi,
+                        kakaKayitlari.isNotEmpty ? _timeAgo(kakaKayitlari.first['tarih']) : '-',
+                        kakaKayitlari.isNotEmpty ? kakaKayitlari.first['tur'] : '',
+                        const Color(0xFFB3E5FC), cardColor, textColor, subtitleColor,
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 24),
 
-                // TIMELINE
+                // ZAMAN ÇİZELGESİ
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Timeline',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
+                      Text(Dil.zaman, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade200,
+                          color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(
-                          'Son 24 saat',
-                          style: TextStyle(fontSize: 12, color: textColor),
-                        ),
+                        child: Text(Dil.son24Saat, style: TextStyle(fontSize: 12, color: textColor)),
                       ),
                     ],
                   ),
@@ -227,10 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const Text('📝', style: TextStyle(fontSize: 48)),
                           const SizedBox(height: 12),
-                          Text(
-                            'Henüz kayıt yok',
-                            style: TextStyle(color: subtitleColor),
-                          ),
+                          Text(Dil.henuzKayitYok, style: TextStyle(color: subtitleColor)),
                         ],
                       ),
                     ),
@@ -241,82 +161,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     itemCount: timeline.length > 5 ? 5 : timeline.length,
-                    itemBuilder: (context, index) => _buildTimelineItem(
-                      timeline[index],
-                      textColor,
-                      subtitleColor,
-                      isDark,
-                    ),
+                    itemBuilder: (context, index) => _buildTimelineItem(timeline[index], textColor, subtitleColor, isDark),
                   ),
                 const SizedBox(height: 24),
 
-                // GROWTH
+                // BÜYÜME TAKİBİ
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '📊 Büyüme Takibi',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
+                      Text('📊 ${Dil.buyumeTakibi}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                       Container(
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade200,
+                          color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
                             GestureDetector(
-                              onTap: () =>
-                                  setState(() => _showGrowthChart = true),
+                              onTap: () => setState(() => _showGrowthChart = true),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: _showGrowthChart
-                                      ? const Color(0xFF4CAF50)
-                                      : Colors.transparent,
+                                  color: _showGrowthChart ? const Color(0xFF4CAF50) : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: Icon(
-                                  Icons.show_chart,
-                                  size: 18,
-                                  color: _showGrowthChart
-                                      ? Colors.white
-                                      : subtitleColor,
-                                ),
+                                child: Icon(Icons.show_chart, size: 18, color: _showGrowthChart ? Colors.white : subtitleColor),
                               ),
                             ),
                             GestureDetector(
-                              onTap: () =>
-                                  setState(() => _showGrowthChart = false),
+                              onTap: () => setState(() => _showGrowthChart = false),
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: !_showGrowthChart
-                                      ? const Color(0xFF4CAF50)
-                                      : Colors.transparent,
+                                  color: !_showGrowthChart ? const Color(0xFF4CAF50) : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: Icon(
-                                  Icons.list,
-                                  size: 18,
-                                  color: !_showGrowthChart
-                                      ? Colors.white
-                                      : subtitleColor,
-                                ),
+                                child: Icon(Icons.list, size: 18, color: !_showGrowthChart ? Colors.white : subtitleColor),
                               ),
                             ),
                           ],
@@ -331,19 +213,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     padding: const EdgeInsets.all(40),
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+                    decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(16)),
                     child: Center(
                       child: Column(
                         children: [
                           const Text('📏', style: TextStyle(fontSize: 48)),
                           const SizedBox(height: 12),
-                          Text(
-                            'Henüz ölçüm yok',
-                            style: TextStyle(color: subtitleColor),
-                          ),
+                          Text(Dil.henuzOlcumYok, style: TextStyle(color: subtitleColor)),
                         ],
                       ),
                     ),
@@ -351,12 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 else if (_showGrowthChart)
                   _buildGrowthChart(boyKiloKayitlari, cardColor, textColor)
                 else
-                  _buildGrowthList(
-                    boyKiloKayitlari,
-                    cardColor,
-                    textColor,
-                    subtitleColor,
-                  ),
+                  _buildGrowthList(boyKiloKayitlari, cardColor, textColor, subtitleColor),
 
                 const SizedBox(height: 100),
               ],
@@ -367,16 +238,19 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildLastActionCard(
-    String icon,
-    String title,
-    String value,
-    String detail,
-    Color color,
-    Color cardColor,
-    Color textColor,
-    Color subtitleColor,
-  ) {
+  String _getMamaDetail(Map<String, dynamic>? kayit) {
+    if (kayit == null) return '';
+    final tur = kayit['tur'] as String? ?? '';
+    if (tur == 'Anne Sütü') {
+      final sol = kayit['solDakika'] ?? 0;
+      final sag = kayit['sagDakika'] ?? 0;
+      return 'Sol ${sol}dk • Sağ ${sag}dk';
+    } else {
+      return '${kayit['miktar']} ml';
+    }
+  }
+
+  Widget _buildLastActionCard(String icon, String title, String value, String detail, Color color, Color cardColor, Color textColor, Color subtitleColor) {
     return Container(
       width: 130,
       margin: const EdgeInsets.only(right: 12),
@@ -384,13 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+        boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 10, offset: Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,93 +266,67 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             children: [
               Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: color,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(icon, style: const TextStyle(fontSize: 14)),
-                ),
+                width: 28, height: 28,
+                decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+                child: Center(child: Text(icon, style: const TextStyle(fontSize: 14))),
               ),
               const SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: TextStyle(fontSize: 9, color: subtitleColor),
-                    ),
-                    Text(
-                      value,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
+                    Text(title, style: TextStyle(fontSize: 9, color: subtitleColor)),
+                    Text(value, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: textColor)),
                   ],
                 ),
               ),
             ],
           ),
           const Spacer(),
-          Text(
-            detail,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFFE91E63),
-            ),
-          ),
+          Text(detail, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFFE91E63))),
         ],
       ),
     );
   }
 
-  Widget _buildTimelineItem(
-    Map<String, dynamic> item,
-    Color textColor,
-    Color subtitleColor,
-    bool isDark,
-  ) {
+  Widget _buildTimelineItem(Map<String, dynamic> item, Color textColor, Color subtitleColor, bool isDark) {
     final type = item['type'] as String;
     final time = item['time'] as String;
-
+    
     Color lineColor;
     String emoji;
     String title;
     String subtitle;
-
+    
     switch (type) {
       case 'mama':
         lineColor = const Color(0xFFFF9800);
-        final tur = item['tur'] as String;
+        final tur = item['tur'] as String? ?? '';
+        final sol = item['solDakika'] ?? 0;
+        final sag = item['sagDakika'] ?? 0;
+        final miktar = item['miktar'] ?? 0;
+        
         if (tur == 'Anne Sütü') {
           emoji = '🤱';
-          title = 'Emzirme';
-          final sol = item['solDakika'] ?? 0;
-          final sag = item['sagDakika'] ?? 0;
-          subtitle = 'L ${sol}dk • R ${sag}dk';
+          title = Dil.emzirme;
+          subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
         } else {
           emoji = tur == 'Formül' ? '🍼' : '🥛';
           title = tur;
-          subtitle = '${item['miktar']} ml';
+          subtitle = '$miktar ml';
         }
         break;
       case 'kaka':
         lineColor = const Color(0xFF03A9F4);
         emoji = '👶';
-        title = 'Bez';
-        subtitle = item['tur'];
+        title = Dil.bezDegisimi;
+        subtitle = item['tur'] ?? '';
         break;
       case 'uyku':
         lineColor = const Color(0xFF9C27B0);
         emoji = '😴';
-        title = 'Uyku';
-        subtitle = item['sure'];
+        title = Dil.uyku;
+        subtitle = item['sure'] ?? '';
         break;
       default:
         lineColor = Colors.grey;
@@ -501,19 +343,14 @@ class _HomeScreenState extends State<HomeScreen> {
           Column(
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: 12, height: 12,
                 decoration: BoxDecoration(
                   color: lineColor.withAlpha(50),
                   shape: BoxShape.circle,
                   border: Border.all(color: lineColor, width: 2),
                 ),
               ),
-              Container(
-                width: 2,
-                height: 40,
-                color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
-              ),
+              Container(width: 2, height: 40, color: isDark ? Colors.grey.shade700 : Colors.grey.shade200),
             ],
           ),
           const SizedBox(width: 12),
@@ -526,25 +363,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: textColor,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: TextStyle(color: lineColor, fontSize: 12),
-                      ),
+                      Text(title, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor)),
+                      Text(subtitle, style: TextStyle(color: lineColor, fontSize: 12)),
                     ],
                   ),
                 ),
-                Text(
-                  time,
-                  style: TextStyle(color: subtitleColor, fontSize: 11),
-                ),
+                Text(time, style: TextStyle(color: subtitleColor, fontSize: 11)),
               ],
             ),
           ),
@@ -553,11 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGrowthChart(
-    List<Map<String, dynamic>> kayitlar,
-    Color cardColor,
-    Color textColor,
-  ) {
+  Widget _buildGrowthChart(List<Map<String, dynamic>> kayitlar, Color cardColor, Color textColor) {
     final son6 = kayitlar.take(6).toList().reversed.toList();
     if (son6.isEmpty) return const SizedBox();
 
@@ -572,59 +392,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
-          Row(
-            children: [
-              const Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 18),
-              const SizedBox(width: 8),
-              Text(
-                'Boy (cm)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-              ),
-            ],
-          ),
+          Row(children: [
+            const Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 18),
+            const SizedBox(width: 8),
+            Text('${Dil.boy} (cm)', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+          ]),
           const SizedBox(height: 8),
           SizedBox(
             height: 80,
             child: CustomPaint(
               size: const Size(double.infinity, 80),
-              painter: _ChartPainter(
-                data: son6.map((k) => (k['boy'] as num).toDouble()).toList(),
-                maxValue: maxBoy,
-                color: const Color(0xFF4CAF50),
-              ),
+              painter: _ChartPainter(data: son6.map((k) => (k['boy'] as num).toDouble()).toList(), maxValue: maxBoy, color: const Color(0xFF4CAF50)),
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(
-                Icons.monitor_weight,
-                color: Color(0xFF2196F3),
-                size: 18,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Kilo (kg)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-              ),
-            ],
-          ),
+          Row(children: [
+            const Icon(Icons.monitor_weight, color: Color(0xFF2196F3), size: 18),
+            const SizedBox(width: 8),
+            Text('${Dil.kilo} (kg)', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+          ]),
           const SizedBox(height: 8),
           SizedBox(
             height: 80,
             child: CustomPaint(
               size: const Size(double.infinity, 80),
-              painter: _ChartPainter(
-                data: son6.map((k) => (k['kilo'] as num).toDouble()).toList(),
-                maxValue: maxKilo,
-                color: const Color(0xFF2196F3),
-              ),
+              painter: _ChartPainter(data: son6.map((k) => (k['kilo'] as num).toDouble()).toList(), maxValue: maxKilo, color: const Color(0xFF2196F3)),
             ),
           ),
         ],
@@ -632,61 +427,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildGrowthList(
-    List<Map<String, dynamic>> kayitlar,
-    Color cardColor,
-    Color textColor,
-    Color subtitleColor,
-  ) {
+  Widget _buildGrowthList(List<Map<String, dynamic>> kayitlar, Color cardColor, Color textColor, Color subtitleColor) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(16)),
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: kayitlar.length > 5 ? 5 : kayitlar.length,
-        separatorBuilder: (_, __) =>
-            Divider(height: 1, color: subtitleColor.withAlpha(50)),
+        separatorBuilder: (_, __) => Divider(height: 1, color: subtitleColor.withAlpha(50)),
         itemBuilder: (context, index) {
           final k = kayitlar[index];
           final tarih = k['tarih'] as DateTime;
           return ListTile(
             leading: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.green.withAlpha(25),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Center(
-                child: Text('📏', style: TextStyle(fontSize: 18)),
-              ),
+              width: 40, height: 40,
+              decoration: BoxDecoration(color: Colors.green.withAlpha(25), borderRadius: BorderRadius.circular(10)),
+              child: const Center(child: Text('📏', style: TextStyle(fontSize: 18))),
             ),
-            title: Text(
-              '${tarih.day}/${tarih.month}/${tarih.year}',
-              style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-            ),
-            subtitle: Text(
-              'Boy: ${k['boy']} cm • Kilo: ${k['kilo']} kg',
-              style: TextStyle(color: subtitleColor, fontSize: 12),
-            ),
+            title: Text('${tarih.day} ${Dil.aylar[tarih.month - 1]} ${tarih.year}', style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+            subtitle: Text('${Dil.boy}: ${k['boy']} cm • ${Dil.kilo}: ${k['kilo']} kg', style: TextStyle(color: subtitleColor, fontSize: 12)),
           );
         },
       ),
     );
   }
 
-  List<Map<String, dynamic>> _buildTimeline(
-    List<Map<String, dynamic>> mama,
-    List<Map<String, dynamic>> kaka,
-    List<Map<String, dynamic>> uyku,
-  ) {
+  List<Map<String, dynamic>> _buildTimeline(List<Map<String, dynamic>> mama, List<Map<String, dynamic>> kaka, List<Map<String, dynamic>> uyku) {
     final List<Map<String, dynamic>> timeline = [];
     final son24Saat = DateTime.now().subtract(const Duration(hours: 24));
-
+    
     for (var k in mama) {
       final tarih = k['tarih'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
@@ -694,60 +464,47 @@ class _HomeScreenState extends State<HomeScreen> {
           'type': 'mama',
           'tarih': tarih,
           'time': _formatTime(tarih),
-          'miktar': k['miktar'],
-          'tur': k['tur'],
+          'miktar': k['miktar'] ?? 0,
+          'tur': k['tur'] ?? '',
+          'solDakika': k['solDakika'] ?? 0,
+          'sagDakika': k['sagDakika'] ?? 0,
         });
       }
     }
     for (var k in kaka) {
       final tarih = k['tarih'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
-        timeline.add({
-          'type': 'kaka',
-          'tarih': tarih,
-          'time': _formatTime(tarih),
-          'tur': k['tur'],
-        });
+        timeline.add({'type': 'kaka', 'tarih': tarih, 'time': _formatTime(tarih), 'tur': k['tur']});
       }
     }
     for (var k in uyku) {
       final tarih = k['bitis'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
-        timeline.add({
-          'type': 'uyku',
-          'tarih': tarih,
-          'time': _formatTime(tarih),
-          'sure': _formatDuration(k['sure']),
-        });
+        timeline.add({'type': 'uyku', 'tarih': tarih, 'time': _formatTime(tarih), 'sure': _formatDuration(k['sure'])});
       }
     }
-
-    timeline.sort(
-      (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
-    );
+    
+    timeline.sort((a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime));
     return timeline;
   }
 
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+    if (diff.inMinutes < 1) return Dil.azOnce;
+    if (diff.inMinutes < 60) return '${diff.inMinutes} ${Dil.dakikaOnce}';
+    if (diff.inHours < 24) return '${diff.inHours} ${Dil.saatOnce}';
+    return '${diff.inDays} ${Dil.gunOnce}';
   }
 
   String _formatTime(DateTime date) {
-    final hour = date.hour;
-    final minute = date.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
-    final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-    return '$hour12:$minute $period';
+    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
-    if (hours > 0) return '${hours}h ${minutes}m';
-    return '${minutes}m';
+    if (hours > 0) return '$hours ${Dil.sa} $minutes ${Dil.dk}';
+    return '$minutes ${Dil.dk}';
   }
 }
 
@@ -756,27 +513,15 @@ class _ChartPainter extends CustomPainter {
   final double maxValue;
   final Color color;
 
-  _ChartPainter({
-    required this.data,
-    required this.maxValue,
-    required this.color,
-  });
+  _ChartPainter({required this.data, required this.maxValue, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
     if (data.isEmpty) return;
 
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    final fillPaint = Paint()
-      ..color = color.withAlpha(30)
-      ..style = PaintingStyle.fill;
-    final dotPaint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
+    final paint = Paint()..color = color..strokeWidth = 2..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+    final fillPaint = Paint()..color = color.withAlpha(30)..style = PaintingStyle.fill;
+    final dotPaint = Paint()..color = color..style = PaintingStyle.fill;
 
     final path = Path();
     final fillPath = Path();
@@ -785,7 +530,7 @@ class _ChartPainter extends CustomPainter {
     for (int i = 0; i < data.length; i++) {
       final x = i * stepX;
       final y = size.height - (data[i] / maxValue * size.height);
-
+      
       if (i == 0) {
         path.moveTo(x, y);
         fillPath.moveTo(x, size.height);
@@ -796,10 +541,10 @@ class _ChartPainter extends CustomPainter {
       }
       canvas.drawCircle(Offset(x, y), 4, dotPaint);
     }
-
+    
     fillPath.lineTo(size.width, size.height);
     fillPath.close();
-
+    
     canvas.drawPath(fillPath, fillPaint);
     canvas.drawPath(path, paint);
   }

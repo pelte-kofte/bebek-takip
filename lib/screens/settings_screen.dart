@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
+import '../models/dil.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,9 +11,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final TextEditingController _isimController = TextEditingController(
-    text: 'Bebeğim',
-  );
+  final TextEditingController _isimController = TextEditingController(text: 'Bebeğim');
   DateTime _dogumTarihi = DateTime(2024, 6, 15);
 
   @override
@@ -20,14 +19,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
-
+    
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark
+            colors: isDark 
                 ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
                 : [const Color(0xFFFCE4EC), Colors.white],
           ),
@@ -39,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '⚙️ Ayarlar',
+                  '⚙️ ${Dil.ayarlar}',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -50,12 +49,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // GÖRÜNÜM
                 _buildSection(
-                  title: '🎨 Görünüm',
+                  title: '🎨 ${Dil.gorunum}',
                   cardColor: cardColor,
                   children: [
                     _buildSwitchTile(
-                      title: 'Karanlık Mod',
-                      subtitle: 'Göz yormayan koyu tema',
+                      title: Dil.karanlikMod,
+                      subtitle: Dil.karanlikModAciklama,
                       value: BabyTrackerApp.of(context)?.isDarkMode ?? false,
                       onChanged: (value) {
                         BabyTrackerApp.of(context)?.toggleTheme();
@@ -69,18 +68,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // BEBEK BİLGİLERİ
                 _buildSection(
-                  title: '👶 Bebek Bilgileri',
+                  title: '👶 ${Dil.bebekBilgileri}',
                   cardColor: cardColor,
                   children: [
                     _buildTextField(
                       controller: _isimController,
-                      label: 'Bebek Adı',
+                      label: Dil.bebekAdi,
                       icon: Icons.person,
                       isDark: isDark,
                     ),
                     const SizedBox(height: 12),
                     _buildDatePicker(
-                      label: 'Doğum Tarihi',
+                      label: Dil.dogumTarihi,
                       value: _dogumTarihi,
                       isDark: isDark,
                       onTap: () async {
@@ -101,11 +100,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // BİLDİRİMLER
                 _buildSection(
-                  title: '🔔 Bildirimler',
+                  title: '🔔 ${Dil.bildirimler}',
                   cardColor: cardColor,
                   children: [
                     _buildSwitchTile(
-                      title: 'Mama Hatırlatıcı',
+                      title: Dil.mamaHatirlatici,
                       subtitle: 'Her 3 saatte bir hatırlat',
                       value: true,
                       onChanged: (value) {},
@@ -113,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       iconColor: const Color(0xFFE91E63),
                     ),
                     _buildSwitchTile(
-                      title: 'Bez Hatırlatıcı',
+                      title: Dil.bezHatirlatici,
                       subtitle: 'Her 2 saatte bir kontrol et',
                       value: false,
                       onChanged: (value) {},
@@ -126,12 +125,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // VERİ YÖNETİMİ
                 _buildSection(
-                  title: '💾 Veri Yönetimi',
+                  title: '💾 ${Dil.veriYonetimi}',
                   cardColor: cardColor,
                   children: [
                     _buildActionTile(
                       icon: Icons.download,
-                      title: 'Verileri Dışa Aktar',
+                      title: Dil.verileriDisaAktar,
                       subtitle: 'JSON formatında indir',
                       color: const Color(0xFF2196F3),
                       onTap: () {
@@ -142,8 +141,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     _buildActionTile(
                       icon: Icons.delete_forever,
-                      title: 'Tüm Verileri Sil',
-                      subtitle: 'Dikkat: Bu işlem geri alınamaz!',
+                      title: Dil.tumVerileriSil,
+                      subtitle: Dil.silmeUyarisi,
                       color: Colors.red,
                       onTap: () => _showDeleteDialog(),
                     ),
@@ -153,11 +152,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // HAKKINDA
                 _buildSection(
-                  title: 'ℹ️ Hakkında',
+                  title: 'ℹ️ ${Dil.hakkinda}',
                   cardColor: cardColor,
                   children: [
-                    _buildInfoTile('Versiyon', '1.0.0', isDark),
-                    _buildInfoTile('Geliştirici', 'Bebek Takip', isDark),
+                    _buildInfoTile(Dil.versiyon, '1.0.0', isDark),
+                    _buildInfoTile(Dil.gelistirici, 'Bebek Takip', isDark),
                   ],
                 ),
                 const SizedBox(height: 100),
@@ -169,11 +168,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection({
-    required String title,
-    required Color cardColor,
-    required List<Widget> children,
-  }) {
+  Widget _buildSection({required String title, required Color cardColor, required List<Widget> children}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -217,16 +212,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       style: TextStyle(color: isDark ? Colors.white : Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(
-          color: isDark ? Colors.grey.shade400 : Colors.grey,
-        ),
+        labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey),
         prefixIcon: Icon(icon, color: const Color(0xFFE91E63)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
+          borderSide: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
         ),
       ),
     );
@@ -238,28 +229,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required bool isDark,
     required VoidCallback onTap,
   }) {
-    final aylar = [
-      'Ocak',
-      'Şubat',
-      'Mart',
-      'Nisan',
-      'Mayıs',
-      'Haziran',
-      'Temmuz',
-      'Ağustos',
-      'Eylül',
-      'Ekim',
-      'Kasım',
-      'Aralık',
-    ];
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
+          border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -269,20 +244,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(label, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
                 Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey,
-                  ),
-                ),
-                Text(
-                  '${value.day} ${aylar[value.month - 1]} ${value.year}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
+                  '${value.day} ${Dil.aylar[value.month - 1]} ${value.year}',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black),
                 ),
               ],
             ),
@@ -319,20 +284,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                ),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey,
-                  ),
-                ),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
+                Text(subtitle, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
               ],
             ),
           ),
@@ -374,17 +327,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.w600, color: color),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey,
-                    ),
-                  ),
+                  Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: color)),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
                 ],
               ),
             ),
@@ -401,41 +345,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: isDark ? Colors.grey.shade400 : Colors.grey,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
+          Text(label, style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
         ],
       ),
     );
   }
 
   void _showDeleteDialog() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Text('⚠️', style: TextStyle(fontSize: 28)),
-            SizedBox(width: 12),
-            Text('Dikkat!'),
+            const Text('⚠️', style: TextStyle(fontSize: 28)),
+            const SizedBox(width: 12),
+            Text(Dil.dikkat, style: TextStyle(color: isDark ? Colors.white : Colors.black)),
           ],
         ),
-        content: const Text('Tüm veriler silinecek. Bu işlem geri alınamaz!'),
+        content: Text(Dil.silmeUyarisi, style: TextStyle(color: isDark ? Colors.grey.shade300 : Colors.black87)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('İptal'),
+            child: Text(Dil.iptal),
           ),
           ElevatedButton(
             onPressed: () {
@@ -446,7 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Sil', style: TextStyle(color: Colors.white)),
+            child: Text(Dil.sil, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
