@@ -13,8 +13,10 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
-              'miktar': e['miktar'],
-              'tur': e['tur'],
+              'miktar': e['miktar'] ?? 0,
+              'tur': e['tur'] ?? '',
+              'solDakika': e['solDakika'] ?? 0,
+              'sagDakika': e['sagDakika'] ?? 0,
             }),
           )
           .toList();
@@ -30,8 +32,10 @@ class VeriYonetici {
         .map(
           (e) => {
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
-            'miktar': e['miktar'],
-            'tur': e['tur'],
+            'miktar': e['miktar'] ?? 0,
+            'tur': e['tur'] ?? '',
+            'solDakika': e['solDakika'] ?? 0,
+            'sagDakika': e['sagDakika'] ?? 0,
           },
         )
         .toList();
@@ -141,6 +145,7 @@ class VeriYonetici {
     html.window.localStorage['anilar'] = jsonEncode(data);
   }
 
+  // BOY/KİLO
   static List<Map<String, dynamic>> getBoyKiloKayitlari() {
     try {
       final data = html.window.localStorage['boykilo_kayitlari'];
@@ -175,6 +180,16 @@ class VeriYonetici {
         )
         .toList();
     html.window.localStorage['boykilo_kayitlari'] = jsonEncode(data);
+  }
+
+  // TEMA
+  static bool isDarkMode() {
+    final data = html.window.localStorage['dark_mode'];
+    return data == 'true';
+  }
+
+  static void setDarkMode(bool value) {
+    html.window.localStorage['dark_mode'] = value.toString();
   }
 
   // VERİLERİ TEMİZLE

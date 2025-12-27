@@ -14,21 +14,21 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       'title': 'İlk Gülümseme',
       'ay': 2,
       'tamamlandi': false,
-      'tarih': '15 Oca 2025',
+      'tarih': null,
     },
     {
       'emoji': '🎒',
       'title': 'Başını Tutma',
       'ay': 3,
       'tamamlandi': false,
-      'tarih': '20 Şub 2025',
+      'tarih': null,
     },
     {
       'emoji': '🔄',
       'title': 'Dönme',
       'ay': 4,
       'tamamlandi': false,
-      'tarih': '10 Mar 2025',
+      'tarih': null,
     },
     {
       'emoji': '🪑',
@@ -84,79 +84,62 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   void _toggleMilestone(int index) {
     setState(() {
       _milestones[index]['tamamlandi'] = !_milestones[index]['tamamlandi'];
-      if (_milestones[index]['tamamlandi']) {
-        final now = DateTime.now();
-        final aylar = [
-          'Oca',
-          'Şub',
-          'Mar',
-          'Nis',
-          'May',
-          'Haz',
-          'Tem',
-          'Ağu',
-          'Eyl',
-          'Eki',
-          'Kas',
-          'Ara',
-        ];
-        _milestones[index]['tarih'] =
-            '${now.day} ${aylar[now.month - 1]} ${now.year}';
-      } else {
-        _milestones[index]['tarih'] = null;
-      }
+      _milestones[index]['tarih'] = _milestones[index]['tamamlandi']
+          ? DateTime.now()
+          : null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final tamamlanan = _milestones.where((m) => m['tamamlandi']).length;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+
+    final tamamlanan = _milestones.where((m) => m['tamamlandi'] == true).length;
     final toplam = _milestones.length;
+    final progress = tamamlanan / toplam;
 
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFCE4EC), Colors.white],
+            colors: isDark
+                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
+                : [const Color(0xFFFCE4EC), Colors.white],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // HEADER
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
-                      children: [
-                        Text(
-                          '🏆 Gelişim Aşamaları',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF333333),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '🏆 Gelişim Aşamaları',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
                     ),
                     const SizedBox(height: 16),
-
-                    // PROGRESS BAR
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFE91E63), Color(0xFFAD1457)],
-                        ),
+                        color: cardColor,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
-                            color: Color(0x40E91E63),
-                            blurRadius: 15,
-                            offset: Offset(0, 8),
+                            color: isDark
+                                ? Colors.black26
+                                : const Color(0x1A000000),
+                            blurRadius: 10,
                           ),
                         ],
                       ),
@@ -165,19 +148,18 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
+                              Text(
                                 'İlerleme',
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
                                 ),
                               ),
                               Text(
                                 '$tamamlanan / $toplam',
                                 style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE91E63),
                                 ),
                               ),
                             ],
@@ -186,12 +168,14 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
                             child: LinearProgressIndicator(
-                              value: tamamlanan / toplam,
-                              backgroundColor: Colors.white30,
+                              value: progress,
+                              minHeight: 12,
+                              backgroundColor: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade200,
                               valueColor: const AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                                Color(0xFFE91E63),
                               ),
-                              minHeight: 10,
                             ),
                           ),
                         ],
@@ -200,8 +184,6 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   ],
                 ),
               ),
-
-              // LİSTE
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -210,93 +192,106 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                     final milestone = _milestones[index];
                     final tamamlandi = milestone['tamamlandi'] as bool;
 
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: tamamlandi
-                            ? Border.all(
-                                color: const Color(0xFF4CAF50),
-                                width: 2,
-                              )
-                            : null,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x1A000000),
-                            blurRadius: 10,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
-                        leading: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: tamamlandi
-                                ? const Color(0xFF4CAF50).withAlpha(25)
-                                : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Center(
-                            child: Text(
-                              milestone['emoji'],
-                              style: TextStyle(
-                                fontSize: 24,
-                                color: tamamlandi ? null : Colors.grey,
+                    return GestureDetector(
+                      onTap: () => _toggleMilestone(index),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(16),
+                          border: tamamlandi
+                              ? Border.all(color: Colors.green, width: 2)
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.black26
+                                  : const Color(0x1A000000),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: tamamlandi
+                                    ? Colors.green.withAlpha(25)
+                                    : (isDark
+                                          ? Colors.grey.shade800
+                                          : Colors.grey.shade100),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  milestone['emoji'],
+                                  style: const TextStyle(fontSize: 24),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                        title: Text(
-                          milestone['title'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: tamamlandi
-                                ? const Color(0xFF333333)
-                                : Colors.grey,
-                            decoration: tamamlandi
-                                ? TextDecoration.none
-                                : TextDecoration.none,
-                          ),
-                        ),
-                        subtitle: Text(
-                          tamamlandi
-                              ? '✓ ${milestone['tarih']}'
-                              : '${milestone['ay']}. ayda bekleniyor',
-                          style: TextStyle(
-                            color: tamamlandi
-                                ? const Color(0xFF4CAF50)
-                                : Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                        trailing: GestureDetector(
-                          onTap: () => _toggleMilestone(index),
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: tamamlandi
-                                  ? const Color(0xFF4CAF50)
-                                  : Colors.grey.shade200,
-                              shape: BoxShape.circle,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    milestone['title'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: tamamlandi
+                                          ? Colors.green
+                                          : textColor,
+                                      decoration: tamamlandi
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    tamamlandi
+                                        ? '✓ Tamamlandı!'
+                                        : '${milestone['ay']}. ayda bekleniyor',
+                                    style: TextStyle(
+                                      color: tamamlandi
+                                          ? Colors.green
+                                          : subtitleColor,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Icon(
-                              tamamlandi ? Icons.check : Icons.circle_outlined,
-                              color: tamamlandi ? Colors.white : Colors.grey,
-                              size: 24,
+                            Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: tamamlandi
+                                    ? Colors.green
+                                    : (isDark
+                                          ? Colors.grey.shade700
+                                          : Colors.grey.shade300),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                tamamlandi
+                                    ? Icons.check
+                                    : Icons.circle_outlined,
+                                color: Colors.white,
+                                size: 18,
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     );
                   },
                 ),
               ),
+              const SizedBox(height: 80),
             ],
           ),
         ),

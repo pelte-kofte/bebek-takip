@@ -4,25 +4,72 @@ import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
+import 'models/veri_yonetici.dart';
 
 void main() {
   runApp(const BabyTrackerApp());
 }
 
-class BabyTrackerApp extends StatelessWidget {
+class BabyTrackerApp extends StatefulWidget {
   const BabyTrackerApp({super.key});
+
+  static _BabyTrackerAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_BabyTrackerAppState>();
+
+  @override
+  State<BabyTrackerApp> createState() => _BabyTrackerAppState();
+}
+
+class _BabyTrackerAppState extends State<BabyTrackerApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  void _loadTheme() {
+    final isDark = VeriYonetici.isDarkMode();
+    setState(() {
+      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  void toggleTheme() {
+    setState(() {
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
+      VeriYonetici.setDarkMode(_themeMode == ThemeMode.dark);
+    });
+  }
+
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bebek Takip',
       debugShowCheckedModeBanner: false,
+      themeMode: _themeMode,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFE91E63),
           brightness: Brightness.light,
         ),
         useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF8F8F8),
+        cardColor: Colors.white,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFE91E63),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        cardColor: const Color(0xFF1E1E1E),
       ),
       home: const MainScreen(),
     );
@@ -33,19 +80,19 @@ class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MainScreen> createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  int _refreshKey = 0;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    ActivitiesScreen(),
-    SizedBox(),
-    MilestonesScreen(),
-    SettingsScreen(),
-  ];
+  // Dışarıdan çağırılabilir yenileme fonksiyonu
+  void refreshScreens() {
+    setState(() {
+      _refreshKey++;
+    });
+  }
 
   void _onItemTapped(int index) {
     if (index == 2) {
@@ -62,21 +109,35 @@ class _MainScreenState extends State<MainScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => const AddScreen(),
-    );
+    ).then((_) {
+      // Modal kapandığında tüm ekranları yenile
+      refreshScreens();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Her yenilemede yeni key ile widgetlar oluştur
+    final screens = [
+      HomeScreen(key: ValueKey('home_$_refreshKey')),
+      ActivitiesScreen(key: ValueKey('activities_$_refreshKey')),
+      const SizedBox(),
+      MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),
+      const SettingsScreen(),
+    ];
+
     return Scaffold(
-      body: _screens[_selectedIndex],
+      body: IndexedStack(index: _selectedIndex, children: screens),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Color(0x1A000000),
+              color: isDark ? Colors.black26 : const Color(0x1A000000),
               blurRadius: 10,
-              offset: Offset(0, -5),
+              offset: const Offset(0, -5),
             ),
           ],
         ),
@@ -87,9 +148,9 @@ class _MainScreenState extends State<MainScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildNavItem(0, Icons.home_rounded, 'Home'),
-                _buildNavItem(1, Icons.bar_chart_rounded, 'Chart'),
+                _buildNavItem(1, Icons.bar_chart_rounded, 'Activities'),
                 _buildAddButton(),
-                _buildNavItem(3, Icons.person_outline, 'Milestones'),
+                _buildNavItem(3, Icons.emoji_events_rounded, 'Milestones'),
                 _buildNavItem(4, Icons.settings_outlined, 'Settings'),
               ],
             ),
@@ -101,6 +162,8 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Column(
@@ -108,7 +171,9 @@ class _MainScreenState extends State<MainScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected ? const Color(0xFFE91E63) : Colors.grey,
+            color: isSelected
+                ? const Color(0xFFE91E63)
+                : (isDark ? Colors.grey.shade400 : Colors.grey),
             size: 26,
           ),
           const SizedBox(height: 4),
@@ -116,7 +181,9 @@ class _MainScreenState extends State<MainScreen> {
             label,
             style: TextStyle(
               fontSize: 11,
-              color: isSelected ? const Color(0xFFE91E63) : Colors.grey,
+              color: isSelected
+                  ? const Color(0xFFE91E63)
+                  : (isDark ? Colors.grey.shade400 : Colors.grey),
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),

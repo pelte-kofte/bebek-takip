@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../models/veri_yonetici.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,23 +13,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final TextEditingController _isimController = TextEditingController(
     text: 'Bebeğim',
   );
-  final TextEditingController _boyController = TextEditingController(
-    text: '68',
-  );
-  final TextEditingController _kiloController = TextEditingController(
-    text: '7.5',
-  );
   DateTime _dogumTarihi = DateTime(2024, 6, 15);
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFFCE4EC), Colors.white],
+            colors: isDark
+                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
+                : [const Color(0xFFFCE4EC), Colors.white],
           ),
         ),
         child: SafeArea(
@@ -37,30 +38,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // HEADER
-                const Text(
+                Text(
                   '⚙️ Ayarlar',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 24),
 
+                // GÖRÜNÜM
+                _buildSection(
+                  title: '🎨 Görünüm',
+                  cardColor: cardColor,
+                  children: [
+                    _buildSwitchTile(
+                      title: 'Karanlık Mod',
+                      subtitle: 'Göz yormayan koyu tema',
+                      value: BabyTrackerApp.of(context)?.isDarkMode ?? false,
+                      onChanged: (value) {
+                        BabyTrackerApp.of(context)?.toggleTheme();
+                      },
+                      icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                      iconColor: isDark ? Colors.amber : Colors.orange,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
                 // BEBEK BİLGİLERİ
                 _buildSection(
                   title: '👶 Bebek Bilgileri',
+                  cardColor: cardColor,
                   children: [
                     _buildTextField(
                       controller: _isimController,
                       label: 'Bebek Adı',
                       icon: Icons.person,
+                      isDark: isDark,
                     ),
                     const SizedBox(height: 12),
                     _buildDatePicker(
                       label: 'Doğum Tarihi',
                       value: _dogumTarihi,
+                      isDark: isDark,
                       onTap: () async {
                         final picked = await showDatePicker(
                           context: context,
@@ -73,61 +95,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
                       },
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _boyController,
-                            label: 'Boy (cm)',
-                            icon: Icons.straighten,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildTextField(
-                            controller: _kiloController,
-                            label: 'Kilo (kg)',
-                            icon: Icons.monitor_weight,
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 // BİLDİRİMLER
                 _buildSection(
                   title: '🔔 Bildirimler',
+                  cardColor: cardColor,
                   children: [
                     _buildSwitchTile(
                       title: 'Mama Hatırlatıcı',
                       subtitle: 'Her 3 saatte bir hatırlat',
                       value: true,
                       onChanged: (value) {},
+                      icon: Icons.restaurant,
+                      iconColor: const Color(0xFFE91E63),
                     ),
                     _buildSwitchTile(
                       title: 'Bez Hatırlatıcı',
                       subtitle: 'Her 2 saatte bir kontrol et',
                       value: false,
                       onChanged: (value) {},
-                    ),
-                    _buildSwitchTile(
-                      title: 'Uyku Takibi',
-                      subtitle: 'Uyku düzeni bildirimleri',
-                      value: true,
-                      onChanged: (value) {},
+                      icon: Icons.baby_changing_station,
+                      iconColor: const Color(0xFF9C27B0),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 // VERİ YÖNETİMİ
                 _buildSection(
                   title: '💾 Veri Yönetimi',
+                  cardColor: cardColor,
                   children: [
                     _buildActionTile(
                       icon: Icons.download,
@@ -149,18 +149,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
 
                 // HAKKINDA
                 _buildSection(
                   title: 'ℹ️ Hakkında',
+                  cardColor: cardColor,
                   children: [
-                    _buildInfoTile('Versiyon', '1.0.0'),
-                    _buildInfoTile('Geliştirici', 'Bebek Takip'),
-                    _buildInfoTile('İletişim', 'info@bebektakip.com'),
+                    _buildInfoTile('Versiyon', '1.0.0', isDark),
+                    _buildInfoTile('Geliştirici', 'Bebek Takip', isDark),
                   ],
                 ),
-                const SizedBox(height: 40),
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -171,18 +171,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSection({
     required String title,
+    required Color cardColor,
     required List<Widget> children,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
+            color: isDark ? Colors.black26 : const Color(0x1A000000),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -208,18 +210,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
+    required bool isDark,
   }) {
     return TextField(
       controller: controller,
-      keyboardType: keyboardType,
+      style: TextStyle(color: isDark ? Colors.white : Colors.black),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey.shade400 : Colors.grey,
+        ),
         prefixIcon: Icon(icon, color: const Color(0xFFE91E63)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        focusedBorder: OutlineInputBorder(
+        enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFFE91E63), width: 2),
+          borderSide: BorderSide(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
         ),
       ),
     );
@@ -228,6 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildDatePicker({
     required String label,
     required DateTime value,
+    required bool isDark,
     required VoidCallback onTap,
   }) {
     final aylar = [
@@ -249,7 +257,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade400),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -261,13 +271,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
                 ),
                 Text(
                   '${value.day} ${aylar[value.month - 1]} ${value.year}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black,
                   ),
                 ),
               ],
@@ -283,22 +297,41 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
+    required IconData icon,
+    required Color iconColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: iconColor.withAlpha(25),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                 ),
                 Text(
                   subtitle,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
                 ),
               ],
             ),
@@ -306,7 +339,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: const Color(0xFFE91E63),
+            activeColor: const Color(0xFFE91E63),
           ),
         ],
       ),
@@ -320,6 +353,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Color color,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Padding(
@@ -346,7 +380,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
                   ),
                 ],
               ),
@@ -358,14 +395,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildInfoTile(String label, String value) {
+  Widget _buildInfoTile(String label, String value, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.grey.shade400 : Colors.grey,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
         ],
       ),
     );
@@ -383,9 +431,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text('Dikkat!'),
           ],
         ),
-        content: const Text(
-          'Tüm veriler silinecek. Bu işlem geri alınamaz!\n\nDevam etmek istiyor musun?',
-        ),
+        content: const Text('Tüm veriler silinecek. Bu işlem geri alınamaz!'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

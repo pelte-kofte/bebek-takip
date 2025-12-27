@@ -6,10 +6,12 @@ class AddScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -24,12 +26,12 @@ class AddScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const Text(
+          Text(
             'Ne eklemek istersin?',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF333333),
+              color: isDark ? Colors.white : const Color(0xFF333333),
             ),
           ),
           const SizedBox(height: 24),
@@ -72,7 +74,7 @@ class AddScreen extends StatelessWidget {
                 color: const Color(0xFF4CAF50),
                 onTap: () => _showGrowthDialog(context),
               ),
-              const SizedBox(width: 70), // Boşluk için
+              const SizedBox(width: 70),
             ],
           ),
           const SizedBox(height: 24),
@@ -83,8 +85,12 @@ class AddScreen extends StatelessWidget {
 
   void _showMamaDialog(BuildContext context) {
     Navigator.pop(context);
-    int miktar = 100;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     String tur = 'Anne Sütü';
+    int solDakika = 10;
+    int sagDakika = 10;
+    int miktar = 100;
     TimeOfDay saat = TimeOfDay.now();
 
     showModalBottomSheet(
@@ -92,190 +98,442 @@ class AddScreen extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                '🍼 Mama Ekle',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFE91E63),
-                ),
+        builder: (ctx, setModalState) {
+          return Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(24),
               ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.pink.shade50,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => setModalState(
-                        () => miktar = (miktar - 10).clamp(0, 500),
-                      ),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE91E63),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.remove, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    Text(
-                      '$miktar ml',
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFE91E63),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-                    GestureDetector(
-                      onTap: () => setModalState(
-                        () => miktar = (miktar + 10).clamp(0, 500),
-                      ),
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFE91E63),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.add, color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: ['Anne Sütü', 'Formül', 'Karışık'].map((t) {
-                  final selected = tur == t;
-                  return GestureDetector(
-                    onTap: () => setModalState(() => tur = t),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? const Color(0xFFE91E63)
-                            : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        t,
-                        style: TextStyle(
-                          color: selected ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 16),
-              GestureDetector(
-                onTap: () async {
-                  final picked = await showTimePicker(
-                    context: ctx,
-                    initialTime: saat,
-                  );
-                  if (picked != null) setModalState(() => saat = picked);
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: const Color(0xFFE91E63),
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
-                    style: const TextStyle(
-                      fontSize: 20,
+            ),
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '🍼 Mama Ekle',
+                    style: TextStyle(
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFFE91E63),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final now = DateTime.now();
-                    final tarih = DateTime(
-                      now.year,
-                      now.month,
-                      now.day,
-                      saat.hour,
-                      saat.minute,
-                    );
-                    final kayitlar = VeriYonetici.getMamaKayitlari();
-                    kayitlar.insert(0, {
-                      'tarih': tarih,
-                      'miktar': miktar,
-                      'tur': tur,
-                    });
-                    await VeriYonetici.saveMamaKayitlari(kayitlar);
-                    Navigator.pop(ctx);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE91E63),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  const SizedBox(height: 24),
+
+                  // TÜR SEÇİMİ
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _TurSecimWidget(
+                        emoji: '🤱',
+                        label: 'Anne Sütü',
+                        selected: tur,
+                        onSelect: (t) => setModalState(() => tur = t),
+                      ),
+                      _TurSecimWidget(
+                        emoji: '🍼',
+                        label: 'Formül',
+                        selected: tur,
+                        onSelect: (t) => setModalState(() => tur = t),
+                      ),
+                      _TurSecimWidget(
+                        emoji: '🥛',
+                        label: 'Biberon',
+                        selected: tur,
+                        onSelect: (t) => setModalState(() => tur = t),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ANNE SÜTÜ - MEME SEÇİMİ VE SÜRE
+                  if (tur == 'Anne Sütü') ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.pink.shade900.withAlpha(50)
+                            : Colors.pink.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          // Sol Meme
+                          Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE91E63).withAlpha(25),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'L',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFE91E63),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Sol Meme',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () => setModalState(
+                                  () =>
+                                      solDakika = (solDakika - 1).clamp(0, 60),
+                                ),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE91E63),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '$solDakika dk',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE91E63),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: () => setModalState(
+                                  () =>
+                                      solDakika = (solDakika + 1).clamp(0, 60),
+                                ),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE91E63),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Sağ Meme
+                          Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE91E63).withAlpha(25),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Center(
+                                  child: Text(
+                                    'R',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFFE91E63),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Sağ Meme',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                              ),
+                              const Spacer(),
+                              GestureDetector(
+                                onTap: () => setModalState(
+                                  () =>
+                                      sagDakika = (sagDakika - 1).clamp(0, 60),
+                                ),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE91E63),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                '$sagDakika dk',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE91E63),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              GestureDetector(
+                                onTap: () => setModalState(
+                                  () =>
+                                      sagDakika = (sagDakika + 1).clamp(0, 60),
+                                ),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFE91E63),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFE91E63).withAlpha(25),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  '⏱️ Toplam: ',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  '${solDakika + sagDakika} dakika',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFE91E63),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // FORMÜL VEYA BİBERON - MİKTAR
+                  if (tur == 'Formül' || tur == 'Biberon') ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.pink.shade900.withAlpha(50)
+                            : Colors.pink.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () => setModalState(
+                              () => miktar = (miktar - 10).clamp(0, 500),
+                            ),
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFE91E63),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.remove,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 24),
+                          Text(
+                            '$miktar ml',
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFE91E63),
+                            ),
+                          ),
+                          const SizedBox(width: 24),
+                          GestureDetector(
+                            onTap: () => setModalState(
+                              () => miktar = (miktar + 10).clamp(0, 500),
+                            ),
+                            child: Container(
+                              width: 50,
+                              height: 50,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFE91E63),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.add, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 16),
+
+                  // SAAT SEÇİMİ
+                  GestureDetector(
+                    onTap: () async {
+                      final picked = await showTimePicker(
+                        context: ctx,
+                        initialTime: saat,
+                      );
+                      if (picked != null) setModalState(() => saat = picked);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xFFE91E63),
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.access_time,
+                            color: Color(0xFFE91E63),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFE91E63),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    '✓ Kaydet',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                  const SizedBox(height: 24),
+
+                  // KAYDET BUTONU
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final now = DateTime.now();
+                        final tarih = DateTime(
+                          now.year,
+                          now.month,
+                          now.day,
+                          saat.hour,
+                          saat.minute,
+                        );
+                        final kayitlar = VeriYonetici.getMamaKayitlari();
+
+                        if (tur == 'Anne Sütü') {
+                          kayitlar.insert(0, {
+                            'tarih': tarih,
+                            'tur': 'Anne Sütü',
+                            'solDakika': solDakika,
+                            'sagDakika': sagDakika,
+                            'miktar': 0,
+                          });
+                        } else {
+                          String kayitTur = tur == 'Biberon'
+                              ? 'Biberon Anne Sütü'
+                              : 'Formül';
+                          kayitlar.insert(0, {
+                            'tarih': tarih,
+                            'tur': kayitTur,
+                            'miktar': miktar,
+                            'solDakika': 0,
+                            'sagDakika': 0,
+                          });
+                        }
+
+                        await VeriYonetici.saveMamaKayitlari(kayitlar);
+                        Navigator.pop(ctx);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE91E63),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        '✓ Kaydet',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
 
   void _showKakaDialog(BuildContext context) {
     Navigator.pop(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -322,6 +580,7 @@ class AddScreen extends StatelessWidget {
 
   void _showUykuDialog(BuildContext context) {
     Navigator.pop(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     TimeOfDay baslangic = TimeOfDay.now();
     TimeOfDay bitis = TimeOfDay.now();
 
@@ -331,9 +590,9 @@ class AddScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -353,9 +612,11 @@ class AddScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      const Text(
+                      Text(
                         'Başlangıç',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade400 : Colors.grey,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
@@ -388,10 +649,18 @@ class AddScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Icon(Icons.arrow_forward, color: Colors.grey),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
                   Column(
                     children: [
-                      const Text('Bitiş', style: TextStyle(color: Colors.grey)),
+                      Text(
+                        'Bitiş',
+                        style: TextStyle(
+                          color: isDark ? Colors.grey.shade400 : Colors.grey,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: () async {
@@ -446,14 +715,9 @@ class AddScreen extends StatelessWidget {
                       bitis.hour,
                       bitis.minute,
                     );
-
-                    // Eğer bitiş başlangıçtan önceyse, ertesi gün demektir
-                    if (bitisDT.isBefore(baslangicDT)) {
+                    if (bitisDT.isBefore(baslangicDT))
                       bitisDT = bitisDT.add(const Duration(days: 1));
-                    }
-
                     final sure = bitisDT.difference(baslangicDT);
-
                     final kayitlar = VeriYonetici.getUykuKayitlari();
                     kayitlar.insert(0, {
                       'baslangic': baslangicDT,
@@ -479,7 +743,6 @@ class AddScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -489,6 +752,7 @@ class AddScreen extends StatelessWidget {
 
   void _showAniDialog(BuildContext context) {
     Navigator.pop(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final baslikController = TextEditingController();
     final notController = TextEditingController();
     String emoji = '👶';
@@ -499,9 +763,9 @@ class AddScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: EdgeInsets.only(
             left: 24,
@@ -533,7 +797,9 @@ class AddScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: emoji == e
                                   ? Colors.orange.shade100
-                                  : Colors.grey.shade100,
+                                  : (isDark
+                                        ? Colors.grey.shade800
+                                        : Colors.grey.shade100),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -548,18 +814,26 @@ class AddScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: baslikController,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  decoration: InputDecoration(
                     labelText: 'Başlık',
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: notController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                  decoration: InputDecoration(
                     labelText: 'Not',
-                    border: OutlineInputBorder(),
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -606,6 +880,7 @@ class AddScreen extends StatelessWidget {
 
   void _showGrowthDialog(BuildContext context) {
     Navigator.pop(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final boyController = TextEditingController();
     final kiloController = TextEditingController();
     final basController = TextEditingController();
@@ -617,9 +892,9 @@ class AddScreen extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           padding: EdgeInsets.only(
             left: 24,
@@ -640,8 +915,6 @@ class AddScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // TARİH SEÇİMİ
                 GestureDetector(
                   onTap: () async {
                     final picked = await showDatePicker(
@@ -650,15 +923,16 @@ class AddScreen extends StatelessWidget {
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                     );
-                    if (picked != null) {
+                    if (picked != null)
                       setModalState(() => secilenTarih = picked);
-                    }
                   },
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green.shade50,
+                      color: isDark
+                          ? Colors.green.shade900.withAlpha(50)
+                          : Colors.green.shade50,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: const Color(0xFF4CAF50)),
                     ),
@@ -678,24 +952,29 @@ class AddScreen extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        const Text(
+                        Text(
                           'Tarih Seç',
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(
+                            color: isDark ? Colors.grey.shade400 : Colors.grey,
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 TextField(
                   controller: boyController,
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Boy (cm)',
                     hintText: 'Örn: 68.5',
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
                     prefixIcon: const Icon(
                       Icons.straighten,
                       color: Color(0xFF4CAF50),
@@ -711,9 +990,13 @@ class AddScreen extends StatelessWidget {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Kilo (kg)',
                     hintText: 'Örn: 7.5',
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
                     prefixIcon: const Icon(
                       Icons.monitor_weight,
                       color: Color(0xFF2196F3),
@@ -729,9 +1012,13 @@ class AddScreen extends StatelessWidget {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                   decoration: InputDecoration(
                     labelText: 'Baş Çevresi (cm) - Opsiyonel',
                     hintText: 'Örn: 42.0',
+                    labelStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
                     prefixIcon: const Icon(
                       Icons.circle_outlined,
                       color: Color(0xFFFF9800),
@@ -768,7 +1055,6 @@ class AddScreen extends StatelessWidget {
                               ) ??
                               0,
                         });
-                        // Tarihe göre sırala (en yeni önce)
                         kayitlar.sort(
                           (a, b) => (b['tarih'] as DateTime).compareTo(
                             a['tarih'] as DateTime,
@@ -803,6 +1089,7 @@ class AddScreen extends StatelessWidget {
   }
 }
 
+// YARDIMCI WİDGETLAR
 class _AddOption extends StatelessWidget {
   final String emoji;
   final String label;
@@ -844,6 +1131,51 @@ class _AddOption extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TurSecimWidget extends StatelessWidget {
+  final String emoji;
+  final String label;
+  final String selected;
+  final Function(String) onSelect;
+
+  const _TurSecimWidget({
+    required this.emoji,
+    required this.label,
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = selected == label;
+    return GestureDetector(
+      onTap: () => onSelect(label),
+      child: Container(
+        width: 90,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFE91E63) : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 28)),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

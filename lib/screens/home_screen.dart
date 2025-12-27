@@ -9,10 +9,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool _showGrowthChart = true; // true = grafik, false = liste
+  bool _showGrowthChart = true;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
     final kakaKayitlari = VeriYonetici.getKakaKayitlari();
     final uykuKayitlari = VeriYonetici.getUykuKayitlari();
@@ -24,597 +29,360 @@ class _HomeScreenState extends State<HomeScreen> {
       uykuKayitlari,
     );
 
-    // Boy/Kilo değişim hesapla
     Map<String, dynamic>? sonOlcum;
-    Map<String, dynamic>? oncekiOlcum;
     if (boyKiloKayitlari.isNotEmpty) {
       sonOlcum = boyKiloKayitlari.first;
-      if (boyKiloKayitlari.length > 1) {
-        oncekiOlcum = boyKiloKayitlari[1];
-      }
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // HEADER - Bebek Profili
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.pink.shade100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Center(
-                        child: Text('👶', style: TextStyle(fontSize: 28)),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Bebeğim',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF333333),
-                          ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
+                : [const Color(0xFFFCE4EC), const Color(0xFFF8F8F8)],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // HEADER
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.pink.shade900
+                              : Colors.pink.shade100,
+                          shape: BoxShape.circle,
                         ),
-                        Row(
-                          children: [
-                            if (sonOlcum != null) ...[
-                              Text(
-                                '${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ] else
-                              const Text(
-                                '6 ay 12 gün',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                          ],
+                        child: const Center(
+                          child: Text('👶', style: TextStyle(fontSize: 28)),
                         ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: Colors.pink.shade50,
-                        shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.notifications_none,
-                        color: Color(0xFFE91E63),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // LAST ACTIONS
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Last actions',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF333333),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              SizedBox(
-                height: 100,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  children: [
-                    _buildLastActionCard(
-                      icon: '🍼',
-                      title: 'Last Fed',
-                      value: mamaKayitlari.isNotEmpty
-                          ? _timeAgo(mamaKayitlari.first['tarih'])
-                          : '-',
-                      subtitle: mamaKayitlari.isNotEmpty
-                          ? '${mamaKayitlari.first['tur']}'
-                          : '',
-                      detail: mamaKayitlari.isNotEmpty
-                          ? '${mamaKayitlari.first['miktar']} ml'
-                          : '',
-                      color: const Color(0xFFFFE0B2),
-                    ),
-                    _buildLastActionCard(
-                      icon: '😴',
-                      title: 'Awake',
-                      value: uykuKayitlari.isNotEmpty
-                          ? _timeAgo(uykuKayitlari.first['bitis'])
-                          : '-',
-                      subtitle: 'Today',
-                      detail: uykuKayitlari.isNotEmpty
-                          ? _formatDuration(uykuKayitlari.first['sure'])
-                          : '',
-                      color: const Color(0xFFE1BEE7),
-                    ),
-                    _buildLastActionCard(
-                      icon: '👶',
-                      title: 'Changed',
-                      value: kakaKayitlari.isNotEmpty
-                          ? _timeAgo(kakaKayitlari.first['tarih'])
-                          : '-',
-                      subtitle: 'Type',
-                      detail: kakaKayitlari.isNotEmpty
-                          ? kakaKayitlari.first['tur']
-                          : '',
-                      color: const Color(0xFFB3E5FC),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // TIMELINE HEADER
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Timeline',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'All',
-                            style: TextStyle(fontWeight: FontWeight.w500),
+                            'Bebeğim',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
                           ),
-                          SizedBox(width: 4),
-                          Icon(Icons.keyboard_arrow_down, size: 18),
+                          if (sonOlcum != null)
+                            Text(
+                              '${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: subtitleColor,
+                              ),
+                            )
+                          else
+                            Text(
+                              '6 ay 12 gün',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: subtitleColor,
+                              ),
+                            ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  'Today',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFE91E63),
+                      const Spacer(),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.pink.shade900
+                              : Colors.pink.shade50,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.notifications_none,
+                          color: Color(0xFFE91E63),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
 
-              // TIMELINE LIST
-              if (timeline.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Text('📝', style: TextStyle(fontSize: 48)),
-                        SizedBox(height: 12),
-                        Text(
-                          'Henüz kayıt yok',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          '+ butonuna basarak ekle',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                // LAST ACTIONS
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: timeline.length > 5 ? 5 : timeline.length,
-                  itemBuilder: (context, index) {
-                    final item = timeline[index];
-                    return _buildTimelineItem(item);
-                  },
-                ),
-              const SizedBox(height: 24),
-
-              // GROWTH SECTION
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '📊 Büyüme Takibi',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
-                      ),
+                  child: Text(
+                    'Last actions',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: textColor,
                     ),
-                    // Grafik/Liste Toggle
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  height: 110,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    children: [
+                      _buildLastActionCard(
+                        '🍼',
+                        'Last Fed',
+                        mamaKayitlari.isNotEmpty
+                            ? _timeAgo(mamaKayitlari.first['tarih'])
+                            : '-',
+                        mamaKayitlari.isNotEmpty
+                            ? '${mamaKayitlari.first['miktar']} ml'
+                            : '',
+                        const Color(0xFFFFE0B2),
+                        cardColor,
+                        textColor,
+                        subtitleColor,
                       ),
-                      child: Row(
+                      _buildLastActionCard(
+                        '😴',
+                        'Awake',
+                        uykuKayitlari.isNotEmpty
+                            ? _timeAgo(uykuKayitlari.first['bitis'])
+                            : '-',
+                        uykuKayitlari.isNotEmpty
+                            ? _formatDuration(uykuKayitlari.first['sure'])
+                            : '',
+                        const Color(0xFFE1BEE7),
+                        cardColor,
+                        textColor,
+                        subtitleColor,
+                      ),
+                      _buildLastActionCard(
+                        '👶',
+                        'Changed',
+                        kakaKayitlari.isNotEmpty
+                            ? _timeAgo(kakaKayitlari.first['tarih'])
+                            : '-',
+                        kakaKayitlari.isNotEmpty
+                            ? kakaKayitlari.first['tur']
+                            : '',
+                        const Color(0xFFB3E5FC),
+                        cardColor,
+                        textColor,
+                        subtitleColor,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // TIMELINE
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Timeline',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Son 24 saat',
+                          style: TextStyle(fontSize: 12, color: textColor),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                if (timeline.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(40),
+                    child: Center(
+                      child: Column(
                         children: [
-                          GestureDetector(
-                            onTap: () =>
-                                setState(() => _showGrowthChart = true),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _showGrowthChart
-                                    ? const Color(0xFF4CAF50)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(
-                                Icons.show_chart,
-                                size: 18,
-                                color: _showGrowthChart
-                                    ? Colors.white
-                                    : Colors.grey,
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () =>
-                                setState(() => _showGrowthChart = false),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: !_showGrowthChart
-                                    ? const Color(0xFF4CAF50)
-                                    : Colors.transparent,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Icon(
-                                Icons.list,
-                                size: 18,
-                                color: !_showGrowthChart
-                                    ? Colors.white
-                                    : Colors.grey,
-                              ),
-                            ),
+                          const Text('📝', style: TextStyle(fontSize: 48)),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Henüz kayıt yok',
+                            style: TextStyle(color: subtitleColor),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // GROWTH CONTENT
-              if (boyKiloKayitlari.isEmpty)
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(40),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: const Center(
-                    child: Column(
-                      children: [
-                        Text('📏', style: TextStyle(fontSize: 48)),
-                        SizedBox(height: 12),
-                        Text(
-                          'Henüz ölçüm yok',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          '+ butonundan ölçüm ekle',
-                          style: TextStyle(color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
+                  )
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: timeline.length > 5 ? 5 : timeline.length,
+                    itemBuilder: (context, index) => _buildTimelineItem(
+                      timeline[index],
+                      textColor,
+                      subtitleColor,
+                      isDark,
                     ),
                   ),
-                )
-              else if (_showGrowthChart)
-                _buildGrowthChart(boyKiloKayitlari)
-              else
-                _buildGrowthList(boyKiloKayitlari),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 100),
-            ],
+                // GROWTH
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '📊 Büyüme Takibi',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () =>
+                                  setState(() => _showGrowthChart = true),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _showGrowthChart
+                                      ? const Color(0xFF4CAF50)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  Icons.show_chart,
+                                  size: 18,
+                                  color: _showGrowthChart
+                                      ? Colors.white
+                                      : subtitleColor,
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () =>
+                                  setState(() => _showGrowthChart = false),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: !_showGrowthChart
+                                      ? const Color(0xFF4CAF50)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Icon(
+                                  Icons.list,
+                                  size: 18,
+                                  color: !_showGrowthChart
+                                      ? Colors.white
+                                      : subtitleColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+
+                if (boyKiloKayitlari.isEmpty)
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.all(40),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          const Text('📏', style: TextStyle(fontSize: 48)),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Henüz ölçüm yok',
+                            style: TextStyle(color: subtitleColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                else if (_showGrowthChart)
+                  _buildGrowthChart(boyKiloKayitlari, cardColor, textColor)
+                else
+                  _buildGrowthList(
+                    boyKiloKayitlari,
+                    cardColor,
+                    textColor,
+                    subtitleColor,
+                  ),
+
+                const SizedBox(height: 100),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildGrowthChart(List<Map<String, dynamic>> kayitlar) {
-    // Son 6 ölçümü al ve ters çevir (eski->yeni)
-    final son6 = kayitlar.take(6).toList().reversed.toList();
-
-    if (son6.isEmpty) return const SizedBox();
-
-    // Max değerleri bul
-    double maxBoy = 0;
-    double maxKilo = 0;
-    for (var k in son6) {
-      if ((k['boy'] as num) > maxBoy) maxBoy = (k['boy'] as num).toDouble();
-      if ((k['kilo'] as num) > maxKilo) maxKilo = (k['kilo'] as num).toDouble();
-    }
-    maxBoy = maxBoy * 1.1;
-    maxKilo = maxKilo * 1.1;
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          // Boy Grafiği
-          const Row(
-            children: [
-              Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 18),
-              SizedBox(width: 8),
-              Text(
-                'Boy (cm)',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4CAF50),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 100,
-            child: CustomPaint(
-              size: const Size(double.infinity, 100),
-              painter: _ChartPainter(
-                data: son6.map((k) => (k['boy'] as num).toDouble()).toList(),
-                maxValue: maxBoy,
-                color: const Color(0xFF4CAF50),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Kilo Grafiği
-          const Row(
-            children: [
-              Icon(Icons.monitor_weight, color: Color(0xFF2196F3), size: 18),
-              SizedBox(width: 8),
-              Text(
-                'Kilo (kg)',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2196F3),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: 100,
-            child: CustomPaint(
-              size: const Size(double.infinity, 100),
-              painter: _ChartPainter(
-                data: son6.map((k) => (k['kilo'] as num).toDouble()).toList(),
-                maxValue: maxKilo,
-                color: const Color(0xFF2196F3),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Tarih etiketleri
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: son6.map((k) {
-              final tarih = k['tarih'] as DateTime;
-              return Text(
-                '${tarih.day}/${tarih.month}',
-                style: const TextStyle(fontSize: 10, color: Colors.grey),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildGrowthList(List<Map<String, dynamic>> kayitlar) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: kayitlar.length > 10 ? 10 : kayitlar.length,
-        separatorBuilder: (context, index) =>
-            Divider(height: 1, color: Colors.grey.shade200),
-        itemBuilder: (context, index) {
-          final kayit = kayitlar[index];
-          final tarih = kayit['tarih'] as DateTime;
-          final boy = kayit['boy'];
-          final kilo = kayit['kilo'];
-          final bas = kayit['basCevresi'];
-
-          // Önceki kayıtla karşılaştır
-          String boyDegisim = '';
-          String kiloDegisim = '';
-          if (index < kayitlar.length - 1) {
-            final onceki = kayitlar[index + 1];
-            final boyFark = (boy as num) - (onceki['boy'] as num);
-            final kiloFark = (kilo as num) - (onceki['kilo'] as num);
-            if (boyFark != 0)
-              boyDegisim = boyFark > 0
-                  ? '+${boyFark.toStringAsFixed(1)}'
-                  : boyFark.toStringAsFixed(1);
-            if (kiloFark != 0)
-              kiloDegisim = kiloFark > 0
-                  ? '+${kiloFark.toStringAsFixed(1)}'
-                  : kiloFark.toStringAsFixed(1);
-          }
-
-          return ListTile(
-            leading: Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                color: Colors.green.shade50,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Text('📏', style: TextStyle(fontSize: 20)),
-              ),
-            ),
-            title: Row(
-              children: [
-                Text(
-                  '${tarih.day}/${tarih.month}/${tarih.year}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            subtitle: Row(
-              children: [
-                _buildMiniStat(
-                  '📏',
-                  '$boy cm',
-                  boyDegisim,
-                  const Color(0xFF4CAF50),
-                ),
-                const SizedBox(width: 16),
-                _buildMiniStat(
-                  '⚖️',
-                  '$kilo kg',
-                  kiloDegisim,
-                  const Color(0xFF2196F3),
-                ),
-                if (bas != null && bas > 0) ...[
-                  const SizedBox(width: 16),
-                  _buildMiniStat('🧒', '$bas cm', '', const Color(0xFFFF9800)),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildMiniStat(
-    String emoji,
+  Widget _buildLastActionCard(
+    String icon,
+    String title,
     String value,
-    String change,
+    String detail,
     Color color,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
   ) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 12)),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 12,
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        if (change.isNotEmpty) ...[
-          const SizedBox(width: 2),
-          Text(
-            change,
-            style: TextStyle(
-              fontSize: 10,
-              color: change.startsWith('+') ? Colors.green : Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildLastActionCard({
-    required String icon,
-    required String title,
-    required String value,
-    required String subtitle,
-    required String detail,
-    required Color color,
-  }) {
     return Container(
       width: 130,
       margin: const EdgeInsets.only(right: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
@@ -630,30 +398,31 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             children: [
               Container(
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
-                  child: Text(icon, style: const TextStyle(fontSize: 16)),
+                  child: Text(icon, style: const TextStyle(fontSize: 14)),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      style: TextStyle(fontSize: 9, color: subtitleColor),
                     ),
                     Text(
                       value,
-                      style: const TextStyle(
-                        fontSize: 11,
+                      style: TextStyle(
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                   ],
@@ -662,10 +431,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const Spacer(),
-          Text(
-            subtitle,
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
-          ),
           Text(
             detail,
             style: const TextStyle(
@@ -679,7 +444,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTimelineItem(Map<String, dynamic> item) {
+  Widget _buildTimelineItem(
+    Map<String, dynamic> item,
+    Color textColor,
+    Color subtitleColor,
+    bool isDark,
+  ) {
     final type = item['type'] as String;
     final time = item['time'] as String;
 
@@ -691,26 +461,35 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (type) {
       case 'mama':
         lineColor = const Color(0xFFFF9800);
-        emoji = '🍼';
-        title = 'Feed';
-        subtitle = '${item['tur']} • ${item['miktar']} ml';
+        final tur = item['tur'] as String;
+        if (tur == 'Anne Sütü') {
+          emoji = '🤱';
+          title = 'Emzirme';
+          final sol = item['solDakika'] ?? 0;
+          final sag = item['sagDakika'] ?? 0;
+          subtitle = 'L ${sol}dk • R ${sag}dk';
+        } else {
+          emoji = tur == 'Formül' ? '🍼' : '🥛';
+          title = tur;
+          subtitle = '${item['miktar']} ml';
+        }
         break;
       case 'kaka':
         lineColor = const Color(0xFF03A9F4);
         emoji = '👶';
-        title = 'Diaper';
+        title = 'Bez';
         subtitle = item['tur'];
         break;
       case 'uyku':
         lineColor = const Color(0xFF9C27B0);
         emoji = '😴';
-        title = 'Sleep';
-        subtitle = 'Time slept: ${item['sure']}';
+        title = 'Uyku';
+        subtitle = item['sure'];
         break;
       default:
         lineColor = Colors.grey;
         emoji = '📝';
-        title = 'Activity';
+        title = 'Aktivite';
         subtitle = '';
     }
 
@@ -730,44 +509,172 @@ class _HomeScreenState extends State<HomeScreen> {
                   border: Border.all(color: lineColor, width: 2),
                 ),
               ),
-              Container(width: 2, height: 50, color: Colors.grey.shade200),
+              Container(
+                width: 2,
+                height: 40,
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+              ),
             ],
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  Text(emoji, style: const TextStyle(fontSize: 20)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                          ),
+            child: Row(
+              children: [
+                Text(emoji, style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: textColor,
                         ),
-                        Text(
-                          subtitle,
-                          style: TextStyle(color: lineColor, fontSize: 13),
-                        ),
-                      ],
-                    ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: TextStyle(color: lineColor, fontSize: 12),
+                      ),
+                    ],
                   ),
-                  Text(
-                    time,
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                ],
+                ),
+                Text(
+                  time,
+                  style: TextStyle(color: subtitleColor, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGrowthChart(
+    List<Map<String, dynamic>> kayitlar,
+    Color cardColor,
+    Color textColor,
+  ) {
+    final son6 = kayitlar.take(6).toList().reversed.toList();
+    if (son6.isEmpty) return const SizedBox();
+
+    double maxBoy = 0, maxKilo = 0;
+    for (var k in son6) {
+      if ((k['boy'] as num) > maxBoy) maxBoy = (k['boy'] as num).toDouble();
+      if ((k['kilo'] as num) > maxKilo) maxKilo = (k['kilo'] as num).toDouble();
+    }
+    maxBoy *= 1.1;
+    maxKilo *= 1.1;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 18),
+              const SizedBox(width: 8),
+              Text(
+                'Boy (cm)',
+                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 80,
+            child: CustomPaint(
+              size: const Size(double.infinity, 80),
+              painter: _ChartPainter(
+                data: son6.map((k) => (k['boy'] as num).toDouble()).toList(),
+                maxValue: maxBoy,
+                color: const Color(0xFF4CAF50),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Icon(
+                Icons.monitor_weight,
+                color: Color(0xFF2196F3),
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Kilo (kg)',
+                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            height: 80,
+            child: CustomPaint(
+              size: const Size(double.infinity, 80),
+              painter: _ChartPainter(
+                data: son6.map((k) => (k['kilo'] as num).toDouble()).toList(),
+                maxValue: maxKilo,
+                color: const Color(0xFF2196F3),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildGrowthList(
+    List<Map<String, dynamic>> kayitlar,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: kayitlar.length > 5 ? 5 : kayitlar.length,
+        separatorBuilder: (_, __) =>
+            Divider(height: 1, color: subtitleColor.withAlpha(50)),
+        itemBuilder: (context, index) {
+          final k = kayitlar[index];
+          final tarih = k['tarih'] as DateTime;
+          return ListTile(
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.green.withAlpha(25),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Text('📏', style: TextStyle(fontSize: 18)),
+              ),
+            ),
+            title: Text(
+              '${tarih.day}/${tarih.month}/${tarih.year}',
+              style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+            ),
+            subtitle: Text(
+              'Boy: ${k['boy']} cm • Kilo: ${k['kilo']} kg',
+              style: TextStyle(color: subtitleColor, fontSize: 12),
+            ),
+          );
+        },
       ),
     );
   }
@@ -778,33 +685,41 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Map<String, dynamic>> uyku,
   ) {
     final List<Map<String, dynamic>> timeline = [];
+    final son24Saat = DateTime.now().subtract(const Duration(hours: 24));
 
     for (var k in mama) {
-      timeline.add({
-        'type': 'mama',
-        'tarih': k['tarih'],
-        'time': _formatTime(k['tarih']),
-        'miktar': k['miktar'],
-        'tur': k['tur'],
-      });
+      final tarih = k['tarih'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'mama',
+          'tarih': tarih,
+          'time': _formatTime(tarih),
+          'miktar': k['miktar'],
+          'tur': k['tur'],
+        });
+      }
     }
-
     for (var k in kaka) {
-      timeline.add({
-        'type': 'kaka',
-        'tarih': k['tarih'],
-        'time': _formatTime(k['tarih']),
-        'tur': k['tur'],
-      });
+      final tarih = k['tarih'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'kaka',
+          'tarih': tarih,
+          'time': _formatTime(tarih),
+          'tur': k['tur'],
+        });
+      }
     }
-
     for (var k in uyku) {
-      timeline.add({
-        'type': 'uyku',
-        'tarih': k['bitis'],
-        'time': _formatTime(k['bitis']),
-        'sure': _formatDuration(k['sure']),
-      });
+      final tarih = k['bitis'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'uyku',
+          'tarih': tarih,
+          'time': _formatTime(tarih),
+          'sure': _formatDuration(k['sure']),
+        });
+      }
     }
 
     timeline.sort(
@@ -816,8 +731,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
     if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24)
-      return '${diff.inHours}h ${diff.inMinutes % 60}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
     return '${diff.inDays}d ago';
   }
 
@@ -837,7 +751,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Basit çizgi grafik çizici
 class _ChartPainter extends CustomPainter {
   final List<double> data;
   final double maxValue;
@@ -855,22 +768,19 @@ class _ChartPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 3
+      ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
-
     final fillPaint = Paint()
       ..color = color.withAlpha(30)
       ..style = PaintingStyle.fill;
-
     final dotPaint = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
 
     final path = Path();
     final fillPath = Path();
-
-    final stepX = size.width / (data.length - 1).clamp(1, 100);
+    final stepX = data.length > 1 ? size.width / (data.length - 1) : size.width;
 
     for (int i = 0; i < data.length; i++) {
       final x = i * stepX;
@@ -884,24 +794,7 @@ class _ChartPainter extends CustomPainter {
         path.lineTo(x, y);
         fillPath.lineTo(x, y);
       }
-
-      // Nokta çiz
-      canvas.drawCircle(Offset(x, y), 5, dotPaint);
-
-      // Değer yazısı
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: data[i].toStringAsFixed(1),
-          style: TextStyle(
-            color: color,
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(canvas, Offset(x - textPainter.width / 2, y - 18));
+      canvas.drawCircle(Offset(x, y), 4, dotPaint);
     }
 
     fillPath.lineTo(size.width, size.height);
