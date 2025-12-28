@@ -6,7 +6,7 @@ Son Güncelleme: 29 Aralık 2024
 
 ## 🔥 ACİL (Bu Hafta)
 
-- [ ] Emzirme timer özelliği
+- [ ] Emzirme timer özelliği. 
   - Sol/sağ göğüs seçimi
   - Süre takibi
   - Otomatik son seçimi hatırlama
