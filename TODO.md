@@ -1,0 +1,108 @@
+# 🍼 Bebek Takip Uygulaması - TODO
+
+Son Güncelleme: 29 Aralık 2024
+
+---
+
+## 🔥 ACİL (Bu Hafta)
+
+- [ ] Emzirme timer özelliği
+  - Sol/sağ göğüs seçimi
+  - Süre takibi
+  - Otomatik son seçimi hatırlama
+- [ ] Mama kaydı bug düzeltmesi (saat resetleniyor)
+
+---
+
+## 💡 YENİ ÖZELLİKLER (Öncelikli)
+
+### Besleme
+- [ ] Karışık besleme (meme + biberon)
+- [ ] Beslenme istatistikleri
+- [ ] Haftalık/aylık grafik
+
+### Anı Defteri
+- [ ] Fotoğraf sıkıştırma (boyut küçült)
+- [ ] Fotoğraf filtreleri
+- [ ] Tarih/yaş etiketi
+
+### Genel
+- [ ] Karanlık mod
+- [ ] Bildirimler (mama saati hatırlatma)
+- [ ] Widget (ana ekran)
+
+---
+
+## 🎨 TASARIM İYİLEŞTİRMELERİ
+
+- [ ] Butonlar daha büyük olsun (gece kullanım)
+- [ ] Renkler daha soft (bebek teması)
+- [ ] Ana ekran düzeni optimize
+- [ ] Loading animasyonları
+
+---
+
+## 🐛 BUG'LAR
+
+- [ ] Fotoğraf yükleme çok yavaş
+- [ ] Mama saati resetleniyor
+- [ ] iOS'ta klavye üstüne geliyor
+- [ ] Chrome'da hot reload bazen çalışmıyor
+
+---
+
+## 🚀 İLERİDE (v2.0+)
+
+- [ ] İngilizce dil desteği
+- [ ] Bulut yedekleme
+- [ ] Çok bebek desteği
+- [ ] Aile hesabı (baba/anneanne görsün)
+- [ ] Premium: AI anı kartı
+- [ ] Premium: Gelişmiş istatistikler
+
+---
+
+## ✅ TAMAMLANAN
+
+- [x] Türkçe dil desteği
+- [x] Boy/kilo/uyku takibi
+- [x] Mama/kaka kayıt sistemi
+- [x] 3 tip besleme (meme/anne sütü/formül)
+- [x] Basit ninni çalar
+- [x] Git/GitHub kurulumu
+
+---
+
+## 📝 NOTLAR & FİKİRLER
+
+### Marketing
+- Instagram anne grupları
+- Facebook bebek sayfaları
+- Blogger'larla iletişim
+
+### Teknik
+- SharedPreferences → SQLite geç (daha hızlı)
+- Firebase ekle (analytics)
+- Crashlytics (hata takibi)
+
+### Para Kazanma
+- Freemium model
+- Premium: ₺99/ay
+- Google Ads ekle (ücretsiz versiyon)
+
+---
+
+## 🎯 BU HAFTA ODAKLAN
+
+1. Emzirme timer
+2. Mama bug'ı düzelt
+3. Tasarım iyileştirmeleri
+
+---
+
+## 💭 SORULAR / ARAŞTIR
+
+- [ ] iOS Simulator Xcode ile nasıl çalışır?
+- [ ] App Store yükleme süreci nedir?
+- [ ] SharedPreferences yeterli mi yoksa database mi?
+- [ ] Push notification nasıl yapılır?
