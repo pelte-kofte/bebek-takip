@@ -39,7 +39,9 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
 
   void toggleTheme() {
     setState(() {
-      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
       VeriYonetici.setDarkMode(_themeMode == ThemeMode.dark);
     });
   }
@@ -53,11 +55,17 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFE91E63), brightness: Brightness.light),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFE91E63),
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFE91E63), brightness: Brightness.dark),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFFE91E63),
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const MainScreen(),
@@ -117,7 +125,13 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          boxShadow: [BoxShadow(color: isDark ? Colors.black26 : const Color(0x1A000000), blurRadius: 10, offset: const Offset(0, -5))],
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black26 : const Color(0x1A000000),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
         child: SafeArea(
           child: Padding(
@@ -146,9 +160,24 @@ class _MainScreenState extends State<MainScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: isSelected ? const Color(0xFFE91E63) : (isDark ? Colors.grey.shade400 : Colors.grey), size: 26),
+          Icon(
+            icon,
+            color: isSelected
+                ? const Color(0xFFE91E63)
+                : (isDark ? Colors.grey.shade400 : Colors.grey),
+            size: 26,
+          ),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 11, color: isSelected ? const Color(0xFFE91E63) : (isDark ? Colors.grey.shade400 : Colors.grey), fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: isSelected
+                  ? const Color(0xFFE91E63)
+                  : (isDark ? Colors.grey.shade400 : Colors.grey),
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
         ],
       ),
     );
@@ -158,8 +187,19 @@ class _MainScreenState extends State<MainScreen> {
     return GestureDetector(
       onTap: () => _onItemTapped(2),
       child: Container(
-        width: 50, height: 50,
-        decoration: const BoxDecoration(color: Color(0xFFE91E63), shape: BoxShape.circle, boxShadow: [BoxShadow(color: Color(0x40E91E63), blurRadius: 10, offset: Offset(0, 4))]),
+        width: 50,
+        height: 50,
+        decoration: const BoxDecoration(
+          color: Color(0xFFE91E63),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x40E91E63),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
     );
