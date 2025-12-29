@@ -5,13 +5,6 @@ Son Güncelleme: 29 Aralık 2024
 ---
 
 ## 🔥 ACİL (Bu Hafta)
-
-- [ ] Emzirme timer özelliği. 
-  - Sol/sağ göğüs seçimi
-  - Süre takibi
-  - Otomatik son seçimi hatırlama
-- [ ] Mama kaydı bug düzeltmesi (saat resetleniyor)
-
 ---
 
 ## 💡 YENİ ÖZELLİKLER (Öncelikli)
@@ -70,7 +63,13 @@ Son Güncelleme: 29 Aralık 2024
 - [x] 3 tip besleme (meme/anne sütü/formül)
 - [x] Basit ninni çalar
 - [x] Git/GitHub kurulumu
+- [x] Emzirme timer özelliği. 
+  - Sol/sağ göğüs seçimi
+  - Süre takibi
+  - Otomatik son seçimi hatırlama
+- [x] Mama kaydı bug düzeltmesi (saat resetleniyor)
 
+---
 ---
 
 ## 📝 NOTLAR & FİKİRLER
