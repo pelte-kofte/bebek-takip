@@ -14,3 +14,25 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+# Yeni özellik:
+git add .
+git commit -m "feat: özellik açıklaması"
+git push
+
+# Bug düzeltme:
+git add .
+git commit -m "fix: bug açıklaması"
+git push
+
+# TODO güncelleme:
+git add TODO.md
+git commit -m "docs: TODO güncellendi"
+git push
+
+# Hepsi bir arada:
+git add .
+git commit -m "feat: timer ve grafik eklendi"
+git push
+
