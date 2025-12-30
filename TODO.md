@@ -4,8 +4,10 @@ Son Güncelleme: 29 Aralık 2024
 
 ---
 
-## 🔥 ACİL (Bu Hafta)
----
+## 🔥  (Bu Hafta)
+- [ ] aşı takibi
+- [ ] haftalık ve aylık kaka ve çiş raporu
+- [ ] büyükanne modu
 
 ## 💡 YENİ ÖZELLİKLER (Öncelikli)
 
