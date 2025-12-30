@@ -1,0 +1,14 @@
+<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bottleGradient48" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#D9ECFF" />
+      <stop offset="100%" stop-color="#B3D9FF" />
+    </linearGradient>
+  </defs>
+  <rect x="14" y="2" width="20" height="10" rx="4" fill="#B3D9FF" stroke="#6BA3E0" stroke-width="2"/>
+  <path d="M8 12H40V42C40 44.7614 37.7614 47 35 47H13C10.2386 47 8 44.7614 8 42V12Z" fill="url(#bottleGradient48)" stroke="#6BA3E0" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="12" y1="20" x2="36" y2="20" stroke="#6BA3E0" stroke-width="2" opacity="0.5"/>
+  <line x1="12" y1="29" x2="36" y2="29" stroke="#6BA3E0" stroke-width="2" opacity="0.5"/>
+  <line x1="12" y1="38" x2="36" y2="38" stroke="#6BA3E0" stroke-width="2" opacity="0.5"/>
+  <circle cx="24" cy="7" r="3" fill="#FFFFFF"/>
+</svg>

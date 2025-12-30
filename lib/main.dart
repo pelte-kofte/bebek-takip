@@ -6,6 +6,7 @@ import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'models/dil.dart';
+import '../models/ikonlar.dart';
 
 void main() {
   runApp(const BabyTrackerApp());

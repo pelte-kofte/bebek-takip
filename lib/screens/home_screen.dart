@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
+import '../models/ikonlar.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -140,7 +142,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _uykuTimer?.cancel();
 
     if (_uykuSaniye < 60) {
-      // 1 dakikadan az uyumuşsa kaydetme
       setState(() {
         _uykuAktif = false;
         _uykuSaniye = 0;
@@ -339,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: _buildLastActionCard(
-                          '🍼',
+                          Ikonlar.bottle(size: 20),
                           Dil.sonBeslenme,
                           mamaKayitlari.isNotEmpty
                               ? _timeAgo(mamaKayitlari.first['tarih'])
@@ -358,7 +359,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildLastActionCard(
-                          '😴',
+                          Ikonlar.sleep(size: 20),
                           Dil.sonUyku,
                           uykuKayitlari.isNotEmpty
                               ? _timeAgo(uykuKayitlari.first['bitis'])
@@ -375,7 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildLastActionCard(
-                          '👶',
+                          Ikonlar.diaperClean(size: 20),
                           Dil.sonBezDegisimi,
                           kakaKayitlari.isNotEmpty
                               ? _timeAgo(kakaKayitlari.first['tarih'])
@@ -392,6 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 24),
 
                 // ZAMAN ÇİZELGESİ
                 Padding(
@@ -434,7 +436,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          const Text('📝', style: TextStyle(fontSize: 48)),
+                          Ikonlar.timer(size: 48),
                           const SizedBox(height: 12),
                           Text(
                             Dil.henuzKayitYok,
@@ -465,13 +467,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '📊 ${Dil.buyumeTakibi}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
+                      Row(
+                        children: [
+                          Ikonlar.growth(size: 24),
+                          const SizedBox(width: 8),
+                          Text(
+                            Dil.buyumeTakibi,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                        ],
                       ),
                       Container(
                         decoration: BoxDecoration(
@@ -547,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          const Text('📏', style: TextStyle(fontSize: 48)),
+                          Ikonlar.growth(size: 48),
                           const SizedBox(height: 12),
                           Text(
                             Dil.henuzOlcumYok,
@@ -629,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('🤱', style: TextStyle(fontSize: 20)),
+            Ikonlar.breastfeeding(size: 24),
             const SizedBox(width: 6),
             Text(
               Dil.emzirme,
@@ -661,7 +669,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Text('👈', style: TextStyle(fontSize: 20)),
+                      Ikonlar.leftBreast(
+                        size: 28,
+                        color: _solAktif ? Colors.white : null,
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         'Sol',
@@ -702,7 +713,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Text('👉', style: TextStyle(fontSize: 20)),
+                      Ikonlar.rightBreast(
+                        size: 28,
+                        color: _sagAktif ? Colors.white : null,
+                      ),
                       const SizedBox(height: 4),
                       Text(
                         'Sağ',
@@ -771,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('😴', style: TextStyle(fontSize: 20)),
+            Ikonlar.sleep(size: 24),
             const SizedBox(width: 6),
             Text(
               Dil.uyku,
@@ -809,9 +823,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               if (_uykuAktif)
-                const Text(
-                  '💤 Uyuyor...',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF3F51B5)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Ikonlar.sleep(size: 16, color: const Color(0xFF3F51B5)),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'Uyuyor...',
+                      style: TextStyle(fontSize: 12, color: Color(0xFF3F51B5)),
+                    ),
+                  ],
                 ),
             ],
           ),
@@ -860,7 +881,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildLastActionCard(
-    String icon,
+    Widget icon,
     String title,
     String value,
     String detail,
@@ -887,15 +908,13 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Center(
-              child: Text(icon, style: const TextStyle(fontSize: 16)),
-            ),
+            child: Center(child: icon),
           ),
           const SizedBox(height: 6),
           Text(
@@ -938,43 +957,39 @@ class _HomeScreenState extends State<HomeScreen> {
     final time = item['time'] as String;
 
     Color lineColor;
-    String emoji;
+    Widget icon;
     String title;
     String subtitle;
 
     switch (type) {
-      case 'mama':
-        lineColor = const Color(0xFFFF9800);
-        final tur = item['tur'] as String? ?? '';
-        final sol = item['solDakika'] ?? 0;
-        final sag = item['sagDakika'] ?? 0;
-        final miktar = item['miktar'] ?? 0;
-
-        if (tur == 'Anne Sütü') {
-          emoji = '🤱';
-          title = Dil.emzirme;
-          subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
+      case 'kaka':
+        lineColor = const Color(0xFF03A9F4);
+        final bezTur = item['tur'] ?? '';
+        if (bezTur == Dil.islak) {
+          icon = Ikonlar.diaperWet(size: 20);
+        } else if (bezTur == Dil.kirli) {
+          icon = Ikonlar.diaperDirty(size: 20);
         } else {
-          emoji = tur == 'Formül' ? '🍼' : '🥛';
-          title = tur;
-          subtitle = '$miktar ml';
+          icon = Ikonlar.diaperClean(size: 20);
         }
+        title = Dil.bezDegisimi;
+        subtitle = bezTur;
         break;
       case 'kaka':
         lineColor = const Color(0xFF03A9F4);
-        emoji = '👶';
+        icon = Ikonlar.diaperClean(size: 20);
         title = Dil.bezDegisimi;
         subtitle = item['tur'] ?? '';
         break;
       case 'uyku':
         lineColor = const Color(0xFF9C27B0);
-        emoji = '😴';
+        icon = Ikonlar.sleep(size: 20);
         title = Dil.uyku;
         subtitle = item['sure'] ?? '';
         break;
       default:
         lineColor = Colors.grey;
-        emoji = '📝';
+        icon = Ikonlar.timer(size: 20);
         title = 'Aktivite';
         subtitle = '';
     }
@@ -1006,7 +1021,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Row(
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 20)),
+                icon,
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -1147,9 +1162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.green.withAlpha(25),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Center(
-                child: Text('📏', style: TextStyle(fontSize: 18)),
-              ),
+              child: Center(child: Ikonlar.growth(size: 24)),
             ),
             title: Text(
               '${tarih.day} ${Dil.aylar[tarih.month - 1]} ${tarih.year}',
