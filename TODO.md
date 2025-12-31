@@ -8,6 +8,19 @@ Son Güncelleme: 29 Aralık 2024
 - [ ] aşı takibi
 - [ ] haftalık ve aylık kaka ve çiş raporu
 - [ ] büyükanne modu
+- [ ] "Uygulamaya premium UX detayları ekle:
+
+1. Tüm butonlara haptic feedback
+   (HapticFeedback.lightImpact)
+
+2. Loading state göster
+   (CircularProgressIndicator)
+
+3. Animasyonlu sayfa geçişleri
+   (SlideTransition)
+
+Basit ve performanslı olsun."
+
 
 ## 💡 YENİ ÖZELLİKLER (Öncelikli)
 
