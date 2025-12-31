@@ -4,6 +4,7 @@ import 'dart:async';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -15,6 +16,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool _emzirmeKaydediliyor = false;
+  bool _uykuKaydediliyor = false;
   bool _showGrowthChart = true;
 
   // Emzirme sayaç değişkenleri
@@ -86,6 +89,14 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    // Loading başlat
+    setState(() {
+      _emzirmeKaydediliyor = true;
+    });
+
+    // Kısa bekleme (UX için)
+    await Future.delayed(const Duration(milliseconds: 500));
+
     final solDakika = (_solSaniye / 60).ceil();
     final sagDakika = (_sagSaniye / 60).ceil();
 
@@ -109,6 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _solSaniye = 0;
       _sagSaniye = 0;
       _emzirmeBaslangic = null;
+      _emzirmeKaydediliyor = false;
     });
 
     widget.onDataChanged?.call();
@@ -156,6 +168,14 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    // Loading başlat
+    setState(() {
+      _uykuKaydediliyor = true;
+    });
+
+    // Kısa bekleme (UX için)
+    await Future.delayed(const Duration(milliseconds: 500));
+
     final bitis = DateTime.now();
     final sure = Duration(seconds: _uykuSaniye);
 
@@ -176,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _uykuAktif = false;
       _uykuSaniye = 0;
       _uykuBaslangic = null;
+      _uykuKaydediliyor = false;
     });
 
     widget.onDataChanged?.call();
@@ -656,7 +677,12 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: _solAktif ? null : _startSol,
+                onTap: _solAktif
+                    ? null
+                    : () {
+                        HapticFeedback.lightImpact();
+                        _startSol();
+                      },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
@@ -700,7 +726,12 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(width: 8),
             Expanded(
               child: GestureDetector(
-                onTap: _sagAktif ? null : _startSag,
+                onTap: _sagAktif
+                    ? null
+                    : () {
+                        HapticFeedback.lightImpact();
+                        _startSag();
+                      },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
@@ -751,7 +782,12 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _stopEmzirmeAndSave,
+              onPressed: _emzirmeKaydediliyor
+                  ? null
+                  : () {
+                      HapticFeedback.mediumImpact();
+                      _stopEmzirmeAndSave();
+                    },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE91E63),
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -759,14 +795,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Kaydet',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+              child: _emzirmeKaydediliyor
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text(
+                      'Kaydet',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
             ),
           )
         else
@@ -844,7 +889,16 @@ class _HomeScreenState extends State<HomeScreen> {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: _uykuAktif ? _stopUykuAndSave : _startUyku,
+            onPressed: _uykuKaydediliyor
+                ? null
+                : () {
+                    HapticFeedback.mediumImpact();
+                    if (_uykuAktif) {
+                      _stopUykuAndSave();
+                    } else {
+                      _startUyku();
+                    }
+                  },
             style: ElevatedButton.styleFrom(
               backgroundColor: _uykuAktif
                   ? Colors.orange
@@ -854,14 +908,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-            child: Text(
-              _uykuAktif ? 'Uyandı 🌞' : 'Uyudu 🌙',
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+            child: _uykuKaydediliyor
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Text(
+                    _uykuAktif ? 'Uyandı 🌞' : 'Uyudu 🌙',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
         ),
       ],
@@ -962,6 +1025,27 @@ class _HomeScreenState extends State<HomeScreen> {
     String subtitle;
 
     switch (type) {
+      case 'mama':
+        lineColor = const Color(0xFFFF9800);
+        final tur = item['tur'] as String? ?? '';
+        final sol = item['solDakika'] ?? 0;
+        final sag = item['sagDakika'] ?? 0;
+        final miktar = item['miktar'] ?? 0;
+
+        if (tur == 'Anne Sütü') {
+          icon = Ikonlar.breastfeeding(size: 20);
+          title = Dil.emzirme;
+          subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
+        } else if (tur == 'Formül') {
+          icon = Ikonlar.bottle(size: 20);
+          title = Dil.formula;
+          subtitle = '$miktar ml';
+        } else {
+          icon = Ikonlar.bottle(size: 20);
+          title = Dil.biberon;
+          subtitle = '$miktar ml';
+        }
+        break;
       case 'kaka':
         lineColor = const Color(0xFF03A9F4);
         final bezTur = item['tur'] ?? '';
@@ -974,12 +1058,6 @@ class _HomeScreenState extends State<HomeScreen> {
         }
         title = Dil.bezDegisimi;
         subtitle = bezTur;
-        break;
-      case 'kaka':
-        lineColor = const Color(0xFF03A9F4);
-        icon = Ikonlar.diaperClean(size: 20);
-        title = Dil.bezDegisimi;
-        subtitle = item['tur'] ?? '';
         break;
       case 'uyku':
         lineColor = const Color(0xFF9C27B0);

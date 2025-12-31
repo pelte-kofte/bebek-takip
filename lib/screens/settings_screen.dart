@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
+import 'rapor_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -11,7 +12,9 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final TextEditingController _isimController = TextEditingController(text: 'Bebeğim');
+  final TextEditingController _isimController = TextEditingController(
+    text: 'Bebeğim',
+  );
   DateTime _dogumTarihi = DateTime(2024, 6, 15);
 
   @override
@@ -19,14 +22,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
-    
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: isDark 
+            colors: isDark
                 ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
                 : [const Color(0xFFFCE4EC), Colors.white],
           ),
@@ -129,6 +132,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   cardColor: cardColor,
                   children: [
                     _buildActionTile(
+                      icon: Icons.analytics,
+                      title: 'Rapor Oluştur',
+                      subtitle: 'Haftalık/Aylık istatistikler',
+                      color: const Color(0xFFFF8AC1),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RaporScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildActionTile(
                       icon: Icons.download,
                       title: Dil.verileriDisaAktar,
                       subtitle: 'JSON formatında indir',
@@ -168,7 +185,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection({required String title, required Color cardColor, required List<Widget> children}) {
+  Widget _buildSection({
+    required String title,
+    required Color cardColor,
+    required List<Widget> children,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -212,12 +233,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       style: TextStyle(color: isDark ? Colors.white : Colors.black),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey),
+        labelStyle: TextStyle(
+          color: isDark ? Colors.grey.shade400 : Colors.grey,
+        ),
         prefixIcon: Icon(icon, color: const Color(0xFFE91E63)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+          borderSide: BorderSide(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
         ),
       ),
     );
@@ -234,7 +259,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+          border: Border.all(
+            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -244,10 +271,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
+                ),
                 Text(
                   '${value.day} ${Dil.aylar[value.month - 1]} ${value.year}',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: isDark ? Colors.white : Colors.black),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                 ),
               ],
             ),
@@ -284,8 +321,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
-                Text(subtitle, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                  ),
+                ),
               ],
             ),
           ),
@@ -327,8 +376,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: color)),
-                  Text(subtitle, style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade400 : Colors.grey)),
+                  Text(
+                    title,
+                    style: TextStyle(fontWeight: FontWeight.w600, color: color),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -345,8 +403,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black)),
+          Text(
+            label,
+            style: TextStyle(
+              color: isDark ? Colors.grey.shade400 : Colors.grey,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+          ),
         ],
       ),
     );
@@ -363,10 +432,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             const Text('⚠️', style: TextStyle(fontSize: 28)),
             const SizedBox(width: 12),
-            Text(Dil.dikkat, style: TextStyle(color: isDark ? Colors.white : Colors.black)),
+            Text(
+              Dil.dikkat,
+              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+            ),
           ],
         ),
-        content: Text(Dil.silmeUyarisi, style: TextStyle(color: isDark ? Colors.grey.shade300 : Colors.black87)),
+        content: Text(
+          Dil.silmeUyarisi,
+          style: TextStyle(
+            color: isDark ? Colors.grey.shade300 : Colors.black87,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
