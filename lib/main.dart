@@ -7,6 +7,7 @@ import 'screens/add_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'models/dil.dart';
 import '../models/ikonlar.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const BabyTrackerApp());
@@ -69,7 +70,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
         ),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const SplashScreen(),
     );
   }
 }

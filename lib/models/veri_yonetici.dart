@@ -183,6 +183,18 @@ class VeriYonetici {
   }
 
   // TEMA
+
+  // First launch kontrolü
+  // First launch kontrolü
+  static bool isFirstLaunch() {
+    final data = html.window.localStorage['first_launch'];
+    return data != 'false';
+  }
+
+  static Future<void> setFirstLaunchComplete() async {
+    html.window.localStorage['first_launch'] = 'false';
+  }
+
   static bool isDarkMode() {
     final data = html.window.localStorage['dark_mode'];
     return data == 'true';
