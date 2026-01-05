@@ -6,8 +6,8 @@ import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'models/dil.dart';
-import '../models/ikonlar.dart';
 import 'screens/splash_screen.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   runApp(const BabyTrackerApp());
@@ -16,6 +16,7 @@ void main() {
 class BabyTrackerApp extends StatefulWidget {
   const BabyTrackerApp({super.key});
 
+  // ignore: library_private_types_in_public_api
   static _BabyTrackerAppState? of(BuildContext context) =>
       context.findAncestorStateOfType<_BabyTrackerAppState>();
 
@@ -56,20 +57,8 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
       title: 'Bebek Takip',
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFE91E63),
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFE91E63),
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: const SplashScreen(),
     );
   }
@@ -115,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final screens = [
-      HomeScreen(key: ValueKey('home_$_refreshKey')),
+      HomeScreen(key: ValueKey('home_$_refreshKey'), onDataChanged: _refresh),
       ActivitiesScreen(key: ValueKey('activities_$_refreshKey')),
       const SizedBox(),
       MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),
@@ -126,10 +115,10 @@ class _MainScreenState extends State<MainScreen> {
       body: screens[_selectedIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
           boxShadow: [
             BoxShadow(
-              color: isDark ? Colors.black26 : const Color(0x1A000000),
+              color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),
@@ -165,8 +154,8 @@ class _MainScreenState extends State<MainScreen> {
           Icon(
             icon,
             color: isSelected
-                ? const Color(0xFFE91E63)
-                : (isDark ? Colors.grey.shade400 : Colors.grey),
+                ? AppColors.primary
+                : (isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
             size: 26,
           ),
           const SizedBox(height: 4),
@@ -175,8 +164,8 @@ class _MainScreenState extends State<MainScreen> {
             style: TextStyle(
               fontSize: 11,
               color: isSelected
-                  ? const Color(0xFFE91E63)
-                  : (isDark ? Colors.grey.shade400 : Colors.grey),
+                  ? AppColors.primary
+                  : (isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
@@ -191,14 +180,14 @@ class _MainScreenState extends State<MainScreen> {
       child: Container(
         width: 50,
         height: 50,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE91E63),
+        decoration: BoxDecoration(
+          color: AppColors.primary,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Color(0x40E91E63),
+              color: AppColors.primary.withOpacity(0.4),
               blurRadius: 10,
-              offset: Offset(0, 4),
+              offset: const Offset(0, 4),
             ),
           ],
         ),

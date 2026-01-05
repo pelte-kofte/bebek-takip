@@ -5,6 +5,7 @@ import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
+import '../theme/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -229,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = isDark ? const Color(0xFF2A2A3A) : Color(0xFFFDF6F0);
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
 
@@ -253,11 +254,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
-                : [const Color(0xFFFCE4EC), const Color(0xFFF8F8F8)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark 
+              ? [AppColors.bgDark, AppColors.bgDark]
+              : [AppColors.bgLight, AppColors.bgLight],
           ),
         ),
         child: SafeArea(
