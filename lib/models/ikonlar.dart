@@ -52,8 +52,8 @@ class Ikonlar {
   static Widget timer({double size = 24}) => _buildIcon('timer', size);
 
   // Büyüme
-  static Widget growth({double size = 24}) => _buildIcon('river', size);
-  static Widget growing({double size = 24}) => _buildIcon('river', size);
+  static Widget growth({double size = 24}) => _buildIcon('growing', size);
+  static Widget growing({double size = 24}) => _buildIcon('growing', size);
 
   // Memory
   static Widget memory({double size = 24}) => _buildIcon('favorites', size);
