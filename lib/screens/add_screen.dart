@@ -123,7 +123,7 @@ class AddScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Ikonlar.breastfeeding(size: 28),
+                      Ikonlar.nursing(size: 28),
                       const SizedBox(width: 8),
                       Text(
                         Dil.beslenmeEkle,
@@ -141,7 +141,7 @@ class AddScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _TurSecimWidget(
-                        icon: Ikonlar.breastfeeding(size: 28),
+                        icon: Ikonlar.nursing(size: 28),
                         label: Dil.emzirme,
                         value: 'Anne Sütü',
                         selected: tur,
@@ -178,7 +178,7 @@ class AddScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Ikonlar.leftBreast(size: 40),
+                              Ikonlar.nursing(size: 40),
                               const SizedBox(width: 12),
                               Text(
                                 Dil.solMeme,
@@ -241,7 +241,7 @@ class AddScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              Ikonlar.rightBreast(size: 40),
+                              Ikonlar.nursing(size: 40),
                               const SizedBox(width: 12),
                               Text(
                                 Dil.sagMeme,

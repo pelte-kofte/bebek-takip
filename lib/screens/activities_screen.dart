@@ -54,8 +54,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   bool _isToday(DateTime date) => _isSameDay(date, DateTime.now());
 
   String _formatDateHeader(DateTime date) {
-    if (_isToday(date))
+    if (_isToday(date)) {
       return '${Dil.bugun}, ${date.day} ${Dil.aylar[date.month - 1]}';
+    }
     return '${date.day} ${Dil.aylar[date.month - 1]} ${date.year}';
   }
 
@@ -72,8 +73,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: isDark
-                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
-                : [const Color(0xFFFCE4EC), Colors.white],
+                ? [const Color(0xFF1E1E2A), const Color(0xFF1E1E2A)]
+                : [const Color(0xFFFDF6F0), const Color(0xFFFDF6F0)],
           ),
         ),
         child: SafeArea(
@@ -247,8 +248,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           ((k['solDakika'] ?? 0) as int) + ((k['sagDakika'] ?? 0) as int);
     }
 
-    if (kayitlar.isEmpty)
-      return _buildEmptyState('🍼', '${Dil.kayitYok}', isDark);
+    if (kayitlar.isEmpty) {
+      return _buildEmptyState('🍼', Dil.kayitYok, isDark);
+    }
 
     return Column(
       children: [
@@ -316,7 +318,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                 emoji = '🤱';
                 title = Dil.emzirme;
                 subtitle =
-                    'Sol ${sol}${Dil.dk} • Sağ ${sag}${Dil.dk} (${Dil.toplam}: ${sol + sag}${Dil.dk})';
+                    'Sol $sol${Dil.dk} • Sağ $sag${Dil.dk} (${Dil.toplam}: ${sol + sag}${Dil.dk})';
               } else {
                 emoji = tur == 'Formül' ? '🍼' : '🥛';
                 title = '$miktar ml';
@@ -351,12 +353,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     final tumKayitlar = VeriYonetici.getKakaKayitlari();
     final kayitlar = _filterByDate(tumKayitlar, 'tarih');
 
-    if (kayitlar.isEmpty)
+    if (kayitlar.isEmpty) {
       return _buildEmptyState(
         Ikonlar.diaperClean(size: 48),
         Dil.kayitYok,
         isDark,
       );
+    }
 
     final islak = kayitlar.where((k) => k['tur'] == Dil.islak).length;
     final kirli = kayitlar.where((k) => k['tur'] == Dil.kirli).length;
@@ -1336,8 +1339,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                               context: ctx,
                               initialTime: baslangicSaat,
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setModalState(() => baslangicSaat = picked);
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -1379,8 +1383,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                               context: ctx,
                               initialTime: bitisSaat,
                             );
-                            if (picked != null)
+                            if (picked != null) {
                               setModalState(() => bitisSaat = picked);
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
@@ -1425,8 +1430,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                         bitisSaat.hour,
                         bitisSaat.minute,
                       );
-                      if (yeniBitis.isBefore(yeniBaslangic))
+                      if (yeniBitis.isBefore(yeniBaslangic)) {
                         yeniBitis = yeniBitis.add(const Duration(days: 1));
+                      }
                       final sure = yeniBitis.difference(yeniBaslangic);
                       final kayitlar = VeriYonetici.getUykuKayitlari();
                       kayitlar[index] = {

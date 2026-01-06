@@ -1,67 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class Ikonlar {
-  static Widget add({double size = 32, Color? color}) {
-    return _icon('add-48', size, color);
-  }
+  static const String _basePath = 'assets/icons/illustration/';
 
-  static Widget bottle({double size = 32, Color? color}) {
-    return _icon('bottle-48', size, color);
-  }
-
-  static Widget breastfeeding({double size = 32, Color? color}) {
-    return _icon('breastfeeding-48', size, color);
-  }
-
-  static Widget diaperClean({double size = 32, Color? color}) {
-    return _icon('diaper-clean-48', size, color);
-  }
-
-  static Widget diaperDirty({double size = 32, Color? color}) {
-    return _icon('diaper-dirty-48', size, color);
-  }
-
-  static Widget diaperWet({double size = 32, Color? color}) {
-    return _icon('diaper-wet-48', size, color);
-  }
-
-  static Widget growth({double size = 32, Color? color}) {
-    return _icon('growth-48', size, color);
-  }
-
-  static Widget leftBreast({double size = 32, Color? color}) {
-    return _icon('left-breast-48', size, color);
-  }
-
-  static Widget rightBreast({double size = 32, Color? color}) {
-    return _icon('right-breast-48', size, color);
-  }
-
-  static Widget memory({double size = 32, Color? color}) {
-    return _icon('memory-48', size, color);
-  }
-
-  static Widget settings({double size = 32, Color? color}) {
-    return _icon('settings-48', size, color);
-  }
-
-  static Widget sleep({double size = 32, Color? color}) {
-    return _icon('sleep-48', size, color);
-  }
-
-  static Widget timer({double size = 32, Color? color}) {
-    return _icon('timer-48', size, color);
-  }
-
-  static Widget _icon(String name, double size, Color? color) {
-    return SvgPicture.asset(
-      'assets/icons/$name.svg',
+  // Helper method - tüm ikonlar için
+  static Widget _buildIcon(String name, double size) {
+    return Image.asset(
+      '$_basePath$name.png',
       width: size,
       height: size,
-      colorFilter: color != null
-          ? ColorFilter.mode(color, BlendMode.srcIn)
-          : null,
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.high,
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(Icons.image_not_supported, size: size, color: Colors.grey);
+      },
     );
   }
+
+  // Beslenme
+  static Widget bottle({double size = 24}) => _buildIcon('bottle', size);
+  static Widget nursing({double size = 24}) => _buildIcon('nursing', size);
+  static Widget breastfeeding({double size = 24}) =>
+      _buildIcon('nursing', size);
+
+  // Bez
+  static Widget diaperClean({double size = 24}) =>
+      _buildIcon('diaper_clean', size);
+  static Widget diaperWet({double size = 24}) => _buildIcon('diaper_wet', size);
+  static Widget diaperDirty({double size = 24}) =>
+      _buildIcon('diaper_dirty', size);
+
+  // Uyku
+  static Widget sleep({double size = 24}) => _buildIcon('sleeping', size);
+  static Widget sleeping({double size = 24}) => _buildIcon('sleeping', size);
+  static Widget sleepingMoon({double size = 24}) =>
+      _buildIcon('sleeping_moon', size);
+  static Widget sleepingMoonnight({double size = 24}) =>
+      _buildIcon('sleeping_moonnight', size);
+
+  // Navigasyon
+  static Widget home({double size = 24}) => _buildIcon('home', size);
+  static Widget search({double size = 24}) => _buildIcon('search', size);
+  static Widget favorites({double size = 24}) => _buildIcon('favorites', size);
+  static Widget settings({double size = 24}) => _buildIcon('settings', size);
+  static Widget notifications({double size = 24}) =>
+      _buildIcon('notifications', size);
+
+  // Diğer
+  static Widget cuddle({double size = 24}) => _buildIcon('cuddle', size);
+  static Widget river({double size = 24}) => _buildIcon('river', size);
+  static Widget timer({double size = 24}) => _buildIcon('timer', size);
+
+  // Büyüme
+  static Widget growth({double size = 24}) => _buildIcon('river', size);
+  static Widget growing({double size = 24}) => _buildIcon('river', size);
+
+  // Memory
+  static Widget memory({double size = 24}) => _buildIcon('favorites', size);
+
+  // Sol/Sağ meme
+  static Widget leftBreast({double size = 24}) => _buildIcon('nursing', size);
+  static Widget rightBreast({double size = 24}) => _buildIcon('nursing', size);
 }
