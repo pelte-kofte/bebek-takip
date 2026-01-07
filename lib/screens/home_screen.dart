@@ -44,9 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // EMZİRME FONKSİYONLARI
   void _startSol() {
-    if (_emzirmeBaslangic == null) {
-      _emzirmeBaslangic = DateTime.now();
-    }
+    _emzirmeBaslangic ??= DateTime.now();
     setState(() {
       _solAktif = true;
       _sagAktif = false;
@@ -55,9 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _startSag() {
-    if (_emzirmeBaslangic == null) {
-      _emzirmeBaslangic = DateTime.now();
-    }
+    _emzirmeBaslangic ??= DateTime.now();
     setState(() {
       _sagAktif = true;
       _solAktif = false;
@@ -362,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.bottle(size: 32),
+                          Ikonlar.bottle(size: 40),
                           Dil.sonBeslenme,
                           mamaKayitlari.isNotEmpty
                               ? _timeAgo(mamaKayitlari.first['tarih'])
@@ -381,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.sleepingMoonnight(size: 32),
+                          Ikonlar.sleepingMoonnight(size: 40),
                           Dil.sonUyku,
                           uykuKayitlari.isNotEmpty
                               ? _timeAgo(uykuKayitlari.first['bitis'])
@@ -398,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.diaperClean(size: 32),
+                          Ikonlar.diaperClean(size: 40),
                           Dil.sonBezDegisimi,
                           kakaKayitlari.isNotEmpty
                               ? _timeAgo(kakaKayitlari.first['tarih'])
@@ -659,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.breastfeeding(size: 32),
+            Ikonlar.breastfeeding(size: 48),
             const SizedBox(width: 6),
             Text(
               Dil.emzirme,
@@ -696,7 +692,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.leftBreast(size: 28),
+                      Ikonlar.leftBreast(size: 40),
                       const SizedBox(height: 4),
                       Text(
                         'Sol',
@@ -742,7 +738,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.rightBreast(size: 28),
+                      Ikonlar.rightBreast(size: 40),
                       const SizedBox(height: 4),
                       Text(
                         'Sağ',
@@ -825,7 +821,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.sleepingMoonnight(size: 24),
+            Ikonlar.sleepingMoonnight(size: 40),
             const SizedBox(width: 6),
             Text(
               Dil.uyku,
@@ -949,53 +945,70 @@ class _HomeScreenState extends State<HomeScreen> {
     Color subtitleColor,
   ) {
     return Container(
-      height: 110,
-      padding: const EdgeInsets.all(10),
+      height: 140,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: color.withOpacity(0.15),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // İkon - Renkli daire arka plan ile
           Container(
-            width: 36,
-            height: 36,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(
               color: color,
-              borderRadius: BorderRadius.circular(10),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.4),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-            child: Center(child: icon),
+            child: Padding(padding: const EdgeInsets.all(10), child: icon),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
+          // Başlık
           Text(
             title,
-            style: TextStyle(fontSize: 10, color: subtitleColor),
+            style: TextStyle(
+              fontSize: 11,
+              color: subtitleColor,
+              fontWeight: FontWeight.w500,
+            ),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 2),
+          // Değer
           Text(
             value,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
             textAlign: TextAlign.center,
           ),
-          const Spacer(),
+          const SizedBox(height: 2),
+          // Detay
           Text(
             detail,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
-              color: Color(0xFFE91E63),
+              color: color,
             ),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -1028,15 +1041,15 @@ class _HomeScreenState extends State<HomeScreen> {
         final miktar = item['miktar'] ?? 0;
 
         if (tur == 'Anne Sütü') {
-          icon = Ikonlar.breastfeeding(size: 20);
+          icon = Ikonlar.breastfeeding(size: 40);
           title = Dil.emzirme;
           subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
         } else if (tur == 'Formül') {
-          icon = Ikonlar.bottle(size: 20);
+          icon = Ikonlar.bottle(size: 40);
           title = Dil.formula;
           subtitle = '$miktar ml';
         } else {
-          icon = Ikonlar.bottle(size: 20);
+          icon = Ikonlar.bottle(size: 40);
           title = Dil.biberon;
           subtitle = '$miktar ml';
         }
@@ -1045,11 +1058,11 @@ class _HomeScreenState extends State<HomeScreen> {
         lineColor = const Color(0xFF03A9F4);
         final bezTur = item['tur'] ?? '';
         if (bezTur == Dil.islak) {
-          icon = Ikonlar.diaperWet(size: 20);
+          icon = Ikonlar.diaperWet(size: 40);
         } else if (bezTur == Dil.kirli) {
-          icon = Ikonlar.diaperDirty(size: 20);
+          icon = Ikonlar.diaperDirty(size: 40);
         } else {
-          icon = Ikonlar.diaperClean(size: 20);
+          icon = Ikonlar.diaperClean(size: 40);
         }
         title = Dil.bezDegisimi;
         subtitle = bezTur;

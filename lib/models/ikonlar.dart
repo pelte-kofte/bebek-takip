@@ -5,15 +5,24 @@ class Ikonlar {
 
   // Helper method - tüm ikonlar için
   static Widget _buildIcon(String name, double size) {
-    return Image.asset(
-      '$_basePath$name.png',
+    return SizedBox(
       width: size,
       height: size,
-      fit: BoxFit.contain,
-      filterQuality: FilterQuality.high,
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(Icons.image_not_supported, size: size, color: Colors.grey);
-      },
+      child: Image.asset(
+        '$_basePath$name.png',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        isAntiAlias: true,
+        errorBuilder: (context, error, stackTrace) {
+          return Icon(
+            Icons.image_not_supported,
+            size: size * 0.6,
+            color: Colors.grey,
+          );
+        },
+      ),
     );
   }
 
@@ -36,7 +45,7 @@ class Ikonlar {
   static Widget sleepingMoon({double size = 24}) =>
       _buildIcon('sleeping_moon', size);
   static Widget sleepingMoonnight({double size = 24}) =>
-      _buildIcon('sleeping_moonnight', size);
+      _buildIcon('sleeping_moon', size);
 
   // Navigasyon
   static Widget home({double size = 24}) => _buildIcon('home', size);
