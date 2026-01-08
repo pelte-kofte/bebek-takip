@@ -11,7 +11,7 @@ secondary: Color(0xFFE5E0F7 lavanta
 accent: color(0xFFF6F61   coral
 background: color(0xFFFFFBF5)warm cream
 
-
+BACKGROUNDU LADİNGPAGETEKİ GİBİ YAP!!!
 quicksand (başlıklar-yumuşak) (googleFonts.quicksand())
 dm sans ()body-okunabilir
 comforta (çzel-organik)
