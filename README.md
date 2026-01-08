@@ -2,18 +2,30 @@
 
 A new Flutter project.
 
-## Getting Started
+## about
+soft lavanta + şeftali
+warm cream background
+pop of coral (accent)
+primary:color(0xFFFFB4A2) şeftali
+secondary: Color(0xFFE5E0F7 lavanta
+accent: color(0xFFF6F61   coral
+background: color(0xFFFFFBF5)warm cream
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+quicksand (başlıklar-yumuşak) (googleFonts.quicksand())
+dm sans ()body-okunabilir
+comforta (çzel-organik)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+butoonabasıncabouncy scale
+sayfa geçişindeslide
+liste items staggered fade in
+haptic feedback
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+v2.0da sevimlibebek karakter
+landing pageillustration
+onboard screaan
+
 
 
 # Yeni özellik:
