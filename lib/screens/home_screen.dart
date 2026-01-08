@@ -267,15 +267,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Container(
-                        width: 80,
-                        height: 80,
+                        width: 50,
+                        height: 50,
                         decoration: BoxDecoration(
                           color: isDark
                               ? AppColors.primary.withOpacity(0.2)
                               : AppColors.primaryLight,
                           shape: BoxShape.circle,
                         ),
-                        child: Center(child: Ikonlar.cuddle(size: 70)),
+                        child: Center(child: Ikonlar.cuddle(size: 32)),
                       ),
                       const SizedBox(width: 14),
                       Column(
@@ -353,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.bottle(size: 80),
+                          Ikonlar.bottle(size: 24),
                           Dil.sonBeslenme,
                           mamaKayitlari.isNotEmpty
                               ? _timeAgo(mamaKayitlari.first['tarih'])
@@ -372,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.sleepingMoon(size: 80),
+                          Ikonlar.sleepingMoon(size: 28),
                           Dil.sonUyku,
                           uykuKayitlari.isNotEmpty
                               ? _timeAgo(uykuKayitlari.first['bitis'])
@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.diaperClean(size: 80),
+                          Ikonlar.diaperClean(size: 24),
                           Dil.sonBezDegisimi,
                           kakaKayitlari.isNotEmpty
                               ? _timeAgo(kakaKayitlari.first['tarih'])
@@ -451,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          Ikonlar.timer(size: 120),
+                          Ikonlar.timer(size: 48),
                           const SizedBox(height: 16),
                           Text(
                             Dil.henuzKayitYok,
@@ -487,7 +487,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Row(
                         children: [
-                          Ikonlar.growth(size: 72),
+                          Ikonlar.growth(size: 28),
                           const SizedBox(width: 10),
                           Text(
                             Dil.buyumeTakibi,
@@ -573,7 +573,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          Ikonlar.growth(size: 64),
+                          Ikonlar.growth(size: 28),
                           const SizedBox(height: 16),
                           Text(
                             Dil.henuzOlcumYok,
@@ -655,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.nursing(size: 80),
+            Ikonlar.nursing(size: 28),
             const SizedBox(width: 8),
             Text(
               Dil.emzirme,
@@ -695,7 +695,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.nursing(size: 72),
+                      Ikonlar.nursing(size: 28),
                       const SizedBox(height: 6),
                       Text(
                         'Sol',
@@ -743,7 +743,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.nursing(size: 72),
+                      Ikonlar.nursing(size: 28),
                       const SizedBox(height: 6),
                       Text(
                         'Sağ',
@@ -823,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.sleepingMoon(size: 80),
+            Ikonlar.sleepingMoon(size: 26),
             const SizedBox(width: 8),
             Text(
               Dil.uyku,
@@ -863,7 +863,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Ikonlar.sleepingMoon(size: 40),
+                    Ikonlar.sleepingMoon(size: 28),
                     const SizedBox(width: 6),
                     Text(
                       'Uyuyor...',
@@ -949,16 +949,16 @@ class _HomeScreenState extends State<HomeScreen> {
     Color subtitleColor,
   ) {
     return Container(
-      height: 220,
-      padding: const EdgeInsets.all(14),
+      height: 140,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: color.withOpacity(0.15),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -966,22 +966,30 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          icon,
-          const SizedBox(height: 12),
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Center(child: icon),
+          ),
+          const SizedBox(height: 8),
           Text(
             title,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 11,
               color: subtitleColor,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             value,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
@@ -991,7 +999,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Text(
             detail,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: color,
             ),
@@ -1026,15 +1034,15 @@ class _HomeScreenState extends State<HomeScreen> {
         final miktar = item['miktar'] ?? 0;
 
         if (tur == 'Anne Sütü') {
-          icon = Ikonlar.nursing(size: 64);
+          icon = Ikonlar.nursing(size: 28);
           title = Dil.emzirme;
           subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
         } else if (tur == 'Formül') {
-          icon = Ikonlar.bottle(size: 80);
+          icon = Ikonlar.bottle(size: 24);
           title = Dil.formula;
           subtitle = '$miktar ml';
         } else {
-          icon = Ikonlar.bottle(size: 80);
+          icon = Ikonlar.bottle(size: 24);
           title = Dil.biberon;
           subtitle = '$miktar ml';
         }
@@ -1043,24 +1051,24 @@ class _HomeScreenState extends State<HomeScreen> {
         lineColor = AppColors.accentBlue;
         final bezTur = item['tur'] ?? '';
         if (bezTur == Dil.islak) {
-          icon = Ikonlar.diaperWet(size: 48);
+          icon = Ikonlar.diaperWet(size: 24);
         } else if (bezTur == Dil.kirli) {
-          icon = Ikonlar.diaperDirty(size: 48);
+          icon = Ikonlar.diaperDirty(size: 24);
         } else {
-          icon = Ikonlar.diaperClean(size: 80);
+          icon = Ikonlar.diaperClean(size: 24);
         }
         title = Dil.bezDegisimi;
         subtitle = bezTur;
         break;
       case 'uyku':
         lineColor = AppColors.accentLavender;
-        icon = Ikonlar.sleepingMoon(size: 80);
+        icon = Ikonlar.sleepingMoon(size: 28);
         title = Dil.uyku;
         subtitle = item['sure'] ?? '';
         break;
       default:
         lineColor = Colors.grey;
-        icon = Ikonlar.timer(size: 48);
+        icon = Ikonlar.timer(size: 24);
         title = 'Aktivite';
         subtitle = '';
     }

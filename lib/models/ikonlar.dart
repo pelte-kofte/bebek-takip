@@ -1,97 +1,84 @@
 import 'package:flutter/material.dart';
 
 class Ikonlar {
-  static const String _basePath = 'assets/icons/illustration/';
+  // Basit Material Icons kullanıyoruz - her zaman net!
 
-  static Widget _buildIcon(String name, double size, Color bgColor) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: bgColor.withOpacity(0.3),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: EdgeInsets.all(size * 0.12),
-      child: Image.asset(
-        '$_basePath$name.png',
-        fit: BoxFit.contain,
-        filterQuality: FilterQuality.high,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(Icons.error, size: size * 0.5, color: Colors.white);
-        },
-      ),
-    );
+  static Widget _buildIcon(IconData icon, double size, Color color) {
+    return Icon(icon, size: size, color: color);
   }
 
   // BESLENME
-  static Widget bottle({double size = 24}) =>
-      _buildIcon('bottle', size, const Color(0xFFFFB74D));
+  static Widget bottle({double size = 24, Color? color}) => _buildIcon(
+    Icons.baby_changing_station,
+    size,
+    color ?? const Color(0xFFFF9800),
+  );
 
-  static Widget nursing({double size = 24}) =>
-      _buildIcon('nursing', size, const Color(0xFFFF8A80));
+  static Widget nursing({double size = 24, Color? color}) =>
+      _buildIcon(Icons.child_care, size, color ?? const Color(0xFFE91E63));
 
-  static Widget breastfeeding({double size = 24}) => nursing(size: size);
-  static Widget leftBreast({double size = 24}) => nursing(size: size);
-  static Widget rightBreast({double size = 24}) => nursing(size: size);
+  static Widget breastfeeding({double size = 24, Color? color}) =>
+      nursing(size: size, color: color);
+  static Widget leftBreast({double size = 24, Color? color}) =>
+      nursing(size: size, color: color);
+  static Widget rightBreast({double size = 24, Color? color}) =>
+      nursing(size: size, color: color);
 
   // UYKU
-  static Widget sleep({double size = 24}) =>
-      _buildIcon('sleeping', size, const Color(0xFFB39DDB));
+  static Widget sleep({double size = 24, Color? color}) => _buildIcon(
+    Icons.nightlight_round,
+    size,
+    color ?? const Color(0xFF673AB7),
+  );
 
-  static Widget sleeping({double size = 24}) => sleep(size: size);
-
-  static Widget sleepingMoon({double size = 24}) =>
-      _buildIcon('sleeping_moon', size, const Color(0xFFB39DDB));
-
-  static Widget sleepingMoonnight({double size = 24}) =>
-      sleepingMoon(size: size);
+  static Widget sleeping({double size = 24, Color? color}) =>
+      sleep(size: size, color: color);
+  static Widget sleepingMoon({double size = 24, Color? color}) =>
+      sleep(size: size, color: color);
+  static Widget sleepingMoonnight({double size = 24, Color? color}) =>
+      sleep(size: size, color: color);
 
   // BEZ
-  static Widget diaperClean({double size = 24}) =>
-      _buildIcon('diaper_clean', size, const Color(0xFF81D4FA));
+  static Widget diaperClean({double size = 24, Color? color}) =>
+      _buildIcon(Icons.clean_hands, size, color ?? const Color(0xFF03A9F4));
 
-  static Widget diaperWet({double size = 24}) =>
-      _buildIcon('diaper_wet', size, const Color(0xFF4FC3F7));
+  static Widget diaperWet({double size = 24, Color? color}) =>
+      _buildIcon(Icons.water_drop, size, color ?? const Color(0xFF03A9F4));
 
-  static Widget diaperDirty({double size = 24}) =>
-      _buildIcon('diaper_dirty', size, const Color(0xFFFFCC80));
+  static Widget diaperDirty({double size = 24, Color? color}) =>
+      _buildIcon(Icons.delete_outline, size, color ?? const Color(0xFFFF9800));
 
   // BÜYÜME
-  static Widget growth({double size = 24}) =>
-      _buildIcon('growing', size, const Color(0xFFA5D6A7));
+  static Widget growth({double size = 24, Color? color}) =>
+      _buildIcon(Icons.trending_up, size, color ?? const Color(0xFF4CAF50));
 
-  static Widget growing({double size = 24}) => growth(size: size);
-  static Widget river({double size = 24}) => growth(size: size);
+  static Widget growing({double size = 24, Color? color}) =>
+      growth(size: size, color: color);
+  static Widget river({double size = 24, Color? color}) =>
+      growth(size: size, color: color);
 
   // DİĞER
-  static Widget timer({double size = 24}) =>
-      _buildIcon('timer', size, const Color(0xFFFFB74D));
+  static Widget timer({double size = 24, Color? color}) =>
+      _buildIcon(Icons.timer, size, color ?? const Color(0xFFFF9800));
 
-  static Widget cuddle({double size = 24}) =>
-      _buildIcon('cuddle', size, const Color(0xFFFF8A80));
+  static Widget cuddle({double size = 24, Color? color}) =>
+      _buildIcon(Icons.favorite, size, color ?? const Color(0xFFE91E63));
 
-  // notification (s yok!)
-  static Widget notifications({double size = 24}) =>
-      _buildIcon('notification', size, const Color(0xFFFF8A80));
+  static Widget notifications({double size = 24, Color? color}) =>
+      _buildIcon(Icons.notifications, size, color ?? const Color(0xFFE91E63));
 
-  static Widget home({double size = 24}) =>
-      _buildIcon('home', size, const Color(0xFFB39DDB));
+  static Widget home({double size = 24, Color? color}) =>
+      _buildIcon(Icons.home, size, color ?? const Color(0xFF673AB7));
 
-  static Widget search({double size = 24}) =>
-      _buildIcon('search', size, const Color(0xFF81D4FA));
+  static Widget search({double size = 24, Color? color}) =>
+      _buildIcon(Icons.search, size, color ?? const Color(0xFF03A9F4));
 
-  static Widget favorites({double size = 24}) =>
-      _buildIcon('favorites', size, const Color(0xFFFF8A80));
+  static Widget favorites({double size = 24, Color? color}) =>
+      _buildIcon(Icons.favorite, size, color ?? const Color(0xFFE91E63));
 
-  static Widget settings({double size = 24}) =>
-      _buildIcon('settings', size, const Color(0xFFBDBDBD));
+  static Widget settings({double size = 24, Color? color}) =>
+      _buildIcon(Icons.settings, size, color ?? const Color(0xFF757575));
 
-  static Widget memory({double size = 24}) => favorites(size: size);
+  static Widget memory({double size = 24, Color? color}) =>
+      favorites(size: size, color: color);
 }
