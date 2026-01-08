@@ -26,6 +26,24 @@ v2.0da sevimlibebek karakter
 landing pageillustration
 onboard screaan
 
+Merhaba! Baby tracker app yapıyorum (Flutter).
+
+BEN HAZIRIM:
+- Renk palette: [renklerini yaz]
+- Font: Quicksand + DM Sans
+- Tasarım: Pastel, yuvarlak, emoji
+
+BU HAFTA YAPMAK İSTİYORUM:
+1. Ana ekran (3 buton: mama/uyku/kaka)
+2. Her buton modal açsın
+3. Kayıtları listele
+4. SharedPreferences ile kaydet
+
+BAŞLAYALIM:
+İlk adım: Ana ekran + 3 buton
+TAM KOD ver, dosya yapısını söyle.
+
+Hazırım, hızlı gidelim!
 
 
 # Yeni özellik:
