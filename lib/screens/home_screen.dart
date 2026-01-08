@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
@@ -86,12 +85,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Loading başlat
     setState(() {
       _emzirmeKaydediliyor = true;
     });
 
-    // Kısa bekleme (UX için)
     await Future.delayed(const Duration(milliseconds: 500));
 
     final solDakika = (_solSaniye / 60).ceil();
@@ -127,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         content: Text(
           '✅ Emzirme kaydedildi: Sol ${kaydedilenSol}dk, Sağ ${kaydedilenSag}dk',
         ),
-        backgroundColor: const Color(0xFFE91E63),
+        backgroundColor: AppColors.primary,
       ),
     );
   }
@@ -165,12 +162,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Loading başlat
     setState(() {
       _uykuKaydediliyor = true;
     });
 
-    // Kısa bekleme (UX için)
     await Future.delayed(const Duration(milliseconds: 500));
 
     final bitis = DateTime.now();
@@ -202,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('✅ Uyku kaydedildi: $sureText'),
-        backgroundColor: const Color(0xFF3F51B5),
+        backgroundColor: AppColors.accentLavender,
       ),
     );
   }
@@ -226,9 +221,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF2A2A3A) : Color(0xFFFDF6F0);
-    final textColor = isDark ? Colors.white : const Color(0xFF333333);
-    final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+    final cardColor = isDark ? AppColors.bgDarkCard : AppColors.bgLightCard;
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
 
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
     final kakaKayitlari = VeriYonetici.getKakaKayitlari();
@@ -268,26 +267,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Row(
                     children: [
                       Container(
-                        width: 50,
-                        height: 50,
+                        width: 80,
+                        height: 80,
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.pink.shade900
-                              : Colors.pink.shade100,
+                              ? AppColors.primary.withOpacity(0.2)
+                              : AppColors.primaryLight,
                           shape: BoxShape.circle,
                         ),
-                        child: const Center(
-                          child: Text('👶', style: TextStyle(fontSize: 28)),
-                        ),
+                        child: Center(child: Ikonlar.cuddle(size: 70)),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 14),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Bebeğim',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               color: textColor,
                             ),
@@ -296,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Text(
                               '${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg',
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 14,
                                 color: subtitleColor,
                               ),
                             )
@@ -312,31 +309,28 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const Spacer(),
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 48,
+                        height: 48,
                         decoration: BoxDecoration(
                           color: isDark
-                              ? Colors.pink.shade900
-                              : Colors.pink.shade50,
+                              ? AppColors.primary.withOpacity(0.2)
+                              : AppColors.primaryLight,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
-                          Icons.notifications_none,
-                          color: Color(0xFFE91E63),
-                        ),
+                        child: Ikonlar.notifications(size: 28),
                       ),
                     ],
                   ),
                 ),
 
-                // SAYAÇLAR KARTI (EMZİRME + UYKU)
+                // SAYAÇLAR KARTI
                 _buildSayaclarKarti(
                   cardColor,
                   textColor,
                   subtitleColor,
                   isDark,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
 
                 // SON AKTİVİTELER
                 Padding(
@@ -344,21 +338,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     Dil.sonAktiviteler,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
+                // Son Aktiviteler Kartları
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.bottle(size: 40),
+                          Ikonlar.bottle(size: 80),
                           Dil.sonBeslenme,
                           mamaKayitlari.isNotEmpty
                               ? _timeAgo(mamaKayitlari.first['tarih'])
@@ -368,16 +363,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? mamaKayitlari.first
                                 : null,
                           ),
-                          const Color(0xFFFFE0B2),
+                          AppColors.accentPeach,
                           cardColor,
                           textColor,
                           subtitleColor,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.sleepingMoonnight(size: 40),
+                          Ikonlar.sleepingMoon(size: 80),
                           Dil.sonUyku,
                           uykuKayitlari.isNotEmpty
                               ? _timeAgo(uykuKayitlari.first['bitis'])
@@ -385,16 +380,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           uykuKayitlari.isNotEmpty
                               ? _formatDuration(uykuKayitlari.first['sure'])
                               : '',
-                          const Color(0xFFE1BEE7),
+                          AppColors.accentLavender,
                           cardColor,
                           textColor,
                           subtitleColor,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: _buildLastActionCard(
-                          Ikonlar.diaperClean(size: 40),
+                          Ikonlar.diaperClean(size: 80),
                           Dil.sonBezDegisimi,
                           kakaKayitlari.isNotEmpty
                               ? _timeAgo(kakaKayitlari.first['tarih'])
@@ -402,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           kakaKayitlari.isNotEmpty
                               ? kakaKayitlari.first['tur']
                               : '',
-                          const Color(0xFFB3E5FC),
+                          AppColors.accentBlue,
                           cardColor,
                           textColor,
                           subtitleColor,
@@ -411,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // ZAMAN ÇİZELGESİ
                 Padding(
@@ -422,31 +417,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         Dil.zaman,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: textColor,
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
+                          horizontal: 14,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade200,
+                          color: AppColors.accentGreen.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           Dil.son24Saat,
-                          style: TextStyle(fontSize: 12, color: textColor),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: textColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 if (timeline.isEmpty)
                   Padding(
@@ -454,11 +451,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Center(
                       child: Column(
                         children: [
-                          Ikonlar.timer(size: 70),
-                          const SizedBox(height: 12),
+                          Ikonlar.timer(size: 120),
+                          const SizedBox(height: 16),
                           Text(
                             Dil.henuzKayitYok,
-                            style: TextStyle(color: subtitleColor),
+                            style: TextStyle(
+                              color: subtitleColor,
+                              fontSize: 16,
+                            ),
                           ),
                         ],
                       ),
@@ -477,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       isDark,
                     ),
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // BÜYÜME TAKİBİ
                 Padding(
@@ -487,12 +487,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Row(
                         children: [
-                          Ikonlar.growth(size: 32),
-                          const SizedBox(width: 8),
+                          Ikonlar.growth(size: 72),
+                          const SizedBox(width: 10),
                           Text(
                             Dil.buyumeTakibi,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: textColor,
                             ),
@@ -513,18 +513,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() => _showGrowthChart = true),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
+                                  horizontal: 14,
+                                  vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
                                   color: _showGrowthChart
-                                      ? const Color(0xFF4CAF50)
+                                      ? AppColors.accentGreen
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Icon(
                                   Icons.show_chart,
-                                  size: 18,
+                                  size: 20,
                                   color: _showGrowthChart
                                       ? Colors.white
                                       : subtitleColor,
@@ -536,18 +536,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                   setState(() => _showGrowthChart = false),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
+                                  horizontal: 14,
+                                  vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
                                   color: !_showGrowthChart
-                                      ? const Color(0xFF4CAF50)
+                                      ? AppColors.accentGreen
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Icon(
                                   Icons.list,
-                                  size: 18,
+                                  size: 20,
                                   color: !_showGrowthChart
                                       ? Colors.white
                                       : subtitleColor,
@@ -560,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 if (boyKiloKayitlari.isEmpty)
                   Container(
@@ -568,16 +568,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(40),
                     decoration: BoxDecoration(
                       color: cardColor,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Center(
                       child: Column(
                         children: [
-                          Ikonlar.growth(size: 48),
-                          const SizedBox(height: 12),
+                          Ikonlar.growth(size: 64),
+                          const SizedBox(height: 16),
                           Text(
                             Dil.henuzOlcumYok,
-                            style: TextStyle(color: subtitleColor),
+                            style: TextStyle(
+                              color: subtitleColor,
+                              fontSize: 16,
+                            ),
                           ),
                         ],
                       ),
@@ -593,7 +596,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitleColor,
                   ),
 
-                const SizedBox(height: 100),
+                const SizedBox(height: 120),
               ],
             ),
           ),
@@ -602,7 +605,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // SAYAÇLAR KARTI (EMZİRME + UYKU YAN YANA)
+  // SAYAÇLAR KARTI
   Widget _buildSayaclarKarti(
     Color cardColor,
     Color textColor,
@@ -611,33 +614,30 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : const Color(0x1A000000),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: isDark ? Colors.black26 : AppColors.primary.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // SOL: EMZİRME
           Expanded(
             child: _buildEmzirmeBolumu(textColor, subtitleColor, isDark),
           ),
-          // AYIRICI ÇİZGİ
           Container(
             width: 1,
-            height: 200,
-            margin: const EdgeInsets.symmetric(horizontal: 12),
+            height: 220,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
           ),
-          // SAĞ: UYKU
           Expanded(child: _buildUykuBolumu(textColor, subtitleColor, isDark)),
         ],
       ),
@@ -655,21 +655,20 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.breastfeeding(size: 48),
-            const SizedBox(width: 6),
+            Ikonlar.nursing(size: 80),
+            const SizedBox(width: 8),
             Text(
               Dil.emzirme,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
 
-        // Sol ve Sağ butonları
         Row(
           children: [
             Expanded(
@@ -681,23 +680,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         _startSol();
                       },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: _solAktif
-                        ? const Color(0xFFE91E63)
+                        ? AppColors.primary
                         : (isDark
                               ? Colors.grey.shade800
                               : Colors.grey.shade100),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _solAktif ? AppColors.primary : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.leftBreast(size: 40),
-                      const SizedBox(height: 4),
+                      Ikonlar.nursing(size: 72),
+                      const SizedBox(height: 6),
                       Text(
                         'Sol',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: _solAktif ? Colors.white : textColor,
                         ),
@@ -705,11 +708,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         _formatSaniye(_solSaniye),
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: _solAktif
-                              ? Colors.white
-                              : const Color(0xFFE91E63),
+                          color: _solAktif ? Colors.white : AppColors.primary,
                         ),
                       ),
                     ],
@@ -717,7 +718,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 10),
             Expanded(
               child: GestureDetector(
                 onTap: _sagAktif
@@ -727,23 +728,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         _startSag();
                       },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: _sagAktif
-                        ? const Color(0xFFE91E63)
+                        ? AppColors.primary
                         : (isDark
                               ? Colors.grey.shade800
                               : Colors.grey.shade100),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: _sagAktif ? AppColors.primary : Colors.transparent,
+                      width: 2,
+                    ),
                   ),
                   child: Column(
                     children: [
-                      Ikonlar.rightBreast(size: 40),
-                      const SizedBox(height: 4),
+                      Ikonlar.nursing(size: 72),
+                      const SizedBox(height: 6),
                       Text(
                         'Sağ',
                         style: TextStyle(
-                          fontSize: 11,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                           color: _sagAktif ? Colors.white : textColor,
                         ),
@@ -751,11 +756,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         _formatSaniye(_sagSaniye),
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: _sagAktif
-                              ? Colors.white
-                              : const Color(0xFFE91E63),
+                          color: _sagAktif ? Colors.white : AppColors.primary,
                         ),
                       ),
                     ],
@@ -766,9 +769,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
-        // Durdur ve Kaydet
         if (_emzirmeAktif)
           SizedBox(
             width: double.infinity,
@@ -780,16 +782,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       _stopEmzirmeAndSave();
                     },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE91E63),
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               child: _emzirmeKaydediliyor
                   ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: 22,
+                      height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -798,7 +800,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   : const Text(
                       'Kaydet',
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -808,7 +810,7 @@ class _HomeScreenState extends State<HomeScreen> {
         else
           Text(
             'Başlatmak için dokun',
-            style: TextStyle(fontSize: 10, color: subtitleColor),
+            style: TextStyle(fontSize: 12, color: subtitleColor),
           ),
       ],
     );
@@ -821,31 +823,30 @@ class _HomeScreenState extends State<HomeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Ikonlar.sleepingMoonnight(size: 40),
-            const SizedBox(width: 6),
+            Ikonlar.sleepingMoon(size: 80),
+            const SizedBox(width: 8),
             Text(
               Dil.uyku,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: textColor,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
 
-        // Sayaç gösterimi
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
             color: _uykuAktif
-                ? const Color(0xFF3F51B5).withAlpha(30)
+                ? AppColors.accentLavender.withOpacity(0.3)
                 : (isDark ? Colors.grey.shade800 : Colors.grey.shade100),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             border: _uykuAktif
-                ? Border.all(color: const Color(0xFF3F51B5), width: 2)
+                ? Border.all(color: AppColors.accentLavender, width: 2)
                 : null,
           ),
           child: Column(
@@ -853,20 +854,24 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 _formatUykuSaniye(_uykuSaniye),
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: _uykuAktif ? const Color(0xFF3F51B5) : textColor,
+                  color: _uykuAktif ? AppColors.accentLavender : textColor,
                 ),
               ),
               if (_uykuAktif)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Ikonlar.sleepingMoon(size: 16),
-                    const SizedBox(width: 4),
-                    const Text(
+                    Ikonlar.sleepingMoon(size: 40),
+                    const SizedBox(width: 6),
+                    Text(
                       'Uyuyor...',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF3F51B5)),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.accentLavender,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -874,9 +879,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
 
-        // Başlat / Uyandı butonu
         SizedBox(
           width: double.infinity,
           child: ElevatedButton(
@@ -893,16 +897,16 @@ class _HomeScreenState extends State<HomeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _uykuAktif
                   ? Colors.orange
-                  : const Color(0xFF3F51B5),
-              padding: const EdgeInsets.symmetric(vertical: 10),
+                  : AppColors.accentLavender,
+              padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
             child: _uykuKaydediliyor
                 ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 22,
+                    height: 22,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
@@ -911,7 +915,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 : Text(
                     _uykuAktif ? 'Uyandı 🌞' : 'Uyudu 🌙',
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -945,16 +949,16 @@ class _HomeScreenState extends State<HomeScreen> {
     Color subtitleColor,
   ) {
     return Container(
-      height: 140,
-      padding: const EdgeInsets.all(12),
+      height: 220,
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.15),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
+            color: color.withOpacity(0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -962,51 +966,32 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // İkon - Renkli daire arka plan ile
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: color.withOpacity(0.4),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Padding(padding: const EdgeInsets.all(10), child: icon),
-          ),
-          const SizedBox(height: 8),
-          // Başlık
+          icon,
+          const SizedBox(height: 12),
           Text(
             title,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 12,
               color: subtitleColor,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 2),
-          // Değer
+          const SizedBox(height: 4),
           Text(
             value,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: textColor,
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 2),
-          // Detay
           Text(
             detail,
             style: TextStyle(
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: FontWeight.w600,
               color: color,
             ),
@@ -1034,81 +1019,81 @@ class _HomeScreenState extends State<HomeScreen> {
 
     switch (type) {
       case 'mama':
-        lineColor = const Color(0xFFFF9800);
+        lineColor = AppColors.accentPeach;
         final tur = item['tur'] as String? ?? '';
         final sol = item['solDakika'] ?? 0;
         final sag = item['sagDakika'] ?? 0;
         final miktar = item['miktar'] ?? 0;
 
         if (tur == 'Anne Sütü') {
-          icon = Ikonlar.breastfeeding(size: 40);
+          icon = Ikonlar.nursing(size: 64);
           title = Dil.emzirme;
           subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
         } else if (tur == 'Formül') {
-          icon = Ikonlar.bottle(size: 40);
+          icon = Ikonlar.bottle(size: 80);
           title = Dil.formula;
           subtitle = '$miktar ml';
         } else {
-          icon = Ikonlar.bottle(size: 40);
+          icon = Ikonlar.bottle(size: 80);
           title = Dil.biberon;
           subtitle = '$miktar ml';
         }
         break;
       case 'kaka':
-        lineColor = const Color(0xFF03A9F4);
+        lineColor = AppColors.accentBlue;
         final bezTur = item['tur'] ?? '';
         if (bezTur == Dil.islak) {
-          icon = Ikonlar.diaperWet(size: 40);
+          icon = Ikonlar.diaperWet(size: 48);
         } else if (bezTur == Dil.kirli) {
-          icon = Ikonlar.diaperDirty(size: 40);
+          icon = Ikonlar.diaperDirty(size: 48);
         } else {
-          icon = Ikonlar.diaperClean(size: 40);
+          icon = Ikonlar.diaperClean(size: 80);
         }
         title = Dil.bezDegisimi;
         subtitle = bezTur;
         break;
       case 'uyku':
-        lineColor = const Color(0xFF9C27B0);
-        icon = Ikonlar.sleepingMoon(size: 20);
+        lineColor = AppColors.accentLavender;
+        icon = Ikonlar.sleepingMoon(size: 80);
         title = Dil.uyku;
         subtitle = item['sure'] ?? '';
         break;
       default:
         lineColor = Colors.grey;
-        icon = Ikonlar.timer(size: 20);
+        icon = Ikonlar.timer(size: 48);
         title = 'Aktivite';
         subtitle = '';
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 0),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             children: [
               Container(
-                width: 12,
-                height: 12,
+                width: 16,
+                height: 16,
                 decoration: BoxDecoration(
-                  color: lineColor.withAlpha(50),
+                  color: lineColor.withOpacity(0.3),
                   shape: BoxShape.circle,
-                  border: Border.all(color: lineColor, width: 2),
+                  border: Border.all(color: lineColor, width: 3),
                 ),
               ),
               Container(
-                width: 2,
-                height: 40,
-                color: isDark ? Colors.grey.shade700 : Colors.grey.shade200,
+                width: 3,
+                height: 50,
+                color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
               ),
             ],
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 14),
           Expanded(
             child: Row(
               children: [
                 icon,
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1116,21 +1101,25 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(
                         title,
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
                           color: textColor,
                         ),
                       ),
                       Text(
                         subtitle,
-                        style: TextStyle(color: lineColor, fontSize: 12),
+                        style: TextStyle(
+                          color: lineColor,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 Text(
                   time,
-                  style: TextStyle(color: subtitleColor, fontSize: 11),
+                  style: TextStyle(color: subtitleColor, fontSize: 12),
                 ),
               ],
             ),
@@ -1158,28 +1147,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              const Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 18),
-              const SizedBox(width: 8),
+              const Icon(Icons.straighten, color: Color(0xFF4CAF50), size: 22),
+              const SizedBox(width: 10),
               Text(
                 '${Dil.boy} (cm)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           SizedBox(
-            height: 80,
+            height: 100,
             child: CustomPaint(
-              size: const Size(double.infinity, 80),
+              size: const Size(double.infinity, 100),
               painter: _ChartPainter(
                 data: son6.map((k) => (k['boy'] as num).toDouble()).toList(),
                 maxValue: maxBoy,
@@ -1187,26 +1180,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             children: [
               const Icon(
                 Icons.monitor_weight,
                 color: Color(0xFF2196F3),
-                size: 18,
+                size: 22,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Text(
                 '${Dil.kilo} (kg)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                  fontSize: 16,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           SizedBox(
-            height: 80,
+            height: 100,
             child: CustomPaint(
-              size: const Size(double.infinity, 80),
+              size: const Size(double.infinity, 100),
               painter: _ChartPainter(
                 data: son6.map((k) => (k['kilo'] as num).toDouble()).toList(),
                 maxValue: maxKilo,
@@ -1229,26 +1226,30 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: kayitlar.length > 5 ? 5 : kayitlar.length,
         separatorBuilder: (_, __) =>
-            Divider(height: 1, color: subtitleColor.withAlpha(50)),
+            Divider(height: 1, color: subtitleColor.withOpacity(0.2)),
         itemBuilder: (context, index) {
           final k = kayitlar[index];
           final tarih = k['tarih'] as DateTime;
           return ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
             leading: Container(
-              width: 40,
-              height: 40,
+              width: 50,
+              height: 50,
               decoration: BoxDecoration(
-                color: Colors.green.withAlpha(25),
-                borderRadius: BorderRadius.circular(10),
+                color: AppColors.accentGreen.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: Center(child: Ikonlar.growth(size: 24)),
+              child: Center(child: Ikonlar.growth(size: 32)),
             ),
             title: Text(
               '${tarih.day} ${Dil.aylar[tarih.month - 1]} ${tarih.year}',
@@ -1256,7 +1257,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             subtitle: Text(
               '${Dil.boy}: ${k['boy']} cm • ${Dil.kilo}: ${k['kilo']} kg',
-              style: TextStyle(color: subtitleColor, fontSize: 12),
+              style: TextStyle(color: subtitleColor, fontSize: 13),
             ),
           );
         },
@@ -1352,11 +1353,11 @@ class _ChartPainter extends CustomPainter {
 
     final paint = Paint()
       ..color = color
-      ..strokeWidth = 2
+      ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     final fillPaint = Paint()
-      ..color = color.withAlpha(30)
+      ..color = color.withOpacity(0.15)
       ..style = PaintingStyle.fill;
     final dotPaint = Paint()
       ..color = color
@@ -1378,7 +1379,7 @@ class _ChartPainter extends CustomPainter {
         path.lineTo(x, y);
         fillPath.lineTo(x, y);
       }
-      canvas.drawCircle(Offset(x, y), 4, dotPaint);
+      canvas.drawCircle(Offset(x, y), 6, dotPaint);
     }
 
     fillPath.lineTo(size.width, size.height);

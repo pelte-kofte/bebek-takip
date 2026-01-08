@@ -620,8 +620,9 @@ class AddScreen extends StatelessWidget {
                             context: ctx,
                             initialTime: baslangic,
                           );
-                          if (picked != null)
+                          if (picked != null) {
                             setModalState(() => baslangic = picked);
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -663,8 +664,9 @@ class AddScreen extends StatelessWidget {
                             context: ctx,
                             initialTime: bitis,
                           );
-                          if (picked != null)
+                          if (picked != null) {
                             setModalState(() => bitis = picked);
+                          }
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -710,8 +712,9 @@ class AddScreen extends StatelessWidget {
                       bitis.hour,
                       bitis.minute,
                     );
-                    if (bitisDT.isBefore(baslangicDT))
+                    if (bitisDT.isBefore(baslangicDT)) {
                       bitisDT = bitisDT.add(const Duration(days: 1));
+                    }
                     final sure = bitisDT.difference(baslangicDT);
                     final kayitlar = VeriYonetici.getUykuKayitlari();
                     kayitlar.insert(0, {
@@ -934,8 +937,9 @@ class AddScreen extends StatelessWidget {
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
                     );
-                    if (picked != null)
+                    if (picked != null) {
                       setModalState(() => secilenTarih = picked);
+                    }
                   },
                   child: Container(
                     width: double.infinity,
