@@ -178,7 +178,7 @@ class AddScreen extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Ikonlar.nursing(size: 40),
+                              Ikonlar.nursing(size: 28),
                               const SizedBox(width: 12),
                               Text(
                                 Dil.solMeme,
@@ -241,7 +241,7 @@ class AddScreen extends StatelessWidget {
                           const SizedBox(height: 16),
                           Row(
                             children: [
-                              Ikonlar.nursing(size: 40),
+                              Ikonlar.nursing(size: 28),
                               const SizedBox(width: 12),
                               Text(
                                 Dil.sagMeme,

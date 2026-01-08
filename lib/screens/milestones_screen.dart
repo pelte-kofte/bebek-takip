@@ -16,7 +16,12 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     {'emoji': '🪑', 'title': 'Desteksiz Oturma', 'ay': 6, 'tamamlandi': false},
     {'emoji': '🦷', 'title': 'İlk Diş', 'ay': 6, 'tamamlandi': false},
     {'emoji': '🐛', 'title': 'Emekleme', 'ay': 8, 'tamamlandi': false},
-    {'emoji': '🧍', 'title': 'Tutunarak Ayakta Durma', 'ay': 9, 'tamamlandi': false},
+    {
+      'emoji': '🧍',
+      'title': 'Tutunarak Ayakta Durma',
+      'ay': 9,
+      'tamamlandi': false,
+    },
     {'emoji': '👋', 'title': 'El Sallama', 'ay': 10, 'tamamlandi': false},
     {'emoji': '🗣️', 'title': 'İlk Kelime', 'ay': 12, 'tamamlandi': false},
     {'emoji': '👣', 'title': 'İlk Adım', 'ay': 12, 'tamamlandi': false},
@@ -58,22 +63,48 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('🏆 ${Dil.gelisimAsamalari}', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
+                    Text(
+                      '🏆 ${Dil.gelisimAsamalari}',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: cardColor,
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: isDark ? Colors.black26 : const Color(0x1A000000), blurRadius: 10)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark
+                                ? Colors.black26
+                                : const Color(0x1A000000),
+                            blurRadius: 10,
+                          ),
+                        ],
                       ),
                       child: Column(
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(Dil.ilerleme, style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-                              Text('$tamamlanan / $toplam', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFE91E63))),
+                              Text(
+                                Dil.ilerleme,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                ),
+                              ),
+                              Text(
+                                '$tamamlanan / $toplam',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFE91E63),
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 12),
@@ -82,8 +113,12 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                             child: LinearProgressIndicator(
                               value: progress,
                               minHeight: 12,
-                              backgroundColor: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
-                              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE91E63)),
+                              backgroundColor: isDark
+                                  ? Colors.grey.shade800
+                                  : Colors.grey.shade200,
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Color(0xFFE91E63),
+                              ),
                             ),
                           ),
                         ],
@@ -108,18 +143,37 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                         decoration: BoxDecoration(
                           color: cardColor,
                           borderRadius: BorderRadius.circular(16),
-                          border: tamamlandi ? Border.all(color: Colors.green, width: 2) : null,
-                          boxShadow: [BoxShadow(color: isDark ? Colors.black26 : const Color(0x1A000000), blurRadius: 10)],
+                          border: tamamlandi
+                              ? Border.all(color: Colors.green, width: 2)
+                              : null,
+                          boxShadow: [
+                            BoxShadow(
+                              color: isDark
+                                  ? Colors.black26
+                                  : const Color(0x1A000000),
+                              blurRadius: 10,
+                            ),
+                          ],
                         ),
                         child: Row(
                           children: [
                             Container(
-                              width: 50, height: 50,
+                              width: 50,
+                              height: 50,
                               decoration: BoxDecoration(
-                                color: tamamlandi ? Colors.green.withAlpha(25) : (isDark ? Colors.grey.shade800 : Colors.grey.shade100),
+                                color: tamamlandi
+                                    ? Colors.green.withAlpha(25)
+                                    : (isDark
+                                          ? Colors.grey.shade800
+                                          : Colors.grey.shade100),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Center(child: Text(milestone['emoji'], style: const TextStyle(fontSize: 24))),
+                              child: Center(
+                                child: Text(
+                                  milestone['emoji'],
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                              ),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -131,8 +185,12 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
-                                      color: tamamlandi ? Colors.green : textColor,
-                                      decoration: tamamlandi ? TextDecoration.lineThrough : null,
+                                      color: tamamlandi
+                                          ? Colors.green
+                                          : textColor,
+                                      decoration: tamamlandi
+                                          ? TextDecoration.lineThrough
+                                          : null,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -141,7 +199,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                                         ? '✓ ${Dil.tamamlandi}!'
                                         : '${milestone['ay']}. ${Dil.ayindaBekleniyor}',
                                     style: TextStyle(
-                                      color: tamamlandi ? Colors.green : subtitleColor,
+                                      color: tamamlandi
+                                          ? Colors.green
+                                          : subtitleColor,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -149,13 +209,20 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                               ),
                             ),
                             Container(
-                              width: 30, height: 30,
+                              width: 30,
+                              height: 30,
                               decoration: BoxDecoration(
-                                color: tamamlandi ? Colors.green : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+                                color: tamamlandi
+                                    ? Colors.green
+                                    : (isDark
+                                          ? Colors.grey.shade700
+                                          : Colors.grey.shade300),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                tamamlandi ? Icons.check : Icons.circle_outlined,
+                                tamamlandi
+                                    ? Icons.check
+                                    : Icons.circle_outlined,
                                 color: Colors.white,
                                 size: 18,
                               ),

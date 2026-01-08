@@ -355,7 +355,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        Ikonlar.diaperClean(size: 48),
+        Ikonlar.diaperClean(size: 24),
         Dil.kayitYok,
         isDark,
       );
@@ -633,7 +633,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               shape: BoxShape.circle,
             ),
             child: iconOrEmoji is String
-                ? Text(iconOrEmoji, style: const TextStyle(fontSize: 48))
+                ? Text(iconOrEmoji, style: const TextStyle(fontSize: 24))
                 : iconOrEmoji,
           ),
           const SizedBox(height: 16),
@@ -1250,8 +1250,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     return GestureDetector(
       onTap: () => onSelect(label),
       child: Container(
-        width: 80,
-        height: 80,
+        width: 50,
+        height: 50,
         decoration: BoxDecoration(
           color: isSelected ? color.withAlpha(50) : color.withAlpha(25),
           borderRadius: BorderRadius.circular(16),
