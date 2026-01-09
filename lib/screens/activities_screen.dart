@@ -476,6 +476,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
+        onTap: onEdit,
         leading: Container(
           width: 44,
           height: 44,
@@ -677,6 +678,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
         ],
       ),
       child: ListTile(
+        onTap: onEdit,
         contentPadding: const EdgeInsets.all(12),
         leading: Container(
           width: 50,
@@ -723,10 +725,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                   ),
                 ),
               ),
-            IconButton(
-              icon: Icon(Icons.edit, color: color, size: 20),
-              onPressed: onEdit,
-            ),
+
             IconButton(
               icon: const Icon(
                 Icons.delete_outline,

@@ -5,11 +5,14 @@ Son Güncelleme: 29 Aralık 2024
 ---
 mesela bir de ay ay bebekiçin yapılacak şeyler. 3. ayda dönme egzeresizi 5 te oturma egzesizi2. ayda göz takibi egzersizleri için her ay dönümündeböyle bildirim gitsin
 ## 🔥  (Bu Hafta)
+- [ ] LANDİNG PAGE FLOATİNG  KALDIRIP NETLİĞE BAK.
 - [ ] aşı takibi
+- [ ] eklenen aktiviteler siinmesin hiç 
+- [ ] çoklu kullanım anne-baba
 - [ ] tabtakieiconlardeğişecek.
 - [ ] bebek ekleme
 - [ ] bilgileri sıfırla seçeneği gelsin bir de
-- [x] haftalık ve aylık kaka ve çiş raporu
+- [ ] haftalık ve aylık kaka ve çiş raporu
 - [ ] büyükanne modu
 - [ ] "Uygulamaya premium UX detayları ekle:
 
