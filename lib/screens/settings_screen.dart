@@ -450,8 +450,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text(Dil.iptal),
           ),
           ElevatedButton(
-            onPressed: () {
-              VeriYonetici.verileriTemizle();
+            onPressed: () async {
+              await VeriYonetici.verileriTemizle();
+              if (!context.mounted) return;
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Tüm veriler silindi!')),

@@ -63,21 +63,55 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFBF5);
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
 
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [const Color(0xFF1E1E2A), const Color(0xFF1E1E2A)]
-                : [const Color(0xFFFDF6F0), const Color(0xFFFDF6F0)],
-          ),
+          color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: [
+            if (!isDark) ...[
+              Positioned(
+                top: 100,
+                left: -50,
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFE5E0F7).withOpacity(0.06),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 300,
+                right: -80,
+                child: Container(
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFFFB4A2).withOpacity(0.05),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 100,
+                left: 50,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFE5E0F7).withOpacity(0.08),
+                  ),
+                ),
+              ),
+            ],
+            SafeArea(
           child: Column(
             children: [
               Padding(
@@ -96,21 +130,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 8,
+                        horizontal: 6,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
                         color: cardColor,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
                             color: isDark
-                                ? Colors.black26
-                                : const Color(0x1A000000),
-                            blurRadius: 10,
+                                ? Colors.black12
+                                : const Color(0xFFE5E0F7).withOpacity(0.15),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -121,7 +156,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                             onPressed: _previousDay,
                             icon: const Icon(
                               Icons.chevron_left,
-                              color: Color(0xFFE91E63),
+                              color: Color(0xFFFFB4A2),
                             ),
                           ),
                           GestureDetector(
@@ -132,22 +167,27 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFE91E63).withAlpha(25),
-                                borderRadius: BorderRadius.circular(20),
+                                color: const Color(0xFFE5E0F7).withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: const Color(0xFFFFB4A2).withOpacity(0.4),
+                                  width: 1,
+                                ),
                               ),
                               child: Row(
                                 children: [
                                   const Icon(
                                     Icons.calendar_today,
-                                    size: 18,
-                                    color: Color(0xFFE91E63),
+                                    size: 16,
+                                    color: Color(0xFFFFB4A2),
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     _formatDateHeader(_selectedDate),
                                     style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFFE91E63),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFFFFB4A2),
                                     ),
                                   ),
                                 ],
@@ -162,7 +202,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                               Icons.chevron_right,
                               color: _isToday(_selectedDate)
                                   ? Colors.grey.shade400
-                                  : const Color(0xFFE91E63),
+                                  : const Color(0xFFFFB4A2),
                             ),
                           ),
                         ],
@@ -172,34 +212,74 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                 ),
               ),
               Container(
+                height: 115,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: isDark ? Colors.black26 : const Color(0x1A000000),
-                      blurRadius: 10,
+                      color: isDark
+                          ? Colors.black26
+                          : const Color(0xFFE5E0F7).withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: TabBar(
                   controller: _tabController,
-                  labelColor: Colors.white,
-                  unselectedLabelColor: isDark
-                      ? Colors.grey.shade400
-                      : Colors.grey,
+                  labelColor: const Color(0xFF333333),
+                  unselectedLabelColor: Colors.transparent,
                   indicator: BoxDecoration(
-                    color: const Color(0xFFE91E63),
+                    color: const Color(0xFFFFFBF5),
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFFFFB4A2).withOpacity(0.3),
+                      width: 1.5,
+                    ),
                   ),
                   indicatorSize: TabBarIndicatorSize.tab,
                   dividerColor: Colors.transparent,
-                  tabs: const [
-                    Tab(text: '🍼'),
-                    Tab(text: '👶'),
-                    Tab(text: '😴'),
-                    Tab(text: '📸'),
+                  tabs: [
+                    Tab(
+                      child: Center(
+                        child: Image.asset(
+                          'assets/icons/illustration/bottle2.png',
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: Center(
+                        child: Image.asset(
+                          'assets/icons/illustration/diaper_clean.png',
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: Center(
+                        child: Image.asset(
+                          'assets/icons/illustration/sleeping_moon2.png',
+                          width: 72,
+                          height: 72,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                    const Tab(
+                      child: Center(
+                        child: Text(
+                          '📸',
+                          style: TextStyle(fontSize: 48),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -217,6 +297,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );
@@ -249,7 +331,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     }
 
     if (kayitlar.isEmpty) {
-      return _buildEmptyState('🍼', Dil.kayitYok, isDark);
+      return _buildEmptyState(
+        Image.asset('assets/icons/illustration/bottle2.png', width: 48, height: 48),
+        Dil.kayitYok,
+        isDark,
+      );
     }
 
     return Column(
@@ -258,32 +344,45 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFFE91E63), Color(0xFFAD1457)],
-            ),
+            color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFFFB4A2).withOpacity(0.2),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('🍼', style: TextStyle(fontSize: 24)),
+              Image.asset(
+                'assets/icons/illustration/bottle2.png',
+                width: 32,
+                height: 32,
+              ),
               const SizedBox(width: 12),
               if (toplamDakika > 0)
                 Text(
                   '${Dil.emzirme}: $toplamDakika ${Dil.dk}',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF333333),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               if (toplamDakika > 0 && toplamMl > 0)
-                const Text(' • ', style: TextStyle(color: Colors.white70)),
+                const Text(' • ', style: TextStyle(color: Color(0xFF888888))),
               if (toplamMl > 0)
                 Text(
                   '${Dil.biberon}: $toplamMl ml',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF333333),
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -291,7 +390,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               const SizedBox(width: 8),
               Text(
                 '(${kayitlar.length} ${Dil.kayit})',
-                style: const TextStyle(color: Colors.white70),
+                style: const TextStyle(color: Color(0xFF888888)),
               ),
             ],
           ),
@@ -315,12 +414,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               String subtitle;
 
               if (tur == 'Anne Sütü') {
-                emoji = '🤱';
+                emoji = 'assets/icons/illustration/bottle2.png';
                 title = Dil.emzirme;
                 subtitle =
                     'Sol $sol${Dil.dk} • Sağ $sag${Dil.dk} (${Dil.toplam}: ${sol + sag}${Dil.dk})';
               } else {
-                emoji = tur == 'Formül' ? '🍼' : '🥛';
+                emoji = 'assets/icons/illustration/bottle2.png';
                 title = '$miktar ml';
                 subtitle = tur == 'Formül' ? Dil.formula : Dil.biberonAnneSutu;
               }
@@ -371,10 +470,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF9C27B0), Color(0xFF6A1B9A)],
-            ),
+            color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFE5E0F7).withOpacity(0.4),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -428,11 +536,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
   Widget _getBezIkon(String tur, double size) {
     if (tur == Dil.islak) {
-      return Ikonlar.diaperWet(size: size);
+      return Image.asset('assets/icons/illustration/diaper_wet.png', width: size, height: size);
     } else if (tur == Dil.kirli) {
-      return Ikonlar.diaperDirty(size: size);
+      return Image.asset('assets/icons/illustration/diaper_dirty.png', width: size, height: size);
     } else {
-      return Ikonlar.diaperClean(size: size);
+      return Image.asset('assets/icons/illustration/diaper_clean.png', width: size, height: size);
     }
   }
 
@@ -446,12 +554,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Color(0xFF333333),
           ),
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Colors.white70),
+          style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
         ),
       ],
     );
@@ -474,6 +582,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFE5E0F7).withOpacity(0.1),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ListTile(
         onTap: onEdit,
@@ -523,7 +638,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     final tumKayitlar = VeriYonetici.getUykuKayitlari();
     final kayitlar = _filterByDate(tumKayitlar, 'bitis');
 
-    if (kayitlar.isEmpty) return _buildEmptyState('😴', Dil.kayitYok, isDark);
+    if (kayitlar.isEmpty) {
+      return _buildEmptyState(
+        Image.asset('assets/icons/illustration/sleeping_moon2.png', width: 48, height: 48),
+        Dil.kayitYok,
+        isDark,
+      );
+    }
 
     final toplamDakika = kayitlar.fold(
       0,
@@ -538,21 +659,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF3F51B5), Color(0xFF1A237E)],
-            ),
+            color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: const Color(0xFFE5E0F7).withOpacity(0.4),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('😴', style: TextStyle(fontSize: 24)),
+              Image.asset(
+                'assets/icons/illustration/sleeping_moon2.png',
+                width: 32,
+                height: 32,
+              ),
               const SizedBox(width: 12),
               Text(
                 '${Dil.toplam}: $saat ${Dil.sa} $dakika ${Dil.dk}',
                 style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
+                  color: Color(0xFF333333),
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -571,7 +705,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               final sure = kayit['sure'] as Duration;
               final originalIndex = tumKayitlar.indexOf(kayit);
               return _buildListItem(
-                emoji: '😴',
+                emoji: 'assets/icons/illustration/sleeping_moon2.png',
                 title: _formatDuration(sure),
                 subtitle: '${_formatTime(baslangic)} - ${_formatTime(bitis)}',
                 time: '',
@@ -623,31 +757,136 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   }
 
   Widget _buildEmptyState(dynamic iconOrEmoji, String message, bool isDark) {
+    // Boş state için özel mesajlar
+    String emotionalMessage = 'Henüz kayıt yok';
+    String subtitle = 'İlk anınızı ekleyin';
+
+    if (iconOrEmoji.toString().contains('bottle')) {
+      emotionalMessage = 'İlk mama zamanı geldi mi?';
+      subtitle = 'Bebeğinizin beslenmesini takip edin';
+    } else if (iconOrEmoji.toString().contains('diaper') || iconOrEmoji == '👶') {
+      emotionalMessage = 'Bez değiştirme zamanı!';
+      subtitle = 'Hijyen takibini burada yapın';
+    } else if (iconOrEmoji.toString().contains('sleeping_moon')) {
+      emotionalMessage = 'Tatlı rüyalar...';
+      subtitle = 'Uyku düzenini buradan izleyin';
+    } else if (iconOrEmoji == '📸') {
+      emotionalMessage = 'İlk anınızı paylaşın';
+      subtitle = 'Her an özeldir, kaydedin!';
+    }
+
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [Colors.grey.shade800, Colors.grey.shade700]
+                      : [
+                          const Color(0xFFFFF8F2),
+                          const Color(0xFFFFE8DD),
+                          const Color(0xFFFFEEE5),
+                        ],
+                ),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: (isDark ? Colors.black : const Color(0xFFFFD4B8))
+                        .withOpacity(0.4),
+                    blurRadius: 30,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 10),
+                  ),
+                  BoxShadow(
+                    color: (isDark ? Colors.black54 : Colors.white)
+                        .withOpacity(0.8),
+                    blurRadius: 15,
+                    offset: const Offset(-5, -5),
+                  ),
+                ],
+              ),
+              child: iconOrEmoji is String
+                  ? Text(iconOrEmoji, style: const TextStyle(fontSize: 48))
+                  : iconOrEmoji,
             ),
-            child: iconOrEmoji is String
-                ? Text(iconOrEmoji, style: const TextStyle(fontSize: 24))
-                : iconOrEmoji,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: 16,
-              color: isDark ? Colors.grey.shade400 : Colors.grey,
+            const SizedBox(height: 24),
+            Text(
+              emotionalMessage,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF4A4458),
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 8),
-          TextButton(onPressed: _selectDate, child: Text(Dil.baskaTarihSec)),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 14,
+                color: isDark ? Colors.grey.shade400 : const Color(0xFF8A8494),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFB4A2),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFFFB4A2).withOpacity(0.3),
+                    blurRadius: 12,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _selectDate,
+                  borderRadius: BorderRadius.circular(20),
+                  splashColor: Colors.white.withOpacity(0.3),
+                  highlightColor: Colors.white.withOpacity(0.1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.calendar_today_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          Dil.baskaTarihSec,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -669,11 +908,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
+            color: const Color(0xFFE5E0F7).withOpacity(0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -688,7 +927,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(
-            child: Text(emoji, style: const TextStyle(fontSize: 24)),
+            child: emoji.startsWith('assets/')
+                ? Image.asset(emoji, width: 24, height: 24)
+                : Text(emoji, style: const TextStyle(fontSize: 24)),
           ),
         ),
         title: Text(

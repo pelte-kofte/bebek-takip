@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../models/veri_yonetici.dart';
+import '../models/timer_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/decorative_background.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -25,62 +28,96 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _sagAktif = false;
   int _solSaniye = 0;
   int _sagSaniye = 0;
-  Timer? _emzirmeTimer;
-  DateTime? _emzirmeBaslangic;
 
   // Uyku sayaç değişkenleri
-  bool _uykuAktif = false;
   int _uykuSaniye = 0;
-  Timer? _uykuTimer;
-  DateTime? _uykuBaslangic;
+
+  // Timer manager instance
+  final _timerYonetici = TimerYonetici();
+
+  // Stream subscriptions
+  StreamSubscription<Duration?>? _emzirmeSubscription;
+  StreamSubscription<Duration?>? _uykuSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupTimerListeners();
+  }
+
+  void _setupTimerListeners() {
+    // Listen to emzirme timer updates
+    _emzirmeSubscription = _timerYonetici.emzirmeStream.listen((duration) {
+      if (duration != null) {
+        setState(() {
+          // Determine which side is active based on saved state
+          final taraf = _timerYonetici.emzirmeTaraf;
+          _solAktif = taraf == 'sol';
+          _sagAktif = taraf == 'sag';
+
+          // Get total seconds for each side
+          _solSaniye = _timerYonetici.solToplamSaniye;
+          _sagSaniye = _timerYonetici.sagToplamSaniye;
+        });
+      } else {
+        // Timer stopped
+        setState(() {
+          _solAktif = false;
+          _sagAktif = false;
+          _solSaniye = 0;
+          _sagSaniye = 0;
+        });
+      }
+    });
+
+    // Listen to uyku timer updates
+    _uykuSubscription = _timerYonetici.uykuStream.listen((duration) {
+      if (duration != null) {
+        setState(() {
+          _uykuSaniye = duration.inSeconds;
+        });
+      } else {
+        setState(() {
+          _uykuSaniye = 0;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
-    _emzirmeTimer?.cancel();
-    _uykuTimer?.cancel();
+    _emzirmeSubscription?.cancel();
+    _uykuSubscription?.cancel();
     super.dispose();
   }
 
   // EMZİRME FONKSİYONLARI
-  void _startSol() {
-    _emzirmeBaslangic ??= DateTime.now();
-    setState(() {
-      _solAktif = true;
-      _sagAktif = false;
-    });
-    _startEmzirmeTimer();
+  void _startSol() async {
+    await _timerYonetici.switchEmzirmeSide('sol');
   }
 
-  void _startSag() {
-    _emzirmeBaslangic ??= DateTime.now();
-    setState(() {
-      _sagAktif = true;
-      _solAktif = false;
-    });
-    _startEmzirmeTimer();
-  }
-
-  void _startEmzirmeTimer() {
-    _emzirmeTimer?.cancel();
-    _emzirmeTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_solAktif) {
-          _solSaniye++;
-        } else if (_sagAktif) {
-          _sagSaniye++;
-        }
-      });
-    });
+  void _startSag() async {
+    await _timerYonetici.switchEmzirmeSide('sag');
   }
 
   void _stopEmzirmeAndSave() async {
-    _emzirmeTimer?.cancel();
+    final data = await _timerYonetici.stopEmzirme();
 
-    if (_solSaniye == 0 && _sagSaniye == 0) {
+    if (data == null) {
       setState(() {
         _solAktif = false;
         _sagAktif = false;
-        _emzirmeBaslangic = null;
+      });
+      return;
+    }
+
+    final solSaniye = data['solSaniye'] as int;
+    final sagSaniye = data['sagSaniye'] as int;
+
+    if (solSaniye == 0 && sagSaniye == 0) {
+      setState(() {
+        _solAktif = false;
+        _sagAktif = false;
       });
       return;
     }
@@ -91,34 +128,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await Future.delayed(const Duration(milliseconds: 500));
 
-    final solDakika = (_solSaniye / 60).ceil();
-    final sagDakika = (_sagSaniye / 60).ceil();
+    final solDakika = (solSaniye / 60).ceil();
+    final sagDakika = (sagSaniye / 60).ceil();
 
     final kayitlar = VeriYonetici.getMamaKayitlari();
     kayitlar.insert(0, {
-      'tarih': _emzirmeBaslangic ?? DateTime.now(),
+      'tarih': data['tarih'] ?? DateTime.now(),
       'tur': 'Anne Sütü',
-      'solDakika': solDakika > 0 ? solDakika : (_solSaniye > 0 ? 1 : 0),
-      'sagDakika': sagDakika > 0 ? sagDakika : (_sagSaniye > 0 ? 1 : 0),
+      'solDakika': solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0),
+      'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
       'miktar': 0,
     });
 
     await VeriYonetici.saveMamaKayitlari(kayitlar);
 
-    final kaydedilenSol = solDakika > 0 ? solDakika : (_solSaniye > 0 ? 1 : 0);
-    final kaydedilenSag = sagDakika > 0 ? sagDakika : (_sagSaniye > 0 ? 1 : 0);
+    final kaydedilenSol = solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0);
+    final kaydedilenSag = sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0);
 
     setState(() {
       _solAktif = false;
       _sagAktif = false;
       _solSaniye = 0;
       _sagSaniye = 0;
-      _emzirmeBaslangic = null;
       _emzirmeKaydediliyor = false;
     });
 
     widget.onDataChanged?.call();
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -130,29 +167,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // UYKU FONKSİYONLARI
-  void _startUyku() {
-    _uykuBaslangic = DateTime.now();
-    setState(() {
-      _uykuAktif = true;
-      _uykuSaniye = 0;
-    });
-    _uykuTimer?.cancel();
-    _uykuTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _uykuSaniye++;
-      });
-    });
+  void _startUyku() async {
+    await _timerYonetici.startUyku();
   }
 
   void _stopUykuAndSave() async {
-    _uykuTimer?.cancel();
+    final data = await _timerYonetici.stopUyku();
 
-    if (_uykuSaniye < 60) {
+    if (data == null || _uykuSaniye < 60) {
       setState(() {
-        _uykuAktif = false;
         _uykuSaniye = 0;
-        _uykuBaslangic = null;
       });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('⚠️ Uyku 1 dakikadan kısa, kaydedilmedi'),
@@ -168,14 +194,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await Future.delayed(const Duration(milliseconds: 500));
 
-    final bitis = DateTime.now();
-    final sure = Duration(seconds: _uykuSaniye);
-
     final kayitlar = VeriYonetici.getUykuKayitlari();
     kayitlar.insert(0, {
-      'baslangic': _uykuBaslangic ?? bitis.subtract(sure),
-      'bitis': bitis,
-      'sure': sure,
+      'baslangic': data['baslangic'],
+      'bitis': data['bitis'],
+      'sure': data['sure'],
     });
 
     await VeriYonetici.saveUykuKayitlari(kayitlar);
@@ -185,15 +208,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final kalanDakika = dakika % 60;
 
     setState(() {
-      _uykuAktif = false;
       _uykuSaniye = 0;
-      _uykuBaslangic = null;
       _uykuKaydediliyor = false;
     });
 
     widget.onDataChanged?.call();
 
     String sureText = saat > 0 ? '$saat sa $kalanDakika dk' : '$dakika dk';
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('✅ Uyku kaydedildi: $sureText'),
@@ -215,8 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${saat.toString().padLeft(2, '0')}:${dk.toString().padLeft(2, '0')}:${sn.toString().padLeft(2, '0')}';
   }
 
-  bool get _emzirmeAktif =>
-      _solAktif || _sagAktif || _solSaniye > 0 || _sagSaniye > 0;
+  bool get _emzirmeAktif => _timerYonetici.isEmzirmeActive;
+
+  bool get _uykuAktif => _timerYonetici.isUykuActive;
 
   @override
   Widget build(BuildContext context) {
@@ -246,16 +269,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [AppColors.bgDark, AppColors.bgDark]
-                : [AppColors.bgLight, AppColors.bgLight],
-          ),
-        ),
+      body: DecorativeBackground(
+        variant: BackgroundVariant.home,
         child: SafeArea(
           child: SingleChildScrollView(
             child: Column(

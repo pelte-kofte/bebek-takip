@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import '../models/veri_yonetici.dart';
 import '../main.dart';
 import '../theme/app_theme.dart';
+import '../theme/app_spacing.dart';
+import '../widgets/decorative_background.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -96,40 +98,13 @@ class _SplashScreenState extends State<SplashScreen>
       onTap: _goToNextScreen,
       child: Scaffold(
         backgroundColor: AppColors.bgLight,
-        body: Stack(
-          children: [
-            // Decorative Blobs (Landing page tarzı)
-            Positioned(
-              top: -100,
-              right: -50,
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.accentGreen.withOpacity(0.3),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -150,
-              left: -100,
-              child: Container(
-                width: 400,
-                height: 400,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.primaryLight.withOpacity(0.4),
-                ),
-              ),
-            ),
-
-            // Main Content
-            SafeArea(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+        body: DecorativeBackground(
+          variant: BackgroundVariant.splash,
+          child: SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                     const Spacer(flex: 2),
 
                     // Cuddle Image with float animation
@@ -144,14 +119,14 @@ class _SplashScreenState extends State<SplashScreen>
                           child: Transform.scale(
                             scale: _logoScale.value,
                             child: Container(
-                              width: 200,
-                              height: 200,
+                              width: 280,
+                              height: 280,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(40),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.2),
-                                    blurRadius: 40,
+                                    color: AppColors.primary.withOpacity(0.3),
+                                    blurRadius: 50,
                                     offset: const Offset(0, 20),
                                   ),
                                 ],
@@ -159,7 +134,7 @@ class _SplashScreenState extends State<SplashScreen>
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(40),
                                 child: Image.asset(
-                                  'assets/icons/illustration/cuddle.png',
+                                  'assets/icons/illustration/parents.png',
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -169,7 +144,7 @@ class _SplashScreenState extends State<SplashScreen>
                       },
                     ),
 
-                    const SizedBox(height: 40),
+                    SizedBox(height: AppSpacing.xxl),
 
                     // App Title
                     FadeTransition(
@@ -182,28 +157,23 @@ class _SplashScreenState extends State<SplashScreen>
                               const Text('🌱 ', style: TextStyle(fontSize: 32)),
                               Text(
                                 'Bebek Takip',
-                                style: TextStyle(
+                                style: AppTypography.h1(context).copyWith(
                                   fontSize: 36,
                                   fontWeight: FontWeight.w800,
-                                  color: AppColors.textPrimaryLight,
                                   letterSpacing: -1,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          SizedBox(height: AppSpacing.md),
 
                           // Tagline
                           Text(
                             'Parenting made simple & memorable.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.textSecondaryLight,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: AppTypography.body(context),
                           ),
 
-                          const SizedBox(height: 8),
+                          SizedBox(height: AppSpacing.sm),
 
                           // Features Row
                           Row(
@@ -269,12 +239,11 @@ class _SplashScreenState extends State<SplashScreen>
                       ),
                     ),
 
-                    const Spacer(),
-                  ],
-                ),
+                  const Spacer(),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

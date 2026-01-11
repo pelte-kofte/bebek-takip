@@ -63,6 +63,9 @@ class Ikonlar {
 
   static Widget cuddle({double size = 24, Color? color}) =>
       _buildIcon(Icons.favorite, size, color ?? const Color(0xFFE91E63));
+      
+  static Widget parents({double size = 24, Color? color}) =>
+      _buildIcon(Icons.favorite, size, color ?? const Color(0xFFE91E63));  
 
   static Widget notifications({double size = 24, Color? color}) =>
       _buildIcon(Icons.notifications, size, color ?? const Color(0xFFE91E63));

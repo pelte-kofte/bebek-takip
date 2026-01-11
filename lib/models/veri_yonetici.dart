@@ -1,12 +1,41 @@
 import 'dart:convert';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'timer_yonetici.dart';
 
 class VeriYonetici {
-  // MAMA
-  static List<Map<String, dynamic>> getMamaKayitlari() {
+  // Singleton instance
+  static SharedPreferences? _prefs;
+
+  // In-memory cache
+  static List<Map<String, dynamic>> _mamaKayitlari = [];
+  static List<Map<String, dynamic>> _kakaKayitlari = [];
+  static List<Map<String, dynamic>> _uykuKayitlari = [];
+  static List<Map<String, dynamic>> _anilar = [];
+  static List<Map<String, dynamic>> _boyKiloKayitlari = [];
+  static bool _darkMode = false;
+  static bool _firstLaunch = true;
+
+  // Initialize - must be called before using any other methods
+  static Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+
+    // Load all data into cache
+    _mamaKayitlari = _loadMamaKayitlari();
+    _kakaKayitlari = _loadKakaKayitlari();
+    _uykuKayitlari = _loadUykuKayitlari();
+    _anilar = _loadAnilar();
+    _boyKiloKayitlari = _loadBoyKiloKayitlari();
+    _darkMode = _prefs!.getBool('dark_mode') ?? false;
+    _firstLaunch = _prefs!.getBool('first_launch') ?? true;
+
+    // Initialize TimerYonetici
+    await TimerYonetici().init(_prefs!);
+  }
+
+  // Private load methods
+  static List<Map<String, dynamic>> _loadMamaKayitlari() {
     try {
-      final data = html.window.localStorage['mama_kayitlari'];
+      final data = _prefs!.getString('mama_kayitlari');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
       return list
@@ -25,9 +54,18 @@ class VeriYonetici {
     }
   }
 
+  // MAMA - returns from cache (sync)
+  static List<Map<String, dynamic>> getMamaKayitlari() {
+    return List.from(_mamaKayitlari);
+  }
+
   static Future<void> saveMamaKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    // Update cache
+    _mamaKayitlari = List.from(kayitlar);
+
+    // Save to shared_preferences
     final data = kayitlar
         .map(
           (e) => {
@@ -39,13 +77,13 @@ class VeriYonetici {
           },
         )
         .toList();
-    html.window.localStorage['mama_kayitlari'] = jsonEncode(data);
+    await _prefs!.setString('mama_kayitlari', jsonEncode(data));
   }
 
   // KAKA
-  static List<Map<String, dynamic>> getKakaKayitlari() {
+  static List<Map<String, dynamic>> _loadKakaKayitlari() {
     try {
-      final data = html.window.localStorage['kaka_kayitlari'];
+      final data = _prefs!.getString('kaka_kayitlari');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
       return list
@@ -61,9 +99,17 @@ class VeriYonetici {
     }
   }
 
+  static List<Map<String, dynamic>> getKakaKayitlari() {
+    return List.from(_kakaKayitlari);
+  }
+
   static Future<void> saveKakaKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    // Update cache
+    _kakaKayitlari = List.from(kayitlar);
+
+    // Save to shared_preferences
     final data = kayitlar
         .map(
           (e) => {
@@ -72,13 +118,13 @@ class VeriYonetici {
           },
         )
         .toList();
-    html.window.localStorage['kaka_kayitlari'] = jsonEncode(data);
+    await _prefs!.setString('kaka_kayitlari', jsonEncode(data));
   }
 
   // UYKU
-  static List<Map<String, dynamic>> getUykuKayitlari() {
+  static List<Map<String, dynamic>> _loadUykuKayitlari() {
     try {
-      final data = html.window.localStorage['uyku_kayitlari'];
+      final data = _prefs!.getString('uyku_kayitlari');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
       return list
@@ -95,9 +141,17 @@ class VeriYonetici {
     }
   }
 
+  static List<Map<String, dynamic>> getUykuKayitlari() {
+    return List.from(_uykuKayitlari);
+  }
+
   static Future<void> saveUykuKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    // Update cache
+    _uykuKayitlari = List.from(kayitlar);
+
+    // Save to shared_preferences
     final data = kayitlar
         .map(
           (e) => {
@@ -107,13 +161,13 @@ class VeriYonetici {
           },
         )
         .toList();
-    html.window.localStorage['uyku_kayitlari'] = jsonEncode(data);
+    await _prefs!.setString('uyku_kayitlari', jsonEncode(data));
   }
 
   // ANILAR
-  static List<Map<String, dynamic>> getAnilar() {
+  static List<Map<String, dynamic>> _loadAnilar() {
     try {
-      final data = html.window.localStorage['anilar'];
+      final data = _prefs!.getString('anilar');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
       return list
@@ -131,7 +185,15 @@ class VeriYonetici {
     }
   }
 
+  static List<Map<String, dynamic>> getAnilar() {
+    return List.from(_anilar);
+  }
+
   static Future<void> saveAnilar(List<Map<String, dynamic>> anilar) async {
+    // Update cache
+    _anilar = List.from(anilar);
+
+    // Save to shared_preferences
     final data = anilar
         .map(
           (e) => {
@@ -142,13 +204,13 @@ class VeriYonetici {
           },
         )
         .toList();
-    html.window.localStorage['anilar'] = jsonEncode(data);
+    await _prefs!.setString('anilar', jsonEncode(data));
   }
 
   // BOY/KİLO
-  static List<Map<String, dynamic>> getBoyKiloKayitlari() {
+  static List<Map<String, dynamic>> _loadBoyKiloKayitlari() {
     try {
-      final data = html.window.localStorage['boykilo_kayitlari'];
+      final data = _prefs!.getString('boykilo_kayitlari');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
       return list
@@ -166,9 +228,17 @@ class VeriYonetici {
     }
   }
 
+  static List<Map<String, dynamic>> getBoyKiloKayitlari() {
+    return List.from(_boyKiloKayitlari);
+  }
+
   static Future<void> saveBoyKiloKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    // Update cache
+    _boyKiloKayitlari = List.from(kayitlar);
+
+    // Save to shared_preferences
     final data = kayitlar
         .map(
           (e) => {
@@ -179,37 +249,40 @@ class VeriYonetici {
           },
         )
         .toList();
-    html.window.localStorage['boykilo_kayitlari'] = jsonEncode(data);
+    await _prefs!.setString('boykilo_kayitlari', jsonEncode(data));
   }
 
-  // TEMA
-
-  // First launch kontrolü
-  // First launch kontrolü
+  // TEMA & SETTINGS
   static bool isFirstLaunch() {
-    final data = html.window.localStorage['first_launch'];
-    return data != 'false';
+    return _firstLaunch;
   }
 
   static Future<void> setFirstLaunchComplete() async {
-    html.window.localStorage['first_launch'] = 'false';
+    _firstLaunch = false;
+    await _prefs!.setBool('first_launch', false);
   }
 
   static bool isDarkMode() {
-    final data = html.window.localStorage['dark_mode'];
-    return data == 'true';
+    return _darkMode;
   }
 
-  static void setDarkMode(bool value) {
-    html.window.localStorage['dark_mode'] = value.toString();
+  static Future<void> setDarkMode(bool value) async {
+    _darkMode = value;
+    await _prefs!.setBool('dark_mode', value);
   }
 
   // VERİLERİ TEMİZLE
-  static void verileriTemizle() {
-    html.window.localStorage.remove('mama_kayitlari');
-    html.window.localStorage.remove('kaka_kayitlari');
-    html.window.localStorage.remove('uyku_kayitlari');
-    html.window.localStorage.remove('anilar');
-    html.window.localStorage.remove('boykilo_kayitlari');
+  static Future<void> verileriTemizle() async {
+    _mamaKayitlari.clear();
+    _kakaKayitlari.clear();
+    _uykuKayitlari.clear();
+    _anilar.clear();
+    _boyKiloKayitlari.clear();
+
+    await _prefs!.remove('mama_kayitlari');
+    await _prefs!.remove('kaka_kayitlari');
+    await _prefs!.remove('uyku_kayitlari');
+    await _prefs!.remove('anilar');
+    await _prefs!.remove('boykilo_kayitlari');
   }
 }

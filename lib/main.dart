@@ -9,7 +9,13 @@ import 'models/dil.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
-void main() {
+void main() async {
+  // Initialize Flutter bindings
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize VeriYonetici (loads all data into cache)
+  await VeriYonetici.init();
+
   runApp(const BabyTrackerApp());
 }
 
@@ -40,13 +46,13 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
     });
   }
 
-  void toggleTheme() {
+  void toggleTheme() async {
     setState(() {
       _themeMode = _themeMode == ThemeMode.light
           ? ThemeMode.dark
           : ThemeMode.light;
-      VeriYonetici.setDarkMode(_themeMode == ThemeMode.dark);
     });
+    await VeriYonetici.setDarkMode(_themeMode == ThemeMode.dark);
   }
 
   bool get isDarkMode => _themeMode == ThemeMode.dark;
