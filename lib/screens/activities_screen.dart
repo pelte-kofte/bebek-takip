@@ -65,69 +65,54 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ),
           ),
 
-          // 2. DEKORATİF ARKA PLAN LAYER (scroll etmez, tıklanamaz)
+          // 2. DEKORATİF ARKA PLAN LAYER (köşelerde, çok hafif)
           if (!isDark)
             Positioned.fill(
               child: IgnorePointer(
                 child: Stack(
                   children: [
-                    // Lavender blob - sol üst
+                    // Lavender blob - sol üst köşe
                     Positioned(
-                      top: 60,
-                      left: -80,
+                      top: -50,
+                      left: -100,
                       child: Container(
-                        width: 280,
-                        height: 280,
+                        width: 240,
+                        height: 240,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFE5E0F7).withOpacity(0.06),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 80,
-                              spreadRadius: 20,
-                              color: const Color(0xFFE5E0F7).withOpacity(0.04),
-                            ),
-                          ],
+                          color: const Color(
+                            0xFFE5E0F7,
+                          ).withValues(alpha: 0.03),
                         ),
                       ),
                     ),
-                    // Peach blob - sağ orta
+                    // Peach blob - sağ üst köşe
                     Positioned(
-                      top: 300,
-                      right: -100,
+                      top: -30,
+                      right: -80,
                       child: Container(
-                        width: 320,
-                        height: 320,
+                        width: 200,
+                        height: 200,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFFFB4A2).withOpacity(0.05),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 70,
-                              spreadRadius: 20,
-                              color: const Color(0xFFFFB4A2).withOpacity(0.03),
-                            ),
-                          ],
+                          color: const Color(
+                            0xFFFFB4A2,
+                          ).withValues(alpha: 0.03),
                         ),
                       ),
                     ),
-                    // Lavender blob - sol alt
+                    // Lavender blob - sağ alt köşe
                     Positioned(
-                      bottom: 100,
-                      left: 20,
+                      bottom: -60,
+                      right: -70,
                       child: Container(
                         width: 220,
                         height: 220,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFE5E0F7).withOpacity(0.05),
-                          boxShadow: [
-                            BoxShadow(
-                              blurRadius: 60,
-                              spreadRadius: 15,
-                              color: const Color(0xFFE5E0F7).withOpacity(0.03),
-                            ),
-                          ],
+                          color: const Color(
+                            0xFFE5E0F7,
+                          ).withValues(alpha: 0.03),
                         ),
                       ),
                     ),
@@ -140,9 +125,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           SafeArea(
             child: Column(
               children: [
-                // Header
+                // Header (fixed)
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                   child: Column(
                     children: [
                       Row(
@@ -165,31 +150,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ),
 
-                // Custom Segmented Control
+                // Custom Segmented Control (fixed)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildActivitySegment(
-                        'assets/icons/illustration/bottle2.png',
-                        ActivityType.mama,
-                      ),
-                      _buildActivitySegment(
-                        'assets/icons/illustration/diaper_clean.png',
-                        ActivityType.bez,
-                      ),
-                      _buildActivitySegment(
-                        'assets/icons/illustration/sleeping_moon2.png',
-                        ActivityType.uyku,
-                      ),
-                    ],
+                  child: SizedBox(
+                    height: 90,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildActivitySegment(
+                          'assets/icons/illustration/bottle2.png',
+                          ActivityType.mama,
+                        ),
+                        _buildActivitySegment(
+                          'assets/icons/illustration/diaper_clean.png',
+                          ActivityType.bez,
+                        ),
+                        _buildActivitySegment(
+                          'assets/icons/illustration/sleeping_moon2.png',
+                          ActivityType.uyku,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
 
-                // İçerik (sadece aktif segment)
+                // İçerik (scrollable, Expanded ile kalan alanı doldurur)
                 Expanded(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 250),
@@ -218,7 +206,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           BoxShadow(
             color: isDark
                 ? Colors.black12
-                : const Color(0xFFE5E0F7).withOpacity(0.15),
+                : const Color(0xFFE5E0F7).withValues(alpha: 0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -236,10 +224,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: const Color(0xFFE5E0F7).withOpacity(0.3),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFFFFB4A2).withOpacity(0.4),
+                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.4),
                   width: 1,
                 ),
               ),
@@ -284,20 +272,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       onTap: () => setState(() => _activeType = type),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 96,
-        height: 96,
+        width: 90,
+        height: 90,
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFFFFBF5) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          color: isActive
+              ? const Color(0xFFFFFBF5)
+              : const Color(0xFFFFFBF5).withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(18),
           border: isActive
               ? Border.all(color: const Color(0xFFFFB4A2), width: 1.5)
               : null,
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: const Color(0xFFE5E0F7).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
                 ]
               : null,
@@ -305,8 +295,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         child: Center(
           child: Image.asset(
             iconPath,
-            width: 72,
-            height: 72,
+            width: isActive ? 64 : 52,
+            height: isActive ? 64 : 52,
             fit: BoxFit.contain,
           ),
         ),
@@ -375,55 +365,76 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFFFB4A2).withOpacity(0.2),
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(
-                'assets/icons/illustration/bottle2.png',
-                width: 32,
-                height: 32,
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFBF5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Image.asset(
+                  'assets/icons/illustration/bottle2.png',
+                  width: 28,
+                  height: 28,
+                ),
               ),
-              const SizedBox(width: 12),
-              if (toplamDakika > 0)
-                Text(
-                  '${Dil.emzirme}: $toplamDakika ${Dil.dk}',
-                  style: const TextStyle(
-                    color: Color(0xFF333333),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+              const SizedBox(height: 8),
+              Flexible(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    if (toplamDakika > 0)
+                      Text(
+                        '${Dil.emzirme}: $toplamDakika ${Dil.dk}',
+                        style: const TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    if (toplamDakika > 0 && toplamMl > 0)
+                      const Text(
+                        '•',
+                        style: TextStyle(color: Color(0xFF888888)),
+                      ),
+                    if (toplamMl > 0)
+                      Text(
+                        '${Dil.biberon}: $toplamMl ml',
+                        style: const TextStyle(
+                          color: Color(0xFF333333),
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    Text(
+                      '(${kayitlar.length} ${Dil.kayit})',
+                      style: const TextStyle(
+                        color: Color(0xFF888888),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
-              if (toplamDakika > 0 && toplamMl > 0)
-                const Text(' • ', style: TextStyle(color: Color(0xFF888888))),
-              if (toplamMl > 0)
-                Text(
-                  '${Dil.biberon}: $toplamMl ml',
-                  style: const TextStyle(
-                    color: Color(0xFF333333),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              const SizedBox(width: 8),
-              Text(
-                '(${kayitlar.length} ${Dil.kayit})',
-                style: const TextStyle(color: Color(0xFF888888)),
               ),
             ],
           ),
@@ -502,17 +513,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFE5E0F7).withOpacity(0.4),
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -608,38 +619,48 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: const Color(0xFFE5E0F7).withOpacity(0.4),
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withOpacity(0.15),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(
-                'assets/icons/illustration/sleeping_moon2.png',
-                width: 32,
-                height: 32,
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFBF5),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Image.asset(
+                  'assets/icons/illustration/sleeping_moon2.png',
+                  width: 28,
+                  height: 28,
+                ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(height: 8),
               Text(
                 '${Dil.toplam}: $saat ${Dil.sa} $dakika ${Dil.dk}',
                 style: const TextStyle(
                   color: Color(0xFF333333),
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -680,8 +701,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget _buildBezSummary(String iconPath, int count, String label) {
     return Column(
       children: [
-        Image.asset(iconPath, width: 32, height: 32),
-        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFBF5),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Image.asset(iconPath, width: 36, height: 36),
+        ),
+        const SizedBox(height: 6),
         Text(
           '$count',
           style: const TextStyle(
@@ -693,6 +721,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         Text(
           label,
           style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -706,66 +737,58 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   ) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [Colors.grey.shade800, Colors.grey.shade700]
-                      : [
-                          const Color(0xFFFFF8F2),
-                          const Color(0xFFFFE8DD),
-                          const Color(0xFFFFEEE5),
-                        ],
-                ),
+                color: isDark ? Colors.grey.shade800 : const Color(0xFFFFFBF5),
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: (isDark ? Colors.black : const Color(0xFFFFD4B8))
-                        .withOpacity(0.4),
-                    blurRadius: 30,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 10),
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: Image.asset(iconPath, width: 64, height: 64),
+              child: Image.asset(iconPath, width: 56, height: 56),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             Text(
               title,
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
                 color: isDark ? Colors.white : const Color(0xFF4A4458),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               subtitle,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 13,
                 color: isDark ? Colors.grey.shade400 : const Color(0xFF8A8494),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             Container(
               decoration: BoxDecoration(
                 color: const Color(0xFFFFB4A2),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFFFB4A2).withOpacity(0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
+                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
@@ -773,11 +796,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: _selectDate,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 32,
-                      vertical: 16,
+                      horizontal: 24,
+                      vertical: 12,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -785,13 +808,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         const Icon(
                           Icons.calendar_today_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: 10),
                         Text(
                           Dil.baskaTarihSec,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -827,7 +850,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFE5E0F7).withOpacity(0.12),
+            color: const Color(0xFFE5E0F7).withValues(alpha: 0.12),
             blurRadius: 8,
             offset: const Offset(0, 3),
           ),
@@ -837,13 +860,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         onTap: onEdit,
         contentPadding: const EdgeInsets.all(12),
         leading: Container(
-          width: 50,
-          height: 50,
+          width: 100,
+          height: 100,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+            color: const Color(0xFFFFFBF5),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
           ),
-          child: Center(child: Image.asset(iconPath, width: 32, height: 32)),
+          child: Center(
+            child: Image.asset(
+              iconPath,
+              width: 56,
+              height: 56,
+              fit: BoxFit.contain,
+            ),
+          ),
         ),
         title: Text(
           title,
@@ -852,10 +883,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             fontSize: 16,
             color: textColor,
           ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(color: subtitleColor, fontSize: 13),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
@@ -867,7 +902,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -1274,7 +1309,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.pink.shade900.withOpacity(0.3)
+            ? Colors.pink.shade900.withValues(alpha: 0.3)
             : Colors.pink.shade50,
         borderRadius: BorderRadius.circular(16),
       ),
@@ -1334,7 +1369,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark
-            ? Colors.pink.shade900.withOpacity(0.3)
+            ? Colors.pink.shade900.withValues(alpha: 0.3)
             : Colors.pink.shade50,
         borderRadius: BorderRadius.circular(16),
       ),
@@ -1494,7 +1529,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         width: 80,
         height: 80,
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.2) : color.withOpacity(0.1),
+          color: isSelected
+              ? color.withValues(alpha: 0.2)
+              : color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border: isSelected ? Border.all(color: color, width: 2) : null,
         ),
