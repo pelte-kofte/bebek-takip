@@ -3,6 +3,8 @@ import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
 
+enum ActivityType { mama, bez, uyku }
+
 class ActivitiesScreen extends StatefulWidget {
   const ActivitiesScreen({super.key});
 
@@ -10,22 +12,9 @@ class ActivitiesScreen extends StatefulWidget {
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
 }
 
-class _ActivitiesScreenState extends State<ActivitiesScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ActivitiesScreenState extends State<ActivitiesScreen> {
   DateTime _selectedDate = DateTime.now();
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  ActivityType _activeType = ActivityType.mama;
 
   void _selectDate() async {
     final picked = await showDatePicker(
@@ -51,6 +40,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
+
   bool _isToday(DateTime date) => _isSameDay(date, DateTime.now());
 
   String _formatDateHeader(DateTime date) {
@@ -63,245 +53,286 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFBF5);
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-        ),
-        child: Stack(
-          children: [
-            if (!isDark) ...[
-              Positioned(
-                top: 100,
-                left: -50,
-                child: Container(
-                  width: 200,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFE5E0F7).withOpacity(0.06),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 300,
-                right: -80,
-                child: Container(
-                  width: 250,
-                  height: 250,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFFFB4A2).withOpacity(0.05),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 100,
-                left: 50,
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFE5E0F7).withOpacity(0.08),
-                  ),
-                ),
-              ),
-            ],
-            SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          '📋 ${Dil.aktiviteler}',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(14),
-                        boxShadow: [
-                          BoxShadow(
-                            color: isDark
-                                ? Colors.black12
-                                : const Color(0xFFE5E0F7).withOpacity(0.15),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            onPressed: _previousDay,
-                            icon: const Icon(
-                              Icons.chevron_left,
-                              color: Color(0xFFFFB4A2),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _selectDate,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE5E0F7).withOpacity(0.3),
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: const Color(0xFFFFB4A2).withOpacity(0.4),
-                                  width: 1,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.calendar_today,
-                                    size: 16,
-                                    color: Color(0xFFFFB4A2),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _formatDateHeader(_selectedDate),
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFFFFB4A2),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: _isToday(_selectedDate)
-                                ? null
-                                : _nextDay,
-                            icon: Icon(
-                              Icons.chevron_right,
-                              color: _isToday(_selectedDate)
-                                  ? Colors.grey.shade400
-                                  : const Color(0xFFFFB4A2),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: 115,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: isDark
-                          ? Colors.black26
-                          : const Color(0xFFE5E0F7).withOpacity(0.2),
-                      blurRadius: 12,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: const Color(0xFF333333),
-                  unselectedLabelColor: Colors.transparent,
-                  indicator: BoxDecoration(
-                    color: const Color(0xFFFFFBF5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFFFB4A2).withOpacity(0.3),
-                      width: 1.5,
-                    ),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
-                  tabs: [
-                    Tab(
-                      child: Center(
-                        child: Image.asset(
-                          'assets/icons/illustration/bottle2.png',
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Center(
-                        child: Image.asset(
-                          'assets/icons/illustration/diaper_clean.png',
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Center(
-                        child: Image.asset(
-                          'assets/icons/illustration/sleeping_moon2.png',
-                          width: 72,
-                          height: 72,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    const Tab(
-                      child: Center(
-                        child: Text(
-                          '📸',
-                          style: TextStyle(fontSize: 48),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildMamaList(),
-                    _buildKakaList(),
-                    _buildUykuList(),
-                    _buildAnilarList(),
-                  ],
-                ),
-              ),
-            ],
+      body: Stack(
+        children: [
+          // 1. ARKA PLAN RENK
+          Positioned.fill(
+            child: Container(
+              color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
+            ),
           ),
+
+          // 2. DEKORATİF ARKA PLAN LAYER (scroll etmez, tıklanamaz)
+          if (!isDark)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Stack(
+                  children: [
+                    // Lavender blob - sol üst
+                    Positioned(
+                      top: 60,
+                      left: -80,
+                      child: Container(
+                        width: 280,
+                        height: 280,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFE5E0F7).withOpacity(0.06),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 80,
+                              spreadRadius: 20,
+                              color: const Color(0xFFE5E0F7).withOpacity(0.04),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Peach blob - sağ orta
+                    Positioned(
+                      top: 300,
+                      right: -100,
+                      child: Container(
+                        width: 320,
+                        height: 320,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFFFB4A2).withOpacity(0.05),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 70,
+                              spreadRadius: 20,
+                              color: const Color(0xFFFFB4A2).withOpacity(0.03),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Lavender blob - sol alt
+                    Positioned(
+                      bottom: 100,
+                      left: 20,
+                      child: Container(
+                        width: 220,
+                        height: 220,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFE5E0F7).withOpacity(0.05),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 60,
+                              spreadRadius: 15,
+                              color: const Color(0xFFE5E0F7).withOpacity(0.03),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // 3. ANA İÇERİK (Stack'in üstünde)
+          SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            '📋 ${Dil.aktiviteler}',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: textColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Tarih Seçici
+                      _buildDateSelector(isDark),
+                    ],
+                  ),
+                ),
+
+                // Custom Segmented Control
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildActivitySegment(
+                        'assets/icons/illustration/bottle2.png',
+                        ActivityType.mama,
+                      ),
+                      _buildActivitySegment(
+                        'assets/icons/illustration/diaper_clean.png',
+                        ActivityType.bez,
+                      ),
+                      _buildActivitySegment(
+                        'assets/icons/illustration/sleeping_moon2.png',
+                        ActivityType.uyku,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // İçerik (sadece aktif segment)
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: _buildActiveContent(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDateSelector(bool isDark) {
+    final cardColor = isDark
+        ? const Color(0xFF1E1E1E)
+        : const Color(0xFFFFFBF5);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black12
+                : const Color(0xFFE5E0F7).withOpacity(0.15),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: _previousDay,
+            icon: const Icon(Icons.chevron_left, color: Color(0xFFFFB4A2)),
+          ),
+          GestureDetector(
+            onTap: _selectDate,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E0F7).withOpacity(0.3),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFFFB4A2).withOpacity(0.4),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 16,
+                    color: Color(0xFFFFB4A2),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _formatDateHeader(_selectedDate),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFFFFB4A2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _isToday(_selectedDate) ? null : _nextDay,
+            icon: Icon(
+              Icons.chevron_right,
+              color: _isToday(_selectedDate)
+                  ? Colors.grey.shade400
+                  : const Color(0xFFFFB4A2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivitySegment(String iconPath, ActivityType type) {
+    final isActive = _activeType == type;
+
+    return GestureDetector(
+      onTap: () => setState(() => _activeType = type),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        width: 96,
+        height: 96,
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFFFFFBF5) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border: isActive
+              ? Border.all(color: const Color(0xFFFFB4A2), width: 1.5)
+              : null,
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFFE5E0F7).withOpacity(0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
-          ],
+        child: Center(
+          child: Image.asset(
+            iconPath,
+            width: 72,
+            height: 72,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildActiveContent() {
+    // Her widget'a unique key ver ki AnimatedSwitcher farkı anlasın
+    switch (_activeType) {
+      case ActivityType.mama:
+        return KeyedSubtree(
+          key: const ValueKey('mama'),
+          child: _buildMamaList(),
+        );
+      case ActivityType.bez:
+        return KeyedSubtree(
+          key: const ValueKey('bez'),
+          child: _buildKakaList(),
+        );
+      case ActivityType.uyku:
+        return KeyedSubtree(
+          key: const ValueKey('uyku'),
+          child: _buildUykuList(),
+        );
+    }
   }
 
   List<Map<String, dynamic>> _filterByDate(
@@ -332,14 +363,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        Image.asset('assets/icons/illustration/bottle2.png', width: 48, height: 48),
-        Dil.kayitYok,
+        'assets/icons/illustration/bottle2.png',
+        'İlk mama zamanı geldi mi?',
+        'Bebeğinizin beslenmesini takip edin',
         isDark,
       );
     }
 
     return Column(
       children: [
+        // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
@@ -396,6 +429,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           ),
         ),
         const SizedBox(height: 12),
+
+        // Liste
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -409,23 +444,20 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               final sag = kayit['sagDakika'] ?? 0;
               final miktar = kayit['miktar'] ?? 0;
 
-              String emoji;
               String title;
               String subtitle;
 
               if (tur == 'Anne Sütü') {
-                emoji = 'assets/icons/illustration/bottle2.png';
                 title = Dil.emzirme;
                 subtitle =
                     'Sol $sol${Dil.dk} • Sağ $sag${Dil.dk} (${Dil.toplam}: ${sol + sag}${Dil.dk})';
               } else {
-                emoji = 'assets/icons/illustration/bottle2.png';
                 title = '$miktar ml';
                 subtitle = tur == 'Formül' ? Dil.formula : Dil.biberonAnneSutu;
               }
 
               return _buildListItem(
-                emoji: emoji,
+                iconPath: 'assets/icons/illustration/bottle2.png',
                 title: title,
                 subtitle: subtitle,
                 time: _formatTime(tarih),
@@ -454,8 +486,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        Ikonlar.diaperClean(size: 24),
-        Dil.kayitYok,
+        'assets/icons/illustration/diaper_clean.png',
+        'Bez değiştirme zamanı!',
+        'Hijyen takibini burada yapın',
         isDark,
       );
     }
@@ -466,6 +499,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     return Column(
       children: [
+        // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
@@ -487,18 +521,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBezSummaryWithIcon(
-                Ikonlar.diaperWet(size: 24),
+              _buildBezSummary(
+                'assets/icons/illustration/diaper_wet.png',
                 islak,
                 Dil.islak,
               ),
-              _buildBezSummaryWithIcon(
-                Ikonlar.diaperDirty(size: 24),
+              _buildBezSummary(
+                'assets/icons/illustration/diaper_dirty.png',
                 kirli,
                 Dil.kirli,
               ),
-              _buildBezSummaryWithIcon(
-                Ikonlar.diaperClean(size: 24),
+              _buildBezSummary(
+                'assets/icons/illustration/diaper_clean.png',
                 ikisi,
                 Dil.ikisiBirden,
               ),
@@ -506,6 +540,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           ),
         ),
         const SizedBox(height: 12),
+
+        // Liste
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -514,10 +550,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               final kayit = kayitlar[index];
               final tarih = kayit['tarih'] as DateTime;
               final originalIndex = tumKayitlar.indexOf(kayit);
-              Widget icon = _getBezIkon(kayit['tur'] ?? '', 24);
-              return _buildListItemWithIcon(
-                icon: icon,
-                title: kayit['tur'],
+              final tur = kayit['tur'] ?? '';
+
+              String iconPath = 'assets/icons/illustration/diaper_clean.png';
+              if (tur == Dil.islak) {
+                iconPath = 'assets/icons/illustration/diaper_wet.png';
+              } else if (tur == Dil.kirli) {
+                iconPath = 'assets/icons/illustration/diaper_dirty.png';
+              }
+
+              return _buildListItem(
+                iconPath: iconPath,
+                title: tur,
                 subtitle: Dil.bezDegisimi,
                 time: _formatTime(tarih),
                 color: const Color(0xFF9C27B0),
@@ -534,101 +578,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     );
   }
 
-  Widget _getBezIkon(String tur, double size) {
-    if (tur == Dil.islak) {
-      return Image.asset('assets/icons/illustration/diaper_wet.png', width: size, height: size);
-    } else if (tur == Dil.kirli) {
-      return Image.asset('assets/icons/illustration/diaper_dirty.png', width: size, height: size);
-    } else {
-      return Image.asset('assets/icons/illustration/diaper_clean.png', width: size, height: size);
-    }
-  }
-
-  Widget _buildBezSummaryWithIcon(Widget icon, int count, String label) {
-    return Column(
-      children: [
-        icon,
-        const SizedBox(height: 4),
-        Text(
-          '$count',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF333333),
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildListItemWithIcon({
-    required Widget icon,
-    required String title,
-    required String subtitle,
-    required String time,
-    required Color color,
-    required Color cardColor,
-    required Color textColor,
-    required Color subtitleColor,
-    required VoidCallback onEdit,
-    required VoidCallback onDelete,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE5E0F7).withOpacity(0.1),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListTile(
-        onTap: onEdit,
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: color.withAlpha(25),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(child: icon),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(color: subtitleColor, fontSize: 12),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(time, style: TextStyle(color: subtitleColor, fontSize: 12)),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: onEdit,
-              child: Icon(Icons.edit, size: 18, color: subtitleColor),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: onDelete,
-              child: const Icon(Icons.delete, size: 18, color: Colors.red),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildUykuList() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
@@ -640,8 +589,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        Image.asset('assets/icons/illustration/sleeping_moon2.png', width: 48, height: 48),
-        Dil.kayitYok,
+        'assets/icons/illustration/sleeping_moon2.png',
+        'Tatlı rüyalar...',
+        'Uyku düzenini buradan izleyin',
         isDark,
       );
     }
@@ -655,6 +605,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
 
     return Column(
       children: [
+        // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.all(16),
@@ -694,6 +645,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           ),
         ),
         const SizedBox(height: 12),
+
+        // Liste
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -704,8 +657,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
               final bitis = kayit['bitis'] as DateTime;
               final sure = kayit['sure'] as Duration;
               final originalIndex = tumKayitlar.indexOf(kayit);
+
               return _buildListItem(
-                emoji: 'assets/icons/illustration/sleeping_moon2.png',
+                iconPath: 'assets/icons/illustration/sleeping_moon2.png',
                 title: _formatDuration(sure),
                 subtitle: '${_formatTime(baslangic)} - ${_formatTime(bitis)}',
                 time: '',
@@ -723,58 +677,33 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     );
   }
 
-  Widget _buildAnilarList() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF333333);
-    final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
-
-    final tumAnilar = VeriYonetici.getAnilar();
-    final anilar = _filterByDate(tumAnilar, 'tarih');
-
-    if (anilar.isEmpty) return _buildEmptyState('📸', Dil.kayitYok, isDark);
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: anilar.length,
-      itemBuilder: (context, index) {
-        final ani = anilar[index];
-        final originalIndex = tumAnilar.indexOf(ani);
-        return _buildListItem(
-          emoji: ani['emoji'],
-          title: ani['baslik'],
-          subtitle: ani['not'].isNotEmpty ? ani['not'] : 'Not yok',
-          time: '',
-          color: const Color(0xFFFF9800),
-          cardColor: cardColor,
-          textColor: textColor,
-          subtitleColor: subtitleColor,
-          onEdit: () => _editAni(originalIndex, ani),
-          onDelete: () => _deleteAni(originalIndex),
-        );
-      },
+  Widget _buildBezSummary(String iconPath, int count, String label) {
+    return Column(
+      children: [
+        Image.asset(iconPath, width: 32, height: 32),
+        const SizedBox(height: 4),
+        Text(
+          '$count',
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
+        ),
+      ],
     );
   }
 
-  Widget _buildEmptyState(dynamic iconOrEmoji, String message, bool isDark) {
-    // Boş state için özel mesajlar
-    String emotionalMessage = 'Henüz kayıt yok';
-    String subtitle = 'İlk anınızı ekleyin';
-
-    if (iconOrEmoji.toString().contains('bottle')) {
-      emotionalMessage = 'İlk mama zamanı geldi mi?';
-      subtitle = 'Bebeğinizin beslenmesini takip edin';
-    } else if (iconOrEmoji.toString().contains('diaper') || iconOrEmoji == '👶') {
-      emotionalMessage = 'Bez değiştirme zamanı!';
-      subtitle = 'Hijyen takibini burada yapın';
-    } else if (iconOrEmoji.toString().contains('sleeping_moon')) {
-      emotionalMessage = 'Tatlı rüyalar...';
-      subtitle = 'Uyku düzenini buradan izleyin';
-    } else if (iconOrEmoji == '📸') {
-      emotionalMessage = 'İlk anınızı paylaşın';
-      subtitle = 'Her an özeldir, kaydedin!';
-    }
-
+  Widget _buildEmptyState(
+    String iconPath,
+    String title,
+    String subtitle,
+    bool isDark,
+  ) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -804,21 +733,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                     spreadRadius: 2,
                     offset: const Offset(0, 10),
                   ),
-                  BoxShadow(
-                    color: (isDark ? Colors.black54 : Colors.white)
-                        .withOpacity(0.8),
-                    blurRadius: 15,
-                    offset: const Offset(-5, -5),
-                  ),
                 ],
               ),
-              child: iconOrEmoji is String
-                  ? Text(iconOrEmoji, style: const TextStyle(fontSize: 48))
-                  : iconOrEmoji,
+              child: Image.asset(iconPath, width: 64, height: 64),
             ),
             const SizedBox(height: 24),
             Text(
-              emotionalMessage,
+              title,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -844,7 +765,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                   BoxShadow(
                     color: const Color(0xFFFFB4A2).withOpacity(0.3),
                     blurRadius: 12,
-                    spreadRadius: 0,
                     offset: const Offset(0, 4),
                   ),
                 ],
@@ -854,8 +774,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                 child: InkWell(
                   onTap: _selectDate,
                   borderRadius: BorderRadius.circular(20),
-                  splashColor: Colors.white.withOpacity(0.3),
-                  highlightColor: Colors.white.withOpacity(0.1),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 32,
@@ -876,7 +794,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
-                            letterSpacing: 0.3,
                           ),
                         ),
                       ],
@@ -892,7 +809,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
   }
 
   Widget _buildListItem({
-    required String emoji,
+    required String iconPath,
     required String title,
     required String subtitle,
     required String time,
@@ -923,14 +840,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
           width: 50,
           height: 50,
           decoration: BoxDecoration(
-            color: color.withAlpha(25),
+            color: color.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Center(
-            child: emoji.startsWith('assets/')
-                ? Image.asset(emoji, width: 24, height: 24)
-                : Text(emoji, style: const TextStyle(fontSize: 24)),
-          ),
+          child: Center(child: Image.asset(iconPath, width: 32, height: 32)),
         ),
         title: Text(
           title,
@@ -954,7 +867,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: color.withAlpha(25),
+                  color: color.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -966,7 +879,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                   ),
                 ),
               ),
-
             IconButton(
               icon: const Icon(
                 Icons.delete_outline,
@@ -981,31 +893,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     );
   }
 
-  Widget _buildBezSummary(String emoji, int count, String label) {
-    return Column(
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 24)),
-        const SizedBox(height: 4),
-        Text(
-          '$count',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-      ],
-    );
-  }
+  // ============ EDIT & DELETE FUNCTIONS ============
 
-  // EDIT FUNCTIONS
   void _editMama(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
     String tur = kayit['tur'] ?? 'Anne Sütü';
     int solDakika = kayit['solDakika'] ?? 0;
     int sagDakika = kayit['sagDakika'] ?? 0;
@@ -1045,8 +936,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-
-                  // TÜR SEÇİMİ
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -1074,306 +963,63 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                     ],
                   ),
                   const SizedBox(height: 24),
-
                   if (tur == 'Anne Sütü') ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.pink.shade900.withAlpha(50)
-                            : Colors.pink.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        children: [
-                          _buildMemeRow(
-                            Dil.solMeme,
-                            '👈',
-                            solDakika,
-                            (v) => setModalState(() => solDakika = v),
-                            isDark,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildMemeRow(
-                            Dil.sagMeme,
-                            '👉',
-                            sagDakika,
-                            (v) => setModalState(() => sagDakika = v),
-                            isDark,
-                          ),
-                          const SizedBox(height: 12),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFE91E63).withAlpha(25),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  '⏱️ ${Dil.toplam}: ',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  '${solDakika + sagDakika} ${Dil.dakika}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFFE91E63),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    _buildMemeEditor(solDakika, sagDakika, (s, sa) {
+                      setModalState(() {
+                        solDakika = s;
+                        sagDakika = sa;
+                      });
+                    }, isDark),
                   ],
-
                   if (tur == 'Formül' || tur == 'Biberon Anne Sütü') ...[
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? Colors.pink.shade900.withAlpha(50)
-                            : Colors.pink.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildCircleButton(
-                            Icons.remove,
-                            () => setModalState(
-                              () => miktar = (miktar - 10).clamp(0, 500),
-                            ),
-                          ),
-                          const SizedBox(width: 24),
-                          Text(
-                            '$miktar ml',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFE91E63),
-                            ),
-                          ),
-                          const SizedBox(width: 24),
-                          _buildCircleButton(
-                            Icons.add,
-                            () => setModalState(
-                              () => miktar = (miktar + 10).clamp(0, 500),
-                            ),
-                          ),
-                        ],
-                      ),
+                    _buildMiktarEditor(
+                      miktar,
+                      (m) => setModalState(() => miktar = m),
+                      isDark,
                     ),
                   ],
                   const SizedBox(height: 16),
-
                   _buildTimeSelector(
                     saat,
                     (s) => setModalState(() => saat = s),
                     ctx,
                   ),
                   const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final yeniTarih = DateTime(
-                          tarih.year,
-                          tarih.month,
-                          tarih.day,
-                          saat.hour,
-                          saat.minute,
-                        );
-                        final kayitlar = VeriYonetici.getMamaKayitlari();
-
-                        if (tur == 'Anne Sütü') {
-                          kayitlar[index] = {
-                            'tarih': yeniTarih,
-                            'tur': 'Anne Sütü',
-                            'solDakika': solDakika,
-                            'sagDakika': sagDakika,
-                            'miktar': 0,
-                          };
-                        } else {
-                          kayitlar[index] = {
-                            'tarih': yeniTarih,
-                            'tur': tur,
-                            'miktar': miktar,
-                            'solDakika': 0,
-                            'sagDakika': 0,
-                          };
-                        }
-
-                        await VeriYonetici.saveMamaKayitlari(kayitlar);
-                        Navigator.pop(ctx);
-                        setState(() {});
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE91E63),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        '✓ ${Dil.guncelle}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildSaveButton(() async {
+                    final yeniTarih = DateTime(
+                      tarih.year,
+                      tarih.month,
+                      tarih.day,
+                      saat.hour,
+                      saat.minute,
+                    );
+                    final kayitlar = VeriYonetici.getMamaKayitlari();
+                    if (tur == 'Anne Sütü') {
+                      kayitlar[index] = {
+                        'tarih': yeniTarih,
+                        'tur': 'Anne Sütü',
+                        'solDakika': solDakika,
+                        'sagDakika': sagDakika,
+                        'miktar': 0,
+                      };
+                    } else {
+                      kayitlar[index] = {
+                        'tarih': yeniTarih,
+                        'tur': tur,
+                        'miktar': miktar,
+                        'solDakika': 0,
+                        'sagDakika': 0,
+                      };
+                    }
+                    await VeriYonetici.saveMamaKayitlari(kayitlar);
+                    Navigator.pop(ctx);
+                    setState(() {});
+                  }, const Color(0xFFE91E63)),
                 ],
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildMemeRow(
-    String label,
-    String emoji,
-    int dakika,
-    Function(int) onChanged,
-    bool isDark,
-  ) {
-    return Row(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE91E63).withAlpha(25),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(emoji, style: const TextStyle(fontSize: 24)),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-        ),
-        const Spacer(),
-        _buildCircleButton(
-          Icons.remove,
-          () => onChanged((dakika - 1).clamp(0, 60)),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          '$dakika ${Dil.dk}',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFE91E63),
-          ),
-        ),
-        const SizedBox(width: 12),
-        _buildCircleButton(
-          Icons.add,
-          () => onChanged((dakika + 1).clamp(0, 60)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCircleButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE91E63),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
-    );
-  }
-
-  Widget _buildTurButton(
-    String emoji,
-    String label,
-    String value,
-    String selected,
-    Function(String) onSelect,
-  ) {
-    final isSelected = selected == value;
-    return GestureDetector(
-      onTap: () => onSelect(value),
-      child: Container(
-        width: 85,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE91E63) : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTimeSelector(
-    TimeOfDay saat,
-    Function(TimeOfDay) onChanged,
-    BuildContext ctx,
-  ) {
-    return GestureDetector(
-      onTap: () async {
-        final picked = await showTimePicker(context: ctx, initialTime: saat);
-        if (picked != null) onChanged(picked);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE91E63), width: 2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.access_time, color: Color(0xFFE91E63)),
-            const SizedBox(width: 8),
-            Text(
-              '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFE91E63),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1444,73 +1090,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                   ],
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final kayitlar = VeriYonetici.getKakaKayitlari();
-                      kayitlar[index] = {'tarih': kayit['tarih'], 'tur': tur};
-                      await VeriYonetici.saveKakaKayitlari(kayitlar);
-                      Navigator.pop(ctx);
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF9C27B0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      '✓ ${Dil.guncelle}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildSaveButton(() async {
+                  final kayitlar = VeriYonetici.getKakaKayitlari();
+                  kayitlar[index] = {'tarih': kayit['tarih'], 'tur': tur};
+                  await VeriYonetici.saveKakaKayitlari(kayitlar);
+                  Navigator.pop(ctx);
+                  setState(() {});
+                }, const Color(0xFF9C27B0)),
               ],
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _bezEditOption(
-    String emoji,
-    String label,
-    Color color,
-    String selected,
-    Function(String) onSelect,
-  ) {
-    final isSelected = selected == label;
-    return GestureDetector(
-      onTap: () => onSelect(label),
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: isSelected ? color.withAlpha(50) : color.withAlpha(25),
-          borderRadius: BorderRadius.circular(16),
-          border: isSelected ? Border.all(color: color, width: 2) : null,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 28)),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -1564,142 +1154,60 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          Dil.baslangic,
-                          style: TextStyle(
-                            color: isDark ? Colors.grey.shade400 : Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () async {
-                            final picked = await showTimePicker(
-                              context: ctx,
-                              initialTime: baslangicSaat,
-                            );
-                            if (picked != null) {
-                              setModalState(() => baslangicSaat = picked);
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.indigo.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${baslangicSaat.hour.toString().padLeft(2, '0')}:${baslangicSaat.minute.toString().padLeft(2, '0')}',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF3F51B5),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    _buildTimeColumn(
+                      Dil.baslangic,
+                      baslangicSaat,
+                      (picked) {
+                        setModalState(() => baslangicSaat = picked);
+                      },
+                      ctx,
+                      isDark,
                     ),
                     Icon(
                       Icons.arrow_forward,
                       color: isDark ? Colors.grey.shade400 : Colors.grey,
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          Dil.bitis,
-                          style: TextStyle(
-                            color: isDark ? Colors.grey.shade400 : Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () async {
-                            final picked = await showTimePicker(
-                              context: ctx,
-                              initialTime: bitisSaat,
-                            );
-                            if (picked != null) {
-                              setModalState(() => bitisSaat = picked);
-                            }
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.indigo.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${bitisSaat.hour.toString().padLeft(2, '0')}:${bitisSaat.minute.toString().padLeft(2, '0')}',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF3F51B5),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    _buildTimeColumn(
+                      Dil.bitis,
+                      bitisSaat,
+                      (picked) {
+                        setModalState(() => bitisSaat = picked);
+                      },
+                      ctx,
+                      isDark,
                     ),
                   ],
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final yeniBaslangic = DateTime(
-                        baslangic.year,
-                        baslangic.month,
-                        baslangic.day,
-                        baslangicSaat.hour,
-                        baslangicSaat.minute,
-                      );
-                      var yeniBitis = DateTime(
-                        bitis.year,
-                        bitis.month,
-                        bitis.day,
-                        bitisSaat.hour,
-                        bitisSaat.minute,
-                      );
-                      if (yeniBitis.isBefore(yeniBaslangic)) {
-                        yeniBitis = yeniBitis.add(const Duration(days: 1));
-                      }
-                      final sure = yeniBitis.difference(yeniBaslangic);
-                      final kayitlar = VeriYonetici.getUykuKayitlari();
-                      kayitlar[index] = {
-                        'baslangic': yeniBaslangic,
-                        'bitis': yeniBitis,
-                        'sure': sure,
-                      };
-                      await VeriYonetici.saveUykuKayitlari(kayitlar);
-                      Navigator.pop(ctx);
-                      setState(() {});
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3F51B5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: Text(
-                      '✓ ${Dil.guncelle}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
+                _buildSaveButton(() async {
+                  final yeniBaslangic = DateTime(
+                    baslangic.year,
+                    baslangic.month,
+                    baslangic.day,
+                    baslangicSaat.hour,
+                    baslangicSaat.minute,
+                  );
+                  var yeniBitis = DateTime(
+                    bitis.year,
+                    bitis.month,
+                    bitis.day,
+                    bitisSaat.hour,
+                    bitisSaat.minute,
+                  );
+                  if (yeniBitis.isBefore(yeniBaslangic)) {
+                    yeniBitis = yeniBitis.add(const Duration(days: 1));
+                  }
+                  final sure = yeniBitis.difference(yeniBaslangic);
+                  final kayitlar = VeriYonetici.getUykuKayitlari();
+                  kayitlar[index] = {
+                    'baslangic': yeniBaslangic,
+                    'bitis': yeniBitis,
+                    'sure': sure,
+                  };
+                  await VeriYonetici.saveUykuKayitlari(kayitlar);
+                  Navigator.pop(ctx);
+                  setState(() {});
+                }, const Color(0xFF3F51B5)),
               ],
             ),
           );
@@ -1718,148 +1226,294 @@ class _ActivitiesScreenState extends State<ActivitiesScreen>
     }
   }
 
-  void _editAni(int index, Map<String, dynamic> ani) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baslikController = TextEditingController(text: ani['baslik']);
-    final notController = TextEditingController(text: ani['not']);
-    String emoji = ani['emoji'];
+  // ============ HELPER WIDGETS ============
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) {
-          return Container(
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+  Widget _buildTurButton(
+    String emoji,
+    String label,
+    String value,
+    String selected,
+    Function(String) onSelect,
+  ) {
+    final isSelected = selected == value;
+    return GestureDetector(
+      onTap: () => onSelect(value),
+      child: Container(
+        width: 85,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFE91E63) : Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : Colors.black87,
               ),
             ),
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '✏️ ${Dil.aniDuzenle}',
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF9800),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Wrap(
-                    spacing: 8,
-                    children: ['👶', '🎀', '🧸', '🍼', '👣', '💕', '🌟', '🎈']
-                        .map((e) {
-                          return GestureDetector(
-                            onTap: () => setModalState(() => emoji = e),
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: emoji == e
-                                    ? Colors.orange.shade100
-                                    : Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                e,
-                                style: const TextStyle(fontSize: 24),
-                              ),
-                            ),
-                          );
-                        })
-                        .toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: baslikController,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: Dil.baslik,
-                      border: const OutlineInputBorder(),
-                      labelStyle: TextStyle(
-                        color: isDark ? Colors.grey.shade400 : Colors.grey,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: notController,
-                    maxLines: 3,
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: Dil.not,
-                      border: const OutlineInputBorder(),
-                      labelStyle: TextStyle(
-                        color: isDark ? Colors.grey.shade400 : Colors.grey,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (baslikController.text.isNotEmpty) {
-                          final anilar = VeriYonetici.getAnilar();
-                          anilar[index] = {
-                            'baslik': baslikController.text,
-                            'not': notController.text,
-                            'tarih': ani['tarih'],
-                            'emoji': emoji,
-                          };
-                          await VeriYonetici.saveAnilar(anilar);
-                          Navigator.pop(ctx);
-                          setState(() {});
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF9800),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: Text(
-                        '✓ ${Dil.guncelle}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
 
-  void _deleteAni(int index) async {
-    final confirm = await _showDeleteConfirm();
-    if (confirm == true) {
-      final anilar = VeriYonetici.getAnilar();
-      anilar.removeAt(index);
-      await VeriYonetici.saveAnilar(anilar);
-      setState(() {});
-    }
+  Widget _buildMemeEditor(
+    int sol,
+    int sag,
+    Function(int, int) onChanged,
+    bool isDark,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.pink.shade900.withOpacity(0.3)
+            : Colors.pink.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          _buildMemeRow('Sol', '👈', sol, (v) => onChanged(v, sag), isDark),
+          const SizedBox(height: 16),
+          _buildMemeRow('Sağ', '👉', sag, (v) => onChanged(sol, v), isDark),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMemeRow(
+    String label,
+    String emoji,
+    int dakika,
+    Function(int) onChanged,
+    bool isDark,
+  ) {
+    return Row(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 24)),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white : Colors.black,
+          ),
+        ),
+        const Spacer(),
+        _buildCircleButton(
+          Icons.remove,
+          () => onChanged((dakika - 1).clamp(0, 60)),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          '$dakika ${Dil.dk}',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFFE91E63),
+          ),
+        ),
+        const SizedBox(width: 12),
+        _buildCircleButton(
+          Icons.add,
+          () => onChanged((dakika + 1).clamp(0, 60)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMiktarEditor(int miktar, Function(int) onChanged, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.pink.shade900.withOpacity(0.3)
+            : Colors.pink.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildCircleButton(
+            Icons.remove,
+            () => onChanged((miktar - 10).clamp(0, 500)),
+          ),
+          const SizedBox(width: 24),
+          Text(
+            '$miktar ml',
+            style: const TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFE91E63),
+            ),
+          ),
+          const SizedBox(width: 24),
+          _buildCircleButton(
+            Icons.add,
+            () => onChanged((miktar + 10).clamp(0, 500)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCircleButton(IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: const BoxDecoration(
+          color: Color(0xFFE91E63),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildTimeSelector(
+    TimeOfDay saat,
+    Function(TimeOfDay) onChanged,
+    BuildContext ctx,
+  ) {
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showTimePicker(context: ctx, initialTime: saat);
+        if (picked != null) onChanged(picked);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0xFFE91E63), width: 2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.access_time, color: Color(0xFFE91E63)),
+            const SizedBox(width: 8),
+            Text(
+              '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFE91E63),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTimeColumn(
+    String label,
+    TimeOfDay saat,
+    Function(TimeOfDay) onChanged,
+    BuildContext ctx,
+    bool isDark,
+  ) {
+    return Column(
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final picked = await showTimePicker(
+              context: ctx,
+              initialTime: saat,
+            );
+            if (picked != null) onChanged(picked);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.indigo.shade50,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF3F51B5),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSaveButton(VoidCallback onPressed, Color color) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Text(
+          '✓ ${Dil.guncelle}',
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _bezEditOption(
+    String emoji,
+    String label,
+    Color color,
+    String selected,
+    Function(String) onSelect,
+  ) {
+    final isSelected = selected == label;
+    return GestureDetector(
+      onTap: () => onSelect(label),
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.2) : color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: isSelected ? Border.all(color: color, width: 2) : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 28)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<bool?> _showDeleteConfirm() {
