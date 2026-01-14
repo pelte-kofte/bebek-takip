@@ -1,52 +1,59 @@
-# UI DESIGN SPEC – Baby Activity App
+This project contains a ui_designer.md file.
+That file is the SINGLE SOURCE OF TRUTH for all UI rules.
+You MUST strictly follow it. Do not reinterpret or redesign.
 
-## Design Pillars
-- Calm, emotional, reassuring
-- No dashboard feeling
-- No strong pink blocks
-- Pastel, airy, breathable
+Below is an HTML file that represents the FINAL and ONLY visual reference
+for the Activities screen.
 
-## Color System
-- Background: Warm Cream #FFFBF5
-- Primary Accent (rare): Peach #FFB4A2
-- Secondary Surface: Lavender #E5E0F7
-- Text Primary: #2F2F2F
-- Text Secondary: #8A8A8A
+Your task:
+- Translate the HTML layout to Flutter widgets
+- Apply spacing, hierarchy, proportions, and visual weight as literally as possible
+- This is a TRANSLATION task, not a redesign task
+- Do NOT invent styles, colors, or layouts
+- Do NOT change business logic or data models
+- Update ONLY activities_screen.dart
 
-## Icon System
-- Segment icons: 72–88px PNG illustrations
-- Log icons: 36–40px
-- Summary icons: 28–32px
-- All icons sit on solid containers (never floating on background)
-
-## Segment Control (NOT TabBar)
-- Custom Row-based segmented control
-- GestureDetector + Container
-- Active:
-  - Warm cream background
-  - Peach 1px border
-  - Soft lavender shadow
-- Inactive:
-  - Transparent
-  - Smaller icon
-
-## Layout Rules
+Design rules:
+- Follow ui_designer.md exactly
+- Background: warm cream (#FFFBF5)
+- Primary color (accent only): peach (#FFB4A2)
+- Secondary surface: lavender soft (#E5E0F7)
 - No gradients
-- No heavy color blocks
-- Vertical spacing preferred over borders
-- Content always scrollable (SafeArea + SingleChildScrollView)
+- No heavy pink fills
+- Soft surfaces only
 
-## PNG Icon Integration Rules
+Icons (CRITICAL):
+- Replace ALL Material icons with PNG assets:
+  - Feeding → assets/icons/illustration/bottle2.png
+  - Diaper → assets/icons/illustration/diaper_clean.png
+  - Sleep → assets/icons/illustration/sleeping_moon2.png
+- PNG icons MUST NEVER be placed directly on the background
+- Every PNG icon MUST be inside a solid warm-cream container
+- Icon sizes must visually match the HTML:
+  - Hero segments: ~80px
+  - Inactive segments: ~64px
+  - Log list icons: 48–56px
+- Do not shrink icons due to constraints — fix constraints instead
 
-- PNG icons are pastel and detailed; they must never be placed directly on the background.
-- Every PNG icon must be wrapped in a solid surface container.
-- Containers use warm cream or soft lavender backgrounds.
-- No gradients behind PNG icons.
-- PNG size is controlled by layout, not image scaling tricks.
-- Icons should feel embedded into the UI, not floating.
+Layout rules:
+- DO NOT use TabBar or TabBarView
+- Use a custom segmented control as shown in the HTML
+- Use SafeArea
+- No bottom overflow on mobile (iOS Safari included)
+- Text must wrap or ellipsis, NEVER overflow
 
+Scope:
+- activities_screen.dart ONLY
+- Layout + visuals ONLY
+- No refactors outside this screen
+- No new abstractions unless strictly required by Flutter
 
-## iOS Priority
-- iOS Safari safe
-- No bottom overflow
-- Touch-friendly spacing
+Process:
+1. Map HTML sections to Flutter widgets one by one
+2. Preserve visual hierarchy exactly
+3. Validate no overflow, no clipped icons
+
+Below is the HTML reference. This HTML is FINAL.
+Do not deviate from its structure or intent.
+
+[PASTE THE FULL STITCH HTML HERE]
