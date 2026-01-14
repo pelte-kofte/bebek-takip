@@ -150,32 +150,84 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ),
 
-                // Custom Segmented Control (fixed)
+                // Hero Icons - Main Touch Targets
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: SizedBox(
-                    height: 90,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildActivitySegment(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: _buildActivitySegment(
                           'assets/icons/illustration/bottle2.png',
                           ActivityType.mama,
                         ),
-                        _buildActivitySegment(
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildActivitySegment(
                           'assets/icons/illustration/diaper_clean.png',
                           ActivityType.bez,
                         ),
-                        _buildActivitySegment(
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildActivitySegment(
                           'assets/icons/illustration/sleeping_moon2.png',
                           ActivityType.uyku,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Quick Status Banner
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 0,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFFFB4A2),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Son aktivite takibi',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1d0e0c),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
 
                 // İçerik (scrollable, Expanded ile kalan alanı doldurur)
                 Expanded(
@@ -270,36 +322,66 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return GestureDetector(
       onTap: () => setState(() => _activeType = type),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 90,
-        height: 90,
-        decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFFFFFBF5)
-              : const Color(0xFFFFFBF5).withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(18),
-          border: isActive
-              ? Border.all(color: const Color(0xFFFFB4A2), width: 1.5)
-              : null,
-          boxShadow: isActive
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-                ]
-              : null,
-        ),
-        child: Center(
-          child: Image.asset(
-            iconPath,
-            width: isActive ? 64 : 52,
-            height: isActive ? 64 : 52,
-            fit: BoxFit.contain,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Main circular button - HERO SIZE
+          Container(
+            width: 100,
+            height: 100,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFE5E0F7), // SOLID lavender
+              border: isActive
+                  ? Border.all(
+                      color: const Color(0xFFFFB4A2),
+                      width: 3,
+                    )
+                  : null,
+              boxShadow: isActive
+                  ? [
+                      BoxShadow(
+                        color: const Color(0xFFFFB4A2).withValues(alpha: 0.15),
+                        blurRadius: 20,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                  : [
+                      const BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+            ),
+            child: Center(
+              child: Image.asset(
+                iconPath,
+                width: 84,
+                height: 84,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
-        ),
+          const SizedBox(height: 12),
+          // Label
+          Text(
+            type == ActivityType.mama
+                ? 'MAMA'
+                : type == ActivityType.bez
+                    ? 'BEZ'
+                    : 'UYKU',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+              letterSpacing: 0.5,
+              color: isActive
+                  ? const Color(0xFF1d0e0c)
+                  : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -362,6 +444,24 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
+        // Section Header - ÖZET
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ÖZET',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -385,15 +485,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBF5),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Image.asset(
                   'assets/icons/illustration/bottle2.png',
                   width: 28,
                   height: 28,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 8),
@@ -439,7 +546,25 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
+
+        // Section Header - SON AKTİVİTELER
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Row(
+            children: [
+              Text(
+                'SON AKTİVİTELER',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
 
         // Liste
         Expanded(
@@ -510,6 +635,24 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
+        // Section Header - ÖZET
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ÖZET',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -550,7 +693,25 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
+
+        // Section Header - SON AKTİVİTELER
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Row(
+            children: [
+              Text(
+                'SON AKTİVİTELER',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
 
         // Liste
         Expanded(
@@ -616,6 +777,24 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
+        // Section Header - ÖZET
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'ÖZET',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
         // Özet kartı
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -639,15 +818,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFFBF5),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
                 child: Image.asset(
                   'assets/icons/illustration/sleeping_moon2.png',
                   width: 28,
                   height: 28,
+                  fit: BoxFit.contain,
                 ),
               ),
               const SizedBox(height: 8),
@@ -665,7 +851,25 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 24),
+
+        // Section Header - SON AKTİVİTELER
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          child: Row(
+            children: [
+              Text(
+                'SON AKTİVİTELER',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                ),
+              ),
+            ],
+          ),
+        ),
 
         // Liste
         Expanded(
@@ -702,12 +906,23 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          width: 48,
+          height: 48,
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
+              width: 1,
+            ),
           ),
-          child: Image.asset(iconPath, width: 36, height: 36),
+          child: Image.asset(
+            iconPath,
+            width: 28,
+            height: 28,
+            fit: BoxFit.contain,
+          ),
         ),
         const SizedBox(height: 6),
         Text(
@@ -860,12 +1075,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         onTap: onEdit,
         contentPadding: const EdgeInsets.all(12),
         leading: Container(
-          width: 100,
-          height: 100,
+          width: 64,
+          height: 64,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBF5),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: color.withValues(alpha: 0.15), width: 1),
+            borderRadius: BorderRadius.circular(16),
+            color: const Color(0xFFFFFBF5), // solid warm cream
+            border: Border.all(
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+              width: 1,
+            ),
           ),
           child: Center(
             child: Image.asset(
