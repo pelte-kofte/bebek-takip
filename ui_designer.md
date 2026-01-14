@@ -36,6 +36,16 @@
 - Vertical spacing preferred over borders
 - Content always scrollable (SafeArea + SingleChildScrollView)
 
+## PNG Icon Integration Rules
+
+- PNG icons are pastel and detailed; they must never be placed directly on the background.
+- Every PNG icon must be wrapped in a solid surface container.
+- Containers use warm cream or soft lavender backgrounds.
+- No gradients behind PNG icons.
+- PNG size is controlled by layout, not image scaling tricks.
+- Icons should feel embedded into the UI, not floating.
+
+
 ## iOS Priority
 - iOS Safari safe
 - No bottom overflow
