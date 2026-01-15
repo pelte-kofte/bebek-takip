@@ -1,59 +1,258 @@
-This project contains a ui_designer.md file.
-That file is the SINGLE SOURCE OF TRUTH for all UI rules.
-You MUST strictly follow it. Do not reinterpret or redesign.
+# 🎨 UI DESIGNER RULES  
+### Baby Tracker App – Single Source of Truth
 
-Below is an HTML file that represents the FINAL and ONLY visual reference
-for the Activities screen.
+This document defines **STRICT UI RULES** for the entire app.  
+All screens must follow these rules **literally**.  
+This is **not inspiration**, this is **law**.
 
-Your task:
-- Translate the HTML layout to Flutter widgets
-- Apply spacing, hierarchy, proportions, and visual weight as literally as possible
-- This is a TRANSLATION task, not a redesign task
-- Do NOT invent styles, colors, or layouts
-- Do NOT change business logic or data models
-- Update ONLY activities_screen.dart
+---
 
-Design rules:
-- Follow ui_designer.md exactly
-- Background: warm cream (#FFFBF5)
-- Primary color (accent only): peach (#FFB4A2)
-- Secondary surface: lavender soft (#E5E0F7)
-- No gradients
-- No heavy pink fills
-- Soft surfaces only
+## 1️⃣ CORE DESIGN PHILOSOPHY
 
-Icons (CRITICAL):
-- Replace ALL Material icons with PNG assets:
-  - Feeding → assets/icons/illustration/bottle2.png
-  - Diaper → assets/icons/illustration/diaper_clean.png
-  - Sleep → assets/icons/illustration/sleeping_moon2.png
-- PNG icons MUST NEVER be placed directly on the background
-- Every PNG icon MUST be inside a solid warm-cream container
-- Icon sizes must visually match the HTML:
-  - Hero segments: ~80px
-  - Inactive segments: ~64px
-  - Log list icons: 48–56px
-- Do not shrink icons due to constraints — fix constraints instead
+- Calm
+- Emotional
+- Soft
+- Trustworthy
+- Premium but warm
+- Never “dashboard-like”
+- Never aggressive or loud
 
-Layout rules:
+This is a **care app**, not a data app.
+
+---
+
+## 2️⃣ COLOR SYSTEM (STRICT)
+
+### Backgrounds
+- **Main background:** `#FFFBF5` (Warm Cream)
+- This is the default background for ALL screens
+
+### Surfaces (Cards / Containers)
+- **Primary surface:** Warm Cream
+- **Secondary surface:** Lavender Soft `#E5E0F7`
+- No pure white surfaces unless explicitly needed
+
+### Accent
+- **Primary accent:** Peach `#FFB4A2`
+- Accent usage ONLY for:
+  - Active states
+  - Borders
+  - Small highlights
+  - Dots / indicators
+- Peach must NEVER dominate the screen
+
+### Forbidden
+- ❌ Heavy pink fills
+- ❌ Strong gradients
+- ❌ High contrast neon colors
+
+---
+
+## 3️⃣ ICON SYSTEM (CRITICAL)
+
+### Global Rules
+- ALL activity icons are **PNG illustrations**
+- Icons must NEVER float directly on the background
+- Icons must ALWAYS sit inside a **solid container**
+
+### Icon Containers
+- Background: Warm Cream or Lavender Soft
+- Border radius: `16–999`
+- Optional border:
+  - 1px
+  - Alpha: `0.12–0.18`
+- Shadows:
+  - Very soft
+  - Optional
+  - Never heavy
+
+---
+
+### Icon Sizes by Context
+
+#### Hero / Main Activity Icons
+(Top of Activities, Home highlights)
+- Icon: `72–88px`
+- Container: `96–104px`
+- Shape: Circle
+- Visually dominant
+
+#### Summary Cards
+- Icon: `28–36px`
+- Container: `44–52px`
+- Secondary emphasis
+
+#### Log List / History Items
+- Icon: `48–56px`
+- Container: `64–68px`
+- Clear and readable
+
+#### Empty States
+- Icon: `56–72px`
+- Friendly, emotional
+
+---
+
+## 4️⃣ SEGMENT / TAB BEHAVIOR
+
 - DO NOT use TabBar or TabBarView
-- Use a custom segmented control as shown in the HTML
-- Use SafeArea
-- No bottom overflow on mobile (iOS Safari included)
-- Text must wrap or ellipsis, NEVER overflow
+- Use **custom segmented controls**
+- Segments must:
+  - Feel like big tap targets
+  - Be icon-first
+  - Text is secondary or optional
+- Active state:
+  - Border (peach)
+  - Slight emphasis
+- Inactive:
+  - Same background
+  - No border
 
-Scope:
-- activities_screen.dart ONLY
-- Layout + visuals ONLY
-- No refactors outside this screen
-- No new abstractions unless strictly required by Flutter
+---
 
-Process:
-1. Map HTML sections to Flutter widgets one by one
-2. Preserve visual hierarchy exactly
-3. Validate no overflow, no clipped icons
+## 5️⃣ TYPOGRAPHY RULES
 
-Below is the HTML reference. This HTML is FINAL.
-Do not deviate from its structure or intent.
+### Section Headers
+Used for:
+- “ÖZET”
+- “SON AKTİVİTELER”
+- Similar sections
 
-[PASTE THE FULL STITCH HTML HERE]
+Rules:
+- Uppercase
+- Small font
+- Letter spacing
+- Calm presence
+
+Example:
+```dart
+fontSize: 12
+fontWeight: FontWeight.w700
+letterSpacing: 1.2
+
+### Body Text
+
+- Readable
+- Calm
+- Never cramped
+
+## Important Rule
+- Text must wrap or ellipsis
+- Text must NEVER overflow
+
+---
+
+## 6️⃣ CARDS & LISTS
+
+### Cards
+
+- Background: Warm Cream
+- Border radius: 16–20
+- Padding:
+  - Horizontal: 16
+  - Vertical: 16–20
+- Shadow:
+  - Soft
+  - Lavender-tinted
+  - Optional
+
+### Lists
+
+- Icon on left (inside solid container)
+- Text center
+- Time / meta info right
+- No dividers unless necessary
+
+---
+
+## 7️⃣ STATUS & INFO BANNERS
+
+- Used for:
+
+  - “Baby has been sleeping…”
+
+  - Passive information
+
+- Rules:
+
+  - Rounded container
+  - Soft peach background (low opacity)
+  - Small dot indicator
+  - Secondary importance
+  - Calm tone
+
+---
+
+## 8️⃣ EMPTY STATES
+
+- Friendly
+- Emotional
+- Encouraging
+- Never cold or technical
+
+- Rules:
+
+  - Large icon
+  - Short text
+  - One soft CTA
+  - No dense layouts
+
+---
+
+## 9️⃣ LAYOUT & SPACING
+
+- Mobile-first
+- SafeArea ALWAYS
+- No bottom overflow (iOS Safari safe)
+- Vertical rhythm:
+  -Compact
+  -Breathing
+  -Never tight
+
+- Decorative elements:
+
+- Allowed
+- Very low opacity (2–4%)
+- Never interfere with content
+
+---
+
+## 🔟 BEHAVIOR RULES (VERY IMPORTANT)
+
+- Claude MUST:
+  -Apply rules, not reinterpret
+  - Match Activities screen as visual reference
+  - Keep layouts stable
+  - Only adjust visuals when asked
+
+- Claude MUST NOT:
+
+  - Invent new UI styles
+  - Change data logic
+  - Introduce new colors
+  - Resize icons arbitrarily
+  - “Improve” things creatively
+
+---
+
+## ✅ GOLDEN RULE
+
+- If unsure:
+   - Do it the same way as Activities screen.
+
+---
+
+## 🧠 HOW TO USE THIS FILE
+
+- For every screen update, use this prompt pattern:
+Use ui_designer.md as strict rules.
+
+Update ONLY <screen_name>.dart.
+
+Make it visually consistent with Activities screen.
+No redesign. No logic changes.
+
+---
+
+
+
