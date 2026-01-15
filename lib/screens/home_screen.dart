@@ -6,8 +6,7 @@ import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
-import '../theme/app_spacing.dart';
-import '../widgets/decorative_background.dart';
+import 'add_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -21,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _emzirmeKaydediliyor = false;
   bool _uykuKaydediliyor = false;
-  bool _showGrowthChart = true;
 
   // Emzirme sayaç değişkenleri
   bool _solAktif = false;
@@ -244,380 +242,1208 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? AppColors.bgDarkCard : AppColors.bgLightCard;
-    final textColor = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final subtitleColor = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
+    final subtitleColor = textColor.withValues(alpha: 0.6);
 
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
     final kakaKayitlari = VeriYonetici.getKakaKayitlari();
-    final uykuKayitlari = VeriYonetici.getUykuKayitlari();
-    final boyKiloKayitlari = VeriYonetici.getBoyKiloKayitlari();
-
-    final timeline = _buildTimeline(
-      mamaKayitlari,
-      kakaKayitlari,
-      uykuKayitlari,
-    );
-
-    Map<String, dynamic>? sonOlcum;
-    if (boyKiloKayitlari.isNotEmpty) {
-      sonOlcum = boyKiloKayitlari.first;
-    }
 
     return Scaffold(
-      body: DecorativeBackground(
-        variant: BackgroundVariant.home,
-        child: SafeArea(
-          child: SingleChildScrollView(
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Container(
+              color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFF8F0),
+            ),
+          ),
+
+          // Decorative blobs
+          if (!isDark)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: -80,
+                      left: -80,
+                      child: Container(
+                        width: 256,
+                        height: 256,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFEBE8FF).withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: MediaQuery.of(context).size.height * 0.5,
+                      right: -128,
+                      child: Container(
+                        width: 320,
+                        height: 320,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFEBE8FF).withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Main content
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // HEADER
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFEBE8FF),
+                            border: Border.all(color: Colors.white, width: 2),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/icons/illustration/baby_face.png',
+                              width: 56,
+                              height: 56,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) => Container(
+                                color: const Color(0xFFEBE8FF),
+                                child: const Icon(
+                                  Icons.child_care,
+                                  color: Color(0xFFFF998A),
+                                  size: 28,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Sofia',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              Text(
+                                '4 months old',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: subtitleColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.notifications_outlined,
+                            color: Colors.grey,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // TIMER CARDS (2x2 grid)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        // Feeding card
+                        Expanded(
+                          child: _buildTimerCard(
+                            icon: Icons.child_care,
+                            iconColor: const Color(0xFFFF998A),
+                            label: 'FEEDING',
+                            time: _formatSaniye(_solSaniye + _sagSaniye),
+                            lastActivity: _getLastFeedingTime(mamaKayitlari),
+                            isActive: _emzirmeAktif,
+                            isDark: isDark,
+                            buttons: _emzirmeAktif
+                                ? Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: _solAktif ? null : _startSol,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: _solAktif
+                                                      ? const Color(0xFFFF998A)
+                                                      : const Color(0xFFFFF8F0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  'LEFT',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: _solAktif
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFFFF998A),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: _sagAktif ? null : _startSag,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: _sagAktif
+                                                      ? const Color(0xFFFF998A)
+                                                      : const Color(0xFFFFF8F0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  'RIGHT',
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: _sagAktif
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFFFF998A),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      GestureDetector(
+                                        onTap: _emzirmeKaydediliyor
+                                            ? null
+                                            : _stopEmzirmeAndSave,
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFF998A),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: Text(
+                                            'STOP & SAVE',
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              letterSpacing: 1.2,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: _startSol,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFF998A),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: const Text(
+                                              'LEFT',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: _startSag,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFFFF8F0),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: const Text(
+                                              'RIGHT',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: Color(0xFFFF998A),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Sleeping card
+                        Expanded(
+                          child: _buildTimerCard(
+                            icon: Icons.bedtime,
+                            iconColor: const Color(0xFF7A749E),
+                            label: 'SLEEPING',
+                            time: _formatSaniye(_uykuSaniye),
+                            lastActivity: _getLastSleepTime(
+                                VeriYonetici.getUykuKayitlari()),
+                            isActive: _uykuAktif,
+                            isDark: isDark,
+                            buttons: GestureDetector(
+                              onTap: _uykuAktif ? _stopUykuAndSave : _startUyku,
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEBE8FF),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (_uykuAktif)
+                                      Container(
+                                        width: 6,
+                                        height: 6,
+                                        margin: const EdgeInsets.only(right: 6),
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF7A749E),
+                                        ),
+                                      ),
+                                    Text(
+                                      _uykuAktif ? 'ACTIVE' : 'START',
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF7A749E),
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // LAST ACTIVITY SUMMARY
+                  SizedBox(
+                    height: 100,
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _buildSummaryCard(
+                          label: 'LAST FED',
+                          value: _getLastFeedingValue(mamaKayitlari),
+                          progress: 0.33,
+                          progressColor: const Color(0xFFFF998A),
+                          isDark: isDark,
+                        ),
+                        const SizedBox(width: 12),
+                        _buildSummaryCard(
+                          label: 'DIAPER',
+                          value: _getLastDiaperValue(kakaKayitlari),
+                          progress: 0.75,
+                          progressColor: const Color(0xFF7A749E),
+                          isDark: isDark,
+                        ),
+                        const SizedBox(width: 12),
+                        _buildSummaryCard(
+                          label: 'DAILY SLEEP',
+                          value: _getDailySleepTotal(VeriYonetici.getUykuKayitlari()),
+                          progress: 0.66,
+                          progressColor: const Color(0xFFFF998A),
+                          isDark: isDark,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // RECENT ACTIVITY HEADER
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'RECENT ACTIVITY',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                            color: textColor.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            // Navigate to Activities tab
+                            DefaultTabController.of(context).animateTo(1);
+                          },
+                          child: const Text(
+                            'SEE HISTORY',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                              color: Color(0xFFFF998A),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // RECENT ACTIVITY LIST (last 24 hours)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildRecentActivitiesList(
+                      mamaKayitlari,
+                      kakaKayitlari,
+                      VeriYonetici.getUykuKayitlari(),
+                      isDark,
+                      textColor,
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
+                  // GROWTH TRACKING SECTION
+                  _buildGrowthSection(isDark, textColor, subtitleColor),
+
+                  const SizedBox(height: 120),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // TIMER CARD WIDGET
+  Widget _buildTimerCard({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String time,
+    required String lastActivity,
+    required bool isActive,
+    required bool isDark,
+    required Widget buttons,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2A2A3E) : Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBE8FF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor, size: 24),
+              ),
+              const Icon(Icons.more_horiz, color: Colors.grey, size: 24),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+              color: (isDark ? Colors.white : const Color(0xFF2D1A18))
+                  .withValues(alpha: 0.4),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            time,
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              letterSpacing: -1,
+              color: isDark ? Colors.white : const Color(0xFF2D1A18),
+            ),
+          ),
+          if (lastActivity.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              lastActivity,
+              style: TextStyle(
+                fontSize: 10,
+                color: (isDark ? Colors.white : const Color(0xFF2D1A18))
+                    .withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          buttons,
+        ],
+      ),
+    );
+  }
+
+  // SUMMARY CARD
+  Widget _buildSummaryCard({
+    required String label,
+    required String value,
+    required double progress,
+    required Color progressColor,
+    required bool isDark,
+  }) {
+    return Container(
+      width: 120,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2D1A18) : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark
+            ? const Color(0xFF3D2A28)
+            : const Color(0xFFF0EBE8),
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Progress bar
+          Container(
+            width: double.infinity,
+            height: 4,
+            decoration: BoxDecoration(
+              color: progressColor.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: progress,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: progressColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Label
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.5,
+              color: (isDark
+                ? const Color(0xFFFCF8F8)
+                : const Color(0xFF1D0E0C)
+              ).withValues(alpha: 0.5),
+            ),
+          ),
+          const SizedBox(height: 4),
+          // Value
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: isDark
+                ? const Color(0xFFFCF8F8)
+                : const Color(0xFF1D0E0C),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ACTIVITY ITEM
+  Widget _buildActivityItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: (isDark ? const Color(0xFF2A2A3E) : Colors.white)
+            .withValues(alpha: 0.6),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: const Color(0xFFEBE8FF),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: iconColor, size: 20),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // HEADER
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? AppColors.primary.withOpacity(0.2)
-                              : AppColors.primaryLight,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(child: Ikonlar.cuddle(size: 32)),
-                      ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Bebeğim',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                          ),
-                          if (sonOlcum != null)
-                            Text(
-                              '${sonOlcum['boy']} cm • ${sonOlcum['kilo']} kg',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: subtitleColor,
-                              ),
-                            )
-                          else
-                            Text(
-                              'Hoş geldin!',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: subtitleColor,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? AppColors.primary.withOpacity(0.2)
-                              : AppColors.primaryLight,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Ikonlar.notifications(size: 28),
-                      ),
-                    ],
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF2D1A18),
                   ),
                 ),
-
-                // SAYAÇLAR KARTI
-                _buildSayaclarKarti(
-                  cardColor,
-                  textColor,
-                  subtitleColor,
-                  isDark,
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: (isDark ? Colors.white : const Color(0xFF2D1A18))
+                        .withValues(alpha: 0.5),
+                  ),
                 ),
-                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, color: Colors.grey, size: 24),
+        ],
+      ),
+    );
+  }
 
-                // SON AKTİVİTELER
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    Dil.sonAktiviteler,
+  // RECENT ACTIVITIES LIST (last 24 hours)
+  Widget _buildRecentActivitiesList(
+    List<Map<String, dynamic>> mama,
+    List<Map<String, dynamic>> kaka,
+    List<Map<String, dynamic>> uyku,
+    bool isDark,
+    Color textColor,
+  ) {
+    final List<Map<String, dynamic>> timeline = [];
+    final son24Saat = DateTime.now().subtract(const Duration(hours: 24));
+
+    // Add mama activities
+    for (var k in mama) {
+      final tarih = k['tarih'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'mama',
+          'tarih': tarih,
+          'data': k,
+        });
+      }
+    }
+
+    // Add kaka activities
+    for (var k in kaka) {
+      final tarih = k['tarih'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'kaka',
+          'tarih': tarih,
+          'data': k,
+        });
+      }
+    }
+
+    // Add uyku activities
+    for (var k in uyku) {
+      final tarih = k['bitis'] as DateTime;
+      if (tarih.isAfter(son24Saat)) {
+        timeline.add({
+          'type': 'uyku',
+          'tarih': tarih,
+          'data': k,
+        });
+      }
+    }
+
+    // Sort by time descending
+    timeline.sort(
+      (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
+    );
+
+    if (timeline.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Text(
+            'No activities in the last 24 hours',
+            style: TextStyle(
+              fontSize: 12,
+              color: textColor.withValues(alpha: 0.5),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      children: List.generate(
+        timeline.length > 5 ? 5 : timeline.length,
+        (index) {
+          final item = timeline[index];
+          final type = item['type'] as String;
+          final tarih = item['tarih'] as DateTime;
+          final data = item['data'] as Map<String, dynamic>;
+
+          IconData icon;
+          Color iconColor;
+          String title;
+          String subtitle;
+
+          switch (type) {
+            case 'mama':
+              icon = Icons.restaurant;
+              iconColor = const Color(0xFFFF998A);
+              final tur = data['tur'] as String? ?? '';
+              if (tur == 'Anne Sütü') {
+                title = 'Breastfeeding';
+                final sol = data['solDakika'] ?? 0;
+                final sag = data['sagDakika'] ?? 0;
+                subtitle = 'L ${sol}min • R ${sag}min';
+              } else {
+                title = 'Bottle Feeding';
+                subtitle = '${data['miktar']} ml';
+              }
+              break;
+            case 'kaka':
+              icon = Icons.water_drop;
+              iconColor = const Color(0xFF7A749E);
+              title = 'Diaper Change';
+              subtitle = data['tur'] ?? '';
+              break;
+            case 'uyku':
+              icon = Icons.bedtime;
+              iconColor = const Color(0xFF7A749E);
+              title = 'Sleep';
+              final sure = data['sure'] as Duration;
+              final hours = sure.inHours;
+              final minutes = sure.inMinutes % 60;
+              subtitle = hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
+              break;
+            default:
+              icon = Icons.circle;
+              iconColor = Colors.grey;
+              title = 'Activity';
+              subtitle = '';
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: index < timeline.length - 1 ? 12 : 0),
+            child: _buildActivityItem(
+              icon: icon,
+              iconColor: iconColor,
+              title: '$title • ${_timeAgo(tarih)}',
+              subtitle: subtitle,
+              isDark: isDark,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // GROWTH SECTION
+  Widget _buildGrowthSection(
+    bool isDark,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final boyKiloKayitlari = VeriYonetici.getBoyKiloKayitlari();
+
+    if (boyKiloKayitlari.isEmpty) {
+      return Container(
+        margin: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2A2A3E) : Colors.white,
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              const Icon(
+                Icons.straighten,
+                color: Color(0xFFFF998A),
+                size: 32,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Track your baby\'s growth',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Add weight and height measurements',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: subtitleColor,
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  // Open Add Activity bottom sheet with Growth pre-selected
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (context) => AddScreen(
+                      onSaved: widget.onDataChanged,
+                      initialActivity: 'growth',
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF998A),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: const Text(
+                    'Add first measurement',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final latest = boyKiloKayitlari.first;
+    final tarih = latest['tarih'] as DateTime;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Growth Tracking',
+                    style: TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                // Son Aktiviteler Kartları
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildLastActionCard(
-                          Ikonlar.bottle(size: 24),
-                          Dil.sonBeslenme,
-                          mamaKayitlari.isNotEmpty
-                              ? _timeAgo(mamaKayitlari.first['tarih'])
-                              : '-',
-                          _getMamaDetail(
-                            mamaKayitlari.isNotEmpty
-                                ? mamaKayitlari.first
-                                : null,
-                          ),
-                          AppColors.accentPeach,
-                          cardColor,
-                          textColor,
-                          subtitleColor,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildLastActionCard(
-                          Ikonlar.sleepingMoon(size: 28),
-                          Dil.sonUyku,
-                          uykuKayitlari.isNotEmpty
-                              ? _timeAgo(uykuKayitlari.first['bitis'])
-                              : '-',
-                          uykuKayitlari.isNotEmpty
-                              ? _formatDuration(uykuKayitlari.first['sure'])
-                              : '',
-                          AppColors.accentLavender,
-                          cardColor,
-                          textColor,
-                          subtitleColor,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildLastActionCard(
-                          Ikonlar.diaperClean(size: 24),
-                          Dil.sonBezDegisimi,
-                          kakaKayitlari.isNotEmpty
-                              ? _timeAgo(kakaKayitlari.first['tarih'])
-                              : '-',
-                          kakaKayitlari.isNotEmpty
-                              ? kakaKayitlari.first['tur']
-                              : '',
-                          AppColors.accentBlue,
-                          cardColor,
-                          textColor,
-                          subtitleColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 28),
-
-                // ZAMAN ÇİZELGESİ
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Dil.zaman,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.accentGreen.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          Dil.son24Saat,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: textColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                if (timeline.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(40),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Ikonlar.timer(size: 48),
-                          const SizedBox(height: 16),
-                          Text(
-                            Dil.henuzKayitYok,
-                            style: TextStyle(
-                              color: subtitleColor,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: timeline.length > 5 ? 5 : timeline.length,
-                    itemBuilder: (context, index) => _buildTimelineItem(
-                      timeline[index],
-                      textColor,
-                      subtitleColor,
-                      isDark,
+                  Text(
+                    'Last updated ${_formatDaysAgo(tarih)}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: textColor.withValues(alpha: 0.4),
                     ),
                   ),
-                const SizedBox(height: 28),
-
-                // BÜYÜME TAKİBİ
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Ikonlar.growth(size: 28),
-                          const SizedBox(width: 10),
-                          Text(
-                            Dil.buyumeTakibi,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade200,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () =>
-                                  setState(() => _showGrowthChart = true),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: _showGrowthChart
-                                      ? AppColors.accentGreen
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  Icons.show_chart,
-                                  size: 20,
-                                  color: _showGrowthChart
-                                      ? Colors.white
-                                      : subtitleColor,
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () =>
-                                  setState(() => _showGrowthChart = false),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: !_showGrowthChart
-                                      ? AppColors.accentGreen
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Icon(
-                                  Icons.list,
-                                  size: 20,
-                                  color: !_showGrowthChart
-                                      ? Colors.white
-                                      : subtitleColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                ],
+              ),
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEBE8FF),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                const SizedBox(height: 16),
-
-                if (boyKiloKayitlari.isEmpty)
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    padding: const EdgeInsets.all(40),
-                    decoration: BoxDecoration(
-                      color: cardColor,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Ikonlar.growth(size: 28),
-                          const SizedBox(height: 16),
-                          Text(
-                            Dil.henuzOlcumYok,
-                            style: TextStyle(
-                              color: subtitleColor,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else if (_showGrowthChart)
-                  _buildGrowthChart(boyKiloKayitlari, cardColor, textColor)
-                else
-                  _buildGrowthList(
-                    boyKiloKayitlari,
-                    cardColor,
-                    textColor,
-                    subtitleColor,
-                  ),
-
-                const SizedBox(height: 120),
-              ],
+                child: const Icon(
+                  Icons.trending_up,
+                  color: Color(0xFF7A749E),
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Growth cards
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildGrowthCard(
+                  icon: Icons.monitor_weight_outlined,
+                  label: 'WEIGHT',
+                  value: '${latest['kilo']}',
+                  unit: 'kg',
+                  change: _getWeightChange(boyKiloKayitlari),
+                  isDark: isDark,
+                  textColor: textColor,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildGrowthCard(
+                  icon: Icons.straighten,
+                  label: 'HEIGHT',
+                  value: '${latest['boy']}',
+                  unit: 'cm',
+                  change: _getHeightChange(boyKiloKayitlari),
+                  isDark: isDark,
+                  textColor: textColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 24),
+        // View charts button
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: GestureDetector(
+            onTap: () {
+              // Could navigate to detailed growth screen
+            },
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color(0xFFEBE8FF),
+                  width: 2,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                'VIEW GROWTH CHARTS',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.5,
+                  color: const Color(0xFF7A749E),
+                ),
+              ),
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildGrowthCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required String unit,
+    required String change,
+    required bool isDark,
+    required Color textColor,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF8F0),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: change.startsWith('+')
+                    ? const Color(0xFFFF998A)
+                    : const Color(0xFF7A749E),
+                size: 14,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  color: textColor.withValues(alpha: 0.5),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                unit,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          if (change.isNotEmpty)
+            Row(
+              children: [
+                Icon(
+                  Icons.arrow_upward,
+                  color: Colors.green,
+                  size: 12,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  change,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ),
+        ],
       ),
     );
+  }
+
+  // HELPER METHODS
+  String _getLastFeedingTime(List<Map<String, dynamic>> mama) {
+    if (mama.isEmpty) return '';
+    final tarih = mama.first['tarih'] as DateTime;
+    return 'Last feed: ${_timeAgo(tarih)}';
+  }
+
+  String _getLastSleepTime(List<Map<String, dynamic>> uyku) {
+    if (uyku.isEmpty) return '';
+    final tarih = uyku.first['bitis'] as DateTime;
+    return 'Last sleep: ${_timeAgo(tarih)}';
+  }
+
+  String _getLastFeedingValue(List<Map<String, dynamic>> mama) {
+    if (mama.isEmpty) return 'No data';
+    final tarih = mama.first['tarih'] as DateTime;
+    final diff = DateTime.now().difference(tarih);
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      return '${hours}h ${minutes}m ago';
+    } else {
+      return '${diff.inDays}d ago';
+    }
+  }
+
+  String _getLastDiaperValue(List<Map<String, dynamic>> kaka) {
+    if (kaka.isEmpty) return 'No data';
+    final tarih = kaka.first['tarih'] as DateTime;
+    final diff = DateTime.now().difference(tarih);
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      return '${hours}h ${minutes}m ago';
+    } else {
+      return '${diff.inDays}d ago';
+    }
+  }
+
+  String _getDailySleepTotal(List<Map<String, dynamic>> uyku) {
+    final today = DateTime.now();
+    final todayStart = DateTime(today.year, today.month, today.day);
+
+    int totalMinutes = 0;
+    for (var entry in uyku) {
+      final bitis = entry['bitis'] as DateTime;
+      if (bitis.isAfter(todayStart)) {
+        final sure = entry['sure'] as Duration;
+        totalMinutes += sure.inMinutes;
+      }
+    }
+
+    if (totalMinutes == 0) return 'No sleep';
+
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+    return '${hours}h ${minutes}m';
+  }
+
+  String _formatDaysAgo(DateTime date) {
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays == 0) return 'today';
+    if (diff.inDays == 1) return '1 day ago';
+    return '${diff.inDays} days ago';
+  }
+
+  String _getWeightChange(List<Map<String, dynamic>> records) {
+    if (records.length < 2) return '';
+    final latest = records[0]['kilo'] as num;
+    final previous = records[1]['kilo'] as num;
+    final change = latest - previous;
+    if (change > 0) {
+      return '+${change.toStringAsFixed(1)}kg this month';
+    }
+    return '';
+  }
+
+  String _getHeightChange(List<Map<String, dynamic>> records) {
+    if (records.length < 2) return '';
+    final latest = records[0]['boy'] as num;
+    final previous = records[1]['boy'] as num;
+    final change = latest - previous;
+    if (change > 0) {
+      return '+${change.toStringAsFixed(1)}cm this month';
+    }
+    return '';
   }
 
   // SAYAÇLAR KARTI
@@ -635,7 +1461,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : AppColors.primary.withOpacity(0.1),
+            color: isDark ? Colors.black26 : AppColors.primary.withValues(alpha:0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -857,7 +1683,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
             color: _uykuAktif
-                ? AppColors.accentLavender.withOpacity(0.3)
+                ? AppColors.accentLavender.withValues(alpha:0.3)
                 : (isDark ? Colors.grey.shade800 : Colors.grey.shade100),
             borderRadius: BorderRadius.circular(16),
             border: _uykuAktif
@@ -971,7 +1797,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha:0.15),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -985,7 +1811,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
+              color: color.withValues(alpha:0.2),
               shape: BoxShape.circle,
             ),
             child: Center(child: icon),
@@ -1099,7 +1925,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: lineColor.withOpacity(0.3),
+                  color: lineColor.withValues(alpha:0.3),
                   shape: BoxShape.circle,
                   border: Border.all(color: lineColor, width: 3),
                 ),
@@ -1256,7 +2082,7 @@ class _HomeScreenState extends State<HomeScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: kayitlar.length > 5 ? 5 : kayitlar.length,
         separatorBuilder: (_, __) =>
-            Divider(height: 1, color: subtitleColor.withOpacity(0.2)),
+            Divider(height: 1, color: subtitleColor.withValues(alpha:0.2)),
         itemBuilder: (context, index) {
           final k = kayitlar[index];
           final tarih = k['tarih'] as DateTime;
@@ -1269,7 +2095,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.2),
+                color: AppColors.accentGreen.withValues(alpha:0.2),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(child: Ikonlar.growth(size: 32)),
@@ -1380,7 +2206,7 @@ class _ChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     final fillPaint = Paint()
-      ..color = color.withOpacity(0.15)
+      ..color = color.withValues(alpha:0.15)
       ..style = PaintingStyle.fill;
     final dotPaint = Paint()
       ..color = color
