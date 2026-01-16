@@ -12,6 +12,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _uykuKayitlari = [];
   static List<Map<String, dynamic>> _anilar = [];
   static List<Map<String, dynamic>> _boyKiloKayitlari = [];
+  static List<Map<String, dynamic>> _milestones = [];
   static bool _darkMode = false;
   static bool _firstLaunch = true;
 
@@ -25,6 +26,7 @@ class VeriYonetici {
     _uykuKayitlari = _loadUykuKayitlari();
     _anilar = _loadAnilar();
     _boyKiloKayitlari = _loadBoyKiloKayitlari();
+    _milestones = _loadMilestones();
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
 
@@ -252,6 +254,55 @@ class VeriYonetici {
     await _prefs!.setString('boykilo_kayitlari', jsonEncode(data));
   }
 
+  // MILESTONES
+  static List<Map<String, dynamic>> _loadMilestones() {
+    try {
+      final data = _prefs!.getString('milestones');
+      if (data == null || data.isEmpty) return [];
+      final list = jsonDecode(data) as List;
+      return list
+          .map(
+            (e) => Map<String, dynamic>.from({
+              'id': e['id'],
+              'title': e['title'],
+              'date': DateTime.parse(e['date']),
+              'note': e['note'],
+              'photoPath': e['photoPath'],
+              'photoStyle': e['photoStyle'] ?? 'softIllustration',
+            }),
+          )
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static List<Map<String, dynamic>> getMilestones() {
+    return List.from(_milestones);
+  }
+
+  static Future<void> saveMilestones(
+    List<Map<String, dynamic>> milestones,
+  ) async {
+    // Update cache
+    _milestones = List.from(milestones);
+
+    // Save to shared_preferences
+    final data = milestones
+        .map(
+          (e) => {
+            'id': e['id'],
+            'title': e['title'],
+            'date': (e['date'] as DateTime).toIso8601String(),
+            'note': e['note'],
+            'photoPath': e['photoPath'],
+            'photoStyle': e['photoStyle'] ?? 'softIllustration',
+          },
+        )
+        .toList();
+    await _prefs!.setString('milestones', jsonEncode(data));
+  }
+
   // TEMA & SETTINGS
   static bool isFirstLaunch() {
     return _firstLaunch;
@@ -278,11 +329,13 @@ class VeriYonetici {
     _uykuKayitlari.clear();
     _anilar.clear();
     _boyKiloKayitlari.clear();
+    _milestones.clear();
 
     await _prefs!.remove('mama_kayitlari');
     await _prefs!.remove('kaka_kayitlari');
     await _prefs!.remove('uyku_kayitlari');
     await _prefs!.remove('anilar');
     await _prefs!.remove('boykilo_kayitlari');
+    await _prefs!.remove('milestones');
   }
 }
