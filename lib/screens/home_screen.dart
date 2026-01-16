@@ -7,6 +7,7 @@ import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'add_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -300,89 +301,87 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // HEADER
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: const Color(0xFFEBE8FF),
-                            border: Border.all(color: Colors.white, width: 2),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/icons/illustration/baby_face.png',
-                              width: 56,
-                              height: 56,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
-                                color: const Color(0xFFEBE8FF),
-                                child: const Icon(
-                                  Icons.child_care,
-                                  color: Color(0xFFFF998A),
-                                  size: 28,
+                  SizedBox(
+                    height: 80,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFEBE8FF),
+                              border: Border.all(color: Colors.white, width: 2),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 4,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/icons/illustration/baby_face.png',
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => Container(
+                                  color: const Color(0xFFEBE8FF),
+                                  child: const Icon(
+                                    Icons.child_care,
+                                    color: Color(0xFFFF998A),
+                                    size: 24,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Sofia',
-                                style: TextStyle(
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Sofia',
+                                  style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   color: textColor,
                                   letterSpacing: -0.5,
                                 ),
                               ),
-                              Text(
-                                '4 months old',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: subtitleColor,
+                                Text(
+                                  '4 months old',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                    color: subtitleColor,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.8),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.white),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                          IconButton(
+                            icon: Icon(
+                              Icons.settings_outlined,
+                              color: textColor.withValues(alpha: 0.7),
+                              size: 24,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SettingsScreen(),
+                                ),
+                              );
+                            },
                           ),
-                          child: const Icon(
-                            Icons.notifications_outlined,
-                            color: Colors.grey,
-                            size: 24,
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
 

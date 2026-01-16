@@ -4,6 +4,7 @@ import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
+import 'screens/vaccines_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'models/dil.dart';
 import 'screens/splash_screen.dart';
@@ -89,21 +90,17 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     if (index == 2) {
-      _showAddMenu();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddScreen(onSaved: _refresh),
+        ),
+      );
     } else {
       setState(() {
         _selectedIndex = index;
       });
     }
-  }
-
-  void _showAddMenu() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => AddScreen(onSaved: _refresh),
-    );
   }
 
   @override
@@ -114,8 +111,8 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(key: ValueKey('home_$_refreshKey'), onDataChanged: _refresh),
       ActivitiesScreen(key: ValueKey('activities_$_refreshKey')),
       const SizedBox(),
+      VaccinesScreen(key: ValueKey('vaccines_$_refreshKey')),
       MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),
-      const SettingsScreen(),
     ];
 
     return Scaffold(
@@ -140,8 +137,8 @@ class _MainScreenState extends State<MainScreen> {
                 _buildNavItem(0, Icons.home_rounded, Dil.navAnaSayfa),
                 _buildNavItem(1, Icons.bar_chart_rounded, Dil.navAktiviteler),
                 _buildAddButton(),
-                _buildNavItem(3, Icons.emoji_events_rounded, Dil.navGelisim),
-                _buildNavItem(4, Icons.settings_outlined, Dil.navAyarlar),
+                _buildNavItem(3, Icons.vaccines_outlined, Dil.asilar),
+                _buildNavItem(4, Icons.emoji_events_rounded, Dil.navGelisim),
               ],
             ),
           ),

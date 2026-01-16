@@ -84,6 +84,29 @@ class Dil {
   static const String ilerleme = 'İlerleme';
   static const String tamamlandi = 'Tamamlandı';
   static const String ayindaBekleniyor = 'ayında bekleniyor';
+
+  // Aşılar
+  static const String asilar = 'Aşılar';
+  static const String asilarim = 'Aşılarım';
+  static const String asiEkle = 'Aşı Ekle';
+  static const String asiDuzenle = 'Aşı Düzenle';
+  static const String asiAdi = 'Aşı Adı';
+  static const String donem = 'Dönem';
+  static const String dogumda = 'Doğumda';
+  static const String ikinci = '2. Ay';
+  static const String dorduncu = '4. Ay';
+  static const String altinci = '6. Ay';
+  static const String onikinci = '12. Ay';
+  static const String onsekizinci = '18. Ay';
+  static const String yirmiDortuncu = '24. Ay';
+  static const String gelecekAsilar = 'Gelecek Aşılar';
+  static const String tamamlananAsilar = 'Tamamlanan Aşılar';
+  static const String uygulandiTarih = 'Uygulandı';
+  static const String bekleniyor = 'Bekleniyor';
+  static const String uygulandi = 'Uygulandı';
+  static const String doz = 'Doz';
+  static const String aylik = 'Aylık';
+  static const String gunluk = 'Günlük';
   
   // Ayarlar
   static const String ayarlar = 'Ayarlar';

@@ -13,6 +13,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _anilar = [];
   static List<Map<String, dynamic>> _boyKiloKayitlari = [];
   static List<Map<String, dynamic>> _milestones = [];
+  static List<Map<String, dynamic>> _asiKayitlari = [];
   static bool _darkMode = false;
   static bool _firstLaunch = true;
 
@@ -27,6 +28,7 @@ class VeriYonetici {
     _anilar = _loadAnilar();
     _boyKiloKayitlari = _loadBoyKiloKayitlari();
     _milestones = _loadMilestones();
+    _asiKayitlari = _loadAsiKayitlari();
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
 
@@ -303,6 +305,57 @@ class VeriYonetici {
     await _prefs!.setString('milestones', jsonEncode(data));
   }
 
+  // ASILAR
+  static List<Map<String, dynamic>> _loadAsiKayitlari() {
+    try {
+      final data = _prefs!.getString('asi_kayitlari');
+      if (data == null || data.isEmpty) return [];
+      final list = jsonDecode(data) as List;
+      return list
+          .map(
+            (e) => Map<String, dynamic>.from({
+              'id': e['id'],
+              'ad': e['ad'],
+              'donem': e['donem'],
+              'tarih': e['tarih'] != null ? DateTime.parse(e['tarih']) : null,
+              'durum': e['durum'] ?? 'bekleniyor',
+              'notlar': e['notlar'] ?? '',
+            }),
+          )
+          .toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  static List<Map<String, dynamic>> getAsiKayitlari() {
+    return List.from(_asiKayitlari);
+  }
+
+  static Future<void> saveAsiKayitlari(
+    List<Map<String, dynamic>> kayitlar,
+  ) async {
+    // Update cache
+    _asiKayitlari = List.from(kayitlar);
+
+    // Save to shared_preferences
+    final data = kayitlar
+        .map(
+          (e) => {
+            'id': e['id'],
+            'ad': e['ad'],
+            'donem': e['donem'],
+            'tarih': e['tarih'] != null
+                ? (e['tarih'] as DateTime).toIso8601String()
+                : null,
+            'durum': e['durum'] ?? 'bekleniyor',
+            'notlar': e['notlar'] ?? '',
+          },
+        )
+        .toList();
+    await _prefs!.setString('asi_kayitlari', jsonEncode(data));
+  }
+
   // TEMA & SETTINGS
   static bool isFirstLaunch() {
     return _firstLaunch;
@@ -330,6 +383,7 @@ class VeriYonetici {
     _anilar.clear();
     _boyKiloKayitlari.clear();
     _milestones.clear();
+    _asiKayitlari.clear();
 
     await _prefs!.remove('mama_kayitlari');
     await _prefs!.remove('kaka_kayitlari');
@@ -337,5 +391,6 @@ class VeriYonetici {
     await _prefs!.remove('anilar');
     await _prefs!.remove('boykilo_kayitlari');
     await _prefs!.remove('milestones');
+    await _prefs!.remove('asi_kayitlari');
   }
 }
