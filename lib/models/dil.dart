@@ -148,6 +148,19 @@ class Dil {
   // Ne eklemek istersin
   static const String neEklemekIstersin = 'Ne eklemek istersin?';
   
+  // Bebek Profili
+  static const String bebekProfili = 'Bebek Profili';
+  static const String notlar = 'Notlar';
+  static const String istegeBagli = 'İsteğe bağlı';
+  static const String buyumeKayitlari = 'Büyüme Kayıtları';
+  static const String kaydedildi = 'Kaydedildi';
+  static const String yapilandiriliyor = 'Yapılandırılıyor...';
+
+  // Zaman birimleri
+  static const String yil = 'yıl';
+  static const String ay = 'ay';
+  static const String gun = 'gün';
+
   // Aylar
   static const List<String> aylar = [
     'Ocak',

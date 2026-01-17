@@ -168,52 +168,38 @@ class _AddScreenState extends State<AddScreen> {
                           Expanded(
                             child: _buildActivityCard(
                               type: 'breastfeeding',
-                              icon: Ikonlar.breastfeeding(size: 64),
+                              icon: Ikonlar.breastfeeding(size: 54),
                               label: 'Breastfeeding',
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _buildActivityCard(
                               type: 'bottle',
-                              icon: Ikonlar.bottle(size: 64),
+                              icon: Ikonlar.bottle(size: 54),
                               label: 'Bottle',
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Expanded(
                             child: _buildActivityCard(
                               type: 'sleep',
-                              icon: Ikonlar.sleep(size: 64),
+                              icon: Ikonlar.sleep(size: 54),
                               label: 'Sleep',
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: _buildActivityCard(
                               type: 'diaper',
-                              icon: Ikonlar.diaperClean(size: 64),
+                              icon: Ikonlar.diaperClean(size: 54),
                               label: 'Diaper',
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildActivityCard(
-                              type: 'growth',
-                              icon: Ikonlar.growth(size: 64),
-                              label: 'Growth',
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          const Expanded(child: SizedBox()),
                         ],
                       ),
                     ],
@@ -1452,23 +1438,23 @@ class _AddScreenState extends State<AddScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? const Color(0xFFFFFBF5)
                           : const Color(0xFFE5E0F7),
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Opacity(
                       opacity: isSelected ? 1.0 : 0.4,
                       child: icon,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: isSelected
                           ? const Color(0xFF2D1A18)

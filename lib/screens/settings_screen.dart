@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
+import '../theme/app_theme.dart';
 import 'rapor_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,281 +13,235 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final TextEditingController _isimController = TextEditingController(
-    text: 'Bebeğim',
-  );
-  DateTime _dogumTarihi = DateTime(2024, 6, 15);
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final bgColor = isDark ? AppColors.bgDark : const Color(0xFFFFFBF5);
+    final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
+    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
+    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? [const Color(0xFF1A1A2E), const Color(0xFF121212)]
-                : [const Color(0xFFFCE4EC), Colors.white],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '⚙️ ${Dil.ayarlar}',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // GÖRÜNÜM
-                _buildSection(
-                  title: '🎨 ${Dil.gorunum}',
-                  cardColor: cardColor,
-                  children: [
-                    _buildSwitchTile(
-                      title: Dil.karanlikMod,
-                      subtitle: Dil.karanlikModAciklama,
-                      value: BabyTrackerApp.of(context)?.isDarkMode ?? false,
-                      onChanged: (value) {
-                        BabyTrackerApp.of(context)?.toggleTheme();
-                      },
-                      icon: isDark ? Icons.dark_mode : Icons.light_mode,
-                      iconColor: isDark ? Colors.amber : Colors.orange,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // BEBEK BİLGİLERİ
-                _buildSection(
-                  title: '👶 ${Dil.bebekBilgileri}',
-                  cardColor: cardColor,
-                  children: [
-                    _buildTextField(
-                      controller: _isimController,
-                      label: Dil.bebekAdi,
-                      icon: Icons.person,
-                      isDark: isDark,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildDatePicker(
-                      label: Dil.dogumTarihi,
-                      value: _dogumTarihi,
-                      isDark: isDark,
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: _dogumTarihi,
-                          firstDate: DateTime(2020),
-                          lastDate: DateTime.now(),
-                        );
-                        if (picked != null) {
-                          setState(() => _dogumTarihi = picked);
-                        }
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // BİLDİRİMLER
-                _buildSection(
-                  title: '🔔 ${Dil.bildirimler}',
-                  cardColor: cardColor,
-                  children: [
-                    _buildSwitchTile(
-                      title: Dil.mamaHatirlatici,
-                      subtitle: 'Her 3 saatte bir hatırlat',
-                      value: true,
-                      onChanged: (value) {},
-                      icon: Icons.restaurant,
-                      iconColor: const Color(0xFFE91E63),
-                    ),
-                    _buildSwitchTile(
-                      title: Dil.bezHatirlatici,
-                      subtitle: 'Her 2 saatte bir kontrol et',
-                      value: false,
-                      onChanged: (value) {},
-                      icon: Icons.baby_changing_station,
-                      iconColor: const Color(0xFF9C27B0),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // VERİ YÖNETİMİ
-                _buildSection(
-                  title: '💾 ${Dil.veriYonetimi}',
-                  cardColor: cardColor,
-                  children: [
-                    _buildActionTile(
-                      icon: Icons.analytics,
-                      title: 'Rapor Oluştur',
-                      subtitle: 'Haftalık/Aylık istatistikler',
-                      color: const Color(0xFFFF8AC1),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const RaporScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    _buildActionTile(
-                      icon: Icons.download,
-                      title: Dil.verileriDisaAktar,
-                      subtitle: 'JSON formatında indir',
-                      color: const Color(0xFF2196F3),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Yakında eklenecek!')),
-                        );
-                      },
-                    ),
-                    _buildActionTile(
-                      icon: Icons.delete_forever,
-                      title: Dil.tumVerileriSil,
-                      subtitle: Dil.silmeUyarisi,
-                      color: Colors.red,
-                      onTap: () => _showDeleteDialog(),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // HAKKINDA
-                _buildSection(
-                  title: 'ℹ️ ${Dil.hakkinda}',
-                  cardColor: cardColor,
-                  children: [
-                    _buildInfoTile(Dil.versiyon, '1.0.0', isDark),
-                    _buildInfoTile(Dil.gelistirici, 'Bebek Takip', isDark),
-                  ],
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSection({
-    required String title,
-    required Color cardColor,
-    required List<Widget> children,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black26 : const Color(0x1A000000),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFE91E63),
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...children,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    required bool isDark,
-  }) {
-    return TextField(
-      controller: controller,
-      style: TextStyle(color: isDark ? Colors.white : Colors.black),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: TextStyle(
-          color: isDark ? Colors.grey.shade400 : Colors.grey,
-        ),
-        prefixIcon: Icon(icon, color: const Color(0xFFE91E63)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDatePicker({
-    required String label,
-    required DateTime value,
-    required bool isDark,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-          ),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
+      backgroundColor: bgColor,
+      body: SafeArea(
+        child: Column(
           children: [
-            const Icon(Icons.calendar_today, color: Color(0xFFE91E63)),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: textColor,
+                        size: 20,
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  '${value.day} ${Dil.aylar[value.month - 1]} ${value.year}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white : Colors.black,
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Dil.ayarlar,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Uygulama tercihleri',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: subtitleColor,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
                   ),
+                ],
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // GÖRÜNÜM Section
+                    _buildSectionHeader(Dil.gorunum, subtitleColor),
+                    const SizedBox(height: 12),
+                    _buildCard(
+                      cardColor: cardColor,
+                      child: _buildSwitchTile(
+                        icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                        iconBgColor: const Color(0xFFE5E0F7),
+                        iconColor: subtitleColor,
+                        title: Dil.karanlikMod,
+                        subtitle: Dil.karanlikModAciklama,
+                        value: BabyTrackerApp.of(context)?.isDarkMode ?? false,
+                        onChanged: (value) {
+                          BabyTrackerApp.of(context)?.toggleTheme();
+                        },
+                        textColor: textColor,
+                        subtitleColor: subtitleColor,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // BİLDİRİMLER Section
+                    _buildSectionHeader(Dil.bildirimler, subtitleColor),
+                    const SizedBox(height: 12),
+                    _buildCard(
+                      cardColor: cardColor,
+                      child: Column(
+                        children: [
+                          _buildSwitchTile(
+                            icon: Icons.restaurant,
+                            iconBgColor: const Color(0xFFFFE5E0),
+                            iconColor: const Color(0xFFFFB4A2),
+                            title: Dil.mamaHatirlatici,
+                            subtitle: 'Her 3 saatte bir hatırlat',
+                            value: true,
+                            onChanged: (value) {},
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildSwitchTile(
+                            icon: Icons.baby_changing_station,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: Dil.bezHatirlatici,
+                            subtitle: 'Her 2 saatte bir kontrol et',
+                            value: false,
+                            onChanged: (value) {},
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // VERİ YÖNETİMİ Section
+                    _buildSectionHeader(Dil.veriYonetimi, subtitleColor),
+                    const SizedBox(height: 12),
+                    _buildCard(
+                      cardColor: cardColor,
+                      child: Column(
+                        children: [
+                          _buildActionTile(
+                            icon: Icons.analytics_outlined,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: 'Rapor Oluştur',
+                            subtitle: 'Haftalık/Aylık istatistikler',
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RaporScreen(),
+                                ),
+                              );
+                            },
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildActionTile(
+                            icon: Icons.download_outlined,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: Dil.verileriDisaAktar,
+                            subtitle: 'JSON formatında indir',
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(Dil.yapilandiriliyor),
+                                  backgroundColor: const Color(0xFFFFB4A2),
+                                ),
+                              );
+                            },
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildActionTile(
+                            icon: Icons.delete_outline,
+                            iconBgColor: const Color(0xFFFFE5E0),
+                            iconColor: Colors.red.shade400,
+                            title: Dil.tumVerileriSil,
+                            subtitle: 'Tüm kayıtları kalıcı olarak sil',
+                            textColor: Colors.red.shade400,
+                            subtitleColor: subtitleColor,
+                            onTap: () => _showDeleteDialog(isDark, textColor, subtitleColor),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // HAKKINDA Section
+                    _buildSectionHeader(Dil.hakkinda, subtitleColor),
+                    const SizedBox(height: 12),
+                    _buildCard(
+                      cardColor: cardColor,
+                      child: Column(
+                        children: [
+                          _buildInfoTile(
+                            Dil.versiyon,
+                            '1.0.0',
+                            textColor,
+                            subtitleColor,
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildInfoTile(
+                            Dil.gelistirici,
+                            'Bebek Takip',
+                            textColor,
+                            subtitleColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
@@ -294,29 +249,121 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  Widget _buildSectionHeader(String title, Color subtitleColor) {
+    return Text(
+      title.toUpperCase(),
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.bold,
+        color: subtitleColor,
+        letterSpacing: 1.0,
+      ),
+    );
+  }
+
+  Widget _buildCard({
+    required Color cardColor,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
   Widget _buildSwitchTile({
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
     required String title,
     required String subtitle,
     required bool value,
     required ValueChanged<bool> onChanged,
-    required IconData icon,
-    required Color iconColor,
+    required Color textColor,
+    required Color subtitleColor,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return Row(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: iconBgColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: iconColor, size: 22),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: subtitleColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: const Color(0xFFFFB4A2),
+          activeTrackColor: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionTile({
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required Color textColor,
+    required Color subtitleColor,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: iconColor.withAlpha(25),
-              borderRadius: BorderRadius.circular(10),
+              color: iconBgColor,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: iconColor, size: 20),
+            child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,142 +371,138 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   title,
                   style: TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black,
+                    color: textColor,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? Colors.grey.shade400 : Colors.grey,
+                    fontSize: 13,
+                    color: subtitleColor,
                   ),
                 ),
               ],
             ),
           ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeThumbColor: const Color(0xFFE91E63),
+          Icon(
+            Icons.chevron_right,
+            color: subtitleColor,
+            size: 24,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.withAlpha(25),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.w600, color: color),
-                  ),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: color),
-          ],
+  Widget _buildInfoTile(
+    String label,
+    String value,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 15,
+            color: subtitleColor,
+          ),
         ),
-      ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildInfoTile(String label, String value, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: isDark ? Colors.grey.shade400 : Colors.grey,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  void _showDeleteDialog(bool isDark, Color textColor, Color subtitleColor) {
+    final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
 
-  void _showDeleteDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        backgroundColor: cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Text('⚠️', style: TextStyle(fontSize: 28)),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFE5E0),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.red.shade400,
+                size: 24,
+              ),
+            ),
             const SizedBox(width: 12),
             Text(
               Dil.dikkat,
-              style: TextStyle(color: isDark ? Colors.white : Colors.black),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
           ],
         ),
         content: Text(
           Dil.silmeUyarisi,
           style: TextStyle(
-            color: isDark ? Colors.grey.shade300 : Colors.black87,
+            fontSize: 15,
+            color: subtitleColor,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(Dil.iptal),
+            child: Text(
+              Dil.iptal,
+              style: TextStyle(
+                color: subtitleColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
-          ElevatedButton(
-            onPressed: () async {
+          GestureDetector(
+            onTap: () async {
               await VeriYonetici.verileriTemizle();
               if (!context.mounted) return;
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tüm veriler silindi!')),
+                const SnackBar(
+                  content: Text('Tüm veriler silindi!'),
+                  backgroundColor: Color(0xFFFFB4A2),
+                ),
               );
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(Dil.sil, style: const TextStyle(color: Colors.white)),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade400,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Text(
+                Dil.sil,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
         ],
       ),

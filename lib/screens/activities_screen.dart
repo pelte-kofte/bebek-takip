@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
-import '../models/ikonlar.dart';
 
 enum ActivityType { mama, bez, uyku }
 
 class ActivitiesScreen extends StatefulWidget {
-  const ActivitiesScreen({super.key});
+  final ActivityType? initialTab;
+
+  const ActivitiesScreen({super.key, this.initialTab});
 
   @override
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
@@ -14,7 +15,13 @@ class ActivitiesScreen extends StatefulWidget {
 
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
   DateTime _selectedDate = DateTime.now();
-  ActivityType _activeType = ActivityType.mama;
+  late ActivityType _activeType;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeType = widget.initialTab ?? ActivityType.mama;
+  }
 
   void _selectDate() async {
     final picked = await showDatePicker(
@@ -333,10 +340,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               shape: BoxShape.circle,
               color: const Color(0xFFE5E0F7), // SOLID lavender
               border: isActive
-                  ? Border.all(
-                      color: const Color(0xFFFFB4A2),
-                      width: 3,
-                    )
+                  ? Border.all(color: const Color(0xFFFFB4A2), width: 3)
                   : null,
               boxShadow: isActive
                   ? [
@@ -370,8 +374,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             type == ActivityType.mama
                 ? 'MAMA'
                 : type == ActivityType.bez
-                    ? 'BEZ'
-                    : 'UYKU',
+                ? 'BEZ'
+                : 'UYKU',
             style: TextStyle(
               fontSize: 12,
               fontWeight: isActive ? FontWeight.bold : FontWeight.w500,

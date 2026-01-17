@@ -91,10 +91,76 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     }
   }
 
+  void _showVaccineOptions(Map<String, dynamic> vaccine, int index) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.edit_outlined,
+                  color: AppColors.primary,
+                ),
+                title: Text(Dil.duzenle),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editVaccine(vaccine, index);
+                },
+              ),
+              ListTile(
+                leading: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                ),
+                title: Text(
+                  Dil.sil,
+                  style: const TextStyle(color: Colors.red),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteVaccine(index);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _markAsCompleted(int index) async {
     setState(() {
       _vaccines[index]['durum'] = 'uygulandi';
       _vaccines[index]['tarih'] = DateTime.now();
+    });
+    await VeriYonetici.saveAsiKayitlari(_vaccines);
+  }
+
+  void _onReorder(int oldIndex, int newIndex) async {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final item = _vaccines.removeAt(oldIndex);
+      _vaccines.insert(newIndex, item);
     });
     await VeriYonetici.saveAsiKayitlari(_vaccines);
   }
@@ -155,27 +221,46 @@ Widget build(BuildContext context) {
               children: [
                 _buildHeader(isDark),
                 Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildBabyInfoCard(isDark),
-
-                        if (_vaccines.isEmpty) ...[
-                          const SizedBox(height: 32),
-                          _buildEmptyState(isDark),
-                        ],
-
-                        const SizedBox(height: 32),
-                        _buildVaccinesByPeriod('Doğumda', Dil.dogumda, isDark),
-                        const SizedBox(height: 32),
-                        _buildVaccinesByPeriod('2. Ay', Dil.ikinci, isDark),
-                        const SizedBox(height: 32),
-                        _buildUpcomingVaccines(isDark),
-                      ],
-                    ),
-                  ),
+                  child: _vaccines.isEmpty
+                      ? SingleChildScrollView(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildBabyInfoCard(isDark),
+                              const SizedBox(height: 32),
+                              _buildEmptyState(isDark),
+                            ],
+                          ),
+                        )
+                      : ReorderableListView.builder(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+                          buildDefaultDragHandles: false,
+                          onReorder: _onReorder,
+                          itemCount: _vaccines.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Padding(
+                                key: const ValueKey('baby_info'),
+                                padding: const EdgeInsets.only(bottom: 24),
+                                child: _buildBabyInfoCard(isDark),
+                              );
+                            }
+                            final vaccineIndex = index - 1;
+                            final vaccine = _vaccines[vaccineIndex];
+                            final isCompleted = vaccine['durum'] == 'uygulandi';
+                            return Padding(
+                              key: ValueKey(vaccine['id'] ?? vaccineIndex),
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildReorderableVaccineCard(
+                                vaccine,
+                                vaccineIndex,
+                                isDark,
+                                isCompleted,
+                              ),
+                            );
+                          },
+                        ),
                 ),
               ],
             ),
@@ -230,20 +315,6 @@ Widget build(BuildContext context) {
           Text(
             Dil.asilarim,
             style: AppTypography.h1(context),
-          ),
-          const Spacer(),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Icon(
-              Icons.calendar_month,
-              color: AppColors.primary,
-              size: 20,
-            ),
           ),
         ],
       ),
@@ -329,10 +400,11 @@ Widget build(BuildContext context) {
         ),
         ...vaccines.asMap().entries.map((entry) {
           final vaccine = entry.value;
+          final index = _vaccines.indexOf(vaccine);
           final isCompleted = vaccine['durum'] == 'uygulandi';
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: _buildVaccineCard(vaccine, isDark, isCompleted),
+            child: _buildVaccineCard(vaccine, index, isDark, isCompleted),
           );
         }),
       ],
@@ -370,8 +442,9 @@ Widget build(BuildContext context) {
     );
   }
 
-  Widget _buildVaccineCard(
+  Widget _buildReorderableVaccineCard(
     Map<String, dynamic> vaccine,
+    int index,
     bool isDark,
     bool isCompleted,
   ) {
@@ -379,77 +452,201 @@ Widget build(BuildContext context) {
         ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
         : '';
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.bgDarkCard.withOpacity(0.9)
-            : Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFFFB4A2).withOpacity(0.05),
+    return GestureDetector(
+      onTap: () => _editVaccine(vaccine, index),
+      onLongPress: () => _showVaccineOptions(vaccine, index),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard.withOpacity(0.9)
+              : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withOpacity(0.05),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFB4A2).withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFFB4A2).withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFDAB9),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              Icons.vaccines,
-              color: const Color(0xFFFFB4A2),
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  vaccine['ad'],
-                  style: AppTypography.h3(context).copyWith(fontSize: 16),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  isCompleted
-                      ? '${Dil.uygulandi} - $dateStr'
-                      : vaccine['notlar'] ?? Dil.bekleniyor,
-                  style: AppTypography.caption(context).copyWith(
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : const Color(0xFF866F65),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (isCompleted)
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: AppColors.accentGreen.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
+        child: Row(
+          children: [
+            ReorderableDragStartListener(
+              index: index + 1,
               child: Icon(
-                Icons.check,
-                color: AppColors.accentGreen,
+                Icons.drag_indicator,
+                color: isDark
+                    ? AppColors.textSecondaryDark.withOpacity(0.4)
+                    : const Color(0xFF866F65).withOpacity(0.4),
                 size: 20,
               ),
             ),
-        ],
+            const SizedBox(width: 8),
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: isCompleted
+                    ? const Color(0xFFFFDAB9)
+                    : AppColors.accentPeach.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.vaccines,
+                color: isCompleted
+                    ? const Color(0xFFFFB4A2)
+                    : AppColors.primary,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    vaccine['ad'],
+                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isCompleted
+                        ? '${Dil.uygulandi} - $dateStr'
+                        : '${vaccine['donem']} • ${vaccine['notlar'] ?? Dil.bekleniyor}',
+                    style: AppTypography.caption(context).copyWith(
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF866F65),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isCompleted)
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.check,
+                  color: AppColors.accentGreen,
+                  size: 20,
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.edit_outlined,
+              color: isDark
+                  ? AppColors.textSecondaryDark.withOpacity(0.5)
+                  : const Color(0xFF866F65).withOpacity(0.5),
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVaccineCard(
+    Map<String, dynamic> vaccine,
+    int index,
+    bool isDark,
+    bool isCompleted,
+  ) {
+    final dateStr = vaccine['tarih'] != null
+        ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
+        : '';
+
+    return GestureDetector(
+      onTap: () => _editVaccine(vaccine, index),
+      onLongPress: () => _showVaccineOptions(vaccine, index),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard.withOpacity(0.9)
+              : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withOpacity(0.05),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFB4A2).withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFDAB9),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                Icons.vaccines,
+                color: const Color(0xFFFFB4A2),
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    vaccine['ad'],
+                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isCompleted
+                        ? '${Dil.uygulandi} - $dateStr'
+                        : vaccine['notlar'] ?? Dil.bekleniyor,
+                    style: AppTypography.caption(context).copyWith(
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF866F65),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isCompleted)
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: AppColors.accentGreen.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(
+                  Icons.check,
+                  color: AppColors.accentGreen,
+                  size: 20,
+                ),
+              ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.edit_outlined,
+              color: isDark
+                  ? AppColors.textSecondaryDark.withOpacity(0.5)
+                  : const Color(0xFF866F65).withOpacity(0.5),
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -459,83 +656,77 @@ Widget build(BuildContext context) {
     int index,
     bool isDark,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.bgDarkCard.withOpacity(0.9)
-            : Colors.white.withOpacity(0.9),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.primary.withOpacity(0.05),
+    return GestureDetector(
+      onTap: () => _editVaccine(vaccine, index),
+      onLongPress: () => _showVaccineOptions(vaccine, index),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard.withOpacity(0.9)
+              : Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.primary.withOpacity(0.05),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.accentPeach.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Icon(
-              Icons.vaccines,
-              color: AppColors.primary,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  vaccine['ad'],
-                  style: AppTypography.h3(context).copyWith(
-                    fontSize: 16,
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : const Color(0xFF866F65),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  vaccine['notlar'] ?? Dil.bekleniyor,
-                  style: AppTypography.caption(context).copyWith(
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : const Color(0xFF866F65),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => _editVaccine(vaccine, index),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFFE5E0F7),
-                borderRadius: BorderRadius.circular(20),
+                color: AppColors.accentPeach.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Text(
-                Dil.duzenle,
-                style: AppTypography.label(context).copyWith(
-                  color: const Color(0xFF5D3FD3),
-                  fontWeight: FontWeight.w600,
-                ),
+              child: Icon(
+                Icons.vaccines,
+                color: AppColors.primary,
+                size: 24,
               ),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    vaccine['ad'],
+                    style: AppTypography.h3(context).copyWith(
+                      fontSize: 16,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF866F65),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    vaccine['notlar'] ?? Dil.bekleniyor,
+                    style: AppTypography.caption(context).copyWith(
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF866F65),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.edit_outlined,
+              color: isDark
+                  ? AppColors.textSecondaryDark.withOpacity(0.5)
+                  : const Color(0xFF866F65).withOpacity(0.5),
+              size: 18,
+            ),
+          ],
+        ),
       ),
     );
   }

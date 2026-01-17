@@ -9,11 +9,7 @@ class AddVaccineScreen extends StatefulWidget {
   final Map<String, dynamic>? vaccine;
   final int? index;
 
-  const AddVaccineScreen({
-    super.key,
-    this.vaccine,
-    this.index,
-  });
+  const AddVaccineScreen({super.key, this.vaccine, this.index});
 
   @override
   State<AddVaccineScreen> createState() => _AddVaccineScreenState();
@@ -57,15 +53,17 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
 
   void _saveVaccine() async {
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${Dil.asiAdi} boş bırakılamaz')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${Dil.asiAdi} boş bırakılamaz')));
       return;
     }
 
     final vaccines = VeriYonetici.getAsiKayitlari();
     final newVaccine = {
-      'id': widget.vaccine?['id'] ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      'id':
+          widget.vaccine?['id'] ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       'ad': _nameController.text.trim(),
       'donem': _selectedPeriod,
       'durum': _selectedStatus,
@@ -114,58 +112,57 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   @override
-Widget build(BuildContext context) {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-  final isEdit = widget.vaccine != null;
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isEdit = widget.vaccine != null;
 
-  return DecorativeBackground(
-    child: Scaffold(
-      backgroundColor: isDark ? AppColors.bgDark : const Color(0xFFFFFBF5),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                _buildHeader(isDark, isEdit),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildNameField(isDark),
-                        const SizedBox(height: 24),
-                        _buildPeriodSelector(isDark),
-                        const SizedBox(height: 24),
-                        _buildStatusSelector(isDark),
-
-                        if (_selectedStatus == 'uygulandi') ...[
+    return DecorativeBackground(
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.bgDark : const Color(0xFFFFFBF5),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  _buildHeader(isDark, isEdit),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildNameField(isDark),
                           const SizedBox(height: 24),
-                          _buildDateSelector(isDark),
-                        ],
+                          _buildPeriodSelector(isDark),
+                          const SizedBox(height: 24),
+                          _buildStatusSelector(isDark),
 
-                        const SizedBox(height: 24),
-                        _buildNotesField(isDark),
-                      ],
+                          if (_selectedStatus == 'uygulandi') ...[
+                            const SizedBox(height: 24),
+                            _buildDateSelector(isDark),
+                          ],
+
+                          const SizedBox(height: 24),
+                          _buildNotesField(isDark),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            Positioned(
-              bottom: 32,
-              left: 24,
-              right: 24,
-              child: _buildSaveButton(),
-            ),
-          ],
+              Positioned(
+                bottom: 32,
+                left: 24,
+                right: 24,
+                child: _buildSaveButton(),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   Widget _buildHeader(bool isDark, bool isEdit) {
     return Padding(
@@ -232,9 +229,7 @@ Widget build(BuildContext context) {
                 ? AppColors.bgDarkCard.withOpacity(0.9)
                 : Colors.white.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFFFB4A2).withOpacity(0.1),
-            ),
+            border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.1)),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFFFFB4A2).withOpacity(0.05),
@@ -295,8 +290,8 @@ Widget build(BuildContext context) {
                   color: isSelected
                       ? const Color(0xFFFFB4A2)
                       : (isDark
-                          ? AppColors.bgDarkCard.withOpacity(0.9)
-                          : Colors.white.withOpacity(0.9)),
+                            ? AppColors.bgDarkCard.withOpacity(0.9)
+                            : Colors.white.withOpacity(0.9)),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: isSelected
@@ -318,8 +313,8 @@ Widget build(BuildContext context) {
                     color: isSelected
                         ? Colors.white
                         : (isDark
-                            ? AppColors.textPrimaryDark
-                            : AppColors.textPrimaryLight),
+                              ? AppColors.textPrimaryDark
+                              : AppColors.textPrimaryLight),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -363,8 +358,8 @@ Widget build(BuildContext context) {
                     color: _selectedStatus == 'bekleniyor'
                         ? const Color(0xFFE5E0F7)
                         : (isDark
-                            ? AppColors.bgDarkCard.withOpacity(0.9)
-                            : Colors.white.withOpacity(0.9)),
+                              ? AppColors.bgDarkCard.withOpacity(0.9)
+                              : Colors.white.withOpacity(0.9)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedStatus == 'bekleniyor'
@@ -387,8 +382,8 @@ Widget build(BuildContext context) {
                         color: _selectedStatus == 'bekleniyor'
                             ? const Color(0xFF5D3FD3)
                             : (isDark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.textPrimaryLight),
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.textPrimaryLight),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -402,9 +397,7 @@ Widget build(BuildContext context) {
                 onTap: () {
                   setState(() {
                     _selectedStatus = 'uygulandi';
-                    if (_selectedDate == null) {
-                      _selectedDate = DateTime.now();
-                    }
+                    _selectedDate ??= DateTime.now();
                   });
                 },
                 child: Container(
@@ -413,8 +406,8 @@ Widget build(BuildContext context) {
                     color: _selectedStatus == 'uygulandi'
                         ? const Color(0xFF81C784)
                         : (isDark
-                            ? AppColors.bgDarkCard.withOpacity(0.9)
-                            : Colors.white.withOpacity(0.9)),
+                              ? AppColors.bgDarkCard.withOpacity(0.9)
+                              : Colors.white.withOpacity(0.9)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedStatus == 'uygulandi'
@@ -437,8 +430,8 @@ Widget build(BuildContext context) {
                         color: _selectedStatus == 'uygulandi'
                             ? Colors.white
                             : (isDark
-                                ? AppColors.textPrimaryDark
-                                : AppColors.textPrimaryLight),
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.textPrimaryLight),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -534,9 +527,7 @@ Widget build(BuildContext context) {
                 ? AppColors.bgDarkCard.withOpacity(0.9)
                 : Colors.white.withOpacity(0.9),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFFFB4A2).withOpacity(0.1),
-            ),
+            border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.1)),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFFFFB4A2).withOpacity(0.05),

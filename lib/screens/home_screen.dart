@@ -8,6 +8,9 @@ import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import 'add_screen.dart';
 import 'settings_screen.dart';
+import 'activities_screen.dart';
+import 'add_growth_screen.dart';
+import 'baby_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -301,87 +304,99 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // HEADER
-                  SizedBox(
-                    height: 80,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: const Color(0xFFEBE8FF),
-                              border: Border.all(color: Colors.white, width: 2),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  offset: Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: ClipOval(
-                              child: Image.asset(
-                                'assets/icons/illustration/baby_face.png',
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    child: Row(
+                      children: [
+                        // Baby profile area (tappable)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const BabyProfileScreen(),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
                                 width: 48,
                                 height: 48,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
                                   color: const Color(0xFFEBE8FF),
-                                  child: const Icon(
-                                    Icons.child_care,
-                                    color: Color(0xFFFF998A),
-                                    size: 24,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    'assets/icons/illustration/baby_face.png',
+                                    width: 48,
+                                    height: 48,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Container(
+                                      color: const Color(0xFFEBE8FF),
+                                      child: const Icon(
+                                        Icons.child_care,
+                                        color: Color(0xFFFF998A),
+                                        size: 24,
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Sofia',
-                                  style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: textColor,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                                Text(
-                                  '4 months old',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: subtitleColor,
+                              const SizedBox(width: 12),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Sofia',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: textColor,
+                                      letterSpacing: -0.5,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
+                                  Text(
+                                    '4 months old',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: subtitleColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.settings_outlined,
-                              color: textColor.withValues(alpha: 0.7),
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SettingsScreen(),
-                                ),
-                              );
-                            },
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: Icon(
+                            Icons.settings_outlined,
+                            color: textColor.withValues(alpha: 0.7),
+                            size: 24,
                           ),
-                        ],
-                      ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
 
@@ -617,28 +632,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildSummaryCard(
-                          label: 'LAST FED',
-                          value: _getLastFeedingValue(mamaKayitlari),
-                          progress: 0.33,
-                          progressColor: const Color(0xFFFF998A),
-                          isDark: isDark,
+                        GestureDetector(
+                          onTap: () => _navigateToActivities(ActivityType.mama),
+                          child: _buildSummaryCard(
+                            label: 'LAST FED',
+                            value: _getLastFeedingValue(mamaKayitlari),
+                            progress: _getTimeProgress(mamaKayitlari.isNotEmpty ? mamaKayitlari.first['tarih'] as DateTime? : null),
+                            progressColor: const Color(0xFFFF998A),
+                            isDark: isDark,
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        _buildSummaryCard(
-                          label: 'DIAPER',
-                          value: _getLastDiaperValue(kakaKayitlari),
-                          progress: 0.75,
-                          progressColor: const Color(0xFF7A749E),
-                          isDark: isDark,
+                        GestureDetector(
+                          onTap: () => _navigateToActivities(ActivityType.bez),
+                          child: _buildSummaryCard(
+                            label: 'LAST DIAPER',
+                            value: _getLastDiaperValue(kakaKayitlari),
+                            progress: _getTimeProgress(kakaKayitlari.isNotEmpty ? kakaKayitlari.first['tarih'] as DateTime? : null),
+                            progressColor: const Color(0xFF7A749E),
+                            isDark: isDark,
+                          ),
                         ),
                         const SizedBox(width: 12),
-                        _buildSummaryCard(
-                          label: 'DAILY SLEEP',
-                          value: _getDailySleepTotal(VeriYonetici.getUykuKayitlari()),
-                          progress: 0.66,
-                          progressColor: const Color(0xFFFF998A),
-                          isDark: isDark,
+                        GestureDetector(
+                          onTap: () => _navigateToActivities(ActivityType.uyku),
+                          child: _buildSummaryCard(
+                            label: 'LAST SLEEP',
+                            value: _getLastSleepValue(VeriYonetici.getUykuKayitlari()),
+                            progress: _getTimeProgress(VeriYonetici.getUykuKayitlari().isNotEmpty ? VeriYonetici.getUykuKayitlari().first['bitis'] as DateTime? : null),
+                            progressColor: const Color(0xFF7A749E),
+                            isDark: isDark,
+                          ),
                         ),
                       ],
                     ),
@@ -721,7 +745,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A3E) : Colors.white,
+        color: isDark ? const Color(0xFF2A2A3E) : const Color(0xFFF1D9F5),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
@@ -1108,18 +1132,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () {
-                  // Open Add Activity bottom sheet with Growth pre-selected
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    isScrollControlled: true,
-                    builder: (context) => AddScreen(
-                      onSaved: widget.onDataChanged,
-                      initialActivity: 'growth',
-                    ),
-                  );
-                },
+                onTap: () => _navigateToAddGrowth(),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
@@ -1197,34 +1210,37 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 16),
         // Growth cards
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Row(
-            children: [
-              Expanded(
-                child: _buildGrowthCard(
-                  icon: Icons.monitor_weight_outlined,
-                  label: 'WEIGHT',
-                  value: '${latest['kilo']}',
-                  unit: 'kg',
-                  change: _getWeightChange(boyKiloKayitlari),
-                  isDark: isDark,
-                  textColor: textColor,
+        GestureDetector(
+          onTap: () => _navigateToAddGrowth(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildGrowthCard(
+                    icon: Icons.monitor_weight_outlined,
+                    label: 'WEIGHT',
+                    value: '${latest['kilo']}',
+                    unit: 'kg',
+                    change: _getWeightChange(boyKiloKayitlari),
+                    isDark: isDark,
+                    textColor: textColor,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildGrowthCard(
-                  icon: Icons.straighten,
-                  label: 'HEIGHT',
-                  value: '${latest['boy']}',
-                  unit: 'cm',
-                  change: _getHeightChange(boyKiloKayitlari),
-                  isDark: isDark,
-                  textColor: textColor,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _buildGrowthCard(
+                    icon: Icons.straighten,
+                    label: 'HEIGHT',
+                    value: '${latest['boy']}',
+                    unit: 'cm',
+                    change: _getHeightChange(boyKiloKayitlari),
+                    isDark: isDark,
+                    textColor: textColor,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
         const SizedBox(height: 24),
@@ -1367,7 +1383,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _getLastFeedingValue(List<Map<String, dynamic>> mama) {
-    if (mama.isEmpty) return 'No data';
+    if (mama.isEmpty) return 'Henüz kayıt yok';
     final tarih = mama.first['tarih'] as DateTime;
     final diff = DateTime.now().difference(tarih);
     if (diff.inMinutes < 60) {
@@ -1382,7 +1398,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _getLastDiaperValue(List<Map<String, dynamic>> kaka) {
-    if (kaka.isEmpty) return 'No data';
+    if (kaka.isEmpty) return 'Henüz kayıt yok';
     final tarih = kaka.first['tarih'] as DateTime;
     final diff = DateTime.now().difference(tarih);
     if (diff.inMinutes < 60) {
@@ -1394,6 +1410,50 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       return '${diff.inDays}d ago';
     }
+  }
+
+  String _getLastSleepValue(List<Map<String, dynamic>> uyku) {
+    if (uyku.isEmpty) return 'Henüz kayıt yok';
+    final tarih = uyku.first['bitis'] as DateTime;
+    final diff = DateTime.now().difference(tarih);
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}m ago';
+    } else if (diff.inHours < 24) {
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      return '${hours}h ${minutes}m ago';
+    } else {
+      return '${diff.inDays}d ago';
+    }
+  }
+
+  double _getTimeProgress(DateTime? lastTime) {
+    if (lastTime == null) return 0.0;
+    final diff = DateTime.now().difference(lastTime);
+    // Progress bar shows how "fresh" the activity is
+    // Full bar (1.0) = just now, empty bar (0.0) = 4+ hours ago
+    final hoursAgo = diff.inMinutes / 60.0;
+    if (hoursAgo >= 4) return 0.1;
+    return 1.0 - (hoursAgo / 4.0) * 0.9;
+  }
+
+  void _navigateToActivities(ActivityType tab) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ActivitiesScreen(initialTab: tab),
+      ),
+    );
+  }
+
+  void _navigateToAddGrowth() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddGrowthScreen(onSaved: widget.onDataChanged),
+      ),
+    );
+    setState(() {});
   }
 
   String _getDailySleepTotal(List<Map<String, dynamic>> uyku) {
