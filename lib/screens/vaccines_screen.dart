@@ -42,7 +42,28 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   String _getChildAge() {
-    return '10 Ay 12 Günlük';
+    final birthDate = VeriYonetici.getBirthDate();
+    final now = DateTime.now();
+    final difference = now.difference(birthDate);
+    final months = (difference.inDays / 30).floor();
+    final days = difference.inDays % 30;
+
+    if (months >= 12) {
+      final years = months ~/ 12;
+      final remainingMonths = months % 12;
+      if (remainingMonths > 0) {
+        return '$years Yıl $remainingMonths Aylık';
+      }
+      return '$years Yıllık';
+    } else if (months > 0) {
+      return '$months Ay $days Günlük';
+    } else {
+      return '$days Günlük';
+    }
+  }
+
+  String _getBabyName() {
+    return VeriYonetici.getBabyName();
   }
 
   void _deleteVaccine(int index) async {
@@ -361,7 +382,7 @@ Widget build(BuildContext context) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Mavi',
+                _getBabyName(),
                 style: AppTypography.h2(context),
               ),
               const SizedBox(height: 4),
