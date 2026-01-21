@@ -6,7 +6,6 @@ import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
-import 'add_screen.dart';
 import 'settings_screen.dart';
 import 'activities_screen.dart';
 import 'add_growth_screen.dart';
@@ -41,10 +40,41 @@ class _HomeScreenState extends State<HomeScreen> {
   StreamSubscription<Duration?>? _emzirmeSubscription;
   StreamSubscription<Duration?>? _uykuSubscription;
 
+  // Baby info
+  String _babyName = 'Sofia';
+  DateTime _birthDate = DateTime(2024, 9, 17);
+
   @override
   void initState() {
     super.initState();
+    _loadBabyInfo();
     _setupTimerListeners();
+  }
+
+  void _loadBabyInfo() {
+    setState(() {
+      _babyName = VeriYonetici.getBabyName();
+      _birthDate = VeriYonetici.getBirthDate();
+    });
+  }
+
+  String _calculateAge() {
+    final now = DateTime.now();
+    final difference = now.difference(_birthDate);
+    final months = (difference.inDays / 30).floor();
+
+    if (months >= 12) {
+      final years = months ~/ 12;
+      final remainingMonths = months % 12;
+      if (remainingMonths > 0) {
+        return '$years years $remainingMonths months old';
+      }
+      return '$years years old';
+    } else if (months > 0) {
+      return '$months months old';
+    } else {
+      return '${difference.inDays} days old';
+    }
   }
 
   void _setupTimerListeners() {
@@ -310,13 +340,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // Baby profile area (tappable)
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
+                          onTap: () async {
+                            final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const BabyProfileScreen(),
                               ),
                             );
+                            if (result == true) {
+                              _loadBabyInfo();
+                            }
                           },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -327,7 +360,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: const Color(0xFFEBE8FF),
-                                  border: Border.all(color: Colors.white, width: 2),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
                                   boxShadow: const [
                                     BoxShadow(
                                       color: Colors.black12,
@@ -342,14 +378,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: 48,
                                     height: 48,
                                     fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Container(
-                                      color: const Color(0xFFEBE8FF),
-                                      child: const Icon(
-                                        Icons.child_care,
-                                        color: Color(0xFFFF998A),
-                                        size: 24,
-                                      ),
-                                    ),
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              color: const Color(0xFFEBE8FF),
+                                              child: const Icon(
+                                                Icons.child_care,
+                                                color: Color(0xFFFF998A),
+                                                size: 24,
+                                              ),
+                                            ),
                                   ),
                                 ),
                               ),
@@ -359,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Sofia',
+                                    _babyName,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -368,7 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   Text(
-                                    '4 months old',
+                                    _calculateAge(),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -422,12 +460,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         children: [
                                           Expanded(
                                             child: GestureDetector(
-                                              onTap: _solAktif ? null : _startSol,
+                                              onTap: _solAktif
+                                                  ? null
+                                                  : _startSol,
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                  vertical: 8,
-                                                ),
+                                                      vertical: 8,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   color: _solAktif
                                                       ? const Color(0xFFFF998A)
@@ -444,7 +484,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     color: _solAktif
                                                         ? Colors.white
                                                         : const Color(
-                                                            0xFFFF998A),
+                                                            0xFFFF998A,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
@@ -453,12 +494,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: GestureDetector(
-                                              onTap: _sagAktif ? null : _startSag,
+                                              onTap: _sagAktif
+                                                  ? null
+                                                  : _startSag,
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                  vertical: 8,
-                                                ),
+                                                      vertical: 8,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   color: _sagAktif
                                                       ? const Color(0xFFFF998A)
@@ -475,7 +518,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     color: _sagAktif
                                                         ? Colors.white
                                                         : const Color(
-                                                            0xFFFF998A),
+                                                            0xFFFF998A,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
@@ -495,8 +539,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: const Color(0xFFFF998A),
-                                            borderRadius:
-                                                BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
                                           ),
                                           child: Text(
                                             'STOP & SAVE',
@@ -576,7 +621,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             label: 'SLEEPING',
                             time: _formatSaniye(_uykuSaniye),
                             lastActivity: _getLastSleepTime(
-                                VeriYonetici.getUykuKayitlari()),
+                              VeriYonetici.getUykuKayitlari(),
+                            ),
                             isActive: _uykuAktif,
                             isDark: isDark,
                             buttons: GestureDetector(
@@ -637,7 +683,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _buildSummaryCard(
                             label: 'LAST FED',
                             value: _getLastFeedingValue(mamaKayitlari),
-                            progress: _getTimeProgress(mamaKayitlari.isNotEmpty ? mamaKayitlari.first['tarih'] as DateTime? : null),
+                            progress: _getTimeProgress(
+                              mamaKayitlari.isNotEmpty
+                                  ? mamaKayitlari.first['tarih'] as DateTime?
+                                  : null,
+                            ),
                             progressColor: const Color(0xFFFF998A),
                             isDark: isDark,
                           ),
@@ -648,7 +698,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _buildSummaryCard(
                             label: 'LAST DIAPER',
                             value: _getLastDiaperValue(kakaKayitlari),
-                            progress: _getTimeProgress(kakaKayitlari.isNotEmpty ? kakaKayitlari.first['tarih'] as DateTime? : null),
+                            progress: _getTimeProgress(
+                              kakaKayitlari.isNotEmpty
+                                  ? kakaKayitlari.first['tarih'] as DateTime?
+                                  : null,
+                            ),
                             progressColor: const Color(0xFF7A749E),
                             isDark: isDark,
                           ),
@@ -658,8 +712,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () => _navigateToActivities(ActivityType.uyku),
                           child: _buildSummaryCard(
                             label: 'LAST SLEEP',
-                            value: _getLastSleepValue(VeriYonetici.getUykuKayitlari()),
-                            progress: _getTimeProgress(VeriYonetici.getUykuKayitlari().isNotEmpty ? VeriYonetici.getUykuKayitlari().first['bitis'] as DateTime? : null),
+                            value: _getLastSleepValue(
+                              VeriYonetici.getUykuKayitlari(),
+                            ),
+                            progress: _getTimeProgress(
+                              VeriYonetici.getUykuKayitlari().isNotEmpty
+                                  ? VeriYonetici.getUykuKayitlari()
+                                            .first['bitis']
+                                        as DateTime?
+                                  : null,
+                            ),
                             progressColor: const Color(0xFF7A749E),
                             isDark: isDark,
                           ),
@@ -751,11 +813,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
         ),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -829,16 +887,10 @@ class _HomeScreenState extends State<HomeScreen> {
         color: isDark ? const Color(0xFF2D1A18) : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark
-            ? const Color(0xFF3D2A28)
-            : const Color(0xFFF0EBE8),
+          color: isDark ? const Color(0xFF3D2A28) : const Color(0xFFF0EBE8),
         ),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 4,
-            offset: Offset(0, 1),
-          ),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
         ],
       ),
       child: Column(
@@ -871,10 +923,9 @@ class _HomeScreenState extends State<HomeScreen> {
               fontSize: 10,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
-              color: (isDark
-                ? const Color(0xFFFCF8F8)
-                : const Color(0xFF1D0E0C)
-              ).withValues(alpha: 0.5),
+              color:
+                  (isDark ? const Color(0xFFFCF8F8) : const Color(0xFF1D0E0C))
+                      .withValues(alpha: 0.5),
             ),
           ),
           const SizedBox(height: 4),
@@ -884,9 +935,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: isDark
-                ? const Color(0xFFFCF8F8)
-                : const Color(0xFF1D0E0C),
+              color: isDark ? const Color(0xFFFCF8F8) : const Color(0xFF1D0E0C),
             ),
           ),
         ],
@@ -905,12 +954,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: (isDark ? const Color(0xFF2A2A3E) : Colors.white)
-            .withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.4),
+        color: (isDark ? const Color(0xFF2A2A3E) : Colors.white).withValues(
+          alpha: 0.6,
         ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
       ),
       child: Row(
         children: [
@@ -968,11 +1016,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (var k in mama) {
       final tarih = k['tarih'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
-        timeline.add({
-          'type': 'mama',
-          'tarih': tarih,
-          'data': k,
-        });
+        timeline.add({'type': 'mama', 'tarih': tarih, 'data': k});
       }
     }
 
@@ -980,11 +1024,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (var k in kaka) {
       final tarih = k['tarih'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
-        timeline.add({
-          'type': 'kaka',
-          'tarih': tarih,
-          'data': k,
-        });
+        timeline.add({'type': 'kaka', 'tarih': tarih, 'data': k});
       }
     }
 
@@ -992,11 +1032,7 @@ class _HomeScreenState extends State<HomeScreen> {
     for (var k in uyku) {
       final tarih = k['bitis'] as DateTime;
       if (tarih.isAfter(son24Saat)) {
-        timeline.add({
-          'type': 'uyku',
-          'tarih': tarih,
-          'data': k,
-        });
+        timeline.add({'type': 'uyku', 'tarih': tarih, 'data': k});
       }
     }
 
@@ -1021,68 +1057,69 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      children: List.generate(
-        timeline.length > 5 ? 5 : timeline.length,
-        (index) {
-          final item = timeline[index];
-          final type = item['type'] as String;
-          final tarih = item['tarih'] as DateTime;
-          final data = item['data'] as Map<String, dynamic>;
+      children: List.generate(timeline.length > 5 ? 5 : timeline.length, (
+        index,
+      ) {
+        final item = timeline[index];
+        final type = item['type'] as String;
+        final tarih = item['tarih'] as DateTime;
+        final data = item['data'] as Map<String, dynamic>;
 
-          IconData icon;
-          Color iconColor;
-          String title;
-          String subtitle;
+        IconData icon;
+        Color iconColor;
+        String title;
+        String subtitle;
 
-          switch (type) {
-            case 'mama':
-              icon = Icons.restaurant;
-              iconColor = const Color(0xFFFF998A);
-              final tur = data['tur'] as String? ?? '';
-              if (tur == 'Anne Sütü') {
-                title = 'Breastfeeding';
-                final sol = data['solDakika'] ?? 0;
-                final sag = data['sagDakika'] ?? 0;
-                subtitle = 'L ${sol}min • R ${sag}min';
-              } else {
-                title = 'Bottle Feeding';
-                subtitle = '${data['miktar']} ml';
-              }
-              break;
-            case 'kaka':
-              icon = Icons.water_drop;
-              iconColor = const Color(0xFF7A749E);
-              title = 'Diaper Change';
-              subtitle = data['tur'] ?? '';
-              break;
-            case 'uyku':
-              icon = Icons.bedtime;
-              iconColor = const Color(0xFF7A749E);
-              title = 'Sleep';
-              final sure = data['sure'] as Duration;
-              final hours = sure.inHours;
-              final minutes = sure.inMinutes % 60;
-              subtitle = hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
-              break;
-            default:
-              icon = Icons.circle;
-              iconColor = Colors.grey;
-              title = 'Activity';
-              subtitle = '';
-          }
+        switch (type) {
+          case 'mama':
+            icon = Icons.restaurant;
+            iconColor = const Color(0xFFFF998A);
+            final tur = data['tur'] as String? ?? '';
+            if (tur == 'Anne Sütü') {
+              title = 'Breastfeeding';
+              final sol = data['solDakika'] ?? 0;
+              final sag = data['sagDakika'] ?? 0;
+              subtitle = 'L ${sol}min • R ${sag}min';
+            } else {
+              title = 'Bottle Feeding';
+              subtitle = '${data['miktar']} ml';
+            }
+            break;
+          case 'kaka':
+            icon = Icons.water_drop;
+            iconColor = const Color(0xFF7A749E);
+            title = 'Diaper Change';
+            subtitle = data['tur'] ?? '';
+            break;
+          case 'uyku':
+            icon = Icons.bedtime;
+            iconColor = const Color(0xFF7A749E);
+            title = 'Sleep';
+            final sure = data['sure'] as Duration;
+            final hours = sure.inHours;
+            final minutes = sure.inMinutes % 60;
+            subtitle = hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
+            break;
+          default:
+            icon = Icons.circle;
+            iconColor = Colors.grey;
+            title = 'Activity';
+            subtitle = '';
+        }
 
-          return Padding(
-            padding: EdgeInsets.only(bottom: index < timeline.length - 1 ? 12 : 0),
-            child: _buildActivityItem(
-              icon: icon,
-              iconColor: iconColor,
-              title: '$title • ${_timeAgo(tarih)}',
-              subtitle: subtitle,
-              isDark: isDark,
-            ),
-          );
-        },
-      ),
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: index < timeline.length - 1 ? 12 : 0,
+          ),
+          child: _buildActivityItem(
+            icon: icon,
+            iconColor: iconColor,
+            title: '$title • ${_timeAgo(tarih)}',
+            subtitle: subtitle,
+            isDark: isDark,
+          ),
+        );
+      }),
     );
   }
 
@@ -1108,11 +1145,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Center(
           child: Column(
             children: [
-              const Icon(
-                Icons.straighten,
-                color: Color(0xFFFF998A),
-                size: 32,
-              ),
+              const Icon(Icons.straighten, color: Color(0xFFFF998A), size: 32),
               const SizedBox(height: 12),
               Text(
                 'Track your baby\'s growth',
@@ -1125,10 +1158,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               Text(
                 'Add weight and height measurements',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: subtitleColor,
-                ),
+                style: TextStyle(fontSize: 12, color: subtitleColor),
               ),
               const SizedBox(height: 16),
               GestureDetector(
@@ -1255,10 +1285,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: const Color(0xFFEBE8FF),
-                  width: 2,
-                ),
+                border: Border.all(color: const Color(0xFFEBE8FF), width: 2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -1292,9 +1319,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFFFFF8F0),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1348,11 +1373,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (change.isNotEmpty)
             Row(
               children: [
-                Icon(
-                  Icons.arrow_upward,
-                  color: Colors.green,
-                  size: 12,
-                ),
+                Icon(Icons.arrow_upward, color: Colors.green, size: 12),
                 const SizedBox(width: 4),
                 Text(
                   change,
@@ -1520,7 +1541,9 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: isDark ? Colors.black26 : AppColors.primary.withValues(alpha:0.1),
+            color: isDark
+                ? Colors.black26
+                : AppColors.primary.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1742,7 +1765,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(vertical: 24),
           decoration: BoxDecoration(
             color: _uykuAktif
-                ? AppColors.accentLavender.withValues(alpha:0.3)
+                ? AppColors.accentLavender.withValues(alpha: 0.3)
                 : (isDark ? Colors.grey.shade800 : Colors.grey.shade100),
             borderRadius: BorderRadius.circular(16),
             border: _uykuAktif
@@ -1856,7 +1879,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha:0.15),
+            color: color.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
@@ -1870,7 +1893,7 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: color.withValues(alpha:0.2),
+              color: color.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: Center(child: icon),
@@ -1984,7 +2007,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: lineColor.withValues(alpha:0.3),
+                  color: lineColor.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                   border: Border.all(color: lineColor, width: 3),
                 ),
@@ -2141,7 +2164,7 @@ class _HomeScreenState extends State<HomeScreen> {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: kayitlar.length > 5 ? 5 : kayitlar.length,
         separatorBuilder: (_, __) =>
-            Divider(height: 1, color: subtitleColor.withValues(alpha:0.2)),
+            Divider(height: 1, color: subtitleColor.withValues(alpha: 0.2)),
         itemBuilder: (context, index) {
           final k = kayitlar[index];
           final tarih = k['tarih'] as DateTime;
@@ -2154,7 +2177,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: AppColors.accentGreen.withValues(alpha:0.2),
+                color: AppColors.accentGreen.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Center(child: Ikonlar.growth(size: 32)),
@@ -2265,7 +2288,7 @@ class _ChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     final fillPaint = Paint()
-      ..color = color.withValues(alpha:0.15)
+      ..color = color.withValues(alpha: 0.15)
       ..style = PaintingStyle.fill;
     final dotPaint = Paint()
       ..color = color

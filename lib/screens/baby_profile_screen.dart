@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/dil.dart';
+import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
+import '../widgets/decorative_background.dart';
 
 class BabyProfileScreen extends StatefulWidget {
   const BabyProfileScreen({super.key});
@@ -10,11 +12,16 @@ class BabyProfileScreen extends StatefulWidget {
 }
 
 class _BabyProfileScreenState extends State<BabyProfileScreen> {
-  final TextEditingController _nameController = TextEditingController(
-    text: 'Sofia',
-  );
+  late TextEditingController _nameController;
   final TextEditingController _notesController = TextEditingController();
-  DateTime _birthDate = DateTime(2024, 9, 17);
+  late DateTime _birthDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: VeriYonetici.getBabyName());
+    _birthDate = VeriYonetici.getBirthDate();
+  }
 
   @override
   void dispose() {
@@ -51,10 +58,12 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
     final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: SafeArea(
-        child: Column(
+    return DecorativeBackground(
+      preset: BackgroundPreset.profile,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
           children: [
             // Header
             Padding(
@@ -433,6 +442,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
           ],
         ),
       ),
+      ),
     );
   }
 
@@ -459,14 +469,17 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     );
   }
 
-  void _saveProfile() {
-    // TODO: Save profile data to VeriYonetici
+  void _saveProfile() async {
+    await VeriYonetici.setBabyName(_nameController.text.trim());
+    await VeriYonetici.setBirthDate(_birthDate);
+
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(Dil.kaydedildi),
         backgroundColor: const Color(0xFFFFB4A2),
       ),
     );
-    Navigator.pop(context);
+    Navigator.pop(context, true); // Return true to indicate changes were made
   }
 }

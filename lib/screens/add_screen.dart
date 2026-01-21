@@ -30,12 +30,6 @@ class _AddScreenState extends State<AddScreen> {
   String _diaperType = 'both'; // 'wet', 'dirty', or 'both'
   final TextEditingController _diaperNotesController = TextEditingController();
 
-  // Growth form fields
-  final TextEditingController _weightController = TextEditingController();
-  final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _headCircController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
-
   @override
   void initState() {
     super.initState();
@@ -45,9 +39,6 @@ class _AddScreenState extends State<AddScreen> {
 
   @override
   void dispose() {
-    _weightController.dispose();
-    _heightController.dispose();
-    _headCircController.dispose();
     _diaperNotesController.dispose();
     super.dispose();
   }
@@ -1148,11 +1139,9 @@ class _AddScreenState extends State<AddScreen> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFDFCFB),
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
+                              Material(
+                                color: const Color(0xFFFDFCFB),
+                                borderRadius: BorderRadius.circular(24),
                                 child: TextField(
                                   controller: _diaperNotesController,
                                   maxLines: 3,
@@ -1169,183 +1158,6 @@ class _AddScreenState extends State<AddScreen> {
                                     fontSize: 14,
                                     color: const Color(0xFF4A3F3F).withValues(alpha: 0.8),
                                   ),
-                                ),
-                              ),
-                            ],
-                            if (selectedActivity == 'growth') ...[
-                              // Date selector
-                              const Text(
-                                'Date',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              GestureDetector(
-                                onTap: () async {
-                                  final picked = await showDatePicker(
-                                    context: context,
-                                    initialDate: _selectedDate,
-                                    firstDate: DateTime(2020),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (picked != null) {
-                                    setState(() => _selectedDate = picked);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.calendar_today,
-                                        color: Color(0xFF7A749E),
-                                        size: 20,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Text(
-                                        '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFF2D1A18),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              // Weight input
-                              const Text(
-                                'Weight (kg)',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: _weightController,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                      decimal: true,
-                                    ),
-                                decoration: InputDecoration(
-                                  hintText: 'e.g., 7.5',
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF7A749E),
-                                    fontSize: 16,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF2D1A18),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              // Height input
-                              const Text(
-                                'Height (cm)',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: _heightController,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                      decimal: true,
-                                    ),
-                                decoration: InputDecoration(
-                                  hintText: 'e.g., 68.5',
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF7A749E),
-                                    fontSize: 16,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF2D1A18),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              // Head circumference input
-                              const Text(
-                                'Head Circumference (cm) - Optional',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: _headCircController,
-                                keyboardType:
-                                    const TextInputType.numberWithOptions(
-                                      decimal: true,
-                                    ),
-                                decoration: InputDecoration(
-                                  hintText: 'e.g., 42.0',
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF7A749E),
-                                    fontSize: 16,
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 16,
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF2D1A18),
                                 ),
                               ),
                             ],
@@ -1568,34 +1380,6 @@ class _AddScreenState extends State<AddScreen> {
       });
 
       await VeriYonetici.saveKakaKayitlari(kayitlar);
-      widget.onSaved?.call();
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } else if (selectedActivity == 'growth') {
-      // Validate required fields
-      if (_weightController.text.isEmpty || _heightController.text.isEmpty) {
-        return;
-      }
-
-      final kayitlar = VeriYonetici.getBoyKiloKayitlari();
-
-      kayitlar.insert(0, {
-        'tarih': _selectedDate,
-        'boy':
-            double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
-        'kilo':
-            double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
-        'basCevresi':
-            double.tryParse(_headCircController.text.replaceAll(',', '.')) ?? 0,
-      });
-
-      // Sort by date descending
-      kayitlar.sort(
-        (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
-      );
-
-      await VeriYonetici.saveBoyKiloKayitlari(kayitlar);
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);

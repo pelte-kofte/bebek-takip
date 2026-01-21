@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(flutter analyze:*)",
-      "Bash(echo.:*)"
+      "Bash(echo.:*)",
+      "Bash(powershell -Command \"\\(Get-Content lib/screens/vaccines_screen.dart\\) -replace ''variant: BackgroundVariant'', ''preset: BackgroundPreset'' | Set-Content lib/screens/vaccines_screen.dart\")",
+      "Bash(powershell -Command \"\\(Get-Content lib/screens/add_vaccine_screen.dart\\) -replace ''variant: BackgroundVariant'', ''preset: BackgroundPreset'' | Set-Content lib/screens/add_vaccine_screen.dart\")",
+      "Bash(powershell -Command:*)"
     ]
   }
 }

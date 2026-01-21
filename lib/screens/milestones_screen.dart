@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/veri_yonetici.dart';
+import '../widgets/decorative_background.dart';
 
 // Photo style enum for privacy-friendly sharing
 enum PhotoStyle { original, softIllustration, pastelBlur }
@@ -25,7 +26,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     setState(() {
       _milestones = VeriYonetici.getMilestones();
       // Sort by date descending (most recent first)
-      _milestones.sort((a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime));
+      _milestones.sort(
+        (a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime),
+      );
     });
   }
 
@@ -34,121 +37,103 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => AddMilestoneScreen(
-          onSaved: _loadMilestones,
-        ),
+        builder: (context) => AddMilestoneScreen(onSaved: _loadMilestones),
       ),
     );
   }
 
   String _formatDate(DateTime date) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]} ${date.year}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF5),
-      body: Stack(
-        children: [
-          // Decorative circles
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.2,
-            right: -MediaQuery.of(context).size.width * 0.05,
-            child: IgnorePointer(
-              child: Container(
-                width: 256,
-                height: 256,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
-                  shape: BoxShape.circle,
+    return DecorativeBackground(
+      preset: BackgroundPreset.milestones,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Milestones',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFB4A2),
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(
+                          Icons.search,
+                          color: Color(0xFF4A3E39),
+                          size: 20,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.1,
-            left: -MediaQuery.of(context).size.width * 0.1,
-            child: IgnorePointer(
-              child: Container(
-                width: 320,
-                height: 320,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
-                ),
+              // Content
+              Expanded(
+                child: _milestones.isEmpty
+                    ? _buildEmptyState()
+                    : _buildMilestonesList(),
               ),
-            ),
+            ],
           ),
-          // Main content
-          SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Milestones',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFFFB4A2),
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.search,
-                            color: Color(0xFF4A3E39),
-                            size: 20,
-                          ),
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Content
-                Expanded(
-                  child: _milestones.isEmpty
-                      ? _buildEmptyState()
-                      : _buildMilestonesList(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      // Floating Add Button
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: FloatingActionButton.extended(
-          onPressed: _showAddMilestoneSheet,
-          backgroundColor: const Color(0xFFFFB4A2),
-          elevation: 8,
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
-            'Add Milestone',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+        ),
+        floatingActionButton: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: FloatingActionButton.extended(
+            onPressed: _showAddMilestoneSheet,
+            backgroundColor: const Color(0xFFFFB4A2),
+            elevation: 8,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label: const Text(
+              'Add Milestone',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -196,7 +181,10 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             GestureDetector(
               onTap: _showAddMilestoneSheet,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFB4A2),
                   borderRadius: BorderRadius.circular(100),
@@ -265,7 +253,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
-    final hasPhoto = milestone['photoPath'] != null && (milestone['photoPath'] as String).isNotEmpty;
+    final hasPhoto =
+        milestone['photoPath'] != null &&
+        (milestone['photoPath'] as String).isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
@@ -293,21 +283,18 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                     child: Image.file(
                       File(milestone['photoPath']),
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Center(
-                        child: Icon(
-                          Icons.star,
-                          color: Color(0xFF4A3E39),
-                          size: 28,
-                        ),
-                      ),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                            child: Icon(
+                              Icons.star,
+                              color: Color(0xFF4A3E39),
+                              size: 28,
+                            ),
+                          ),
                     ),
                   )
                 : const Center(
-                    child: Icon(
-                      Icons.star,
-                      color: Color(0xFF4A3E39),
-                      size: 28,
-                    ),
+                    child: Icon(Icons.star, color: Color(0xFF4A3E39), size: 28),
                   ),
           ),
           const SizedBox(width: 16),
@@ -347,7 +334,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                       color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
                     ),
                   ),
-                  if (milestone['note'] != null && (milestone['note'] as String).isNotEmpty) ...[
+                  if (milestone['note'] != null &&
+                      (milestone['note'] as String).isNotEmpty) ...[
                     const SizedBox(height: 8),
                     Text(
                       milestone['note'],
@@ -385,7 +373,8 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   final TextEditingController _noteController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   String? _photoPath;
-  PhotoStyle _photoStyle = PhotoStyle.softIllustration; // Default: soft illustrated
+  PhotoStyle _photoStyle =
+      PhotoStyle.softIllustration; // Default: soft illustrated
 
   @override
   void dispose() {
@@ -484,7 +473,10 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
               children: [
                 // Header - sticky
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
                   color: const Color(0xFFFFFBF5).withValues(alpha: 0.95),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -508,7 +500,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           ),
                           child: Icon(
                             Icons.close,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.6),
                             size: 20,
                           ),
                         ),
@@ -568,11 +562,15 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                   ),
                                   child: _photoPath != null
                                       ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(28),
+                                          borderRadius: BorderRadius.circular(
+                                            28,
+                                          ),
                                           child: Image.file(
                                             File(_photoPath!),
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) => _buildPhotoPlaceholder(),
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    _buildPhotoPlaceholder(),
                                           ),
                                         )
                                       : _buildPhotoPlaceholder(),
@@ -591,7 +589,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                   child: Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                       borderRadius: BorderRadius.circular(100),
                                       boxShadow: const [
                                         BoxShadow(
@@ -604,7 +604,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                     child: Icon(
                                       Icons.edit,
                                       size: 20,
-                                      color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                                      color: const Color(
+                                        0xFF4A3E39,
+                                      ).withValues(alpha: 0.7),
                                     ),
                                   ),
                                 ),
@@ -618,7 +620,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.6),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -650,7 +654,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.6),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -659,7 +665,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           decoration: InputDecoration(
                             hintText: 'e.g. First Steps',
                             hintStyle: TextStyle(
-                              color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.4),
                               fontSize: 16,
                             ),
                             filled: true,
@@ -682,7 +690,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.6),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -716,7 +726,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                 Icon(
                                   Icons.calendar_today,
                                   size: 20,
-                                  color: const Color(0xFF4A3E39).withValues(alpha: 0.3),
+                                  color: const Color(
+                                    0xFF4A3E39,
+                                  ).withValues(alpha: 0.3),
                                 ),
                               ],
                             ),
@@ -729,7 +741,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.6),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -739,7 +753,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           decoration: InputDecoration(
                             hintText: 'Write down the memory...',
                             hintStyle: TextStyle(
-                              color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.4),
                               fontSize: 16,
                             ),
                             filled: true,
@@ -871,7 +887,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
               Icon(
                 icon,
                 size: 20,
-                color: isSelected ? Colors.white : const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                color: isSelected
+                    ? Colors.white
+                    : const Color(0xFF4A3E39).withValues(alpha: 0.5),
               ),
               const SizedBox(height: 4),
               Text(
@@ -879,7 +897,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                  color: isSelected
+                      ? Colors.white
+                      : const Color(0xFF4A3E39).withValues(alpha: 0.6),
                 ),
               ),
             ],

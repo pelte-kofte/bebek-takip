@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-enum BackgroundVariant {
-  splash, // Full decorative with large blobs
-  home, // Subtle decoration for home screen
-  subtle, // Very minimal decoration
-  none, // No decoration, just solid color
+enum BackgroundPreset {
+  home,
+  add,
+  activities,
+  vaccines,
+  milestones,
+  settings,
+  profile,
 }
 
-/// Reusable decorative background with circular blobs
-/// Provides consistent visual style across screens
 class DecorativeBackground extends StatelessWidget {
   final Widget child;
-  final BackgroundVariant variant;
+  final BackgroundPreset preset;
   final Color? backgroundColor;
 
   const DecorativeBackground({
     super.key,
     required this.child,
-    this.variant = BackgroundVariant.splash,
+    this.preset = BackgroundPreset.home,
     this.backgroundColor,
   });
 
@@ -26,103 +27,140 @@ class DecorativeBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = backgroundColor ??
-        (isDark ? AppColors.bgDark : AppColors.bgLight);
+        (isDark ? AppColors.bgDark : const Color(0xFFFFFBF5));
 
     return Container(
       color: bgColor,
       child: Stack(
         children: [
-          // Decorative blobs based on variant
-          if (variant != BackgroundVariant.none) ..._buildBlobs(isDark),
-
-          // Main content
+          IgnorePointer(
+            child: Stack(children: _buildShapes(isDark)),
+          ),
           child,
         ],
       ),
     );
   }
 
-  List<Widget> _buildBlobs(bool isDark) {
-    switch (variant) {
-      case BackgroundVariant.splash:
+  List<Widget> _buildShapes(bool isDark) {
+    const peach = Color(0xFFFFB4A2);
+    const lavender = Color(0xFFE5E0F7);
+    const cream = Color(0xFFFFF8F0);
+
+    final baseOpacity = isDark ? 0.05 : 0.07;
+
+    switch (preset) {
+      case BackgroundPreset.home:
         return [
-          // Top-right green blob
           Positioned(
-            top: -100,
+            top: -60,
+            left: -50,
+            child: _circle(260, lavender, baseOpacity),
+          ),
+          Positioned(
+            bottom: -40,
             right: -50,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.accentGreen.withOpacity(isDark ? 0.15 : 0.3),
-              ),
-            ),
-          ),
-          // Bottom-left pink blob
-          Positioned(
-            bottom: -150,
-            left: -100,
-            child: Container(
-              width: 400,
-              height: 400,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primaryLight.withOpacity(isDark ? 0.2 : 0.4),
-              ),
-            ),
+            child: _circle(220, peach, baseOpacity),
           ),
         ];
 
-      case BackgroundVariant.home:
+      case BackgroundPreset.add:
         return [
-          // Top-right subtle blob
           Positioned(
-            top: -80,
+            top: -50,
             right: -60,
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.accentBlue.withOpacity(isDark ? 0.1 : 0.2),
-              ),
-            ),
+            child: _circle(250, peach, 0.08),
           ),
-          // Bottom-left subtle blob
           Positioned(
-            bottom: -100,
-            left: -80,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.accentPeach.withOpacity(isDark ? 0.1 : 0.2),
-              ),
-            ),
+            bottom: -50,
+            left: -60,
+            child: _circle(230, lavender, baseOpacity),
           ),
         ];
 
-      case BackgroundVariant.subtle:
+      case BackgroundPreset.activities:
         return [
-          // Single top blob
           Positioned(
-            top: -100,
-            right: -100,
-            child: Container(
-              width: 200,
-              height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(isDark ? 0.08 : 0.15),
-              ),
-            ),
+            top: -50,
+            right: -60,
+            child: _circle(240, lavender, baseOpacity),
+          ),
+          Positioned(
+            bottom: -60,
+            left: -50,
+            child: _circle(220, lavender, baseOpacity),
           ),
         ];
 
-      case BackgroundVariant.none:
-        return [];
+      case BackgroundPreset.vaccines:
+        return [
+          Positioned(
+            top: -60,
+            left: -50,
+            child: _circle(230, lavender, baseOpacity),
+          ),
+          Positioned(
+            bottom: -50,
+            right: -60,
+            child: _circle(200, peach, 0.06),
+          ),
+        ];
+
+      case BackgroundPreset.milestones:
+        return [
+          Positioned(
+            top: -40,
+            right: -40,
+            child: _circle(280, peach, 0.08),
+          ),
+          Positioned(
+            bottom: -60,
+            left: -50,
+            child: _circle(260, lavender, baseOpacity),
+          ),
+        ];
+
+      case BackgroundPreset.settings:
+        return [
+          Positioned(
+            top: -60,
+            right: -70,
+            child: _circle(220, cream, 0.06),
+          ),
+          Positioned(
+            bottom: -50,
+            left: -60,
+            child: _circle(200, lavender, 0.06),
+          ),
+        ];
+
+      case BackgroundPreset.profile:
+        return [
+          Positioned(
+            top: -50,
+            right: -50,
+            child: _circle(250, peach, baseOpacity),
+          ),
+          Positioned(
+            bottom: -60,
+            left: -50,
+            child: _circle(230, lavender, baseOpacity),
+          ),
+        ];
     }
   }
+
+  Widget _circle(double size, Color color, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color.withValues(alpha: opacity),
+      ),
+    );
+  }
 }
+
+// Legacy alias for backward compatibility
+typedef BackgroundVariant = BackgroundPreset;

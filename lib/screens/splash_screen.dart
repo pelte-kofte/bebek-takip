@@ -99,145 +99,145 @@ class _SplashScreenState extends State<SplashScreen>
       child: Scaffold(
         backgroundColor: AppColors.bgLight,
         body: DecorativeBackground(
-          variant: BackgroundVariant.splash,
+          preset: BackgroundPreset.home,
           child: SafeArea(
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                    const Spacer(flex: 2),
+                  const Spacer(flex: 2),
 
-                    // Cuddle Image with float animation
-                    AnimatedBuilder(
-                      animation: Listenable.merge([
-                        _logoController,
-                        _floatController,
-                      ]),
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, _float.value),
-                          child: Transform.scale(
-                            scale: _logoScale.value,
-                            child: Container(
-                              width: 280,
-                              height: 280,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(40),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.3),
-                                    blurRadius: 50,
-                                    offset: const Offset(0, 20),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(40),
-                                child: Image.asset(
-                                  'assets/icons/illustration/parents.png',
-                                  fit: BoxFit.contain,
+                  // Cuddle Image with float animation
+                  AnimatedBuilder(
+                    animation: Listenable.merge([
+                      _logoController,
+                      _floatController,
+                    ]),
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, _float.value),
+                        child: Transform.scale(
+                          scale: _logoScale.value,
+                          child: Container(
+                            width: 280,
+                            height: 280,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  blurRadius: 50,
+                                  offset: const Offset(0, 20),
                                 ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(40),
+                              child: Image.asset(
+                                'assets/icons/illustration/parents.png',
+                                fit: BoxFit.contain,
                               ),
                             ),
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
+                  ),
 
-                    SizedBox(height: AppSpacing.xxl),
+                  SizedBox(height: AppSpacing.xxl),
 
-                    // App Title
-                    FadeTransition(
-                      opacity: _fadeIn,
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('🌱 ', style: TextStyle(fontSize: 32)),
-                              Text(
-                                'Bebek Takip',
-                                style: AppTypography.h1(context).copyWith(
-                                  fontSize: 36,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: -1,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: AppSpacing.md),
-
-                          // Tagline
-                          Text(
-                            'Parenting made simple & memorable.',
-                            style: AppTypography.body(context),
-                          ),
-
-                          SizedBox(height: AppSpacing.sm),
-
-                          // Features Row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildFeatureChip('✓ Free Forever'),
-                              const SizedBox(width: 16),
-                              _buildFeatureChip('✓ Secure & Private'),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const Spacer(flex: 2),
-
-                    // Tap to continue
-                    FadeTransition(
-                      opacity: _fadeIn,
-                      child: AnimatedOpacity(
-                        opacity: _canTap ? 1.0 : 0.0,
-                        duration: const Duration(milliseconds: 500),
-                        child: Column(
+                  // App Title
+                  FadeTransition(
+                    opacity: _fadeIn,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.4),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Başlamak için dokun',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ],
+                            const Text('🌱 ', style: TextStyle(fontSize: 32)),
+                            Text(
+                              'Bebek Takip',
+                              style: AppTypography.h1(context).copyWith(
+                                fontSize: 36,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -1,
                               ),
                             ),
                           ],
                         ),
+                        SizedBox(height: AppSpacing.md),
+
+                        // Tagline
+                        Text(
+                          'Parenting made simple & memorable.',
+                          style: AppTypography.body(context),
+                        ),
+
+                        SizedBox(height: AppSpacing.sm),
+
+                        // Features Row
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildFeatureChip('✓ Free Forever'),
+                            const SizedBox(width: 16),
+                            _buildFeatureChip('✓ Secure & Private'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // Tap to continue
+                  FadeTransition(
+                    opacity: _fadeIn,
+                    child: AnimatedOpacity(
+                      opacity: _canTap ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 500),
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(30),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.4),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Başlamak için dokun',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
 
                   const Spacer(),
                 ],

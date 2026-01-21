@@ -16,6 +16,8 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _asiKayitlari = [];
   static bool _darkMode = false;
   static bool _firstLaunch = true;
+  static String _babyName = 'Sofia';
+  static DateTime _birthDate = DateTime(2024, 9, 17);
 
   // Initialize - must be called before using any other methods
   static Future<void> init() async {
@@ -31,6 +33,9 @@ class VeriYonetici {
     _asiKayitlari = _loadAsiKayitlari();
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
+    _babyName = _prefs!.getString('baby_name') ?? 'Sofia';
+    final birthDateStr = _prefs!.getString('birth_date');
+    _birthDate = birthDateStr != null ? DateTime.parse(birthDateStr) : DateTime(2024, 9, 17);
 
     // Initialize TimerYonetici
     await TimerYonetici().init(_prefs!);
@@ -373,6 +378,25 @@ class VeriYonetici {
   static Future<void> setDarkMode(bool value) async {
     _darkMode = value;
     await _prefs!.setBool('dark_mode', value);
+  }
+
+  // BABY NAME & BIRTH DATE
+  static String getBabyName() {
+    return _babyName;
+  }
+
+  static Future<void> setBabyName(String name) async {
+    _babyName = name;
+    await _prefs!.setString('baby_name', name);
+  }
+
+  static DateTime getBirthDate() {
+    return _birthDate;
+  }
+
+  static Future<void> setBirthDate(DateTime date) async {
+    _birthDate = date;
+    await _prefs!.setString('birth_date', date.toIso8601String());
   }
 
   // VERİLERİ TEMİZLE

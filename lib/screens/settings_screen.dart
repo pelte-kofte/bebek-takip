@@ -3,6 +3,7 @@ import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../theme/app_theme.dart';
+import '../widgets/decorative_background.dart';
 import 'rapor_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -21,15 +22,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
     final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
 
-    return Scaffold(
-      backgroundColor: bgColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Row(
+    return DecorativeBackground(
+      preset: BackgroundPreset.settings,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: Row(
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
@@ -243,7 +246,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

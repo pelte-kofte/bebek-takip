@@ -117,8 +117,9 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     final isEdit = widget.vaccine != null;
 
     return DecorativeBackground(
+      preset: BackgroundPreset.vaccines,
       child: Scaffold(
-        backgroundColor: isDark ? AppColors.bgDark : const Color(0xFFFFFBF5),
+        backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Stack(
             children: [
