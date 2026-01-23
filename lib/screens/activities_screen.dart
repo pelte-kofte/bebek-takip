@@ -140,7 +140,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       Row(
                         children: [
                           Text(
-                            '📋 ${Dil.aktiviteler}',
+                            Dil.aktiviteler,
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -157,84 +157,37 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ),
 
-                // Hero Icons - Main Touch Targets
+                // Compact Category Tabs
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: _buildActivitySegment(
+                        child: _buildCompactTab(
                           'assets/icons/illustration/bottle2.png',
+                          'MAMA',
                           ActivityType.mama,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: _buildActivitySegment(
+                        child: _buildCompactTab(
                           'assets/icons/illustration/diaper_clean.png',
+                          'BEZ',
                           ActivityType.bez,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: _buildActivitySegment(
+                        child: _buildCompactTab(
                           'assets/icons/illustration/sleeping_moon2.png',
+                          'UYKU',
                           ActivityType.uyku,
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                // Quick Status Banner
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 0,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
-                        width: 1,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFFFFB4A2),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Son aktivite takibi',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF1d0e0c),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 24),
 
                 // İçerik (scrollable, Expanded ile kalan alanı doldurur)
                 Expanded(
@@ -324,68 +277,48 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildActivitySegment(String iconPath, ActivityType type) {
+  Widget _buildCompactTab(String iconPath, String label, ActivityType type) {
     final isActive = _activeType == type;
 
     return GestureDetector(
       onTap: () => setState(() => _activeType = type),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Main circular button - HERO SIZE
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFFE5E0F7), // SOLID lavender
-              border: isActive
-                  ? Border.all(color: const Color(0xFFFFB4A2), width: 3)
-                  : null,
-              boxShadow: isActive
-                  ? [
-                      BoxShadow(
-                        color: const Color(0xFFFFB4A2).withValues(alpha: 0.15),
-                        blurRadius: 20,
-                        spreadRadius: 0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ]
-                  : [
-                      const BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFFFFB4A2).withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isActive
+                ? const Color(0xFFFFB4A2)
+                : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+            width: isActive ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              iconPath,
+              width: 28,
+              height: 28,
+              fit: BoxFit.contain,
             ),
-            child: Center(
-              child: Image.asset(
-                iconPath,
-                width: 84,
-                height: 84,
-                fit: BoxFit.contain,
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                letterSpacing: 0.3,
+                color: isActive
+                    ? const Color(0xFFFFB4A2)
+                    : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          // Label
-          Text(
-            type == ActivityType.mama
-                ? 'MAMA'
-                : type == ActivityType.bez
-                ? 'BEZ'
-                : 'UYKU',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-              letterSpacing: 0.5,
-              color: isActive
-                  ? const Color(0xFF1d0e0c)
-                  : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

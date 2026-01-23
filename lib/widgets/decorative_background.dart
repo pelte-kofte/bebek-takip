@@ -26,16 +26,15 @@ class DecorativeBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = backgroundColor ??
+    final bgColor =
+        backgroundColor ??
         (isDark ? AppColors.bgDark : const Color(0xFFFFFBF5));
 
     return Container(
       color: bgColor,
       child: Stack(
         children: [
-          IgnorePointer(
-            child: Stack(children: _buildShapes(isDark)),
-          ),
+          IgnorePointer(child: Stack(children: _buildShapes(isDark))),
           child,
         ],
       ),
@@ -66,11 +65,7 @@ class DecorativeBackground extends StatelessWidget {
 
       case BackgroundPreset.add:
         return [
-          Positioned(
-            top: -50,
-            right: -60,
-            child: _circle(250, peach, 0.08),
-          ),
+          Positioned(top: -50, right: -60, child: _circle(250, peach, 0.08)),
           Positioned(
             bottom: -50,
             left: -60,
@@ -95,24 +90,20 @@ class DecorativeBackground extends StatelessWidget {
       case BackgroundPreset.vaccines:
         return [
           Positioned(
-            top: -60,
-            left: -50,
-            child: _circle(230, lavender, baseOpacity),
+            top: -40, // Move down slightly
+            left: -30, // Move right slightly
+            child: _circle(260, lavender, 0.09), // Larger, more visible
           ),
           Positioned(
-            bottom: -50,
-            right: -60,
-            child: _circle(200, peach, 0.06),
+            bottom: -80, // Move further down (below FAB)
+            right: -40,
+            child: _circle(240, peach, 0.09), // Larger, more visible
           ),
         ];
 
       case BackgroundPreset.milestones:
         return [
-          Positioned(
-            top: -40,
-            right: -40,
-            child: _circle(280, peach, 0.08),
-          ),
+          Positioned(top: -40, right: -40, child: _circle(280, peach, 0.08)),
           Positioned(
             bottom: -60,
             left: -50,
@@ -122,11 +113,7 @@ class DecorativeBackground extends StatelessWidget {
 
       case BackgroundPreset.settings:
         return [
-          Positioned(
-            top: -60,
-            right: -70,
-            child: _circle(220, cream, 0.06),
-          ),
+          Positioned(top: -60, right: -70, child: _circle(220, cream, 0.06)),
           Positioned(
             bottom: -50,
             left: -60,

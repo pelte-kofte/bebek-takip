@@ -148,375 +148,239 @@ class _AddScreenState extends State<AddScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                // Activity type grid
+                const SizedBox(height: 8),
+                // Compact activity type row
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildActivityCard(
-                              type: 'breastfeeding',
-                              icon: Ikonlar.breastfeeding(size: 54),
-                              label: 'Breastfeeding',
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildActivityCard(
-                              type: 'bottle',
-                              icon: Ikonlar.bottle(size: 54),
-                              label: 'Bottle',
-                            ),
-                          ),
-                        ],
+                      _buildCompactActivityChip(
+                        'breastfeeding',
+                        Ikonlar.breastfeeding(size: 24),
+                        'Nursing',
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildActivityCard(
-                              type: 'sleep',
-                              icon: Ikonlar.sleep(size: 54),
-                              label: 'Sleep',
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildActivityCard(
-                              type: 'diaper',
-                              icon: Ikonlar.diaperClean(size: 54),
-                              label: 'Diaper',
-                            ),
-                          ),
-                        ],
+                      const SizedBox(width: 6),
+                      _buildCompactActivityChip(
+                        'bottle',
+                        Ikonlar.bottle(size: 24),
+                        'Bottle',
+                      ),
+                      const SizedBox(width: 6),
+                      _buildCompactActivityChip(
+                        'sleep',
+                        Ikonlar.sleep(size: 24),
+                        'Sleep',
+                      ),
+                      const SizedBox(width: 6),
+                      _buildCompactActivityChip(
+                        'diaper',
+                        Ikonlar.diaperClean(size: 24),
+                        'Diaper',
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Detail panel
+                // Detail panel - warmer card design
                 Flexible(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFF4EDF9),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 0,
+                        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
                       ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: 32,
-                          right: 32,
-                          top: 20,
-                          bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: const Color(
+                              0xFFE5E0F7,
+                            ).withValues(alpha: 0.5),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(
+                                0xFFE5E0F7,
+                              ).withValues(alpha: 0.3),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (selectedActivity == 'breastfeeding') ...[
-                              // Side selector
-                              const Text(
-                                'Side',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
+                              // Compact side selector
                               Row(
                                 children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () =>
-                                          setState(() => selectedSide = 'left'),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: selectedSide == 'left'
-                                              ? const Color(0xFFFF998A)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                          boxShadow: selectedSide == 'left'
-                                              ? [
-                                                  BoxShadow(
-                                                    color: const Color(
-                                                      0xFFFF998A,
-                                                    ).withValues(alpha: 0.3),
-                                                    blurRadius: 12,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ]
-                                              : [],
-                                        ),
-                                        child: Text(
-                                          'Left',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: selectedSide == 'left'
-                                                ? Colors.white
-                                                : const Color(0xFF7A749E),
-                                            letterSpacing: 1.0,
-                                          ),
-                                        ),
-                                      ),
+                                  const Text(
+                                    'Side',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF7A749E),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () => setState(
-                                        () => selectedSide = 'right',
-                                      ),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: selectedSide == 'right'
-                                              ? const Color(0xFFFF998A)
-                                              : Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => setState(
+                                            () => selectedSide = 'left',
                                           ),
-                                          boxShadow: selectedSide == 'right'
-                                              ? [
-                                                  BoxShadow(
-                                                    color: const Color(
-                                                      0xFFFF998A,
-                                                    ).withValues(alpha: 0.3),
-                                                    blurRadius: 12,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ]
-                                              : [],
-                                        ),
-                                        child: Text(
-                                          'Right',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: selectedSide == 'right'
-                                                ? Colors.white
-                                                : const Color(0xFF7A749E),
-                                            letterSpacing: 1.0,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: selectedSide == 'left'
+                                                  ? const Color(0xFFFF998A)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              'Left',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: selectedSide == 'left'
+                                                    ? Colors.white
+                                                    : const Color(0xFF7A749E),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        GestureDetector(
+                                          onTap: () => setState(
+                                            () => selectedSide = 'right',
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: selectedSide == 'right'
+                                                  ? const Color(0xFFFF998A)
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              'Right',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w600,
+                                                color: selectedSide == 'right'
+                                                    ? Colors.white
+                                                    : const Color(0xFF7A749E),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 20),
-                              // Duration picker
-                              const Text(
-                                'Duration',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 16),
+                              // Compact duration picker (minutes only)
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Minutes
-                                  Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () => setState(
-                                          () => minutes = (minutes + 1).clamp(
-                                            0,
-                                            59,
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: 48,
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.add,
-                                            color: Color(0xFF7A749E),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Container(
-                                        width: 80,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              minutes.toString().padLeft(
-                                                2,
-                                                '0',
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 36,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFF2D1A18),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            const Text(
-                                              'Minutes',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF7A749E),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      GestureDetector(
-                                        onTap: () => setState(
-                                          () => minutes = (minutes - 1).clamp(
-                                            0,
-                                            59,
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: 48,
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: const Icon(
-                                            Icons.remove,
-                                            color: Color(0xFF7A749E),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(width: 24),
                                   const Text(
-                                    ':',
+                                    'Duration',
                                     style: TextStyle(
-                                      fontSize: 36,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
                                       color: Color(0xFF7A749E),
                                     ),
                                   ),
-                                  const SizedBox(width: 24),
-                                  // Seconds
-                                  Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () => setState(
-                                          () => seconds = (seconds + 1).clamp(
-                                            0,
-                                            59,
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: 48,
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => setState(
+                                            () => minutes = (minutes - 1).clamp(
+                                              0,
+                                              60,
                                             ),
                                           ),
-                                          child: const Icon(
-                                            Icons.add,
-                                            color: Color(0xFF7A749E),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Container(
-                                        width: 80,
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              seconds.toString().padLeft(
-                                                2,
-                                                '0',
-                                              ),
-                                              style: const TextStyle(
-                                                fontSize: 36,
-                                                fontWeight: FontWeight.bold,
-                                                color: Color(0xFF2D1A18),
-                                              ),
+                                          child: Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              color: const Color(0xFFF4EDF9),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
-                                            const SizedBox(height: 4),
-                                            const Text(
-                                              'Seconds',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Color(0xFF7A749E),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      GestureDetector(
-                                        onTap: () => setState(
-                                          () => seconds = (seconds - 1).clamp(
-                                            0,
-                                            59,
-                                          ),
-                                        ),
-                                        child: Container(
-                                          width: 48,
-                                          height: 48,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
+                                            child: const Icon(
+                                              Icons.remove,
+                                              color: Color(0xFF7A749E),
+                                              size: 18,
                                             ),
                                           ),
-                                          child: const Icon(
-                                            Icons.remove,
-                                            color: Color(0xFF7A749E),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Text(
+                                          '$minutes min',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xFF2D1A18),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 16),
+                                        GestureDetector(
+                                          onTap: () => setState(
+                                            () => minutes = (minutes + 1).clamp(
+                                              0,
+                                              60,
+                                            ),
+                                          ),
+                                          child: Container(
+                                            width: 32,
+                                            height: 32,
+                                            decoration: BoxDecoration(
+                                              color: const Color(
+                                                0xFFFF998A,
+                                              ).withValues(alpha: 0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                            child: const Icon(
+                                              Icons.add,
+                                              color: Color(0xFFFF998A),
+                                              size: 18,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -542,7 +406,8 @@ class _AddScreenState extends State<AddScreen> {
                                   // Minus button
                                   GestureDetector(
                                     onTap: () => setState(() {
-                                      if (bottleAmount >= 10) bottleAmount -= 10;
+                                      if (bottleAmount >= 10)
+                                        bottleAmount -= 10;
                                     }),
                                     child: Container(
                                       width: 44,
@@ -590,7 +455,8 @@ class _AddScreenState extends State<AddScreen> {
                                   const SizedBox(width: 12),
                                   // Amount value
                                   Row(
-                                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.baseline,
                                     textBaseline: TextBaseline.alphabetic,
                                     children: [
                                       Text(
@@ -607,7 +473,9 @@ class _AddScreenState extends State<AddScreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF4A3F3F).withValues(alpha: 0.4),
+                                          color: const Color(
+                                            0xFF4A3F3F,
+                                          ).withValues(alpha: 0.4),
                                           fontStyle: FontStyle.italic,
                                         ),
                                       ),
@@ -666,9 +534,12 @@ class _AddScreenState extends State<AddScreen> {
                                   children: [
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () => setState(() => milkType = 'breast'),
+                                        onTap: () =>
+                                            setState(() => milkType = 'breast'),
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: milkType == 'breast'
                                                 ? Colors.white
@@ -772,7 +643,10 @@ class _AddScreenState extends State<AddScreen> {
                                   }
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
@@ -791,7 +665,9 @@ class _AddScreenState extends State<AddScreen> {
                                         height: 40,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: Center(
                                           child: Ikonlar.sleep(size: 24),
@@ -832,14 +708,18 @@ class _AddScreenState extends State<AddScreen> {
                                 onTap: () async {
                                   final picked = await showTimePicker(
                                     context: context,
-                                    initialTime: _sleepEndTime ?? TimeOfDay.now(),
+                                    initialTime:
+                                        _sleepEndTime ?? TimeOfDay.now(),
                                   );
                                   if (picked != null) {
                                     setState(() => _sleepEndTime = picked);
                                   }
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(16),
@@ -858,7 +738,9 @@ class _AddScreenState extends State<AddScreen> {
                                         height: 40,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                         ),
                                         child: const Center(
                                           child: Icon(
@@ -870,7 +752,8 @@ class _AddScreenState extends State<AddScreen> {
                                       ),
                                       const SizedBox(width: 16),
                                       Text(
-                                        _sleepEndTime?.format(context) ?? 'Tap to set',
+                                        _sleepEndTime?.format(context) ??
+                                            'Tap to set',
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
@@ -895,10 +778,14 @@ class _AddScreenState extends State<AddScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFF998A).withValues(alpha: 0.1),
+                                    color: const Color(
+                                      0xFFFF998A,
+                                    ).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: const Color(0xFFFF998A).withValues(alpha: 0.3),
+                                      color: const Color(
+                                        0xFFFF998A,
+                                      ).withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
@@ -940,14 +827,19 @@ class _AddScreenState extends State<AddScreen> {
                                   // Wet button
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () => setState(() => _diaperType = 'wet'),
+                                      onTap: () =>
+                                          setState(() => _diaperType = 'wet'),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'wet'
                                               ? const Color(0xFFFF998A)
                                               : Colors.white,
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           border: Border.all(
                                             color: _diaperType == 'wet'
                                                 ? const Color(0xFFFF998A)
@@ -957,7 +849,9 @@ class _AddScreenState extends State<AddScreen> {
                                           boxShadow: _diaperType == 'wet'
                                               ? [
                                                   BoxShadow(
-                                                    color: const Color(0xFFFF998A).withValues(alpha: 0.2),
+                                                    color: const Color(
+                                                      0xFFFF998A,
+                                                    ).withValues(alpha: 0.2),
                                                     blurRadius: 12,
                                                     offset: const Offset(0, 4),
                                                   ),
@@ -971,9 +865,12 @@ class _AddScreenState extends State<AddScreen> {
                                               height: 32,
                                               decoration: BoxDecoration(
                                                 color: _diaperType == 'wet'
-                                                    ? Colors.white.withValues(alpha: 0.3)
+                                                    ? Colors.white.withValues(
+                                                        alpha: 0.3,
+                                                      )
                                                     : const Color(0xFFF4EDF9),
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                               child: Center(
                                                 child: Image.asset(
@@ -991,7 +888,9 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'wet'
                                                     ? Colors.white
-                                                    : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                                    : const Color(
+                                                        0xFF4A3F3F,
+                                                      ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1003,14 +902,19 @@ class _AddScreenState extends State<AddScreen> {
                                   // Dirty button
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () => setState(() => _diaperType = 'dirty'),
+                                      onTap: () =>
+                                          setState(() => _diaperType = 'dirty'),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'dirty'
                                               ? const Color(0xFFFF998A)
                                               : Colors.white,
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           border: Border.all(
                                             color: _diaperType == 'dirty'
                                                 ? const Color(0xFFFF998A)
@@ -1020,7 +924,9 @@ class _AddScreenState extends State<AddScreen> {
                                           boxShadow: _diaperType == 'dirty'
                                               ? [
                                                   BoxShadow(
-                                                    color: const Color(0xFFFF998A).withValues(alpha: 0.2),
+                                                    color: const Color(
+                                                      0xFFFF998A,
+                                                    ).withValues(alpha: 0.2),
                                                     blurRadius: 12,
                                                     offset: const Offset(0, 4),
                                                   ),
@@ -1034,9 +940,12 @@ class _AddScreenState extends State<AddScreen> {
                                               height: 32,
                                               decoration: BoxDecoration(
                                                 color: _diaperType == 'dirty'
-                                                    ? Colors.white.withValues(alpha: 0.3)
+                                                    ? Colors.white.withValues(
+                                                        alpha: 0.3,
+                                                      )
                                                     : const Color(0xFFF4EDF9),
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                               child: Center(
                                                 child: Image.asset(
@@ -1054,7 +963,9 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'dirty'
                                                     ? Colors.white
-                                                    : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                                    : const Color(
+                                                        0xFF4A3F3F,
+                                                      ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1066,14 +977,19 @@ class _AddScreenState extends State<AddScreen> {
                                   // Both button
                                   Expanded(
                                     child: GestureDetector(
-                                      onTap: () => setState(() => _diaperType = 'both'),
+                                      onTap: () =>
+                                          setState(() => _diaperType = 'both'),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 16,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'both'
                                               ? const Color(0xFFFF998A)
                                               : Colors.white,
-                                          borderRadius: BorderRadius.circular(24),
+                                          borderRadius: BorderRadius.circular(
+                                            24,
+                                          ),
                                           border: Border.all(
                                             color: _diaperType == 'both'
                                                 ? const Color(0xFFFF998A)
@@ -1083,7 +999,9 @@ class _AddScreenState extends State<AddScreen> {
                                           boxShadow: _diaperType == 'both'
                                               ? [
                                                   BoxShadow(
-                                                    color: const Color(0xFFFF998A).withValues(alpha: 0.2),
+                                                    color: const Color(
+                                                      0xFFFF998A,
+                                                    ).withValues(alpha: 0.2),
                                                     blurRadius: 12,
                                                     offset: const Offset(0, 4),
                                                   ),
@@ -1097,9 +1015,12 @@ class _AddScreenState extends State<AddScreen> {
                                               height: 32,
                                               decoration: BoxDecoration(
                                                 color: _diaperType == 'both'
-                                                    ? Colors.white.withValues(alpha: 0.3)
+                                                    ? Colors.white.withValues(
+                                                        alpha: 0.3,
+                                                      )
                                                     : const Color(0xFFF4EDF9),
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                               child: Center(
                                                 child: Image.asset(
@@ -1117,7 +1038,9 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'both'
                                                     ? Colors.white
-                                                    : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                                    : const Color(
+                                                        0xFF4A3F3F,
+                                                      ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1146,9 +1069,12 @@ class _AddScreenState extends State<AddScreen> {
                                   controller: _diaperNotesController,
                                   maxLines: 3,
                                   decoration: InputDecoration(
-                                    hintText: 'Add a note about the diaper change...',
+                                    hintText:
+                                        'Add a note about the diaper change...',
                                     hintStyle: TextStyle(
-                                      color: const Color(0xFF4A3F3F).withValues(alpha: 0.3),
+                                      color: const Color(
+                                        0xFF4A3F3F,
+                                      ).withValues(alpha: 0.3),
                                       fontSize: 14,
                                     ),
                                     border: InputBorder.none,
@@ -1156,41 +1082,33 @@ class _AddScreenState extends State<AddScreen> {
                                   ),
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: const Color(0xFF4A3F3F).withValues(alpha: 0.8),
+                                    color: const Color(
+                                      0xFF4A3F3F,
+                                    ).withValues(alpha: 0.8),
                                   ),
                                 ),
                               ),
                             ],
-                            // Save button inside scrollable content
-                            const SizedBox(height: 24),
+                            // Save button - calm style
+                            const SizedBox(height: 20),
                             GestureDetector(
                               onTap: _saveActivity,
                               child: Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 18,
+                                  vertical: 14,
                                 ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFFF998A),
-                                  borderRadius: BorderRadius.circular(100),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFFF998A,
-                                      ).withValues(alpha: 0.3),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: const Text(
-                                  'Save Activity',
+                                  'Save',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
                                     color: Colors.white,
-                                    letterSpacing: 1.0,
                                   ),
                                 ),
                               ),
@@ -1209,90 +1127,43 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget _buildActivityCard({
-    required String type,
-    required Widget icon,
-    required String label,
-  }) {
+  Widget _buildCompactActivityChip(String type, Widget icon, String label) {
     final isSelected = selectedActivity == type;
 
-    return GestureDetector(
-      onTap: () => setState(() => selectedActivity = type),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFFBF5),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? const Color(0xFFFF998A) : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFFFF998A).withValues(alpha: 0.15),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-        ),
-        child: Stack(
-          children: [
-            // Icon and label
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? const Color(0xFFFFFBF5)
-                          : const Color(0xFFE5E0F7),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Opacity(
-                      opacity: isSelected ? 1.0 : 0.4,
-                      child: icon,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected
-                          ? const Color(0xFF2D1A18)
-                          : const Color(0xFF7A749E).withValues(alpha: 0.4),
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
-              ),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => selectedActivity = type),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? const Color(0xFFFF998A).withValues(alpha: 0.15)
+                : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFFFF998A)
+                  : const Color(0xFFE5E0F7),
+              width: isSelected ? 2 : 1,
             ),
-            // Check badge
-            if (isSelected)
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFFF998A),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Opacity(opacity: isSelected ? 1.0 : 0.5, child: icon),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected
+                      ? const Color(0xFFFF998A)
+                      : const Color(0xFF7A749E),
                 ),
               ),
-          ],
+            ],
+          ),
         ),
       ),
     );

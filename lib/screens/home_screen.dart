@@ -10,6 +10,7 @@ import 'settings_screen.dart';
 import 'activities_screen.dart';
 import 'add_growth_screen.dart';
 import 'baby_profile_screen.dart';
+import 'growth_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -450,7 +451,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             iconColor: const Color(0xFFFF998A),
                             label: 'FEEDING',
                             time: _formatSaniye(_solSaniye + _sagSaniye),
-                            lastActivity: _getLastFeedingTime(mamaKayitlari),
+                            lastActivity: '',
                             isActive: _emzirmeAktif,
                             isDark: isDark,
                             buttons: _emzirmeAktif
@@ -620,9 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             iconColor: const Color(0xFF7A749E),
                             label: 'SLEEPING',
                             time: _formatSaniye(_uykuSaniye),
-                            lastActivity: _getLastSleepTime(
-                              VeriYonetici.getUykuKayitlari(),
-                            ),
+                            lastActivity: '',
                             isActive: _uykuAktif,
                             isDark: isDark,
                             buttons: GestureDetector(
@@ -1279,7 +1278,12 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: GestureDetector(
             onTap: () {
-              // Could navigate to detailed growth screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const GrowthScreen(),
+                ),
+              );
             },
             child: Container(
               width: double.infinity,
@@ -1391,18 +1395,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // HELPER METHODS
-  String _getLastFeedingTime(List<Map<String, dynamic>> mama) {
-    if (mama.isEmpty) return '';
-    final tarih = mama.first['tarih'] as DateTime;
-    return 'Last feed: ${_timeAgo(tarih)}';
-  }
-
-  String _getLastSleepTime(List<Map<String, dynamic>> uyku) {
-    if (uyku.isEmpty) return '';
-    final tarih = uyku.first['bitis'] as DateTime;
-    return 'Last sleep: ${_timeAgo(tarih)}';
-  }
-
   String _getLastFeedingValue(List<Map<String, dynamic>> mama) {
     if (mama.isEmpty) return 'Henüz kayıt yok';
     final tarih = mama.first['tarih'] as DateTime;
@@ -1705,7 +1697,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _stopEmzirmeAndSave();
                     },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: const Color(0xFFE8A0A0),
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -1820,7 +1812,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: _uykuAktif
                   ? Colors.orange
-                  : AppColors.accentLavender,
+                  : const Color(0xFFD4C4E8),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),

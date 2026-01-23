@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
 
@@ -42,28 +43,52 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, {bool includeYear = false}) {
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
+      'January',
+      'February',
+      'March',
+      'April',
       'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ];
-    return '${date.day.toString().padLeft(2, '0')} ${months[date.month - 1]} ${date.year}';
+    final day = date.day;
+    final month = months[date.month - 1];
+    if (includeYear || date.year != DateTime.now().year) {
+      return '$day $month ${date.year}';
+    }
+    return '$day $month';
+  }
+
+  void _showEditMilestoneSheet(Map<String, dynamic> milestone) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          EditMilestoneSheet(milestone: milestone, onSaved: _loadMilestones),
+    );
+  }
+
+  void _shareMilestone(Map<String, dynamic> milestone) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) =>
+          _SharePreviewSheet(milestone: milestone, formatDate: _formatDate),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return DecorativeBackground(
-      preset: BackgroundPreset.milestones,
+      preset: BackgroundPreset.home,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
@@ -148,59 +173,52 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
               width: 96,
               height: 96,
               decoration: BoxDecoration(
-                color: const Color(0xFFE5E0F7),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.6),
                 borderRadius: BorderRadius.circular(48),
               ),
               child: const Center(
                 child: Icon(
-                  Icons.star_outline,
-                  size: 48,
-                  color: Color(0xFF4A3E39),
+                  Icons.auto_awesome,
+                  size: 44,
+                  color: Color(0xFFFFB4A2),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            const Text(
-              'No milestones yet',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A3E39),
-              ),
-            ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 28),
             Text(
-              'Capture your baby\'s special moments',
+              'Your baby\'s first moments\nwill appear here',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
-                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF4A3E39).withValues(alpha: 0.8),
+                height: 1.4,
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 40),
             GestureDetector(
               onTap: _showAddMilestoneSheet,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
+                  horizontal: 28,
+                  vertical: 14,
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFB4A2),
                   borderRadius: BorderRadius.circular(100),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.25),
                       blurRadius: 16,
-                      offset: const Offset(0, 8),
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),
                 child: const Text(
-                  'Add first milestone',
+                  'Add first memory',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
@@ -258,101 +276,168 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         (milestone['photoPath'] as String).isNotEmpty;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Timeline icon or photo thumbnail
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E0F7),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: hasPhoto
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.file(
-                      File(milestone['photoPath']),
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Center(
-                            child: Icon(
-                              Icons.star,
-                              color: Color(0xFF4A3E39),
-                              size: 28,
-                            ),
-                          ),
-                    ),
-                  )
-                : const Center(
-                    child: Icon(Icons.star, color: Color(0xFF4A3E39), size: 28),
-                  ),
-          ),
-          const SizedBox(width: 16),
-          // Card content
-          Expanded(
+          GestureDetector(
+            onTap: () => _showEditMilestoneSheet(milestone),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              width: 56,
+              height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFE5E0F7),
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.15),
                     blurRadius: 8,
-                    offset: const Offset(0, 2),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    milestone['title'] ?? '',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF4A3E39),
-                      height: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatDate(milestone['date'] as DateTime),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
-                    ),
-                  ),
-                  if (milestone['note'] != null &&
-                      (milestone['note'] as String).isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      milestone['note'],
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
-                        height: 1.4,
+              child: hasPhoto
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.file(
+                        File(milestone['photoPath']),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                              child: Icon(
+                                Icons.star,
+                                color: Color(0xFFFFB4A2),
+                                size: 28,
+                              ),
+                            ),
+                      ),
+                    )
+                  : const Center(
+                      child: Icon(
+                        Icons.star,
+                        color: Color(0xFFFFB4A2),
+                        size: 28,
                       ),
                     ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          // Card content
+          Expanded(
+            child: GestureDetector(
+              onTap: () => _showEditMilestoneSheet(milestone),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
                   ],
-                ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                milestone['title'] ?? '',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4A3E39),
+                                  height: 1.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatDate(milestone['date'] as DateTime),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: const Color(
+                                    0xFF4A3E39,
+                                  ).withValues(alpha: 0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Action buttons
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildActionButton(
+                              icon: Icons.edit_outlined,
+                              onTap: () => _showEditMilestoneSheet(milestone),
+                            ),
+                            const SizedBox(width: 6),
+                            _buildActionButton(
+                              icon: Icons.share_outlined,
+                              onTap: () => _shareMilestone(milestone),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    if (milestone['note'] != null &&
+                        (milestone['note'] as String).isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Text(
+                        milestone['note'],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFBF5),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: const Color(0xFFE5E0F7).withValues(alpha: 0.6),
+          ),
+        ),
+        child: Icon(
+          icon,
+          size: 16,
+          color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+        ),
       ),
     );
   }
@@ -905,6 +990,674 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Edit Milestone Bottom Sheet
+class EditMilestoneSheet extends StatefulWidget {
+  final Map<String, dynamic> milestone;
+  final VoidCallback onSaved;
+
+  const EditMilestoneSheet({
+    super.key,
+    required this.milestone,
+    required this.onSaved,
+  });
+
+  @override
+  State<EditMilestoneSheet> createState() => _EditMilestoneSheetState();
+}
+
+class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
+  late TextEditingController _titleController;
+  late TextEditingController _noteController;
+  late DateTime _selectedDate;
+  String? _photoPath;
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController = TextEditingController(
+      text: widget.milestone['title'] ?? '',
+    );
+    _noteController = TextEditingController(
+      text: widget.milestone['note'] ?? '',
+    );
+    _selectedDate = widget.milestone['date'] as DateTime;
+    _photoPath = widget.milestone['photoPath'];
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFFFFB4A2),
+              onPrimary: Colors.white,
+              surface: Color(0xFFFFFBF5),
+              onSurface: Color(0xFF4A3E39),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _selectedDate = picked);
+    }
+  }
+
+  Future<void> _saveMilestone() async {
+    if (_titleController.text.isEmpty) return;
+
+    final milestones = VeriYonetici.getMilestones();
+    final index = milestones.indexWhere(
+      (m) => m['id'] == widget.milestone['id'],
+    );
+
+    if (index != -1) {
+      milestones[index] = {
+        ...widget.milestone,
+        'title': _titleController.text,
+        'date': _selectedDate,
+        'note': _noteController.text,
+        'photoPath': _photoPath,
+      };
+      await VeriYonetici.saveMilestones(milestones);
+    }
+
+    widget.onSaved();
+    if (mounted) Navigator.pop(context);
+  }
+
+  Future<void> _deleteMilestone() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFFFFFBF5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Delete milestone?',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        content: const Text(
+          'This memory will be permanently deleted.',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Color(0xFFFF6B6B)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final milestones = VeriYonetici.getMilestones();
+      milestones.removeWhere((m) => m['id'] == widget.milestone['id']);
+      await VeriYonetici.saveMilestones(milestones);
+      widget.onSaved();
+      if (mounted) Navigator.pop(context);
+    }
+  }
+
+  String _formatDateDisplay(DateTime date) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final hasPhoto = _photoPath != null && _photoPath!.isNotEmpty;
+
+    return Container(
+      constraints: BoxConstraints(maxHeight: screenHeight * 0.85),
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFFBF5),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E0F7),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                      size: 18,
+                    ),
+                  ),
+                ),
+                const Text(
+                  'Edit Memory',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF4A3E39),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _deleteMilestone,
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.delete_outline,
+                      color: Color(0xFFFF6B6B),
+                      size: 18,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Flexible(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                24,
+                8,
+                24,
+                MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Photo thumbnail (if exists)
+                  if (hasPhoto)
+                    Container(
+                      height: 120,
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFFE5E0F7,
+                            ).withValues(alpha: 0.5),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.file(
+                          File(_photoPath!),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Container(
+                                color: const Color(0xFFE5E0F7),
+                                child: const Icon(
+                                  Icons.image,
+                                  size: 40,
+                                  color: Color(0xFF4A3E39),
+                                ),
+                              ),
+                        ),
+                      ),
+                    ),
+                  // Title field
+                  Text(
+                    'Title',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      hintText: 'e.g. First smile',
+                      hintStyle: TextStyle(
+                        color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF4A3E39),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  // Date picker
+                  Text(
+                    'Date',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  GestureDetector(
+                    onTap: _selectDate,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              _formatDateDisplay(_selectedDate),
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Color(0xFF4A3E39),
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.4),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  // Notes
+                  Text(
+                    'Notes',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _noteController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: 'Add a memory note...',
+                      hintStyle: TextStyle(
+                        color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Color(0xFF4A3E39),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Save button
+                  GestureDetector(
+                    onTap: _saveMilestone,
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFB4A2),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Text(
+                        'Save Changes',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Share Preview Bottom Sheet
+class _SharePreviewSheet extends StatelessWidget {
+  final Map<String, dynamic> milestone;
+  final String Function(DateTime, {bool includeYear}) formatDate;
+
+  const _SharePreviewSheet({required this.milestone, required this.formatDate});
+
+  Future<void> _doShare() async {
+    final title = milestone['title'] ?? '';
+    final date = formatDate(milestone['date'] as DateTime, includeYear: true);
+    final note = milestone['note'] ?? '';
+    final photoPath = milestone['photoPath'];
+
+    final text = '$title\n$date${note.isNotEmpty ? '\n\n$note' : ''}';
+
+    if (photoPath != null &&
+        photoPath.isNotEmpty &&
+        File(photoPath).existsSync()) {
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(photoPath)], text: text),
+      );
+    } else {
+      await SharePlus.instance.share(ShareParams(text: text));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = milestone['title'] ?? '';
+    final date = formatDate(milestone['date'] as DateTime);
+    final photoPath = milestone['photoPath'];
+    final hasPhoto =
+        photoPath != null &&
+        photoPath.isNotEmpty &&
+        File(photoPath).existsSync();
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFFBF5),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E0F7),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Preview card
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Photo or icon
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: hasPhoto
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.file(
+                            File(photoPath),
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => const Icon(
+                              Icons.star,
+                              color: Color(0xFFFFB4A2),
+                              size: 28,
+                            ),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.star,
+                          color: Color(0xFFFFB4A2),
+                          size: 28,
+                        ),
+                ),
+                const SizedBox(width: 16),
+                // Title and date
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF4A3E39),
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        date,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // AI Illustration placeholder (coming soon)
+          Opacity(
+            opacity: 0.5,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: const Color(0xFFE5E0F7),
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '✨',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Turn this moment into an illustration',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Coming soon',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.8),
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      'Cancel',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _doShare();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFB4A2),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.share_outlined,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Share',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

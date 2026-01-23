@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
 import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
-import 'screens/settings_screen.dart';
 import 'screens/add_screen.dart';
 import 'screens/vaccines_screen.dart';
 import 'models/veri_yonetici.dart';
@@ -90,11 +89,11 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     if (index == 2) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AddScreen(onSaved: _refresh),
-        ),
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => AddScreen(onSaved: _refresh),
       );
     } else {
       setState(() {
@@ -169,7 +168,9 @@ class _MainScreenState extends State<MainScreen> {
               fontSize: 11,
               color: isSelected
                   ? AppColors.primary
-                  : (isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
+                  : (isDark
+                        ? AppColors.textMutedDark
+                        : AppColors.textMutedLight),
               fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
