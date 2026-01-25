@@ -406,8 +406,9 @@ class _AddScreenState extends State<AddScreen> {
                                   // Minus button
                                   GestureDetector(
                                     onTap: () => setState(() {
-                                      if (bottleAmount >= 10)
+                                      if (bottleAmount >= 10) {
                                         bottleAmount -= 10;
+                                      }
                                     }),
                                     child: Container(
                                       width: 44,
