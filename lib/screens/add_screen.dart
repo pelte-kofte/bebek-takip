@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/veri_yonetici.dart';
 import '../models/ikonlar.dart';
+import '../models/dil.dart';
 
 class AddScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -29,6 +30,9 @@ class _AddScreenState extends State<AddScreen> {
   // Diaper fields
   String _diaperType = 'both'; // 'wet', 'dirty', or 'both'
   final TextEditingController _diaperNotesController = TextEditingController();
+
+  // Validation error message
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -406,8 +410,9 @@ class _AddScreenState extends State<AddScreen> {
                                   // Minus button
                                   GestureDetector(
                                     onTap: () => setState(() {
-                                      if (bottleAmount >= 10)
+                                      if (bottleAmount >= 10) {
                                         bottleAmount -= 10;
+                                      }
                                     }),
                                     child: Container(
                                       width: 44,
@@ -1089,8 +1094,46 @@ class _AddScreenState extends State<AddScreen> {
                                 ),
                               ),
                             ],
+                            // Inline validation error
+                            if (_errorMessage != null) ...[
+                              const SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: const Color(0xFFFF6B6B).withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.info_outline,
+                                      color: Color(0xFFFF6B6B),
+                                      size: 18,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        _errorMessage!,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                          color: Color(0xFFFF6B6B),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             // Save button - calm style
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
                             GestureDetector(
                               onTap: _saveActivity,
                               child: Container(
@@ -1132,7 +1175,10 @@ class _AddScreenState extends State<AddScreen> {
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => selectedActivity = type),
+        onTap: () {
+          _clearError();
+          setState(() => selectedActivity = type);
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
@@ -1169,7 +1215,42 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
+  void _showValidationError(String message) {
+    setState(() => _errorMessage = message);
+  }
+
+  void _clearError() {
+    if (_errorMessage != null) {
+      setState(() => _errorMessage = null);
+    }
+  }
+
   void _saveActivity() async {
+    // Validation: prevent saving activities with zero values
+    if (selectedActivity == 'breastfeeding' && minutes == 0) {
+      _showValidationError('Please set a duration');
+      return;
+    }
+    if (selectedActivity == 'bottle' && bottleAmount == 0) {
+      _showValidationError('Please set an amount');
+      return;
+    }
+    if (selectedActivity == 'sleep') {
+      if (_sleepEndTime == null) {
+        _showValidationError('Please set wake up time');
+        return;
+      }
+      // Check if duration would be 0
+      final now = DateTime.now();
+      final startDT = DateTime(now.year, now.month, now.day, _sleepStartTime.hour, _sleepStartTime.minute);
+      var endDT = DateTime(now.year, now.month, now.day, _sleepEndTime!.hour, _sleepEndTime!.minute);
+      if (endDT.isBefore(startDT)) endDT = endDT.add(const Duration(days: 1));
+      if (endDT.difference(startDT).inMinutes == 0) {
+        _showValidationError('Sleep duration must be greater than 0');
+        return;
+      }
+    }
+
     if (selectedActivity == 'breastfeeding') {
       final kayitlar = VeriYonetici.getMamaKayitlari();
       final totalMinutes = minutes + (seconds / 60);
@@ -1244,9 +1325,22 @@ class _AddScreenState extends State<AddScreen> {
     } else if (selectedActivity == 'diaper') {
       final kayitlar = VeriYonetici.getKakaKayitlari();
 
+      // Convert English type to Turkish for consistency
+      String turkceTur;
+      switch (_diaperType) {
+        case 'wet':
+          turkceTur = Dil.islak;
+          break;
+        case 'dirty':
+          turkceTur = Dil.kirli;
+          break;
+        default:
+          turkceTur = Dil.ikisiBirden;
+      }
+
       kayitlar.insert(0, {
         'tarih': DateTime.now(),
-        'tur': _diaperType,
+        'tur': turkceTur,
         'notlar': _diaperNotesController.text,
       });
 

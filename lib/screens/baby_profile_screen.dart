@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
+import 'growth_screen.dart';
 
 class BabyProfileScreen extends StatefulWidget {
   const BabyProfileScreen({super.key});
@@ -15,12 +18,15 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   late TextEditingController _nameController;
   final TextEditingController _notesController = TextEditingController();
   late DateTime _birthDate;
+  String? _photoPath;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: VeriYonetici.getBabyName());
     _birthDate = VeriYonetici.getBirthDate();
+    _photoPath = VeriYonetici.getBabyPhotoPath();
   }
 
   @override
@@ -47,6 +53,18 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
       return '$months ${Dil.ay} $days ${Dil.gun}';
     } else {
       return '$days ${Dil.gun}';
+    }
+  }
+
+  Future<void> _pickPhoto() async {
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+    if (image != null) {
+      setState(() => _photoPath = image.path);
     }
   }
 
@@ -129,39 +147,82 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Baby Avatar
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFEBE8FF),
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 4,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/icons/illustration/baby_face.png',
-                          width: 120,
-                          height: 120,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Container(
-                            color: const Color(0xFFEBE8FF),
-                            child: const Icon(
-                              Icons.child_care,
-                              color: Color(0xFFFF998A),
-                              size: 48,
+                    GestureDetector(
+                      onTap: _pickPhoto,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xFFEBE8FF),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 4,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ClipOval(
+                              child: _photoPath != null && File(_photoPath!).existsSync()
+                                  ? Image.file(
+                                      File(_photoPath!),
+                                      width: 120,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/icons/illustration/baby_face.png',
+                                      width: 120,
+                                      height: 120,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => Container(
+                                        color: const Color(0xFFEBE8FF),
+                                        child: const Icon(
+                                          Icons.child_care,
+                                          color: Color(0xFFFF998A),
+                                          size: 48,
+                                        ),
+                                      ),
+                                    ),
                             ),
                           ),
-                        ),
+                          // Camera badge
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFB4A2),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 3,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -354,12 +415,10 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                     // View Growth Records Button
                     GestureDetector(
                       onTap: () {
-                        // Navigate to growth records (view-only)
-                        // This will be handled in the future
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(Dil.yapilandiriliyor),
-                            backgroundColor: const Color(0xFFFFB4A2),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GrowthScreen(),
                           ),
                         );
                       },
@@ -472,6 +531,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   void _saveProfile() async {
     await VeriYonetici.setBabyName(_nameController.text.trim());
     await VeriYonetici.setBirthDate(_birthDate);
+    await VeriYonetici.setBabyPhotoPath(_photoPath);
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(

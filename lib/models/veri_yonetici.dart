@@ -18,6 +18,7 @@ class VeriYonetici {
   static bool _firstLaunch = true;
   static String _babyName = 'Sofia';
   static DateTime _birthDate = DateTime(2024, 9, 17);
+  static String? _babyPhotoPath;
 
   // Initialize - must be called before using any other methods
   static Future<void> init() async {
@@ -34,6 +35,7 @@ class VeriYonetici {
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
     _babyName = _prefs!.getString('baby_name') ?? 'Sofia';
+    _babyPhotoPath = _prefs!.getString('baby_photo_path');
     final birthDateStr = _prefs!.getString('birth_date');
     _birthDate = birthDateStr != null ? DateTime.parse(birthDateStr) : DateTime(2024, 9, 17);
 
@@ -397,6 +399,19 @@ class VeriYonetici {
   static Future<void> setBirthDate(DateTime date) async {
     _birthDate = date;
     await _prefs!.setString('birth_date', date.toIso8601String());
+  }
+
+  static String? getBabyPhotoPath() {
+    return _babyPhotoPath;
+  }
+
+  static Future<void> setBabyPhotoPath(String? path) async {
+    _babyPhotoPath = path;
+    if (path != null) {
+      await _prefs!.setString('baby_photo_path', path);
+    } else {
+      await _prefs!.remove('baby_photo_path');
+    }
   }
 
   // VERİLERİ TEMİZLE
