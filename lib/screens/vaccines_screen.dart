@@ -177,6 +177,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   void _onReorder(int oldIndex, int newIndex) async {
     setState(() {
+      // Adjust indices to account for baby info card at index 0
+      oldIndex -= 1;
+      newIndex -= 1;
+
       if (newIndex > oldIndex) {
         newIndex -= 1;
       }
