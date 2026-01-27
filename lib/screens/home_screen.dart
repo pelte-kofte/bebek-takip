@@ -49,7 +49,24 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _loadBabyInfo();
+    _initializeTimerValues();
     _setupTimerListeners();
+  }
+
+  void _initializeTimerValues() {
+    // Initialize timer values from TimerYonetici's current state
+    // This prevents showing "00:00" flash before first stream update
+    if (_timerYonetici.isEmzirmeActive) {
+      _solSaniye = _timerYonetici.solToplamSaniye;
+      _sagSaniye = _timerYonetici.sagToplamSaniye;
+      final taraf = _timerYonetici.emzirmeTaraf;
+      _solAktif = taraf == 'sol';
+      _sagAktif = taraf == 'sag';
+    }
+
+    if (_timerYonetici.isUykuActive) {
+      _uykuSaniye = _timerYonetici.uykuElapsed?.inSeconds ?? 0;
+    }
   }
 
   void _loadBabyInfo() {
@@ -782,7 +799,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // GROWTH TRACKING SECTION
                   _buildGrowthSection(isDark, textColor, subtitleColor),
 
-                  const SizedBox(height: 120),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

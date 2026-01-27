@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'dart:html' as html;
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class RaporScreen extends StatefulWidget {
   const RaporScreen({super.key});
@@ -1295,24 +1297,25 @@ class _RaporScreenState extends State<RaporScreen> {
 
       final bytes = await pdf.save();
 
-      // Web için indirme
-      final blob = html.Blob([bytes], 'application/pdf');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      final anchor = html.AnchorElement(href: url)
-        ..setAttribute(
-          'download',
-          'bebek_rapor_${DateTime.now().millisecondsSinceEpoch}.pdf',
-        )
-        ..click();
-      html.Url.revokeObjectUrl(url);
+      // Save to temporary file
+      final output = await getTemporaryDirectory();
+      final file = File(
+        '${output.path}/bebek_rapor_${DateTime.now().millisecondsSinceEpoch}.pdf',
+      );
+      await file.writeAsBytes(bytes);
 
+      // Share PDF (works on both web and mobile)
+      await Share.shareXFiles([XFile(file.path)], text: 'Bebek Takip Raporu');
+
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('✅ PDF başarıyla indirildi!'),
+          content: Text('✅ PDF başarıyla kaydedildi!'),
           backgroundColor: Color(0xFF4CAF50),
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('❌ Hata: $e'), backgroundColor: Colors.red),
       );
