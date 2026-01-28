@@ -232,6 +232,315 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     }
   }
 
+  /// Checks if a vaccine already exists in user's list (same name + same period)
+  bool _isDuplicateVaccine(Map<String, dynamic> vaccine) {
+    return _vaccines.any((v) =>
+        v['ad'] == vaccine['ad'] && v['donem'] == vaccine['donem']);
+  }
+
+  void _showNationalVaccineSelector() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final nationalVaccines = AsiVeri.getTurkiyeAsiTakvimi();
+
+    // Track which vaccines are selected (initially none)
+    final selectedVaccines = <String, bool>{};
+    for (final vaccine in nationalVaccines) {
+      selectedVaccines[vaccine['id']] = false;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          // Count selected and available (non-duplicate) vaccines
+          int availableCount = 0;
+          int selectedCount = 0;
+          for (final vaccine in nationalVaccines) {
+            if (!_isDuplicateVaccine(vaccine)) {
+              availableCount++;
+              if (selectedVaccines[vaccine['id']] == true) {
+                selectedCount++;
+              }
+            }
+          }
+
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.85,
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF5),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Header
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFDAB9),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: Text('🇹🇷', style: TextStyle(fontSize: 24)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Türk Aşı Takvimi',
+                              style: AppTypography.h2(context),
+                            ),
+                            Text(
+                              '$availableCount aşı mevcut',
+                              style: AppTypography.caption(context).copyWith(
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : const Color(0xFF866F65),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: Icon(
+                          Icons.close,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : const Color(0xFF866F65),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Select All / Deselect All buttons
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: availableCount > 0
+                              ? () {
+                                  setModalState(() {
+                                    for (final vaccine in nationalVaccines) {
+                                      if (!_isDuplicateVaccine(vaccine)) {
+                                        selectedVaccines[vaccine['id']] = true;
+                                      }
+                                    }
+                                  });
+                                }
+                              : null,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: BorderSide(
+                              color: AppColors.primary.withOpacity(0.3),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Tümünü Seç'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: selectedCount > 0
+                              ? () {
+                                  setModalState(() {
+                                    for (final id in selectedVaccines.keys) {
+                                      selectedVaccines[id] = false;
+                                    }
+                                  });
+                                }
+                              : null,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF866F65),
+                            side: BorderSide(
+                              color: const Color(0xFF866F65).withOpacity(0.3),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text('Temizle'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Vaccine list
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: nationalVaccines.length,
+                    itemBuilder: (context, index) {
+                      final vaccine = nationalVaccines[index];
+                      final isDuplicate = _isDuplicateVaccine(vaccine);
+                      final isSelected = selectedVaccines[vaccine['id']] == true;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? Colors.white.withOpacity(0.05)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDuplicate
+                                  ? Colors.grey.withOpacity(0.2)
+                                  : isSelected
+                                      ? AppColors.primary.withOpacity(0.3)
+                                      : Colors.transparent,
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: CheckboxListTile(
+                            value: isSelected,
+                            onChanged: isDuplicate
+                                ? null
+                                : (value) {
+                                    setModalState(() {
+                                      selectedVaccines[vaccine['id']] = value ?? false;
+                                    });
+                                  },
+                            controlAffinity: ListTileControlAffinity.leading,
+                            activeColor: AppColors.primary,
+                            title: Text(
+                              vaccine['ad'],
+                              style: AppTypography.body(context).copyWith(
+                                color: isDuplicate
+                                    ? (isDark
+                                        ? AppColors.textSecondaryDark.withOpacity(0.5)
+                                        : const Color(0xFF866F65).withOpacity(0.5))
+                                    : null,
+                                decoration: isDuplicate
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                              ),
+                            ),
+                            subtitle: Text(
+                              isDuplicate
+                                  ? '${vaccine['donem']} • Zaten ekli'
+                                  : '${vaccine['donem']}${vaccine['notlar']?.isNotEmpty == true ? ' • ${vaccine['notlar']}' : ''}',
+                              style: AppTypography.caption(context).copyWith(
+                                color: isDuplicate
+                                    ? (isDark
+                                        ? AppColors.textSecondaryDark.withOpacity(0.4)
+                                        : const Color(0xFF866F65).withOpacity(0.4))
+                                    : (isDark
+                                        ? AppColors.textSecondaryDark
+                                        : const Color(0xFF866F65)),
+                              ),
+                            ),
+                            secondary: isDuplicate
+                                ? Icon(
+                                    Icons.check_circle,
+                                    color: AppColors.accentGreen.withOpacity(0.5),
+                                    size: 20,
+                                  )
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                // Add button
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: selectedCount > 0
+                            ? () async {
+                                // Gather selected vaccines
+                                final toAdd = nationalVaccines
+                                    .where((v) =>
+                                        selectedVaccines[v['id']] == true &&
+                                        !_isDuplicateVaccine(v))
+                                    .toList();
+
+                                if (toAdd.isEmpty) {
+                                  Navigator.pop(context);
+                                  return;
+                                }
+
+                                // Add vaccines with new unique IDs to avoid conflicts
+                                final existingVaccines = VeriYonetici.getAsiKayitlari();
+                                for (final vaccine in toAdd) {
+                                  final newVaccine = Map<String, dynamic>.from(vaccine);
+                                  // Generate a unique ID to prevent ID conflicts
+                                  newVaccine['id'] = '${vaccine['id']}_${DateTime.now().millisecondsSinceEpoch}_${existingVaccines.length}';
+                                  existingVaccines.add(newVaccine);
+                                }
+
+                                await VeriYonetici.saveAsiKayitlari(existingVaccines);
+                                _loadVaccines();
+
+                                if (mounted) {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('${toAdd.length} aşı eklendi'),
+                                      backgroundColor: AppColors.accentGreen,
+                                    ),
+                                  );
+                                }
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: AppColors.primary.withOpacity(0.3),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: Text(
+                          selectedCount > 0
+                              ? '$selectedCount Aşı Ekle'
+                              : 'Aşı Seçin',
+                          style: AppTypography.button(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
 Widget build(BuildContext context) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -338,9 +647,41 @@ Widget build(BuildContext context) {
             ),
           ),
           const SizedBox(width: 16),
-          Text(
-            Dil.asilarim,
-            style: AppTypography.h1(context),
+          Expanded(
+            child: Text(
+              Dil.asilarim,
+              style: AppTypography.h1(context),
+            ),
+          ),
+          // National vaccine selector button
+          GestureDetector(
+            onTap: _showNationalVaccineSelector,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: isDark
+                    ? AppColors.bgDarkCard
+                    : const Color(0xFFFFDAB9).withOpacity(0.5),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.primary.withOpacity(0.2),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('🇹🇷', style: TextStyle(fontSize: 16)),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Takvim',
+                    style: AppTypography.caption(context).copyWith(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

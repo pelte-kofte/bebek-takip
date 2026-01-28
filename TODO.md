@@ -9,13 +9,18 @@ mesela bir de ay ay bebekiçin yapılacak şeyler. 3. ayda dönme egzeresizi 5 t
 - [ ] aşı takibi
 - [ ] eklenen aktiviteler siinmesin hiç 
 - [ ] çoklu kullanım anne-baba
-- [ ] tabtakieiconlardeğişecek.
+
 - [ ] bebek ekleme
 - [ ] bilgileri sıfırla seçeneği gelsin bir de
 - [ ] haftalık ve aylık kaka ve çiş raporu
 - [ ] büyükanne modu
 - [ ] "Uygulamaya premium UX detayları ekle:
+- [ ] GELECEK AŞILAR 
+- [ ] BÜYÜME CHART Chart tab eklenir
 
+Default chart açılır
+
+List secondary olur
 1. Tüm butonlara haptic feedback
    (HapticFeedback.lightImpact)
 

@@ -1,11 +1,37 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
 
 // Photo style enum for privacy-friendly sharing
 enum PhotoStyle { original, softIllustration, pastelBlur }
+
+/// Platform-aware image widget that works on both web and mobile
+Widget buildPlatformImage(
+  String path, {
+  BoxFit fit = BoxFit.cover,
+  Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
+}) {
+  if (kIsWeb) {
+    // On web, ImagePicker returns blob URLs that work with Image.network
+    return Image.network(
+      path,
+      fit: fit,
+      errorBuilder: errorBuilder,
+    );
+  } else {
+    // On mobile/desktop, use File
+    return Image.file(
+      File(path),
+      fit: fit,
+      errorBuilder: errorBuilder,
+    );
+  }
+}
 
 class MilestonesScreen extends StatefulWidget {
   const MilestonesScreen({super.key});
@@ -300,8 +326,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
               child: hasPhoto
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.file(
-                        File(milestone['photoPath']),
+                      child: buildPlatformImage(
+                        milestone['photoPath'],
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
                             const Center(
@@ -456,6 +482,7 @@ class AddMilestoneScreen extends StatefulWidget {
 class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  final ImagePicker _imagePicker = ImagePicker();
   DateTime _selectedDate = DateTime.now();
   String? _photoPath;
   PhotoStyle _photoStyle =
@@ -466,6 +493,48 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
     _titleController.dispose();
     _noteController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+    if (image != null) {
+      // Offer optional cropping (skip on web as image_cropper doesn't support it)
+      if (!kIsWeb) {
+        final croppedFile = await _cropImage(image.path);
+        setState(() => _photoPath = croppedFile ?? image.path);
+      } else {
+        setState(() => _photoPath = image.path);
+      }
+    }
+  }
+
+  Future<String?> _cropImage(String sourcePath) async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: sourcePath,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Fotoğrafı Kırp',
+          toolbarColor: const Color(0xFFFFB4A2),
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: const Color(0xFFFFB4A2),
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(
+          title: 'Fotoğrafı Kırp',
+          doneButtonTitle: 'Tamam',
+          cancelButtonTitle: 'İptal',
+          aspectRatioLockEnabled: false,
+        ),
+      ],
+    );
+    return croppedFile?.path;
   }
 
   Future<void> _selectDate() async {
@@ -623,9 +692,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         Stack(
                           children: [
                             GestureDetector(
-                              onTap: () {
-                                // Photo picker would go here
-                              },
+                              onTap: _pickPhoto,
                               child: AspectRatio(
                                 aspectRatio: 1,
                                 child: Container(
@@ -650,8 +717,8 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                           borderRadius: BorderRadius.circular(
                                             28,
                                           ),
-                                          child: Image.file(
-                                            File(_photoPath!),
+                                          child: buildPlatformImage(
+                                            _photoPath!,
                                             fit: BoxFit.cover,
                                             errorBuilder:
                                                 (context, error, stackTrace) =>
@@ -668,9 +735,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                 bottom: 16,
                                 right: 16,
                                 child: GestureDetector(
-                                  onTap: () {
-                                    // Edit photo action
-                                  },
+                                  onTap: _pickPhoto,
                                   child: Container(
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
@@ -1015,6 +1080,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   late TextEditingController _noteController;
   late DateTime _selectedDate;
   String? _photoPath;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
@@ -1034,6 +1100,48 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
     _titleController.dispose();
     _noteController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickPhoto() async {
+    final XFile? image = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 1024,
+      maxHeight: 1024,
+      imageQuality: 85,
+    );
+    if (image != null) {
+      // Offer optional cropping (skip on web)
+      if (!kIsWeb) {
+        final croppedFile = await _cropImage(image.path);
+        setState(() => _photoPath = croppedFile ?? image.path);
+      } else {
+        setState(() => _photoPath = image.path);
+      }
+    }
+  }
+
+  Future<String?> _cropImage(String sourcePath) async {
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: sourcePath,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Fotoğrafı Kırp',
+          toolbarColor: const Color(0xFFFFB4A2),
+          toolbarWidgetColor: Colors.white,
+          activeControlsWidgetColor: const Color(0xFFFFB4A2),
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(
+          title: 'Fotoğrafı Kırp',
+          doneButtonTitle: 'Tamam',
+          cancelButtonTitle: 'İptal',
+          aspectRatioLockEnabled: false,
+        ),
+      ],
+    );
+    return croppedFile?.path;
   }
 
   Future<void> _selectDate() async {
@@ -1237,38 +1345,124 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Photo thumbnail (if exists)
+                  // Photo section
                   if (hasPhoto)
-                    Container(
-                      height: 120,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(
-                              0xFFE5E0F7,
-                            ).withValues(alpha: 0.5),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: Image.file(
-                          File(_photoPath!),
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Container(
-                                color: const Color(0xFFE5E0F7),
-                                child: const Icon(
-                                  Icons.image,
-                                  size: 40,
-                                  color: Color(0xFF4A3E39),
+                    Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: _pickPhoto,
+                          child: Container(
+                            height: 120,
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: 20),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFE5E0F7,
+                                  ).withValues(alpha: 0.5),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
                                 ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: buildPlatformImage(
+                                _photoPath!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: const Color(0xFFE5E0F7),
+                                      child: const Icon(
+                                        Icons.image,
+                                        size: 40,
+                                        color: Color(0xFF4A3E39),
+                                      ),
+                                    ),
                               ),
+                            ),
+                          ),
+                        ),
+                        // Replace photo button
+                        Positioned(
+                          bottom: 28,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: _pickPhoto,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFB4A2),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Remove photo button
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() => _photoPath = null);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.6),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    // Add photo button (when no photo)
+                    GestureDetector(
+                      onTap: _pickPhoto,
+                      child: Container(
+                        height: 80,
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(0xFFE5E0F7),
+                            width: 2,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Fotoğraf Ekle',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -1499,8 +1693,8 @@ class _SharePreviewSheet extends StatelessWidget {
                   child: hasPhoto
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.file(
-                            File(photoPath),
+                          child: buildPlatformImage(
+                            photoPath,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => const Icon(
                               Icons.star,

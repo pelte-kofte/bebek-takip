@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../models/veri_yonetici.dart';
 import '../models/ikonlar.dart';
 import '../models/dil.dart';
@@ -45,6 +46,90 @@ class _AddScreenState extends State<AddScreen> {
   void dispose() {
     _diaperNotesController.dispose();
     super.dispose();
+  }
+
+  /// Shows a Cupertino-style time picker in a bottom sheet
+  Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initialTime) async {
+    TimeOfDay selectedTime = initialTime;
+
+    final result = await showModalBottomSheet<TimeOfDay>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 280,
+        decoration: const BoxDecoration(
+          color: Color(0xFFFFFBF5),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header with Done button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      Dil.iptal,
+                      style: TextStyle(
+                        color: const Color(0xFF866F65),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, selectedTime),
+                    child: Text(
+                      Dil.tamam,
+                      style: TextStyle(
+                        color: const Color(0xFFFF998A),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Cupertino Time Picker
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true,
+                maximumDate: DateTime.now(),
+                initialDateTime: DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  initialTime.hour,
+                  initialTime.minute,
+                ),
+                onDateTimeChanged: (DateTime dateTime) {
+                  selectedTime = TimeOfDay(
+                    hour: dateTime.hour,
+                    minute: dateTime.minute,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return result;
   }
 
   @override
@@ -639,10 +724,7 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 12),
                               GestureDetector(
                                 onTap: () async {
-                                  final picked = await showTimePicker(
-                                    context: context,
-                                    initialTime: _sleepStartTime,
-                                  );
+                                  final picked = await _showCupertinoTimePicker(_sleepStartTime);
                                   if (picked != null) {
                                     setState(() => _sleepStartTime = picked);
                                   }
@@ -680,7 +762,7 @@ class _AddScreenState extends State<AddScreen> {
                                       ),
                                       const SizedBox(width: 16),
                                       Text(
-                                        _sleepStartTime.format(context),
+                                        '${_sleepStartTime.hour.toString().padLeft(2, '0')}:${_sleepStartTime.minute.toString().padLeft(2, '0')}',
                                         style: const TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
@@ -711,10 +793,8 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 12),
                               GestureDetector(
                                 onTap: () async {
-                                  final picked = await showTimePicker(
-                                    context: context,
-                                    initialTime:
-                                        _sleepEndTime ?? TimeOfDay.now(),
+                                  final picked = await _showCupertinoTimePicker(
+                                    _sleepEndTime ?? TimeOfDay.now(),
                                   );
                                   if (picked != null) {
                                     setState(() => _sleepEndTime = picked);
@@ -757,8 +837,9 @@ class _AddScreenState extends State<AddScreen> {
                                       ),
                                       const SizedBox(width: 16),
                                       Text(
-                                        _sleepEndTime?.format(context) ??
-                                            'Tap to set',
+                                        _sleepEndTime != null
+                                            ? '${_sleepEndTime!.hour.toString().padLeft(2, '0')}:${_sleepEndTime!.minute.toString().padLeft(2, '0')}'
+                                            : 'Tap to set',
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,

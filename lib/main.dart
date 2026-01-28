@@ -108,7 +108,7 @@ class _MainScreenState extends State<MainScreen> {
 
     final screens = [
       HomeScreen(key: ValueKey('home_$_refreshKey'), onDataChanged: _refresh),
-      const ActivitiesScreen(),
+      ActivitiesScreen(refreshTrigger: _refreshKey),
       const SizedBox(),
       VaccinesScreen(key: ValueKey('vaccines_$_refreshKey')),
       MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),

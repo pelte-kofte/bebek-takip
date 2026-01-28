@@ -6,8 +6,9 @@ enum ActivityType { mama, bez, uyku }
 
 class ActivitiesScreen extends StatefulWidget {
   final ActivityType? initialTab;
+  final int? refreshTrigger;
 
-  const ActivitiesScreen({super.key, this.initialTab});
+  const ActivitiesScreen({super.key, this.initialTab, this.refreshTrigger});
 
   @override
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
@@ -21,6 +22,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   void initState() {
     super.initState();
     _activeType = widget.initialTab ?? ActivityType.mama;
+  }
+
+  @override
+  void didUpdateWidget(ActivitiesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // When refreshTrigger changes, rebuild to show new data
+    // The _activeType is preserved because State object isn't recreated
+    if (widget.refreshTrigger != oldWidget.refreshTrigger) {
+      setState(() {});
+    }
   }
 
   void _selectDate() async {
@@ -420,6 +431,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
@@ -443,7 +455,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               const SizedBox(height: 8),
               Flexible(
                 child: Wrap(
-                  alignment: WrapAlignment.center,
+                  alignment: WrapAlignment.start,
                   spacing: 8,
                   runSpacing: 4,
                   children: [
@@ -679,6 +691,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 subtitleColor: subtitleColor,
                 onEdit: () => _editKaka(originalIndex, kayit),
                 onDelete: () => _deleteKaka(originalIndex),
+                notes: kayit['notlar'] as String?,
               );
             },
           ),
@@ -753,6 +766,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 44,
@@ -781,7 +795,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -994,8 +1008,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     required Color subtitleColor,
     required VoidCallback onEdit,
     required VoidCallback onDelete,
+    String? notes,
   }) {
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: cardColor,
@@ -1074,6 +1090,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
+                      if (notes != null && notes.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          notes,
+                          style: TextStyle(
+                            color: subtitleColor.withValues(alpha: 0.6),
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -1273,6 +1302,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   void _editKaka(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     String tur = kayit['tur'];
+    final DateTime originalTarih = kayit['tarih'];
+    TimeOfDay editedTime = TimeOfDay(
+      hour: originalTarih.hour,
+      minute: originalTarih.minute,
+    );
+    final notesController = TextEditingController(
+      text: kayit['notlar'] as String? ?? '',
+    );
 
     showModalBottomSheet(
       context: context,
@@ -1299,6 +1336,61 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                // Time picker
+                GestureDetector(
+                  onTap: () async {
+                    final picked = await showTimePicker(
+                      context: ctx,
+                      initialTime: editedTime,
+                    );
+                    if (picked != null) {
+                      // Check if selected time would be in the future
+                      final now = DateTime.now();
+                      final selectedDateTime = DateTime(
+                        originalTarih.year,
+                        originalTarih.month,
+                        originalTarih.day,
+                        picked.hour,
+                        picked.minute,
+                      );
+                      if (selectedDateTime.isAfter(now)) {
+                        // Don't allow future times - use current time instead
+                        setModalState(() {
+                          editedTime = TimeOfDay(hour: now.hour, minute: now.minute);
+                        });
+                      } else {
+                        setModalState(() => editedTime = picked);
+                      }
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.purple.shade900.withValues(alpha: 0.3) : Colors.purple.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          color: isDark ? Colors.purple.shade200 : Colors.purple.shade700,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${editedTime.hour.toString().padLeft(2, '0')}:${editedTime.minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.purple.shade200 : Colors.purple.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -1325,10 +1417,55 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     ),
                   ],
                 ),
+                // Editable notes field
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesController,
+                  decoration: InputDecoration(
+                    hintText: 'Not ekle (opsiyonel)',
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.note_outlined,
+                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
+                      size: 20,
+                    ),
+                    filled: true,
+                    fillColor: isDark ? Colors.grey.shade800.withValues(alpha: 0.5) : Colors.grey.shade100,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  ),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
+                  ),
+                  maxLines: 2,
+                  textCapitalization: TextCapitalization.sentences,
+                ),
                 const SizedBox(height: 24),
                 _buildSaveButton(() async {
+                  final newTarih = DateTime(
+                    originalTarih.year,
+                    originalTarih.month,
+                    originalTarih.day,
+                    editedTime.hour,
+                    editedTime.minute,
+                  );
                   final kayitlar = VeriYonetici.getKakaKayitlari();
-                  kayitlar[index] = {'tarih': kayit['tarih'], 'tur': tur};
+                  kayitlar[index] = {
+                    'tarih': newTarih,
+                    'tur': tur,
+                    if (notesController.text.isNotEmpty) 'notlar': notesController.text,
+                  };
+                  // Re-sort by time descending after editing
+                  kayitlar.sort(
+                    (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
+                  );
                   await VeriYonetici.saveKakaKayitlari(kayitlar);
                   Navigator.pop(ctx);
                   setState(() {});

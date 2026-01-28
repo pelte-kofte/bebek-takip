@@ -688,58 +688,62 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 16),
 
                   // LAST ACTIVITY SUMMARY
-                  SizedBox(
-                    height: 100,
-                    child: ListView(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      scrollDirection: Axis.horizontal,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
                       children: [
-                        GestureDetector(
-                          onTap: () => _navigateToActivities(ActivityType.mama),
-                          child: _buildSummaryCard(
-                            label: 'LAST FED',
-                            value: _getLastFeedingValue(mamaKayitlari),
-                            progress: _getTimeProgress(
-                              mamaKayitlari.isNotEmpty
-                                  ? mamaKayitlari.first['tarih'] as DateTime?
-                                  : null,
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _navigateToActivities(ActivityType.mama),
+                            child: _buildSummaryCard(
+                              label: 'LAST FED',
+                              value: _getLastFeedingValue(mamaKayitlari),
+                              progress: _getTimeProgress(
+                                mamaKayitlari.isNotEmpty
+                                    ? mamaKayitlari.first['tarih'] as DateTime?
+                                    : null,
+                              ),
+                              progressColor: const Color(0xFFFF998A),
+                              isDark: isDark,
                             ),
-                            progressColor: const Color(0xFFFF998A),
-                            isDark: isDark,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () => _navigateToActivities(ActivityType.bez),
-                          child: _buildSummaryCard(
-                            label: 'LAST DIAPER',
-                            value: _getLastDiaperValue(kakaKayitlari),
-                            progress: _getTimeProgress(
-                              kakaKayitlari.isNotEmpty
-                                  ? kakaKayitlari.first['tarih'] as DateTime?
-                                  : null,
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _navigateToActivities(ActivityType.bez),
+                            child: _buildSummaryCard(
+                              label: 'LAST DIAPER',
+                              value: _getLastDiaperValue(kakaKayitlari),
+                              progress: _getTimeProgress(
+                                kakaKayitlari.isNotEmpty
+                                    ? kakaKayitlari.first['tarih'] as DateTime?
+                                    : null,
+                              ),
+                              progressColor: const Color(0xFF7A749E),
+                              isDark: isDark,
                             ),
-                            progressColor: const Color(0xFF7A749E),
-                            isDark: isDark,
                           ),
                         ),
                         const SizedBox(width: 12),
-                        GestureDetector(
-                          onTap: () => _navigateToActivities(ActivityType.uyku),
-                          child: _buildSummaryCard(
-                            label: 'LAST SLEEP',
-                            value: _getLastSleepValue(
-                              VeriYonetici.getUykuKayitlari(),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _navigateToActivities(ActivityType.uyku),
+                            child: _buildSummaryCard(
+                              label: 'LAST SLEEP',
+                              value: _getLastSleepValue(
+                                VeriYonetici.getUykuKayitlari(),
+                              ),
+                              progress: _getTimeProgress(
+                                VeriYonetici.getUykuKayitlari().isNotEmpty
+                                    ? VeriYonetici.getUykuKayitlari()
+                                              .first['bitis']
+                                          as DateTime?
+                                    : null,
+                              ),
+                              progressColor: const Color(0xFF7A749E),
+                              isDark: isDark,
                             ),
-                            progress: _getTimeProgress(
-                              VeriYonetici.getUykuKayitlari().isNotEmpty
-                                  ? VeriYonetici.getUykuKayitlari()
-                                            .first['bitis']
-                                        as DateTime?
-                                  : null,
-                            ),
-                            progressColor: const Color(0xFF7A749E),
-                            isDark: isDark,
                           ),
                         ),
                       ],
@@ -765,8 +769,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            // Navigate to Activities tab
-                            DefaultTabController.of(context).animateTo(1);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ActivitiesScreen(),
+                              ),
+                            );
                           },
                           child: const Text(
                             'SEE HISTORY',
@@ -891,7 +899,6 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isDark,
   }) {
     return Container(
-      width: 120,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF2D1A18) : Colors.white,
@@ -964,6 +971,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isDark,
   }) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: (isDark ? const Color(0xFF2A2A3E) : Colors.white).withValues(
@@ -2254,7 +2262,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inMinutes < 1) return Dil.azOnce;
+    if (diff.isNegative || diff.inMinutes < 1) return Dil.azOnce;
     if (diff.inMinutes < 60) return '${diff.inMinutes} ${Dil.dakikaOnce}';
     if (diff.inHours < 24) return '${diff.inHours} ${Dil.saatOnce}';
     return '${diff.inDays} ${Dil.gunOnce}';
