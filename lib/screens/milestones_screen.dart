@@ -92,6 +92,19 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     return '$day $month';
   }
 
+  void _showMilestoneDetail(Map<String, dynamic> milestone) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MilestoneDetailScreen(
+          milestone: milestone,
+          onSaved: _loadMilestones,
+          formatDate: _formatDate,
+        ),
+      ),
+    );
+  }
+
   void _showEditMilestoneSheet(Map<String, dynamic> milestone) {
     showModalBottomSheet(
       context: context,
@@ -308,7 +321,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         children: [
           // Timeline icon or photo thumbnail
           GestureDetector(
-            onTap: () => _showEditMilestoneSheet(milestone),
+            onTap: () => _showMilestoneDetail(milestone),
             child: Container(
               width: 56,
               height: 56,
@@ -352,7 +365,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           // Card content
           Expanded(
             child: GestureDetector(
-              onTap: () => _showEditMilestoneSheet(milestone),
+              onTap: () => _showMilestoneDetail(milestone),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -1850,6 +1863,287 @@ class _SharePreviewSheet extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Milestone Detail Screen
+class MilestoneDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> milestone;
+  final VoidCallback onSaved;
+  final String Function(DateTime, {bool includeYear}) formatDate;
+
+  const MilestoneDetailScreen({
+    super.key,
+    required this.milestone,
+    required this.onSaved,
+    required this.formatDate,
+  });
+
+  void _showEditSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => EditMilestoneSheet(
+        milestone: milestone,
+        onSaved: () {
+          onSaved();
+          // Refresh the detail screen by popping and re-pushing
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _shareMilestone(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _SharePreviewSheet(
+        milestone: milestone,
+        formatDate: formatDate,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasPhoto = milestone['photoPath'] != null &&
+        (milestone['photoPath'] as String).isNotEmpty;
+    final title = milestone['title'] ?? '';
+    final date = milestone['date'] as DateTime;
+    final note = milestone['note'] ?? '';
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFBF5),
+      body: Stack(
+        children: [
+          // Decorative background circles
+          Positioned(
+            top: -100,
+            right: -100,
+            child: IgnorePointer(
+              child: Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -150,
+            left: -150,
+            child: IgnorePointer(
+              child: Container(
+                width: 400,
+                height: 400,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          // Main content
+          SafeArea(
+            child: Column(
+              children: [
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.arrow_back,
+                            color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      // Share button
+                      GestureDetector(
+                        onTap: () => _shareMilestone(context),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.share_outlined,
+                            color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Edit button
+                      GestureDetector(
+                        onTap: () => _showEditSheet(context),
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFB4A2),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.edit_outlined,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Scrollable content
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Photo (full-width, not cropped)
+                        if (hasPhoto) ...[
+                          Container(
+                            width: double.infinity,
+                            constraints: const BoxConstraints(
+                              maxHeight: 400,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(24),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: buildPlatformImage(
+                                milestone['photoPath'],
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      height: 200,
+                                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          size: 48,
+                                          color: Color(0xFF4A3E39),
+                                        ),
+                                      ),
+                                    ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                        // Title
+                        Text(
+                          title,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4A3E39),
+                            height: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Date
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 16,
+                              color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              formatDate(date, includeYear: true),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                              ),
+                            ),
+                          ],
+                        ),
+                        // Notes
+                        if (note.isNotEmpty) ...[
+                          const SizedBox(height: 24),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: Text(
+                              note,
+                              style: TextStyle(
+                                fontSize: 16,
+                                height: 1.6,
+                                color: const Color(0xFF4A3E39).withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 
@@ -1339,10 +1340,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 // Time picker
                 GestureDetector(
                   onTap: () async {
-                    final picked = await showTimePicker(
-                      context: ctx,
-                      initialTime: editedTime,
-                    );
+                    final picked = await _showCupertinoTimePicker(ctx, editedTime);
                     if (picked != null) {
                       // Check if selected time would be in the future
                       final now = DateTime.now();
@@ -1752,6 +1750,90 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
+  /// Shows a Cupertino-style time picker in a bottom sheet
+  Future<TimeOfDay?> _showCupertinoTimePicker(BuildContext context, TimeOfDay initialTime) async {
+    TimeOfDay selectedTime = initialTime;
+
+    final result = await showModalBottomSheet<TimeOfDay>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 280,
+        decoration: const BoxDecoration(
+          color: Color(0xFFFFFBF5),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header with Done button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      Dil.iptal,
+                      style: const TextStyle(
+                        color: Color(0xFF866F65),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, selectedTime),
+                    child: Text(
+                      Dil.tamam,
+                      style: const TextStyle(
+                        color: Color(0xFFFF998A),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Cupertino Time Picker
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true,
+                maximumDate: DateTime.now(),
+                initialDateTime: DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month,
+                  DateTime.now().day,
+                  initialTime.hour,
+                  initialTime.minute,
+                ),
+                onDateTimeChanged: (DateTime dateTime) {
+                  selectedTime = TimeOfDay(
+                    hour: dateTime.hour,
+                    minute: dateTime.minute,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return result;
+  }
+
   Widget _buildTimeSelector(
     TimeOfDay saat,
     Function(TimeOfDay) onChanged,
@@ -1759,7 +1841,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   ) {
     return GestureDetector(
       onTap: () async {
-        final picked = await showTimePicker(context: ctx, initialTime: saat);
+        final picked = await _showCupertinoTimePicker(ctx, saat);
         if (picked != null) onChanged(picked);
       },
       child: Container(
@@ -1803,10 +1885,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         const SizedBox(height: 8),
         GestureDetector(
           onTap: () async {
-            final picked = await showTimePicker(
-              context: ctx,
-              initialTime: saat,
-            );
+            final picked = await _showCupertinoTimePicker(ctx, saat);
             if (picked != null) onChanged(picked);
           },
           child: Container(

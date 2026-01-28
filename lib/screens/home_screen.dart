@@ -471,109 +471,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             lastActivity: '',
                             isActive: _emzirmeAktif,
                             isDark: isDark,
+                            activeSide: _emzirmeAktif
+                                ? (_solAktif ? 'LEFT' : (_sagAktif ? 'RIGHT' : null))
+                                : null,
                             buttons: _emzirmeAktif
-                                ? Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: _solAktif
-                                                  ? null
-                                                  : _startSol,
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: _solAktif
-                                                      ? const Color(0xFFFF998A)
-                                                      : const Color(0xFFFFF8F0),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  'LEFT',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: _solAktif
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFFFF998A,
-                                                          ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: _sagAktif
-                                                  ? null
-                                                  : _startSag,
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: _sagAktif
-                                                      ? const Color(0xFFFF998A)
-                                                      : const Color(0xFFFFF8F0),
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  'RIGHT',
-                                                  textAlign: TextAlign.center,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: _sagAktif
-                                                        ? Colors.white
-                                                        : const Color(
-                                                            0xFFFF998A,
-                                                          ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                ? GestureDetector(
+                                    onTap: _emzirmeKaydediliyor
+                                        ? null
+                                        : _stopEmzirmeAndSave,
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8,
                                       ),
-                                      const SizedBox(height: 8),
-                                      GestureDetector(
-                                        onTap: _emzirmeKaydediliyor
-                                            ? null
-                                            : _stopEmzirmeAndSave,
-                                        child: Container(
-                                          width: double.infinity,
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFFFF998A),
-                                            borderRadius: BorderRadius.circular(
-                                              20,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'STOP & SAVE',
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
-                                              letterSpacing: 1.2,
-                                            ),
-                                          ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFFF998A),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Text(
+                                        'STOP & SAVE',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          letterSpacing: 1.2,
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   )
                                 : Row(
                                     children: [
@@ -662,7 +587,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         margin: const EdgeInsets.only(right: 6),
                                         decoration: const BoxDecoration(
                                           shape: BoxShape.circle,
-                                          color: Color(0xFF7A749E),
+                                          color: Color(0xFF4CAF50),
                                         ),
                                       ),
                                     Text(
@@ -827,6 +752,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isActive,
     required bool isDark,
     required Widget buttons,
+    String? activeSide,
   }) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -863,14 +789,40 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            time,
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -1,
-              color: isDark ? Colors.white : const Color(0xFF2D1A18),
-            ),
+          Row(
+            children: [
+              Text(
+                time,
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1,
+                  color: isDark ? Colors.white : const Color(0xFF2D1A18),
+                ),
+              ),
+              if (activeSide != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF998A),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    activeSide,
+                    style: const TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
           if (lastActivity.isNotEmpty) ...[
             const SizedBox(height: 4),
