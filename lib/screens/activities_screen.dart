@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
+import '../widgets/decorative_background.dart';
 
 enum ActivityType { mama, bez, uyku }
 
@@ -74,74 +75,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // 1. ARKA PLAN RENK
-          Positioned.fill(
-            child: Container(
-              color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-            ),
-          ),
-
-          // 2. DEKORATİF ARKA PLAN LAYER (köşelerde, çok hafif)
-          if (!isDark)
-            Positioned.fill(
-              child: IgnorePointer(
-                child: Stack(
-                  children: [
-                    // Lavender blob - sol üst köşe
-                    Positioned(
-                      top: -50,
-                      left: -100,
-                      child: Container(
-                        width: 240,
-                        height: 240,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(
-                            0xFFE5E0F7,
-                          ).withValues(alpha: 0.03),
-                        ),
-                      ),
-                    ),
-                    // Peach blob - sağ üst köşe
-                    Positioned(
-                      top: -30,
-                      right: -80,
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(
-                            0xFFFFB4A2,
-                          ).withValues(alpha: 0.03),
-                        ),
-                      ),
-                    ),
-                    // Lavender blob - sağ alt köşe
-                    Positioned(
-                      bottom: -60,
-                      right: -70,
-                      child: Container(
-                        width: 220,
-                        height: 220,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(
-                            0xFFE5E0F7,
-                          ).withValues(alpha: 0.03),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-          // 3. ANA İÇERİK (Stack'in üstünde)
-          SafeArea(
+    return DecorativeBackground(
+      preset: BackgroundPreset.activities,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
             child: Column(
               children: [
                 // Header (fixed)
@@ -211,8 +149,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               ],
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 
@@ -434,26 +371,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBF5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Image.asset(
-                  'assets/icons/illustration/bottle2.png',
-                  width: 28,
-                  height: 28,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 8),
               Flexible(
                 child: Wrap(
                   alignment: WrapAlignment.start,
@@ -769,26 +686,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 44,
-                height: 44,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBF5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: Image.asset(
-                  'assets/icons/illustration/sleeping_moon2.png',
-                  width: 28,
-                  height: 28,
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 8),
               Text(
                 '${Dil.toplam}: $saat ${Dil.sa} $dakika ${Dil.dk}',
                 style: const TextStyle(
@@ -857,26 +754,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget _buildBezSummary(String iconPath, int count, String label) {
     return Column(
       children: [
-        Container(
-          width: 48,
-          height: 48,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFBF5),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Image.asset(
-            iconPath,
-            width: 28,
-            height: 28,
-            fit: BoxFit.contain,
-          ),
-        ),
-        const SizedBox(height: 6),
         Text(
           '$count',
           style: const TextStyle(

@@ -32,7 +32,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DecorativeBackground(
-      preset: BackgroundPreset.profile,
+      preset: BackgroundPreset.growth,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(

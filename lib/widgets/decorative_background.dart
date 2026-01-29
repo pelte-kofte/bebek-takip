@@ -5,6 +5,7 @@ enum BackgroundPreset {
   home,
   add,
   activities,
+  growth,
   vaccines,
   milestones,
   settings,
@@ -46,20 +47,22 @@ class DecorativeBackground extends StatelessWidget {
     const lavender = Color(0xFFE5E0F7);
     const cream = Color(0xFFFFF8F0);
 
-    final baseOpacity = isDark ? 0.05 : 0.07;
+    // Visible in light mode, subtle in dark mode
+    final primary = isDark ? 0.08 : 0.45;
+    final secondary = isDark ? 0.06 : 0.35;
 
     switch (preset) {
       case BackgroundPreset.home:
         return [
           Positioned(
-            top: -60,
-            left: -50,
-            child: _circle(260, lavender, baseOpacity),
+            top: -40,
+            left: -30,
+            child: _circle(300, lavender, primary),
           ),
           Positioned(
-            bottom: -40,
-            right: -50,
-            child: _circle(220, peach, baseOpacity),
+            bottom: -20,
+            right: -30,
+            child: _circle(280, peach, secondary),
           ),
         ];
 
@@ -69,69 +72,91 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             bottom: -50,
             left: -60,
-            child: _circle(230, lavender, baseOpacity),
+            child: _circle(230, lavender, isDark ? 0.05 : 0.07),
           ),
         ];
 
       case BackgroundPreset.activities:
         return [
           Positioned(
-            top: -50,
-            right: -60,
-            child: _circle(240, lavender, baseOpacity),
+            top: -30,
+            right: -40,
+            child: _circle(280, lavender, primary),
           ),
           Positioned(
-            bottom: -60,
-            left: -50,
-            child: _circle(220, lavender, baseOpacity),
+            bottom: -40,
+            left: -30,
+            child: _circle(260, peach, secondary),
+          ),
+        ];
+
+      case BackgroundPreset.growth:
+        return [
+          Positioned(
+            top: -40,
+            right: -30,
+            child: _circle(280, peach, secondary),
+          ),
+          Positioned(
+            bottom: -40,
+            left: -40,
+            child: _circle(260, lavender, primary),
           ),
         ];
 
       case BackgroundPreset.vaccines:
         return [
           Positioned(
-            top: -40, // Move down slightly
-            left: -30, // Move right slightly
-            child: _circle(260, lavender, 0.09), // Larger, more visible
+            top: -30,
+            left: -20,
+            child: _circle(300, lavender, primary),
           ),
           Positioned(
-            bottom: -80, // Move further down (below FAB)
-            right: -40,
-            child: _circle(240, peach, 0.09), // Larger, more visible
+            bottom: -60,
+            right: -30,
+            child: _circle(280, peach, secondary),
           ),
         ];
 
       case BackgroundPreset.milestones:
         return [
-          Positioned(top: -40, right: -40, child: _circle(280, peach, 0.08)),
           Positioned(
-            bottom: -60,
-            left: -50,
-            child: _circle(260, lavender, baseOpacity),
+            top: -30,
+            right: -30,
+            child: _circle(300, peach, secondary),
+          ),
+          Positioned(
+            bottom: -40,
+            left: -40,
+            child: _circle(280, lavender, primary),
           ),
         ];
 
       case BackgroundPreset.settings:
         return [
-          Positioned(top: -60, right: -70, child: _circle(220, cream, 0.06)),
           Positioned(
-            bottom: -50,
-            left: -60,
-            child: _circle(200, lavender, 0.06),
+            top: -50,
+            right: -50,
+            child: _circle(240, cream, isDark ? 0.06 : 0.15),
+          ),
+          Positioned(
+            bottom: -40,
+            left: -50,
+            child: _circle(220, lavender, isDark ? 0.06 : 0.15),
           ),
         ];
 
       case BackgroundPreset.profile:
         return [
           Positioned(
-            top: -50,
-            right: -50,
-            child: _circle(250, peach, baseOpacity),
+            top: -40,
+            right: -40,
+            child: _circle(270, peach, secondary),
           ),
           Positioned(
-            bottom: -60,
-            left: -50,
-            child: _circle(230, lavender, baseOpacity),
+            bottom: -50,
+            left: -40,
+            child: _circle(250, lavender, primary),
           ),
         ];
     }

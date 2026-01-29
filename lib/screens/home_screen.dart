@@ -610,7 +610,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // LAST ACTIVITY SUMMARY
                   Padding(
@@ -675,20 +675,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
 
                   // RECENT ACTIVITY HEADER
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           'RECENT ACTIVITY',
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1.5,
+                            letterSpacing: 1.2,
                             color: textColor.withValues(alpha: 0.4),
                           ),
                         ),
@@ -727,12 +727,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
 
                   // GROWTH TRACKING SECTION
                   _buildGrowthSection(isDark, textColor, subtitleColor),
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
                 ],
               ),
             ),
@@ -1245,7 +1245,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
         // View charts button
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
