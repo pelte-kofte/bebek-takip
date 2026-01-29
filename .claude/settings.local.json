@@ -5,7 +5,9 @@
       "Bash(echo.:*)",
       "Bash(powershell -Command \"\\(Get-Content lib/screens/vaccines_screen.dart\\) -replace ''variant: BackgroundVariant'', ''preset: BackgroundPreset'' | Set-Content lib/screens/vaccines_screen.dart\")",
       "Bash(powershell -Command \"\\(Get-Content lib/screens/add_vaccine_screen.dart\\) -replace ''variant: BackgroundVariant'', ''preset: BackgroundPreset'' | Set-Content lib/screens/add_vaccine_screen.dart\")",
-      "Bash(powershell -Command:*)"
+      "Bash(powershell -Command:*)",
+      "Bash(ls -la \"c:\\\\Users\\\\ASUS\\\\Documents\\\\bebek_takip\\\\lib\\\\models\"\" 2>&1 || ls -la \"/c/Users/ASUS/Documents/bebek_takip/lib/models/ \")",
+      "Bash(findstr:*)"
     ]
   }
 }

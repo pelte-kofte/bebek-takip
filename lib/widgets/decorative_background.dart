@@ -48,8 +48,8 @@ class DecorativeBackground extends StatelessWidget {
     const cream = Color(0xFFFFF8F0);
 
     // Visible in light mode, subtle in dark mode
-    final primary = isDark ? 0.08 : 0.45;
-    final secondary = isDark ? 0.06 : 0.35;
+    final primary = isDark ? 0.10 : 0.45;
+    final secondary = isDark ? 0.08 : 0.35;
 
     switch (preset) {
       case BackgroundPreset.home:

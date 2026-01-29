@@ -11,6 +11,7 @@ import 'activities_screen.dart';
 import 'add_growth_screen.dart';
 import 'baby_profile_screen.dart';
 import 'growth_screen.dart';
+import '../widgets/baby_switcher_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -311,8 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           // Decorative blobs
-          if (!isDark)
-            Positioned.fill(
+          Positioned.fill(
               child: IgnorePointer(
                 child: Stack(
                   children: [
@@ -324,7 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 256,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFEBE8FF).withValues(alpha: 0.5),
+                          color: const Color(0xFFEBE8FF).withValues(alpha: isDark ? 0.08 : 0.5),
                         ),
                       ),
                     ),
@@ -336,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 320,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFFEBE8FF).withValues(alpha: 0.5),
+                          color: const Color(0xFFEBE8FF).withValues(alpha: isDark ? 0.06 : 0.5),
                         ),
                       ),
                     ),
@@ -356,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                     child: Row(
                       children: [
-                        // Baby profile area (tappable)
+                        // Baby profile area (tappable -> profile)
                         GestureDetector(
                           onTap: () async {
                             final result = await Navigator.push(
@@ -377,18 +377,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 48,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: const Color(0xFFEBE8FF),
+                                  color: isDark
+                                      ? AppColors.bgDarkCard
+                                      : const Color(0xFFEBE8FF),
                                   border: Border.all(
-                                    color: Colors.white,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.1)
+                                        : Colors.white,
                                     width: 2,
                                   ),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 4,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
+                                  boxShadow: isDark
+                                      ? null
+                                      : const [
+                                          BoxShadow(
+                                            color: Colors.black12,
+                                            blurRadius: 4,
+                                            offset: Offset(0, 2),
+                                          ),
+                                        ],
                                 ),
                                 child: ClipOval(
                                   child: Image.asset(
@@ -399,7 +405,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     errorBuilder:
                                         (context, error, stackTrace) =>
                                             Container(
-                                              color: const Color(0xFFEBE8FF),
+                                              color: isDark
+                                                  ? AppColors.bgDarkCard
+                                                  : const Color(0xFFEBE8FF),
                                               child: const Icon(
                                                 Icons.child_care,
                                                 color: Color(0xFFFF998A),
@@ -434,6 +442,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        // Baby switcher icon
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => BabySwitcherSheet(
+                                onBabyChanged: () {
+                                  _loadBabyInfo();
+                                  widget.onDataChanged?.call();
+                                },
+                              ),
+                            );
+                          },
+                          child: Icon(
+                            Icons.expand_more_rounded,
+                            color: subtitleColor,
+                            size: 22,
                           ),
                         ),
                         const Spacer(),
@@ -535,17 +564,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                               vertical: 8,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: const Color(0xFFFFF8F0),
+                                              color: isDark
+                                                  ? Colors.white.withValues(alpha: 0.1)
+                                                  : const Color(0xFFFFF8F0),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),
-                                            child: const Text(
+                                            child: Text(
                                               'RIGHT',
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.bold,
-                                                color: Color(0xFFFF998A),
+                                                color: isDark
+                                                    ? const Color(0xFFFF998A).withValues(alpha: 0.9)
+                                                    : const Color(0xFFFF998A),
                                               ),
                                             ),
                                           ),
@@ -574,7 +607,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFFEBE8FF),
+                                  color: isDark
+                                      ? const Color(0xFFEBE8FF).withValues(alpha: 0.15)
+                                      : const Color(0xFFEBE8FF),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Row(
@@ -757,14 +792,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A3E) : const Color(0xFFF1D9F5),
+        color: isDark ? AppColors.bgDarkCard : const Color(0xFFF1D9F5),
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFFFF8F0).withValues(alpha: 0.5),
         ),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
-        ],
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -772,7 +811,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFFEBE8FF),
+              color: isDark
+                  ? const Color(0xFFEBE8FF).withValues(alpha: 0.15)
+                  : const Color(0xFFEBE8FF),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 24),
@@ -853,14 +894,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2D1A18) : Colors.white,
+        color: isDark ? AppColors.bgDarkCard : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? const Color(0xFF3D2A28) : const Color(0xFFF0EBE8),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF0EBE8),
         ),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
-        ],
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -893,7 +938,7 @@ class _HomeScreenState extends State<HomeScreen> {
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
               color:
-                  (isDark ? const Color(0xFFFCF8F8) : const Color(0xFF1D0E0C))
+                  (isDark ? AppColors.textPrimaryDark : const Color(0xFF1D0E0C))
                       .withValues(alpha: 0.5),
             ),
           ),
@@ -906,7 +951,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: isDark ? const Color(0xFFFCF8F8) : const Color(0xFF1D0E0C),
+              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF1D0E0C),
             ),
           ),
         ],
@@ -926,11 +971,15 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: (isDark ? const Color(0xFF2A2A3E) : Colors.white).withValues(
-          alpha: 0.6,
+        color: (isDark ? AppColors.bgDarkCard : Colors.white).withValues(
+          alpha: isDark ? 0.8 : 0.6,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.4)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.white.withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
         children: [
@@ -938,7 +987,9 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFEBE8FF),
+              color: isDark
+                  ? const Color(0xFFEBE8FF).withValues(alpha: 0.12)
+                  : const Color(0xFFEBE8FF),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 20),
@@ -1108,10 +1159,12 @@ class _HomeScreenState extends State<HomeScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 24),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2A2A3E) : Colors.white,
+          color: isDark ? AppColors.bgDarkCard : Colors.white,
           borderRadius: BorderRadius.circular(28),
           border: Border.all(
-            color: const Color(0xFFFFF8F0).withValues(alpha: 0.5),
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFF8F0).withValues(alpha: 0.5),
           ),
         ),
         child: Center(
@@ -1198,12 +1251,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEBE8FF),
+                  color: isDark
+                      ? const Color(0xFFEBE8FF).withValues(alpha: 0.12)
+                      : const Color(0xFFEBE8FF),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.trending_up,
-                  color: Color(0xFF7A749E),
+                  color: isDark
+                      ? AppColors.accentLavender
+                      : const Color(0xFF7A749E),
                   size: 20,
                 ),
               ),
@@ -1262,7 +1319,12 @@ class _HomeScreenState extends State<HomeScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFFEBE8FF), width: 2),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.accentLavender.withValues(alpha: 0.3)
+                      : const Color(0xFFEBE8FF),
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -1272,7 +1334,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.5,
-                  color: const Color(0xFF7A749E),
+                  color: isDark
+                      ? AppColors.accentLavender
+                      : const Color(0xFF7A749E),
                 ),
               ),
             ),
@@ -1294,9 +1358,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF8F0),
+        color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFF8F0),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.white.withValues(alpha: 0.5),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
