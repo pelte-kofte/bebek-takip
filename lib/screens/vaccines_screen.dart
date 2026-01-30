@@ -883,7 +883,9 @@ Widget build(BuildContext context) {
                   Text(
                     isCompleted
                         ? '${Dil.uygulandi} - $dateStr'
-                        : '${vaccine['donem']} • ${vaccine['notlar'] ?? Dil.bekleniyor}',
+                        : dateStr.isNotEmpty
+                            ? '${vaccine['donem']} • $dateStr'
+                            : '${vaccine['donem']} • Tarih seç',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -980,7 +982,9 @@ Widget build(BuildContext context) {
                   Text(
                     isCompleted
                         ? '${Dil.uygulandi} - $dateStr'
-                        : vaccine['notlar'] ?? Dil.bekleniyor,
+                        : dateStr.isNotEmpty
+                            ? '${vaccine['donem']} • $dateStr'
+                            : '${vaccine['donem']} • Tarih seç',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -1023,6 +1027,10 @@ Widget build(BuildContext context) {
     int index,
     bool isDark,
   ) {
+    final dateStr = vaccine['tarih'] != null
+        ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
+        : '';
+
     return GestureDetector(
       onTap: () => _editVaccine(vaccine, index),
       onLongPress: () => _showVaccineOptions(vaccine, index),
@@ -1075,7 +1083,9 @@ Widget build(BuildContext context) {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    vaccine['notlar'] ?? Dil.bekleniyor,
+                    dateStr.isNotEmpty
+                        ? '${vaccine['donem']} • $dateStr'
+                        : '${vaccine['donem']} • Tarih seç',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark

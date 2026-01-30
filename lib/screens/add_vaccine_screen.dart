@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
@@ -83,32 +84,83 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     }
   }
 
-  Future<void> _selectDate() async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: const Color(0xFFFFB4A2),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: AppColors.textPrimaryLight,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
+  void _selectDate() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    DateTime tempDate = _selectedDate ?? DateTime.now();
+    final lastDate = _selectedStatus == 'bekleniyor'
+        ? DateTime.now().add(const Duration(days: 365 * 5))
+        : DateTime.now();
 
-    if (date != null) {
-      setState(() {
-        _selectedDate = date;
-      });
-    }
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.06)
+                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        Dil.iptal,
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : const Color(0xFF866F65),
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedDate = tempDate;
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        Dil.tamam,
+                        style: TextStyle(
+                          color: const Color(0xFFFFB4A2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: tempDate.isAfter(lastDate) ? lastDate : tempDate,
+                  minimumDate: DateTime(2020),
+                  maximumDate: lastDate,
+                  onDateTimeChanged: (date) {
+                    tempDate = date;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -138,10 +190,8 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                           const SizedBox(height: 24),
                           _buildStatusSelector(isDark),
 
-                          if (_selectedStatus == 'uygulandi') ...[
-                            const SizedBox(height: 24),
-                            _buildDateSelector(isDark),
-                          ],
+                          const SizedBox(height: 24),
+                          _buildDateSelector(isDark),
 
                           const SizedBox(height: 24),
                           _buildNotesField(isDark),
@@ -447,13 +497,17 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildDateSelector(bool isDark) {
+    final dateLabel = _selectedStatus == 'bekleniyor'
+        ? 'Planlanan Tarih'
+        : Dil.tarihSec;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            Dil.tarihSec,
+            dateLabel,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark

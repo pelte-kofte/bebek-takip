@@ -2,69 +2,35 @@
 
 Son Güncelleme: 29 Aralık 2024
 
----
-mesela bir de ay ay bebekiçin yapılacak şeyler. 3. ayda dönme egzeresizi 5 te oturma egzesizi2. ayda göz takibi egzersizleri için her ay dönümündeböyle bildirim gitsin
-## 🔥  (Bu Hafta)
-- [ ] LANDİNG PAGE FLOATİNG  KALDIRIP NETLİĞE BAK.
+## V2 – Product & UX
+
+- [ ] Günün İpuçları (Home)
+- [ ] Gelecek Aşılar (Home + Vaccines)
+- [ ] Weekly / Monthly Reports
+- [ ] Grandma Mode (read-only)
+- [ ] Activities UX v2
+- [ ] Landing page sadeleştirme
+- [ ] Growth chart polish
 - [ ] çoklu kullanım anne-baba
-- [ ] bebek ekleme
-- [ ] bilgileri sıfırla seçeneği gelsin bir de
-- [ ] haftalık ve aylık kaka ve çiş raporu
-- [ ] büyükanne modu
-- [ ] GELECEK AŞILAR 
-- [ ] BÜYÜME CHART Chart tab eklenir
+- [ ] Günün İpuçları
+  - Local hardcoded tips (offline default)
+  - Firebase Remote override (optional)
+  - Local daily cache (date-based)
 
-Default chart açılır
+## V2 – Infra & Security (Final Phase)
 
-List secondary olur
-1. Tüm butonlara haptic feedback
-   (HapticFeedback.lightImpact)
+- [ ] Firebase integration
+- [ ] Auth (anonymous → Apple / Google)
+- [ ] Data sync & backup
+- [ ] Security rules
+- [ ] .env & secret management
+- [ ] Pre-commit guards
+- [ ] Rate limiting & quotas
 
-2. Loading state göster
-   (CircularProgressIndicator)
-
-3. Animasyonlu sayfa geçişleri
-   (SlideTransition)
-
-Basit ve performanslı olsun."
-
-
-## 💡 YENİ ÖZELLİKLER (Öncelikli)
-
-### Besleme
-- [ ] Karışık besleme (meme + biberon)
-- [ ] Beslenme istatistikleri
-- [ ] Haftalık/aylık grafik
-
-### Anı Defteri
+## Anı Defteri
 - [ ] Fotoğraf sıkıştırma (boyut küçült)
 - [ ] Fotoğraf filtreleri
 - [ ] Tarih/yaş etiketi
-
-### Genel
-- [ ] Karanlık mod
-- [ ] Bildirimler (mama saati hatırlatma)
-- [ ] Widget (ana ekran)
-
----
-
-## 🎨 TASARIM İYİLEŞTİRMELERİ
-
-- [ ] Butonlar daha büyük olsun (gece kullanım)
-- [ ] Renkler daha soft (bebek teması)
-- [ ] Ana ekran düzeni optimize
-- [ ] Loading animasyonları
-
----
-
-## 🐛 BUG'LAR
-
-- [ ] Fotoğraf yükleme çok yavaş
-- [ ] Mama saati resetleniyor
-- [ ] iOS'ta klavye üstüne geliyor
-- [ ] Chrome'da hot reload bazen çalışmıyor
-
----
 
 ## 🚀 İLERİDE (v2.0+)
 
@@ -75,24 +41,6 @@ Basit ve performanslı olsun."
 - [ ] Premium: AI anı kartı
 - [ ] Premium: Gelişmiş istatistikler
 
----
-
-## ✅ TAMAMLANAN
-
-- [x] Türkçe dil desteği
-- [x] Boy/kilo/uyku takibi
-- [x] Mama/kaka kayıt sistemi
-- [x] 3 tip besleme (meme/anne sütü/formül)
-- [x] Basit ninni çalar
-- [x] Git/GitHub kurulumu
-- [x] Emzirme timer özelliği. 
-  - Sol/sağ göğüs seçimi
-  - Süre takibi
-  - Otomatik son seçimi hatırlama
-- [x] Mama kaydı bug düzeltmesi (saat resetleniyor)
-
----
----
 
 ## 📝 NOTLAR & FİKİRLER
 
@@ -111,19 +59,4 @@ Basit ve performanslı olsun."
 - Premium: ₺99/ay
 - Google Ads ekle (ücretsiz versiyon)
 
----
-
-## 🎯 BU HAFTA ODAKLAN
-
-1. Emzirme timer
-2. Mama bug'ı düzelt
-3. Tasarım iyileştirmeleri
-
----
-
-## 💭 SORULAR / ARAŞTIR
-
-- [ ] iOS Simulator Xcode ile nasıl çalışır?
-- [ ] App Store yükleme süreci nedir?
-- [ ] SharedPreferences yeterli mi yoksa database mi?
-- [ ] Push notification nasıl yapılır?
+s

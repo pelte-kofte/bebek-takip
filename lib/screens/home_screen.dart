@@ -11,7 +11,10 @@ import 'activities_screen.dart';
 import 'add_growth_screen.dart';
 import 'baby_profile_screen.dart';
 import 'growth_screen.dart';
+import '../models/daily_tip.dart';
 import '../widgets/baby_switcher_sheet.dart';
+import 'tips_archive_screen.dart';
+import 'vaccines_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -762,6 +765,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
+                  const SizedBox(height: 24),
+
+                  // DAILY TIP
+                  _buildDailyTipCard(isDark, textColor, subtitleColor),
+
+                  const SizedBox(height: 20),
+
+                  // UPCOMING VACCINE
+                  _buildUpcomingVaccineCard(isDark, textColor, subtitleColor),
+
                   const SizedBox(height: 28),
 
                   // GROWTH TRACKING SECTION
@@ -1143,6 +1156,299 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }),
+    );
+  }
+
+  // DAILY TIP CARD
+  Widget _buildDailyTipCard(
+    bool isDark,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final tip = DailyTip.today;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.bgDarkCard : Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+          ),
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'GÜNÜN İPUCU',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                    color: textColor.withValues(alpha: 0.4),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TipsArchiveScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Tüm ipuçları',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.accentLavender
+                          : const Color(0xFF7A749E),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
+                        : const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      tip.illustrationPath,
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        Icons.lightbulb_outline,
+                        color: isDark
+                            ? AppColors.accentLavender
+                            : const Color(0xFF7A749E),
+                        size: 28,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tip.title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        tip.description,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: subtitleColor,
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // UPCOMING VACCINE CARD
+  Widget _buildUpcomingVaccineCard(
+    bool isDark,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final vaccines = VeriYonetici.getAsiKayitlari();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Parse period string to month offset
+    int parseDonemMonths(String donem) {
+      if (donem == 'Doğumda') return 0;
+      final match = RegExp(r'(\d+)\.\s*Ay').firstMatch(donem);
+      if (match != null) return int.parse(match.group(1)!);
+      return 0;
+    }
+
+    // Calculate expected date from birth date + period months
+    DateTime expectedDateFor(String donem) {
+      final months = parseDonemMonths(donem);
+      return DateTime(_birthDate.year, _birthDate.month + months, _birthDate.day);
+    }
+
+    // Find pending vaccines with expected dates
+    // Prefer the vaccine's explicit tarih field; fall back to period-based calculation
+    final pending = vaccines
+        .where((v) => v['durum'] == 'bekleniyor')
+        .map((v) {
+          final DateTime expected = v['tarih'] as DateTime? ??
+              expectedDateFor(v['donem'] ?? '');
+          return {'vaccine': v, 'expected': expected};
+        })
+        .where((entry) => (entry['expected']! as DateTime).isAfter(today) ||
+            (entry['expected']! as DateTime).isAtSameMomentAs(today))
+        .toList();
+
+    pending.sort((a, b) =>
+        (a['expected']! as DateTime).compareTo(b['expected']! as DateTime));
+
+    final upcoming = pending.isNotEmpty ? pending.first : null;
+
+    // Relative date text
+    String relativeDate(DateTime date) {
+      final diff = date.difference(today).inDays;
+      if (diff == 0) return 'Bugün';
+      if (diff == 1) return 'Yarın';
+      if (diff < 30) return '$diff gün sonra';
+      final months = (diff / 30).round();
+      return '$months ay sonra';
+    }
+
+    if (upcoming == null) {
+      return const SizedBox.shrink();
+    }
+
+    final vaccineData = upcoming['vaccine'] as Map<String, dynamic>;
+    final expectedDate = upcoming['expected'] as DateTime;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const VaccinesScreen()),
+          ).then((_) => setState(() {}));
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.bgDarkCard : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+            ),
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'YAKLAŞAN AŞI',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                      color: textColor.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 18,
+                    color: subtitleColor.withValues(alpha: 0.5),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFFFFB4A2).withValues(alpha: 0.15)
+                          : const Color(0xFFFFB4A2).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.vaccines_outlined,
+                      color: isDark
+                          ? const Color(0xFFFFB4A2)
+                          : const Color(0xFFE8A0A0),
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          vaccineData['ad'] ?? '',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${vaccineData['donem']} · ${relativeDate(expectedDate)}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: subtitleColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
