@@ -15,6 +15,7 @@ import '../models/daily_tip.dart';
 import '../widgets/baby_switcher_sheet.dart';
 import 'tips_archive_screen.dart';
 import 'vaccines_screen.dart';
+import '../utils/vaccine_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -773,7 +774,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 20),
 
                   // UPCOMING VACCINE
-                  _buildUpcomingVaccineCard(isDark, textColor, subtitleColor),
+                  ValueListenableBuilder<int>(
+                    valueListenable: VeriYonetici.vaccineNotifier,
+                    builder: (context, value, child) {
+                      return _buildUpcomingVaccineCard(isDark, textColor, subtitleColor);
+                    },
+                  ),
 
                   const SizedBox(height: 28),
 
@@ -1296,57 +1302,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Color subtitleColor,
   ) {
     final vaccines = VeriYonetici.getAsiKayitlari();
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+    final upcoming = getUpcomingVaccines(vaccines);
 
-    // Parse period string to month offset
-    int parseDonemMonths(String donem) {
-      if (donem == 'Doğumda') return 0;
-      final match = RegExp(r'(\d+)\.\s*Ay').firstMatch(donem);
-      if (match != null) return int.parse(match.group(1)!);
-      return 0;
-    }
-
-    // Calculate expected date from birth date + period months
-    DateTime expectedDateFor(String donem) {
-      final months = parseDonemMonths(donem);
-      return DateTime(_birthDate.year, _birthDate.month + months, _birthDate.day);
-    }
-
-    // Find pending vaccines with expected dates
-    // Prefer the vaccine's explicit tarih field; fall back to period-based calculation
-    final pending = vaccines
-        .where((v) => v['durum'] == 'bekleniyor')
-        .map((v) {
-          final DateTime expected = v['tarih'] as DateTime? ??
-              expectedDateFor(v['donem'] ?? '');
-          return {'vaccine': v, 'expected': expected};
-        })
-        .where((entry) => (entry['expected']! as DateTime).isAfter(today) ||
-            (entry['expected']! as DateTime).isAtSameMomentAs(today))
-        .toList();
-
-    pending.sort((a, b) =>
-        (a['expected']! as DateTime).compareTo(b['expected']! as DateTime));
-
-    final upcoming = pending.isNotEmpty ? pending.first : null;
-
-    // Relative date text
-    String relativeDate(DateTime date) {
-      final diff = date.difference(today).inDays;
-      if (diff == 0) return 'Bugün';
-      if (diff == 1) return 'Yarın';
-      if (diff < 30) return '$diff gün sonra';
-      final months = (diff / 30).round();
-      return '$months ay sonra';
-    }
-
-    if (upcoming == null) {
+    if (upcoming.isEmpty) {
       return const SizedBox.shrink();
     }
 
-    final vaccineData = upcoming['vaccine'] as Map<String, dynamic>;
-    final expectedDate = upcoming['expected'] as DateTime;
+    final primaryVaccine = upcoming[0];
+    final secondaryVaccine = upcoming.length > 1 ? upcoming[1] : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1355,7 +1318,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const VaccinesScreen()),
-          ).then((_) => setState(() {}));
+          );
         },
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -1425,7 +1388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          vaccineData['ad'] ?? '',
+                          primaryVaccine['ad'] ?? '',
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -1434,12 +1397,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${vaccineData['donem']} · ${relativeDate(expectedDate)}',
+                          '${primaryVaccine['donem']} · ${getVaccineRelativeDate(primaryVaccine['tarih'] as DateTime)}',
                           style: TextStyle(
                             fontSize: 13,
                             color: subtitleColor,
                           ),
                         ),
+                        if (secondaryVaccine != null) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Sonraki: ${secondaryVaccine['ad']}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: subtitleColor.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

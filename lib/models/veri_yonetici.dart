@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'baby.dart';
 import 'timer_yonetici.dart';
@@ -15,6 +16,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _boyKiloKayitlari = [];
   static List<Map<String, dynamic>> _milestones = [];
   static List<Map<String, dynamic>> _asiKayitlari = [];
+  static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
   static String _babyName = 'Sofia';
@@ -599,6 +601,8 @@ class VeriYonetici {
         .toList();
   }
 
+  static ValueNotifier<int> get vaccineNotifier => _vaccineVersion;
+
   static Future<void> saveAsiKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
@@ -625,6 +629,7 @@ class VeriYonetici {
         )
         .toList();
     await _prefs!.setString('asi_kayitlari', jsonEncode(data));
+    _vaccineVersion.value++;
   }
 
   // ============ TEMA & SETTINGS ============
