@@ -230,5 +230,113 @@
     }
   },
   "atLeast2Measurements": "At least 2 measurements needed for chart",
-  "growthTracking": "Growth Tracking"
+  "growthTracking": "Growth Tracking",
+
+  "feedingTimer": "FEEDING",
+  "sleepingTimer": "SLEEPING",
+  "stopAndSave": "STOP & SAVE",
+  "activeTimer": "ACTIVE",
+  "lastFed": "LAST FED",
+  "lastDiaper": "LAST DIAPER",
+  "lastSleep": "LAST SLEEP",
+  "recentActivity": "RECENT ACTIVITY",
+  "seeHistory": "SEE HISTORY",
+  "noActivitiesLast24h": "No activities in the last 24 hours",
+  "bottleFeeding": "Bottle Feeding",
+  "trackYourBabyGrowth": "Track your baby's growth",
+  "addHeightWeightMeasurements": "Add weight and height measurements",
+  "addFirstMeasurement": "Add first measurement",
+  "lastUpdatedToday": "Last updated today",
+  "lastUpdated1Day": "Last updated 1 day ago",
+  "lastUpdatedDays": "Last updated {days} days ago",
+  "@lastUpdatedDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "viewGrowthCharts": "VIEW GROWTH CHARTS",
+  "weightLabel": "WEIGHT",
+  "heightLabel": "HEIGHT",
+  "mAgo": "{count}m ago",
+  "@mAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hmAgo": "{hours}h {minutes}m ago",
+  "@hmAgo": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "dAgo": "{days}d ago",
+  "@dAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "noRecordsYet": "No records yet",
+  "dailyTip": "DAILY TIP",
+  "allTips": "All tips",
+  "upcomingVaccine": "UPCOMING VACCINE",
+  "nextVaccineLabel": "Next: {name}",
+  "@nextVaccineLabel": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "leftMinRightMin": "L {left}min • R {right}min",
+  "@leftMinRightMin": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "breastfeedingSavedSnack": "✅ Breastfeeding saved: L {left}min, R {right}min",
+  "@breastfeedingSavedSnack": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "sleepSavedSnack": "✅ Sleep saved: {duration}",
+  "@sleepSavedSnack": {
+    "placeholders": {
+      "duration": {"type": "String"}
+    }
+  },
+  "sleepTooShort": "⚠️ Sleep under 1 minute, not saved",
+  "kgThisMonth": "+{value}kg this month",
+  "@kgThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "cmThisMonth": "+{value}cm this month",
+  "@cmThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "noSleep": "No sleep",
+  "justNow": "just now",
+  "minutesAgo": "{count} min ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "daysAgo": "{count}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

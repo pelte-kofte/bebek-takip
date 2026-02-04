@@ -520,4 +520,147 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get growthTracking => 'Büyüme Takibi';
+
+  @override
+  String get feedingTimer => 'MAMA';
+
+  @override
+  String get sleepingTimer => 'UYKU';
+
+  @override
+  String get stopAndSave => 'DURDUR & KAYDET';
+
+  @override
+  String get activeTimer => 'AKTİF';
+
+  @override
+  String get lastFed => 'SON MAMA';
+
+  @override
+  String get lastDiaper => 'SON BEZ';
+
+  @override
+  String get lastSleep => 'SON UYKU';
+
+  @override
+  String get recentActivity => 'SON AKTİVİTELER';
+
+  @override
+  String get seeHistory => 'GEÇMİŞİ GÖR';
+
+  @override
+  String get noActivitiesLast24h => 'Son 24 saatte aktivite yok';
+
+  @override
+  String get bottleFeeding => 'Biberon';
+
+  @override
+  String get trackYourBabyGrowth => 'Bebeğinizin büyümesini takip edin';
+
+  @override
+  String get addHeightWeightMeasurements => 'Boy ve kilo ölçümlerini ekleyin';
+
+  @override
+  String get addFirstMeasurement => 'İlk ölçümü ekle';
+
+  @override
+  String get lastUpdatedToday => 'Son güncelleme bugün';
+
+  @override
+  String get lastUpdated1Day => 'Son güncelleme 1 gün önce';
+
+  @override
+  String lastUpdatedDays(int days) {
+    return 'Son güncelleme $days gün önce';
+  }
+
+  @override
+  String get viewGrowthCharts => 'BÜYÜME GRAFİKLERİNİ GÖR';
+
+  @override
+  String get weightLabel => 'KİLO';
+
+  @override
+  String get heightLabel => 'BOY';
+
+  @override
+  String mAgo(int count) {
+    return '${count}dk önce';
+  }
+
+  @override
+  String hmAgo(int hours, int minutes) {
+    return '${hours}sa ${minutes}dk önce';
+  }
+
+  @override
+  String dAgo(int days) {
+    return '${days}g önce';
+  }
+
+  @override
+  String get noRecordsYet => 'Henüz kayıt yok';
+
+  @override
+  String get dailyTip => 'GÜNÜN İPUCU';
+
+  @override
+  String get allTips => 'Tüm ipuçları';
+
+  @override
+  String get upcomingVaccine => 'YAKLAŞAN AŞI';
+
+  @override
+  String nextVaccineLabel(String name) {
+    return 'Sonraki: $name';
+  }
+
+  @override
+  String leftMinRightMin(int left, int right) {
+    return 'Sol ${left}dk • Sağ ${right}dk';
+  }
+
+  @override
+  String breastfeedingSavedSnack(int left, int right) {
+    return '✅ Emzirme kaydedildi: Sol ${left}dk, Sağ ${right}dk';
+  }
+
+  @override
+  String sleepSavedSnack(String duration) {
+    return '✅ Uyku kaydedildi: $duration';
+  }
+
+  @override
+  String get sleepTooShort => '⚠️ Uyku 1 dakikadan kısa, kaydedilmedi';
+
+  @override
+  String kgThisMonth(String value) {
+    return '+${value}kg bu ay';
+  }
+
+  @override
+  String cmThisMonth(String value) {
+    return '+${value}cm bu ay';
+  }
+
+  @override
+  String get noSleep => 'Uyku yok';
+
+  @override
+  String get justNow => 'az önce';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count dk önce';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count sa önce';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count gün önce';
+  }
 }

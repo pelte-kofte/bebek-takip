@@ -6,6 +6,7 @@ import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
+import '../l10n/app_localizations.dart';
 import 'settings_screen.dart';
 import 'activities_screen.dart';
 import 'add_growth_screen.dart';
@@ -50,6 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
   String _babyName = 'Sofia';
   DateTime _birthDate = DateTime(2024, 9, 17);
 
+  int get babyAgeInMonths {
+    final now = DateTime.now();
+    return (now.year - _birthDate.year) * 12 + now.month - _birthDate.month;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -81,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  String _calculateAge() {
+  String _calculateAge(AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(_birthDate);
     final months = (difference.inDays / 30).floor();
@@ -90,13 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
       final years = months ~/ 12;
       final remainingMonths = months % 12;
       if (remainingMonths > 0) {
-        return '$years years $remainingMonths months old';
+        return l10n.ageYearsMonths(years, remainingMonths);
       }
-      return '$years years old';
+      return l10n.ageYears(years);
     } else if (months > 0) {
-      return '$months months old';
+      return l10n.ageMonthsDays(months, difference.inDays % 30);
     } else {
-      return '${difference.inDays} days old';
+      return l10n.ageDays(difference.inDays);
     }
   }
 
@@ -211,10 +217,11 @@ class _HomeScreenState extends State<HomeScreen> {
     widget.onDataChanged?.call();
 
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '✅ Emzirme kaydedildi: Sol ${kaydedilenSol}dk, Sağ ${kaydedilenSag}dk',
+          l10n.breastfeedingSavedSnack(kaydedilenSol, kaydedilenSag),
         ),
         backgroundColor: AppColors.primary,
       ),
@@ -234,9 +241,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _uykuSaniye = 0;
       });
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('⚠️ Uyku 1 dakikadan kısa, kaydedilmedi'),
+        SnackBar(
+          content: Text(l10n.sleepTooShort),
           backgroundColor: Colors.orange,
         ),
       );
@@ -269,11 +277,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     widget.onDataChanged?.call();
 
-    String sureText = saat > 0 ? '$saat sa $kalanDakika dk' : '$dakika dk';
+    final l10n = AppLocalizations.of(context)!;
+    String sureText = saat > 0
+        ? '$saat${l10n.hourAbbrev} $kalanDakika${l10n.minAbbrev}'
+        : '$dakika${l10n.minAbbrev}';
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('✅ Uyku kaydedildi: $sureText'),
+        content: Text(l10n.sleepSavedSnack(sureText)),
         backgroundColor: AppColors.accentLavender,
       ),
     );
@@ -298,6 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
@@ -317,37 +329,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Decorative blobs
           Positioned.fill(
-              child: IgnorePointer(
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: -80,
-                      left: -80,
-                      child: Container(
-                        width: 256,
-                        height: 256,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFFEBE8FF).withValues(alpha: isDark ? 0.08 : 0.5),
-                        ),
+            child: IgnorePointer(
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -80,
+                    left: -80,
+                    child: Container(
+                      width: 256,
+                      height: 256,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(
+                          0xFFEBE8FF,
+                        ).withValues(alpha: isDark ? 0.08 : 0.5),
                       ),
                     ),
-                    Positioned(
-                      top: MediaQuery.of(context).size.height * 0.5,
-                      right: -128,
-                      child: Container(
-                        width: 320,
-                        height: 320,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(0xFFEBE8FF).withValues(alpha: isDark ? 0.06 : 0.5),
-                        ),
+                  ),
+                  Positioned(
+                    top: MediaQuery.of(context).size.height * 0.5,
+                    right: -128,
+                    child: Container(
+                      width: 320,
+                      height: 320,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: const Color(
+                          0xFFEBE8FF,
+                        ).withValues(alpha: isDark ? 0.06 : 0.5),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
+          ),
 
           // Main content
           SafeArea(
@@ -400,26 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ],
                                 ),
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    'assets/icons/illustration/baby_face.png',
-                                    width: 48,
-                                    height: 48,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Container(
-                                              color: isDark
-                                                  ? AppColors.bgDarkCard
-                                                  : const Color(0xFFEBE8FF),
-                                              child: const Icon(
-                                                Icons.child_care,
-                                                color: Color(0xFFFF998A),
-                                                size: 24,
-                                              ),
-                                            ),
-                                  ),
-                                ),
+                                child: SizedBox.shrink(),
                               ),
                               const SizedBox(width: 12),
                               Column(
@@ -436,7 +433,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   Text(
-                                    _calculateAge(),
+                                    _calculateAge(l10n),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -499,13 +496,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _buildTimerCard(
                             icon: Icons.child_care,
                             iconColor: const Color(0xFFFF998A),
-                            label: 'FEEDING',
+                            label: l10n.feedingTimer,
                             time: _formatSaniye(_solSaniye + _sagSaniye),
                             lastActivity: '',
                             isActive: _emzirmeAktif,
                             isDark: isDark,
                             activeSide: _emzirmeAktif
-                                ? (_solAktif ? 'LEFT' : (_sagAktif ? 'RIGHT' : null))
+                                ? (_solAktif
+                                      ? l10n.left.toUpperCase()
+                                      : (_sagAktif
+                                            ? l10n.right.toUpperCase()
+                                            : null))
                                 : null,
                             buttons: _emzirmeAktif
                                 ? GestureDetector(
@@ -521,10 +522,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: const Color(0xFFFF998A),
                                         borderRadius: BorderRadius.circular(20),
                                       ),
-                                      child: const Text(
-                                        'STOP & SAVE',
+                                      child: Text(
+                                        l10n.stopAndSave,
                                         textAlign: TextAlign.center,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
@@ -547,10 +548,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),
-                                            child: const Text(
-                                              'LEFT',
+                                            child: Text(
+                                              l10n.left.toUpperCase(),
                                               textAlign: TextAlign.center,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.white,
@@ -569,19 +570,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                               color: isDark
-                                                  ? Colors.white.withValues(alpha: 0.1)
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.1,
+                                                    )
                                                   : const Color(0xFFFFF8F0),
                                               borderRadius:
                                                   BorderRadius.circular(20),
                                             ),
                                             child: Text(
-                                              'RIGHT',
+                                              l10n.right.toUpperCase(),
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                 fontSize: 10,
                                                 fontWeight: FontWeight.bold,
                                                 color: isDark
-                                                    ? const Color(0xFFFF998A).withValues(alpha: 0.9)
+                                                    ? const Color(
+                                                        0xFFFF998A,
+                                                      ).withValues(alpha: 0.9)
                                                     : const Color(0xFFFF998A),
                                               ),
                                             ),
@@ -598,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: _buildTimerCard(
                             icon: Icons.bedtime,
                             iconColor: const Color(0xFF7A749E),
-                            label: 'SLEEPING',
+                            label: l10n.sleepingTimer,
                             time: _formatSaniye(_uykuSaniye),
                             lastActivity: '',
                             isActive: _uykuAktif,
@@ -612,7 +617,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: isDark
-                                      ? const Color(0xFFEBE8FF).withValues(alpha: 0.15)
+                                      ? const Color(
+                                          0xFFEBE8FF,
+                                        ).withValues(alpha: 0.15)
                                       : const Color(0xFFEBE8FF),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -630,7 +637,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                     Text(
-                                      _uykuAktif ? 'ACTIVE' : 'START',
+                                      _uykuAktif
+                                          ? l10n.activeTimer
+                                          : l10n.start.toUpperCase(),
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
                                         fontSize: 10,
@@ -658,10 +667,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => _navigateToActivities(ActivityType.mama),
+                            onTap: () =>
+                                _navigateToActivities(ActivityType.mama),
                             child: _buildSummaryCard(
-                              label: 'LAST FED',
-                              value: _getLastFeedingValue(mamaKayitlari),
+                              label: l10n.lastFed,
+                              value: _getLastFeedingValue(l10n, mamaKayitlari),
                               progress: _getTimeProgress(
                                 mamaKayitlari.isNotEmpty
                                     ? mamaKayitlari.first['tarih'] as DateTime?
@@ -675,10 +685,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => _navigateToActivities(ActivityType.bez),
+                            onTap: () =>
+                                _navigateToActivities(ActivityType.bez),
                             child: _buildSummaryCard(
-                              label: 'LAST DIAPER',
-                              value: _getLastDiaperValue(kakaKayitlari),
+                              label: l10n.lastDiaper,
+                              value: _getLastDiaperValue(l10n, kakaKayitlari),
                               progress: _getTimeProgress(
                                 kakaKayitlari.isNotEmpty
                                     ? kakaKayitlari.first['tarih'] as DateTime?
@@ -692,10 +703,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => _navigateToActivities(ActivityType.uyku),
+                            onTap: () =>
+                                _navigateToActivities(ActivityType.uyku),
                             child: _buildSummaryCard(
-                              label: 'LAST SLEEP',
+                              label: l10n.lastSleep,
                               value: _getLastSleepValue(
+                                l10n,
                                 VeriYonetici.getUykuKayitlari(),
                               ),
                               progress: _getTimeProgress(
@@ -723,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'RECENT ACTIVITY',
+                          l10n.recentActivity,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.bold,
@@ -736,13 +749,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ActivitiesScreen(fromHome: true),
+                                builder: (context) =>
+                                    const ActivitiesScreen(fromHome: true),
                               ),
                             );
                           },
-                          child: const Text(
-                            'SEE HISTORY',
-                            style: TextStyle(
+                          child: Text(
+                            l10n.seeHistory,
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 1.2,
@@ -758,6 +772,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: _buildRecentActivitiesList(
+                      l10n,
                       mamaKayitlari,
                       kakaKayitlari,
                       VeriYonetici.getUykuKayitlari(),
@@ -769,7 +784,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
 
                   // DAILY TIP
-                  _buildDailyTipCard(isDark, textColor, subtitleColor),
+                  _buildDailyTipCard(l10n, isDark, textColor, subtitleColor),
 
                   const SizedBox(height: 20),
 
@@ -777,14 +792,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   ValueListenableBuilder<int>(
                     valueListenable: VeriYonetici.vaccineNotifier,
                     builder: (context, value, child) {
-                      return _buildUpcomingVaccineCard(isDark, textColor, subtitleColor);
+                      return _buildUpcomingVaccineCard(
+                        l10n,
+                        isDark,
+                        textColor,
+                        subtitleColor,
+                      );
                     },
                   ),
 
                   const SizedBox(height: 28),
 
                   // GROWTH TRACKING SECTION
-                  _buildGrowthSection(isDark, textColor, subtitleColor),
+                  _buildGrowthSection(l10n, isDark, textColor, subtitleColor),
 
                   const SizedBox(height: 32),
                 ],
@@ -821,7 +841,11 @@ class _HomeScreenState extends State<HomeScreen> {
         boxShadow: isDark
             ? null
             : const [
-                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
               ],
       ),
       child: Column(
@@ -923,7 +947,11 @@ class _HomeScreenState extends State<HomeScreen> {
         boxShadow: isDark
             ? null
             : const [
-                BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 1)),
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 1),
+                ),
               ],
       ),
       child: Column(
@@ -970,7 +998,9 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF1D0E0C),
+              color: isDark
+                  ? AppColors.textPrimaryDark
+                  : const Color(0xFF1D0E0C),
             ),
           ),
         ],
@@ -1045,6 +1075,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // RECENT ACTIVITIES LIST (last 24 hours)
   Widget _buildRecentActivitiesList(
+    AppLocalizations l10n,
     List<Map<String, dynamic>> mama,
     List<Map<String, dynamic>> kaka,
     List<Map<String, dynamic>> uyku,
@@ -1088,7 +1119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(20),
         child: Center(
           child: Text(
-            'No activities in the last 24 hours',
+            l10n.noActivitiesLast24h,
             style: TextStyle(
               fontSize: 12,
               color: textColor.withValues(alpha: 0.5),
@@ -1119,38 +1150,42 @@ class _HomeScreenState extends State<HomeScreen> {
             final tur = data['tur'] as String? ?? '';
             final kategori = data['kategori'] as String? ?? 'Milk';
             if (tur == 'Anne Sütü') {
-              title = 'Breastfeeding';
+              title = l10n.breastfeeding;
               final sol = data['solDakika'] ?? 0;
               final sag = data['sagDakika'] ?? 0;
-              subtitle = 'L ${sol}min • R ${sag}min';
+              subtitle = l10n.leftMinRightMin(sol, sag);
             } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
-              title = 'Solid Food';
+              title = l10n.solidFood;
               final solidAciklama = data['solidAciklama'] as String?;
-              subtitle = (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Katı gıda';
+              subtitle = (solidAciklama != null && solidAciklama.isNotEmpty)
+                  ? solidAciklama
+                  : l10n.solidFood;
             } else {
-              title = 'Bottle Feeding';
+              title = l10n.bottleFeeding;
               subtitle = '${data['miktar']} ml';
             }
             break;
           case 'kaka':
             icon = Icons.water_drop;
             iconColor = const Color(0xFF7A749E);
-            title = 'Diaper Change';
+            title = l10n.diaperChange;
             subtitle = data['tur'] ?? '';
             break;
           case 'uyku':
             icon = Icons.bedtime;
             iconColor = const Color(0xFF7A749E);
-            title = 'Sleep';
+            title = l10n.sleep;
             final sure = data['sure'] as Duration;
             final hours = sure.inHours;
             final minutes = sure.inMinutes % 60;
-            subtitle = hours > 0 ? '${hours}h ${minutes}m' : '${minutes}m';
+            subtitle = hours > 0
+                ? '$hours${l10n.hourAbbrev} $minutes${l10n.minAbbrev}'
+                : '$minutes${l10n.minAbbrev}';
             break;
           default:
             icon = Icons.circle;
             iconColor = Colors.grey;
-            title = 'Activity';
+            title = l10n.activities;
             subtitle = '';
         }
 
@@ -1161,7 +1196,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: _buildActivityItem(
             icon: icon,
             iconColor: iconColor,
-            title: '$title • ${_timeAgo(tarih)}',
+            title: '$title • ${_timeAgo(l10n, tarih)}',
             subtitle: subtitle,
             isDark: isDark,
           ),
@@ -1172,11 +1207,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // DAILY TIP CARD
   Widget _buildDailyTipCard(
+    AppLocalizations l10n,
     bool isDark,
     Color textColor,
     Color subtitleColor,
   ) {
-    final tip = DailyTip.today;
+    final tip = DailyTip.todayForBaby(babyAgeInMonths);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -1207,7 +1243,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'GÜNÜN İPUCU',
+                  l10n.dailyTip,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -1225,7 +1261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                   child: Text(
-                    'Tüm ipuçları',
+                    l10n.allTips,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -1302,6 +1338,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // UPCOMING VACCINE CARD
   Widget _buildUpcomingVaccineCard(
+    AppLocalizations l10n,
     bool isDark,
     Color textColor,
     Color subtitleColor,
@@ -1352,7 +1389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'YAKLAŞAN AŞI',
+                    l10n.upcomingVaccine,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -1403,15 +1440,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 2),
                         Text(
                           '${primaryVaccine['donem']} · ${getVaccineRelativeDate(primaryVaccine['tarih'] as DateTime)}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: subtitleColor,
-                          ),
+                          style: TextStyle(fontSize: 13, color: subtitleColor),
                         ),
                         if (secondaryVaccine != null) ...[
                           const SizedBox(height: 8),
                           Text(
-                            'Sonraki: ${secondaryVaccine['ad']}',
+                            l10n.nextVaccineLabel(secondaryVaccine['ad'] ?? ''),
                             style: TextStyle(
                               fontSize: 12,
                               color: subtitleColor.withValues(alpha: 0.7),
@@ -1432,6 +1466,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // GROWTH SECTION
   Widget _buildGrowthSection(
+    AppLocalizations l10n,
     bool isDark,
     Color textColor,
     Color subtitleColor,
@@ -1457,7 +1492,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const Icon(Icons.straighten, color: Color(0xFFFF998A), size: 32),
               const SizedBox(height: 12),
               Text(
-                'Track your baby\'s growth',
+                l10n.trackYourBabyGrowth,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -1466,7 +1501,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Add weight and height measurements',
+                l10n.addHeightWeightMeasurements,
                 style: TextStyle(fontSize: 12, color: subtitleColor),
               ),
               const SizedBox(height: 16),
@@ -1481,9 +1516,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: const Color(0xFFFF998A),
                     borderRadius: BorderRadius.circular(100),
                   ),
-                  child: const Text(
-                    'Add first measurement',
-                    style: TextStyle(
+                  child: Text(
+                    l10n.addFirstMeasurement,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1514,7 +1549,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Growth Tracking',
+                    l10n.growthTracking,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -1522,7 +1557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Text(
-                    'Last updated ${_formatDaysAgo(tarih)}',
+                    _formatDaysAgo(l10n, tarih),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -1562,10 +1597,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: _buildGrowthCard(
                     icon: Icons.monitor_weight_outlined,
-                    label: 'WEIGHT',
+                    label: l10n.weightLabel,
                     value: '${latest['kilo']}',
                     unit: 'kg',
-                    change: _getWeightChange(boyKiloKayitlari),
+                    change: _getWeightChange(l10n, boyKiloKayitlari),
                     isDark: isDark,
                     textColor: textColor,
                   ),
@@ -1574,10 +1609,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Expanded(
                   child: _buildGrowthCard(
                     icon: Icons.straighten,
-                    label: 'HEIGHT',
+                    label: l10n.heightLabel,
                     value: '${latest['boy']}',
                     unit: 'cm',
-                    change: _getHeightChange(boyKiloKayitlari),
+                    change: _getHeightChange(l10n, boyKiloKayitlari),
                     isDark: isDark,
                     textColor: textColor,
                   ),
@@ -1594,9 +1629,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const GrowthScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => const GrowthScreen()),
               );
             },
             child: Container(
@@ -1612,7 +1645,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                'VIEW GROWTH CHARTS',
+                l10n.viewGrowthCharts,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,
@@ -1720,48 +1753,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // HELPER METHODS
-  String _getLastFeedingValue(List<Map<String, dynamic>> mama) {
-    if (mama.isEmpty) return 'Henüz kayıt yok';
+  String _getLastFeedingValue(
+    AppLocalizations l10n,
+    List<Map<String, dynamic>> mama,
+  ) {
+    if (mama.isEmpty) return l10n.noRecordsYet;
     final tarih = mama.first['tarih'] as DateTime;
     final diff = DateTime.now().difference(tarih);
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.mAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
       final hours = diff.inHours;
       final minutes = diff.inMinutes % 60;
-      return '${hours}h ${minutes}m ago';
+      return l10n.hmAgo(hours, minutes);
     } else {
-      return '${diff.inDays}d ago';
+      return l10n.dAgo(diff.inDays);
     }
   }
 
-  String _getLastDiaperValue(List<Map<String, dynamic>> kaka) {
-    if (kaka.isEmpty) return 'Henüz kayıt yok';
+  String _getLastDiaperValue(
+    AppLocalizations l10n,
+    List<Map<String, dynamic>> kaka,
+  ) {
+    if (kaka.isEmpty) return l10n.noRecordsYet;
     final tarih = kaka.first['tarih'] as DateTime;
     final diff = DateTime.now().difference(tarih);
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.mAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
       final hours = diff.inHours;
       final minutes = diff.inMinutes % 60;
-      return '${hours}h ${minutes}m ago';
+      return l10n.hmAgo(hours, minutes);
     } else {
-      return '${diff.inDays}d ago';
+      return l10n.dAgo(diff.inDays);
     }
   }
 
-  String _getLastSleepValue(List<Map<String, dynamic>> uyku) {
-    if (uyku.isEmpty) return 'Henüz kayıt yok';
+  String _getLastSleepValue(
+    AppLocalizations l10n,
+    List<Map<String, dynamic>> uyku,
+  ) {
+    if (uyku.isEmpty) return l10n.noRecordsYet;
     final tarih = uyku.first['bitis'] as DateTime;
     final diff = DateTime.now().difference(tarih);
     if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
+      return l10n.mAgo(diff.inMinutes);
     } else if (diff.inHours < 24) {
       final hours = diff.inHours;
       final minutes = diff.inMinutes % 60;
-      return '${hours}h ${minutes}m ago';
+      return l10n.hmAgo(hours, minutes);
     } else {
-      return '${diff.inDays}d ago';
+      return l10n.dAgo(diff.inDays);
     }
   }
 
@@ -1814,31 +1856,37 @@ class _HomeScreenState extends State<HomeScreen> {
     return '${hours}h ${minutes}m';
   }
 
-  String _formatDaysAgo(DateTime date) {
+  String _formatDaysAgo(AppLocalizations l10n, DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.inDays == 0) return 'today';
-    if (diff.inDays == 1) return '1 day ago';
-    return '${diff.inDays} days ago';
+    if (diff.inDays == 0) return l10n.lastUpdatedToday;
+    if (diff.inDays == 1) return l10n.lastUpdated1Day;
+    return l10n.lastUpdatedDays(diff.inDays);
   }
 
-  String _getWeightChange(List<Map<String, dynamic>> records) {
+  String _getWeightChange(
+    AppLocalizations l10n,
+    List<Map<String, dynamic>> records,
+  ) {
     if (records.length < 2) return '';
     final latest = records[0]['kilo'] as num;
     final previous = records[1]['kilo'] as num;
     final change = latest - previous;
     if (change > 0) {
-      return '+${change.toStringAsFixed(1)}kg this month';
+      return l10n.kgThisMonth(change.toStringAsFixed(1));
     }
     return '';
   }
 
-  String _getHeightChange(List<Map<String, dynamic>> records) {
+  String _getHeightChange(
+    AppLocalizations l10n,
+    List<Map<String, dynamic>> records,
+  ) {
     if (records.length < 2) return '';
     final latest = records[0]['boy'] as num;
     final previous = records[1]['boy'] as num;
     final change = latest - previous;
     if (change > 0) {
-      return '+${change.toStringAsFixed(1)}cm this month';
+      return l10n.cmThisMonth(change.toStringAsFixed(1));
     }
     return '';
   }
@@ -2176,7 +2224,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return 'Sol ${sol}dk • Sağ ${sag}dk';
     } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
       final solidAciklama = kayit['solidAciklama'] as String?;
-      return (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Katı gıda';
+      return (solidAciklama != null && solidAciklama.isNotEmpty)
+          ? solidAciklama
+          : 'Katı gıda';
     } else {
       return '${kayit['miktar']} ml';
     }
@@ -2284,9 +2334,15 @@ class _HomeScreenState extends State<HomeScreen> {
           title = Dil.emzirme;
           subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
         } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
-          icon = const Icon(Icons.restaurant_outlined, size: 24, color: Color(0xFFFF998A));
+          icon = const Icon(
+            Icons.restaurant_outlined,
+            size: 24,
+            color: Color(0xFFFF998A),
+          );
           title = 'Katı';
-          subtitle = (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Ek gıda';
+          subtitle = (solidAciklama != null && solidAciklama.isNotEmpty)
+              ? solidAciklama
+              : 'Ek gıda';
         } else if (tur == 'Formül') {
           icon = Ikonlar.bottle(size: 24);
           title = Dil.formula;
@@ -2574,12 +2630,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return timeline;
   }
 
-  String _timeAgo(DateTime date) {
+  String _timeAgo(AppLocalizations l10n, DateTime date) {
     final diff = DateTime.now().difference(date);
-    if (diff.isNegative || diff.inMinutes < 1) return Dil.azOnce;
-    if (diff.inMinutes < 60) return '${diff.inMinutes} ${Dil.dakikaOnce}';
-    if (diff.inHours < 24) return '${diff.inHours} ${Dil.saatOnce}';
-    return '${diff.inDays} ${Dil.gunOnce}';
+    if (diff.isNegative || diff.inMinutes < 1) return l10n.justNow;
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
+    return l10n.daysAgo(diff.inDays);
   }
 
   String _formatTime(DateTime date) {

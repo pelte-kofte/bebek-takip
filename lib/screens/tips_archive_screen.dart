@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/daily_tip.dart';
+import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 
@@ -9,10 +10,27 @@ class TipsArchiveScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : const Color(0xFF2D1A18);
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF7A749E);
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
-    final todayTip = DailyTip.today;
+
+    // Compute baby age in months
+    final birthDate = VeriYonetici.getBirthDate();
+    final now = DateTime.now();
+    final babyAgeInMonths =
+        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+
+    // Filter tips by baby's age
+    final filteredTips = DailyTip.tips.where((tip) {
+      return babyAgeInMonths >= tip.minMonth && babyAgeInMonths < tip.maxMonth;
+    }).toList();
+
+    // Get today's tip for this baby's age
+    final todayTip = DailyTip.todayForBaby(babyAgeInMonths);
 
     return DecorativeBackground(
       preset: BackgroundPreset.home,
@@ -83,10 +101,10 @@ class TipsArchiveScreen extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  itemCount: DailyTip.tips.length,
+                  itemCount: filteredTips.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final tip = DailyTip.tips[index];
+                    final tip = filteredTips[index];
                     final isToday = tip.id == todayTip.id;
 
                     return Container(
@@ -98,15 +116,19 @@ class TipsArchiveScreen extends StatelessWidget {
                           color: isToday
                               ? const Color(0xFFFFB4A2).withValues(alpha: 0.5)
                               : (isDark
-                                  ? Colors.white.withValues(alpha: 0.06)
-                                  : const Color(0xFFE5E0F7).withValues(alpha: 0.4)),
+                                    ? Colors.white.withValues(alpha: 0.06)
+                                    : const Color(
+                                        0xFFE5E0F7,
+                                      ).withValues(alpha: 0.4)),
                           width: isToday ? 1.5 : 1,
                         ),
                         boxShadow: isDark
                             ? null
                             : [
                                 BoxShadow(
-                                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
+                                  color: const Color(
+                                    0xFFE5E0F7,
+                                  ).withValues(alpha: 0.2),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -121,8 +143,12 @@ class TipsArchiveScreen extends StatelessWidget {
                             height: 48,
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
-                                  : const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                                  ? const Color(
+                                      0xFFE5E0F7,
+                                    ).withValues(alpha: 0.12)
+                                  : const Color(
+                                      0xFFE5E0F7,
+                                    ).withValues(alpha: 0.4),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: ClipRRect(
@@ -132,13 +158,14 @@ class TipsArchiveScreen extends StatelessWidget {
                                 width: 48,
                                 height: 48,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) => Icon(
-                                  Icons.lightbulb_outline,
-                                  color: isDark
-                                      ? AppColors.accentLavender
-                                      : const Color(0xFF7A749E),
-                                  size: 22,
-                                ),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(
+                                      Icons.lightbulb_outline,
+                                      color: isDark
+                                          ? AppColors.accentLavender
+                                          : const Color(0xFF7A749E),
+                                      size: 22,
+                                    ),
                               ),
                             ),
                           ),
@@ -167,8 +194,13 @@ class TipsArchiveScreen extends StatelessWidget {
                                           vertical: 3,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFFFB4A2).withValues(alpha: isDark ? 0.25 : 0.15),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: const Color(0xFFFFB4A2)
+                                              .withValues(
+                                                alpha: isDark ? 0.25 : 0.15,
+                                              ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: Text(
                                           'BUGÜN',

@@ -521,4 +521,148 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get growthTracking => 'Growth Tracking';
+
+  @override
+  String get feedingTimer => 'FEEDING';
+
+  @override
+  String get sleepingTimer => 'SLEEPING';
+
+  @override
+  String get stopAndSave => 'STOP & SAVE';
+
+  @override
+  String get activeTimer => 'ACTIVE';
+
+  @override
+  String get lastFed => 'LAST FED';
+
+  @override
+  String get lastDiaper => 'LAST DIAPER';
+
+  @override
+  String get lastSleep => 'LAST SLEEP';
+
+  @override
+  String get recentActivity => 'RECENT ACTIVITY';
+
+  @override
+  String get seeHistory => 'SEE HISTORY';
+
+  @override
+  String get noActivitiesLast24h => 'No activities in the last 24 hours';
+
+  @override
+  String get bottleFeeding => 'Bottle Feeding';
+
+  @override
+  String get trackYourBabyGrowth => 'Track your baby\'s growth';
+
+  @override
+  String get addHeightWeightMeasurements =>
+      'Add weight and height measurements';
+
+  @override
+  String get addFirstMeasurement => 'Add first measurement';
+
+  @override
+  String get lastUpdatedToday => 'Last updated today';
+
+  @override
+  String get lastUpdated1Day => 'Last updated 1 day ago';
+
+  @override
+  String lastUpdatedDays(int days) {
+    return 'Last updated $days days ago';
+  }
+
+  @override
+  String get viewGrowthCharts => 'VIEW GROWTH CHARTS';
+
+  @override
+  String get weightLabel => 'WEIGHT';
+
+  @override
+  String get heightLabel => 'HEIGHT';
+
+  @override
+  String mAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hmAgo(int hours, int minutes) {
+    return '${hours}h ${minutes}m ago';
+  }
+
+  @override
+  String dAgo(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get noRecordsYet => 'No records yet';
+
+  @override
+  String get dailyTip => 'DAILY TIP';
+
+  @override
+  String get allTips => 'All tips';
+
+  @override
+  String get upcomingVaccine => 'UPCOMING VACCINE';
+
+  @override
+  String nextVaccineLabel(String name) {
+    return 'Next: $name';
+  }
+
+  @override
+  String leftMinRightMin(int left, int right) {
+    return 'L ${left}min • R ${right}min';
+  }
+
+  @override
+  String breastfeedingSavedSnack(int left, int right) {
+    return '✅ Breastfeeding saved: L ${left}min, R ${right}min';
+  }
+
+  @override
+  String sleepSavedSnack(String duration) {
+    return '✅ Sleep saved: $duration';
+  }
+
+  @override
+  String get sleepTooShort => '⚠️ Sleep under 1 minute, not saved';
+
+  @override
+  String kgThisMonth(String value) {
+    return '+${value}kg this month';
+  }
+
+  @override
+  String cmThisMonth(String value) {
+    return '+${value}cm this month';
+  }
+
+  @override
+  String get noSleep => 'No sleep';
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count min ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '${count}d ago';
+  }
 }

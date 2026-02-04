@@ -1075,6 +1075,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Growth Tracking'**
   String get growthTracking;
+
+  /// No description provided for @feedingTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'FEEDING'**
+  String get feedingTimer;
+
+  /// No description provided for @sleepingTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'SLEEPING'**
+  String get sleepingTimer;
+
+  /// No description provided for @stopAndSave.
+  ///
+  /// In en, this message translates to:
+  /// **'STOP & SAVE'**
+  String get stopAndSave;
+
+  /// No description provided for @activeTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'ACTIVE'**
+  String get activeTimer;
+
+  /// No description provided for @lastFed.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST FED'**
+  String get lastFed;
+
+  /// No description provided for @lastDiaper.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST DIAPER'**
+  String get lastDiaper;
+
+  /// No description provided for @lastSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'LAST SLEEP'**
+  String get lastSleep;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'RECENT ACTIVITY'**
+  String get recentActivity;
+
+  /// No description provided for @seeHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'SEE HISTORY'**
+  String get seeHistory;
+
+  /// No description provided for @noActivitiesLast24h.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities in the last 24 hours'**
+  String get noActivitiesLast24h;
+
+  /// No description provided for @bottleFeeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottle Feeding'**
+  String get bottleFeeding;
+
+  /// No description provided for @trackYourBabyGrowth.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your baby\'s growth'**
+  String get trackYourBabyGrowth;
+
+  /// No description provided for @addHeightWeightMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Add weight and height measurements'**
+  String get addHeightWeightMeasurements;
+
+  /// No description provided for @addFirstMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Add first measurement'**
+  String get addFirstMeasurement;
+
+  /// No description provided for @lastUpdatedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated today'**
+  String get lastUpdatedToday;
+
+  /// No description provided for @lastUpdated1Day.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated 1 day ago'**
+  String get lastUpdated1Day;
+
+  /// No description provided for @lastUpdatedDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated {days} days ago'**
+  String lastUpdatedDays(int days);
+
+  /// No description provided for @viewGrowthCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'VIEW GROWTH CHARTS'**
+  String get viewGrowthCharts;
+
+  /// No description provided for @weightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'WEIGHT'**
+  String get weightLabel;
+
+  /// No description provided for @heightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HEIGHT'**
+  String get heightLabel;
+
+  /// No description provided for @mAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String mAgo(int count);
+
+  /// No description provided for @hmAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m ago'**
+  String hmAgo(int hours, int minutes);
+
+  /// No description provided for @dAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String dAgo(int days);
+
+  /// No description provided for @noRecordsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet'**
+  String get noRecordsYet;
+
+  /// No description provided for @dailyTip.
+  ///
+  /// In en, this message translates to:
+  /// **'DAILY TIP'**
+  String get dailyTip;
+
+  /// No description provided for @allTips.
+  ///
+  /// In en, this message translates to:
+  /// **'All tips'**
+  String get allTips;
+
+  /// No description provided for @upcomingVaccine.
+  ///
+  /// In en, this message translates to:
+  /// **'UPCOMING VACCINE'**
+  String get upcomingVaccine;
+
+  /// No description provided for @nextVaccineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}'**
+  String nextVaccineLabel(String name);
+
+  /// No description provided for @leftMinRightMin.
+  ///
+  /// In en, this message translates to:
+  /// **'L {left}min • R {right}min'**
+  String leftMinRightMin(int left, int right);
+
+  /// No description provided for @breastfeedingSavedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Breastfeeding saved: L {left}min, R {right}min'**
+  String breastfeedingSavedSnack(int left, int right);
+
+  /// No description provided for @sleepSavedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Sleep saved: {duration}'**
+  String sleepSavedSnack(String duration);
+
+  /// No description provided for @sleepTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠️ Sleep under 1 minute, not saved'**
+  String get sleepTooShort;
+
+  /// No description provided for @kgThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value}kg this month'**
+  String kgThisMonth(String value);
+
+  /// No description provided for @cmThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'+{value}cm this month'**
+  String cmThisMonth(String value);
+
+  /// No description provided for @noSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'No sleep'**
+  String get noSleep;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String daysAgo(int count);
 }
 
 class _AppLocalizationsDelegate
