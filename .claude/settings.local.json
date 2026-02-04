@@ -8,7 +8,12 @@
       "Bash(powershell -Command:*)",
       "Bash(ls -la \"c:\\\\Users\\\\ASUS\\\\Documents\\\\bebek_takip\\\\lib\\\\models\"\" 2>&1 || ls -la \"/c/Users/ASUS/Documents/bebek_takip/lib/models/ \")",
       "Bash(findstr:*)",
-      "Bash(dir /s /b c:UsersASUSDocumentsbebek_takipassetsillustrations)"
+      "Bash(dir /s /b c:UsersASUSDocumentsbebek_takipassetsillustrations)",
+      "Bash(ls -la \"c:\\\\Users\\\\ASUS\\\\Documents\\\\bebek_takip\\\\assets\\\\icons\\\\illustration\"\" 2>/dev/null || dir \"c:UsersASUSDocumentsbebek_takipassetsiconsillustration \")",
+      "Bash(flutter gen-l10n:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter build:*)",
+      "Bash(dart analyze:*)"
     ]
   }
 }

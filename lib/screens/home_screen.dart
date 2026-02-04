@@ -736,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => const ActivitiesScreen(),
+                                builder: (context) => const ActivitiesScreen(fromHome: true),
                               ),
                             );
                           },
@@ -1117,11 +1117,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon = Icons.restaurant;
             iconColor = const Color(0xFFFF998A);
             final tur = data['tur'] as String? ?? '';
+            final kategori = data['kategori'] as String? ?? 'Milk';
             if (tur == 'Anne Sütü') {
               title = 'Breastfeeding';
               final sol = data['solDakika'] ?? 0;
               final sag = data['sagDakika'] ?? 0;
               subtitle = 'L ${sol}min • R ${sag}min';
+            } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
+              title = 'Solid Food';
+              final solidAciklama = data['solidAciklama'] as String?;
+              subtitle = (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Katı gıda';
             } else {
               title = 'Bottle Feeding';
               subtitle = '${data['miktar']} ml';
@@ -1774,7 +1779,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ActivitiesScreen(initialTab: tab),
+        builder: (context) => ActivitiesScreen(initialTab: tab, fromHome: true),
       ),
     );
   }
@@ -2164,10 +2169,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String _getMamaDetail(Map<String, dynamic>? kayit) {
     if (kayit == null) return '';
     final tur = kayit['tur'] as String? ?? '';
+    final kategori = kayit['kategori'] as String? ?? 'Milk';
     if (tur == 'Anne Sütü') {
       final sol = kayit['solDakika'] ?? 0;
       final sag = kayit['sagDakika'] ?? 0;
       return 'Sol ${sol}dk • Sağ ${sag}dk';
+    } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
+      final solidAciklama = kayit['solidAciklama'] as String?;
+      return (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Katı gıda';
     } else {
       return '${kayit['miktar']} ml';
     }
@@ -2267,11 +2276,17 @@ class _HomeScreenState extends State<HomeScreen> {
         final sol = item['solDakika'] ?? 0;
         final sag = item['sagDakika'] ?? 0;
         final miktar = item['miktar'] ?? 0;
+        final kategori = item['kategori'] as String? ?? 'Milk';
+        final solidAciklama = item['solidAciklama'] as String?;
 
         if (tur == 'Anne Sütü') {
           icon = Ikonlar.nursing(size: 28);
           title = Dil.emzirme;
           subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
+        } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
+          icon = const Icon(Icons.restaurant_outlined, size: 24, color: Color(0xFFFF998A));
+          title = 'Katı';
+          subtitle = (solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : 'Ek gıda';
         } else if (tur == 'Formül') {
           icon = Ikonlar.bottle(size: 24);
           title = Dil.formula;

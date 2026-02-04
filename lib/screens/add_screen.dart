@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../models/veri_yonetici.dart';
-import '../models/ikonlar.dart';
 import '../models/dil.dart';
+import '../l10n/app_localizations.dart';
 
 class AddScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -23,6 +23,8 @@ class _AddScreenState extends State<AddScreen> {
   // Bottle feeding fields
   int bottleAmount = 120;
   String milkType = 'breast'; // 'breast' or 'formula'
+  String feedingCategory = 'Milk'; // 'Milk' or 'Solid'
+  final TextEditingController _solidFoodController = TextEditingController();
 
   // Sleep fields
   late TimeOfDay _sleepStartTime;
@@ -45,6 +47,7 @@ class _AddScreenState extends State<AddScreen> {
   @override
   void dispose() {
     _diaperNotesController.dispose();
+    _solidFoodController.dispose();
     super.dispose();
   }
 
@@ -211,63 +214,73 @@ class _AddScreenState extends State<AddScreen> {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Add Activity',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2D1A18),
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'What happened?',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Color(0xFF7A749E),
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ],
+                      Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context)!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.addActivity,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2D1A18),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.whatHappened,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF7A749E),
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 8),
                 // Compact activity type row
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      _buildCompactActivityChip(
-                        'breastfeeding',
-                        Ikonlar.breastfeeding(size: 24),
-                        'Nursing',
+                Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context)!;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          _buildCompactActivityChip(
+                            'breastfeeding',
+                            const Icon(Icons.child_care_outlined, size: 24, color: Color(0xFFFF998A)),
+                            l10n.nursing,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildCompactActivityChip(
+                            'bottle',
+                            const Icon(Icons.local_drink_outlined, size: 24, color: Color(0xFFFF998A)),
+                            l10n.bottle,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildCompactActivityChip(
+                            'sleep',
+                            const Icon(Icons.bedtime_outlined, size: 24, color: Color(0xFFFF998A)),
+                            l10n.sleep,
+                          ),
+                          const SizedBox(width: 6),
+                          _buildCompactActivityChip(
+                            'diaper',
+                            const Icon(Icons.baby_changing_station_outlined, size: 24, color: Color(0xFFFF998A)),
+                            l10n.diaper,
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 6),
-                      _buildCompactActivityChip(
-                        'bottle',
-                        Ikonlar.bottle(size: 24),
-                        'Bottle',
-                      ),
-                      const SizedBox(width: 6),
-                      _buildCompactActivityChip(
-                        'sleep',
-                        Ikonlar.sleep(size: 24),
-                        'Sleep',
-                      ),
-                      const SizedBox(width: 6),
-                      _buildCompactActivityChip(
-                        'diaper',
-                        Ikonlar.diaperClean(size: 24),
-                        'Diaper',
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 // Detail panel - warmer card design
@@ -306,99 +319,107 @@ class _AddScreenState extends State<AddScreen> {
                           children: [
                             if (selectedActivity == 'breastfeeding') ...[
                               // Compact side selector
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Side',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF7A749E),
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.all(3),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () => setState(
-                                            () => selectedSide = 'left',
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 20,
-                                              vertical: 8,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: selectedSide == 'left'
-                                                  ? const Color(0xFFFF998A)
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              'Left',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                                color: selectedSide == 'left'
-                                                    ? Colors.white
-                                                    : const Color(0xFF7A749E),
+                              Builder(
+                                builder: (context) {
+                                  final l10n = AppLocalizations.of(context)!;
+                                  return Row(
+                                    children: [
+                                      Text(
+                                        l10n.side,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF7A749E),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.all(3),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () => setState(
+                                                () => selectedSide = 'left',
+                                              ),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: selectedSide == 'left'
+                                                      ? const Color(0xFFFF998A)
+                                                      : Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Text(
+                                                  l10n.left,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: selectedSide == 'left'
+                                                        ? Colors.white
+                                                        : const Color(0xFF7A749E),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () => setState(
-                                            () => selectedSide = 'right',
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 20,
-                                              vertical: 8,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: selectedSide == 'right'
-                                                  ? const Color(0xFFFF998A)
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: Text(
-                                              'Right',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                                color: selectedSide == 'right'
-                                                    ? Colors.white
-                                                    : const Color(0xFF7A749E),
+                                            GestureDetector(
+                                              onTap: () => setState(
+                                                () => selectedSide = 'right',
+                                              ),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 20,
+                                                  vertical: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: selectedSide == 'right'
+                                                      ? const Color(0xFFFF998A)
+                                                      : Colors.transparent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: Text(
+                                                  l10n.right,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: selectedSide == 'right'
+                                                        ? Colors.white
+                                                        : const Color(0xFF7A749E),
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                               const SizedBox(height: 16),
                               // Compact duration picker (minutes only)
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Duration',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF7A749E),
-                                    ),
-                                  ),
+                              Builder(
+                                builder: (context) {
+                                  final l10n = AppLocalizations.of(context)!;
+                                  return Row(
+                                    children: [
+                                      Text(
+                                        l10n.duration,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF7A749E),
+                                        ),
+                                      ),
                                   const Spacer(),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -472,10 +493,123 @@ class _AddScreenState extends State<AddScreen> {
                                     ),
                                   ),
                                 ],
+                              );
+                                },
                               ),
                             ],
                             if (selectedActivity == 'bottle') ...[
-                              // Amount section
+                              // Category selector (Milk/Solid)
+                              const Text(
+                                'CATEGORY',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4A3F3F),
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => setState(() => feedingCategory = 'Milk'),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: feedingCategory == 'Milk' ? Colors.white : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: feedingCategory == 'Milk'
+                                                ? const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))]
+                                                : [],
+                                          ),
+                                          child: Text(
+                                            'Milk',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: feedingCategory == 'Milk'
+                                                  ? const Color(0xFFFF998A)
+                                                  : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () => setState(() => feedingCategory = 'Solid'),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: feedingCategory == 'Solid' ? Colors.white : Colors.transparent,
+                                            borderRadius: BorderRadius.circular(12),
+                                            boxShadow: feedingCategory == 'Solid'
+                                                ? const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))]
+                                                : [],
+                                          ),
+                                          child: Text(
+                                            'Solid',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                              color: feedingCategory == 'Solid'
+                                                  ? const Color(0xFFFF998A)
+                                                  : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              // Show different content based on category
+                              if (feedingCategory == 'Solid') ...[
+                                // Solid food description
+                                const Text(
+                                  'NE VERİLDİ?',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Material(
+                                  color: const Color(0xFFFDFCFB),
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: TextField(
+                                    controller: _solidFoodController,
+                                    maxLines: 2,
+                                    decoration: InputDecoration(
+                                      hintText: 'Ör: Muz püresi, havuç...',
+                                      hintStyle: TextStyle(
+                                        color: const Color(0xFF4A3F3F).withValues(alpha: 0.3),
+                                        fontSize: 14,
+                                      ),
+                                      border: InputBorder.none,
+                                      contentPadding: const EdgeInsets.all(20),
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: const Color(0xFF4A3F3F).withValues(alpha: 0.8),
+                                    ),
+                                  ),
+                                ),
+                              ] else ...[
+                              // Amount section (for Milk)
                               const Center(
                                 child: Text(
                                   'AMOUNT',
@@ -538,8 +672,8 @@ class _AddScreenState extends State<AddScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: Center(
-                                      child: Ikonlar.bottle(size: 28),
+                                    child: const Center(
+                                      child: Icon(Icons.local_drink_outlined, size: 28, color: Color(0xFFFF998A)),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
@@ -709,6 +843,7 @@ class _AddScreenState extends State<AddScreen> {
                                   ],
                                 ),
                               ),
+                              ], // end of else (Milk category)
                             ],
                             if (selectedActivity == 'sleep') ...[
                               // Sleep started at
@@ -756,8 +891,8 @@ class _AddScreenState extends State<AddScreen> {
                                             12,
                                           ),
                                         ),
-                                        child: Center(
-                                          child: Ikonlar.sleep(size: 24),
+                                        child: const Center(
+                                          child: Icon(Icons.bedtime_outlined, size: 24, color: Color(0xFFFF998A)),
                                         ),
                                       ),
                                       const SizedBox(width: 16),
@@ -959,10 +1094,10 @@ class _AddScreenState extends State<AddScreen> {
                                                     BorderRadius.circular(8),
                                               ),
                                               child: Center(
-                                                child: Image.asset(
-                                                  'assets/icons/illustration/diaper_wet.png',
-                                                  width: 24,
-                                                  height: 24,
+                                                child: Icon(
+                                                  Icons.water_drop_outlined,
+                                                  size: 24,
+                                                  color: _diaperType == 'wet' ? Colors.white : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1034,10 +1169,10 @@ class _AddScreenState extends State<AddScreen> {
                                                     BorderRadius.circular(8),
                                               ),
                                               child: Center(
-                                                child: Image.asset(
-                                                  'assets/icons/illustration/diaper_dirty.png',
-                                                  width: 24,
-                                                  height: 24,
+                                                child: Icon(
+                                                  Icons.cloud_outlined,
+                                                  size: 24,
+                                                  color: _diaperType == 'dirty' ? Colors.white : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1109,10 +1244,10 @@ class _AddScreenState extends State<AddScreen> {
                                                     BorderRadius.circular(8),
                                               ),
                                               child: Center(
-                                                child: Image.asset(
-                                                  'assets/icons/illustration/diaper_clean.png',
-                                                  width: 24,
-                                                  height: 24,
+                                                child: Icon(
+                                                  Icons.baby_changing_station_outlined,
+                                                  size: 24,
+                                                  color: _diaperType == 'both' ? Colors.white : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1312,7 +1447,7 @@ class _AddScreenState extends State<AddScreen> {
       _showValidationError('Please set a duration');
       return;
     }
-    if (selectedActivity == 'bottle' && bottleAmount == 0) {
+    if (selectedActivity == 'bottle' && feedingCategory == 'Milk' && bottleAmount == 0) {
       _showValidationError('Please set an amount');
       return;
     }
@@ -1342,6 +1477,7 @@ class _AddScreenState extends State<AddScreen> {
         'solDakika': selectedSide == 'left' ? totalMinutes.round() : 0,
         'sagDakika': selectedSide == 'right' ? totalMinutes.round() : 0,
         'miktar': 0,
+        'kategori': 'Milk',
       });
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
@@ -1352,13 +1488,26 @@ class _AddScreenState extends State<AddScreen> {
     } else if (selectedActivity == 'bottle') {
       final kayitlar = VeriYonetici.getMamaKayitlari();
 
-      kayitlar.insert(0, {
-        'tarih': DateTime.now(),
-        'tur': milkType == 'breast' ? 'Anne Sütü (Biberon)' : 'Formül',
-        'solDakika': 0,
-        'sagDakika': 0,
-        'miktar': bottleAmount,
-      });
+      if (feedingCategory == 'Solid') {
+        kayitlar.insert(0, {
+          'tarih': DateTime.now(),
+          'tur': 'Katı Gıda',
+          'solDakika': 0,
+          'sagDakika': 0,
+          'miktar': 0,
+          'kategori': 'Solid',
+          'solidAciklama': _solidFoodController.text.isNotEmpty ? _solidFoodController.text : null,
+        });
+      } else {
+        kayitlar.insert(0, {
+          'tarih': DateTime.now(),
+          'tur': milkType == 'breast' ? 'Anne Sütü (Biberon)' : 'Formül',
+          'solDakika': 0,
+          'sagDakika': 0,
+          'miktar': bottleAmount,
+          'kategori': 'Milk',
+        });
+      }
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
       widget.onSaved?.call();

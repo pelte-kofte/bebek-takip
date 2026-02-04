@@ -1,11 +1,15 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -19,6 +23,8 @@ class RaporScreen extends StatefulWidget {
 class _RaporScreenState extends State<RaporScreen> {
   bool _isWeekly = true;
   bool _isLoading = false;
+  bool _isCapturing = false;
+  final GlobalKey _repaintKey = GlobalKey();
 
   // İstatistik verileri
   Map<String, dynamic> _stats = {};
@@ -33,7 +39,7 @@ class _RaporScreenState extends State<RaporScreen> {
     final now = DateTime.now();
     final startDate = _isWeekly
         ? now.subtract(const Duration(days: 7))
-        : DateTime(now.year, now.month - 1, now.day);
+        : DateTime(now.year, now.month, 1); // Start of current month
 
     // Mama kayıtları
     final mamaKayitlari = VeriYonetici.getMamaKayitlari()
@@ -52,9 +58,14 @@ class _RaporScreenState extends State<RaporScreen> {
       toplamSagDk += (k['sagDakika'] as int?) ?? 0;
     }
 
-    // Biberon/Formül
+    // Katı gıda (solid food)
+    final solidKayitlari = mamaKayitlari
+        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'Katı Gıda')
+        .toList();
+
+    // Biberon/Formül (exclude solid food)
     final biberonKayitlari = mamaKayitlari
-        .where((k) => k['tur'] != 'Anne Sütü')
+        .where((k) => k['tur'] != 'Anne Sütü' && k['kategori'] != 'Solid' && k['tur'] != 'Katı Gıda')
         .toList();
     int toplamBiberonMl = 0;
     int toplamFormulMl = 0;
@@ -101,7 +112,7 @@ class _RaporScreenState extends State<RaporScreen> {
       }
     }
 
-    final gunSayisi = _isWeekly ? 7 : 30;
+    final gunSayisi = _isWeekly ? 7 : now.day; // Days elapsed in current month
 
     setState(() {
       _stats = {
@@ -117,6 +128,8 @@ class _RaporScreenState extends State<RaporScreen> {
         // Biberon
         'toplamBiberonMl': toplamBiberonMl,
         'toplamFormulMl': toplamFormulMl,
+        // Katı gıda
+        'toplamSolid': solidKayitlari.length,
         // Bez
         'toplamBez': kakaKayitlari.length,
         'gunlukBez': (kakaKayitlari.length / gunSayisi).toStringAsFixed(1),
@@ -168,37 +181,43 @@ class _RaporScreenState extends State<RaporScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    _buildFeedingCard(
-                      isDark,
-                      cardColor,
-                      textColor,
-                      subtitleColor,
+                child: RepaintBoundary(
+                  key: _repaintKey,
+                  child: Container(
+                    color: bgColor,
+                    child: Column(
+                      children: [
+                        _buildFeedingCard(
+                          isDark,
+                          cardColor,
+                          textColor,
+                          subtitleColor,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDiaperCard(
+                          isDark,
+                          cardColor,
+                          textColor,
+                          subtitleColor,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildSleepCard(
+                          isDark,
+                          cardColor,
+                          textColor,
+                          subtitleColor,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildGrowthCard(
+                          isDark,
+                          cardColor,
+                          textColor,
+                          subtitleColor,
+                        ),
+                        const SizedBox(height: 100),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    _buildDiaperCard(
-                      isDark,
-                      cardColor,
-                      textColor,
-                      subtitleColor,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildSleepCard(
-                      isDark,
-                      cardColor,
-                      textColor,
-                      subtitleColor,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildGrowthCard(
-                      isDark,
-                      cardColor,
-                      textColor,
-                      subtitleColor,
-                    ),
-                    const SizedBox(height: 100),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -211,12 +230,14 @@ class _RaporScreenState extends State<RaporScreen> {
   }
 
   Widget _buildHeader(bool isDark, Color cardColor, Color textColor) {
+    final l10n = AppLocalizations.of(context)!;
+    final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june, l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december];
     final startDate = _stats['startDate'] as DateTime?;
     final endDate = _stats['endDate'] as DateTime?;
     String dateRange = '';
     if (startDate != null && endDate != null) {
       dateRange =
-          '${startDate.day} ${Dil.aylar[startDate.month - 1]} - ${endDate.day} ${Dil.aylar[endDate.month - 1]} ${endDate.year}';
+          '${startDate.day} ${months[startDate.month - 1]} - ${endDate.day} ${months[endDate.month - 1]} ${endDate.year}';
     }
 
     return Container(
@@ -257,7 +278,7 @@ class _RaporScreenState extends State<RaporScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _isWeekly ? 'Haftalık Rapor' : 'Aylık Rapor',
+                      _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -274,6 +295,36 @@ class _RaporScreenState extends State<RaporScreen> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              // Share Button
+              GestureDetector(
+                onTap: _isCapturing ? null : _shareAsImage,
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? const Color(0xFF3A3445)
+                        : const Color(0xFFF5F5F5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: _isCapturing
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Color(0xFFFF8AC1),
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          Icons.share_outlined,
+                          size: 18,
+                          color: isDark ? Colors.white70 : const Color(0xFF666666),
+                        ),
                 ),
               ),
             ],
@@ -313,7 +364,7 @@ class _RaporScreenState extends State<RaporScreen> {
                             : null,
                       ),
                       child: Text(
-                        'Haftalık',
+                        l10n.weekly,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -352,7 +403,7 @@ class _RaporScreenState extends State<RaporScreen> {
                             : null,
                       ),
                       child: Text(
-                        'Aylık',
+                        l10n.monthly,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 14,
@@ -380,6 +431,7 @@ class _RaporScreenState extends State<RaporScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
@@ -431,7 +483,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Beslenme',
+                      l10n.feeding,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -447,7 +499,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['toplamEmzirme'] ?? 0}',
-                        'Toplam Emzirme',
+                        l10n.totalBreastfeeding,
                         const Color(0xFFFFB3D9),
                         const Color(0xFFFF8FAB),
                       ),
@@ -455,8 +507,8 @@ class _RaporScreenState extends State<RaporScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildStatItem(
-                        '${_stats['toplamEmzirmeDk'] ?? 0} dk',
-                        'Toplam Süre',
+                        '${_stats['toplamEmzirmeDk'] ?? 0} ${l10n.minAbbrev}',
+                        l10n.totalDuration,
                         const Color(0xFFFFB3D9),
                         const Color(0xFFFF8FAB),
                       ),
@@ -469,7 +521,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['gunlukEmzirme'] ?? 0}',
-                        'Günlük Ort.',
+                        l10n.dailyAvg,
                         const Color(0xFFFFB3D9),
                         const Color(0xFFFF8FAB),
                       ),
@@ -477,8 +529,8 @@ class _RaporScreenState extends State<RaporScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildStatItem(
-                        '${((_stats['toplamEmzirmeDk'] ?? 0) / ((_stats['toplamEmzirme'] ?? 1) == 0 ? 1 : _stats['toplamEmzirme'])).toStringAsFixed(0)} dk',
-                        'Ort. Süre',
+                        '${((_stats['toplamEmzirmeDk'] ?? 0) / ((_stats['toplamEmzirme'] ?? 1) == 0 ? 1 : _stats['toplamEmzirme'])).toStringAsFixed(0)} ${l10n.minAbbrev}',
+                        l10n.avgDuration,
                         const Color(0xFFFFB3D9),
                         const Color(0xFFFF8FAB),
                       ),
@@ -504,7 +556,7 @@ class _RaporScreenState extends State<RaporScreen> {
                                 Ikonlar.leftBreast(size: 16),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Sol Meme',
+                                  l10n.leftBreast,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: subtitleColor,
@@ -514,7 +566,7 @@ class _RaporScreenState extends State<RaporScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_stats['solMemeDk'] ?? 0} dk',
+                              '${_stats['solMemeDk'] ?? 0} ${l10n.minAbbrev}',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -538,7 +590,7 @@ class _RaporScreenState extends State<RaporScreen> {
                                 Ikonlar.rightBreast(size: 16),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Sağ Meme',
+                                  l10n.rightBreast,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: subtitleColor,
@@ -548,7 +600,7 @@ class _RaporScreenState extends State<RaporScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_stats['sagMemeDk'] ?? 0} dk',
+                              '${_stats['sagMemeDk'] ?? 0} ${l10n.minAbbrev}',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -575,7 +627,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Biberon',
+                              l10n.bottle,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtitleColor,
@@ -594,7 +646,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -605,7 +657,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Formül',
+                              l10n.formula,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtitleColor,
@@ -614,6 +666,36 @@ class _RaporScreenState extends State<RaporScreen> {
                             const SizedBox(height: 4),
                             Text(
                               '${_stats['toplamFormulMl'] ?? 0} ml',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFFFF8AC1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFB3D9).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(
+                              l10n.solidFood,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: subtitleColor,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${_stats['toplamSolid'] ?? 0}',
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -641,6 +723,7 @@ class _RaporScreenState extends State<RaporScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
@@ -690,7 +773,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Bez Değişimi',
+                      l10n.diaperChanges,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -705,7 +788,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['toplamBez'] ?? 0}',
-                        'Toplam',
+                        l10n.total,
                         const Color(0xFFB3D9FF),
                         const Color(0xFF6BA3E0),
                       ),
@@ -714,7 +797,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['gunlukBez'] ?? 0}',
-                        'Günlük Ort.',
+                        l10n.dailyAvg,
                         const Color(0xFFB3D9FF),
                         const Color(0xFF6BA3E0),
                       ),
@@ -745,7 +828,7 @@ class _RaporScreenState extends State<RaporScreen> {
                               ),
                             ),
                             Text(
-                              'Islak',
+                              l10n.wet,
                               style: TextStyle(
                                 fontSize: 10,
                                 color: subtitleColor,
@@ -776,7 +859,7 @@ class _RaporScreenState extends State<RaporScreen> {
                               ),
                             ),
                             Text(
-                              'Kirli',
+                              l10n.dirty,
                               style: TextStyle(
                                 fontSize: 10,
                                 color: subtitleColor,
@@ -807,7 +890,7 @@ class _RaporScreenState extends State<RaporScreen> {
                               ),
                             ),
                             Text(
-                              'İkisi',
+                              l10n.both,
                               style: TextStyle(
                                 fontSize: 10,
                                 color: subtitleColor,
@@ -834,6 +917,7 @@ class _RaporScreenState extends State<RaporScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
@@ -883,7 +967,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Uyku',
+                      l10n.sleep,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -897,8 +981,8 @@ class _RaporScreenState extends State<RaporScreen> {
                   children: [
                     Expanded(
                       child: _buildStatItem(
-                        '${_stats['toplamUykuSaat'] ?? 0} sa',
-                        'Toplam',
+                        '${_stats['toplamUykuSaat'] ?? 0} ${l10n.hourAbbrev}',
+                        l10n.total,
                         const Color(0xFFD9B3FF),
                         const Color(0xFF9B6FCC),
                       ),
@@ -906,8 +990,8 @@ class _RaporScreenState extends State<RaporScreen> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: _buildStatItem(
-                        '${_stats['gunlukUykuSaat'] ?? 0} sa',
-                        'Günlük Ort.',
+                        '${_stats['gunlukUykuSaat'] ?? 0} ${l10n.hourAbbrev}',
+                        l10n.dailyAvg,
                         const Color(0xFFD9B3FF),
                         const Color(0xFF9B6FCC),
                       ),
@@ -920,7 +1004,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['enUzunUyku'] ?? '-'}',
-                        'En Uzun',
+                        l10n.longestSleep,
                         const Color(0xFFD9B3FF),
                         const Color(0xFF9B6FCC),
                       ),
@@ -929,7 +1013,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     Expanded(
                       child: _buildStatItem(
                         '${_stats['uykuSayisi'] ?? 0}',
-                        'Uyku Sayısı',
+                        l10n.sleepCount,
                         const Color(0xFFD9B3FF),
                         const Color(0xFF9B6FCC),
                       ),
@@ -951,6 +1035,7 @@ class _RaporScreenState extends State<RaporScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final boy = _stats['boy'];
     final kilo = _stats['kilo'];
     final boyDegisim = _stats['boyDegisim'];
@@ -1005,7 +1090,7 @@ class _RaporScreenState extends State<RaporScreen> {
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Büyüme',
+                      l10n.growth,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
@@ -1027,7 +1112,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Boy',
+                              l10n.height,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtitleColor,
@@ -1066,7 +1151,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         child: Column(
                           children: [
                             Text(
-                              'Kilo',
+                              l10n.weight,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: subtitleColor,
@@ -1139,6 +1224,7 @@ class _RaporScreenState extends State<RaporScreen> {
   }
 
   Widget _buildExportButton(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1186,9 +1272,9 @@ class _RaporScreenState extends State<RaporScreen> {
                 else ...[
                   const Icon(Icons.download, color: Colors.white, size: 20),
                   const SizedBox(width: 10),
-                  const Text(
-                    'PDF Olarak Kaydet',
-                    style: TextStyle(
+                  Text(
+                    l10n.saveAsPdf,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
@@ -1204,6 +1290,17 @@ class _RaporScreenState extends State<RaporScreen> {
   }
 
   Future<void> _exportPDF() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.pdfMobileOnly),
+          backgroundColor: const Color(0xFF888888),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     HapticFeedback.mediumImpact();
 
@@ -1253,6 +1350,7 @@ class _RaporScreenState extends State<RaporScreen> {
                   'Toplam Süre: ${_stats['toplamEmzirmeDk']} dakika',
                   'Sol Meme: ${_stats['solMemeDk']} dk | Sağ Meme: ${_stats['sagMemeDk']} dk',
                   'Biberon: ${_stats['toplamBiberonMl']} ml | Formül: ${_stats['toplamFormulMl']} ml',
+                  'Katı Gıda: ${_stats['toplamSolid']} kez',
                 ], PdfColors.pink100),
                 pw.SizedBox(height: 16),
 
@@ -1309,9 +1407,9 @@ class _RaporScreenState extends State<RaporScreen> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✅ PDF başarıyla kaydedildi!'),
-          backgroundColor: Color(0xFF4CAF50),
+        SnackBar(
+          content: Text('✅ ${l10n.pdfSaved}'),
+          backgroundColor: const Color(0xFF4CAF50),
         ),
       );
     } catch (e) {
@@ -1322,6 +1420,58 @@ class _RaporScreenState extends State<RaporScreen> {
     }
 
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _shareAsImage() async {
+    final l10n = AppLocalizations.of(context)!;
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.sharingMobileOnly),
+          backgroundColor: const Color(0xFF888888),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isCapturing = true);
+    HapticFeedback.mediumImpact();
+
+    try {
+      final boundary = _repaintKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        throw Exception('RepaintBoundary not found');
+      }
+
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) {
+        throw Exception('Failed to capture image');
+      }
+
+      final bytes = byteData.buffer.asUint8List();
+
+      // Save to temp file
+      final output = await getTemporaryDirectory();
+      final file = File(
+        '${output.path}/bebek_rapor_${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+      await file.writeAsBytes(bytes);
+
+      // Open share sheet
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Hata: $e'), backgroundColor: Colors.red),
+      );
+    }
+
+    setState(() => _isCapturing = false);
   }
 
   pw.Widget _buildPdfSection(

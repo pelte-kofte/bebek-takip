@@ -268,6 +268,8 @@ class VeriYonetici {
               'tur': e['tur'] ?? '',
               'solDakika': e['solDakika'] ?? 0,
               'sagDakika': e['sagDakika'] ?? 0,
+              'kategori': e['kategori'] ?? 'Milk',
+              'solidAciklama': e['solidAciklama'],
               'babyId': e['babyId'] ?? _activeBabyId,
             }),
           )
@@ -301,6 +303,8 @@ class VeriYonetici {
             'tur': e['tur'] ?? '',
             'solDakika': e['solDakika'] ?? 0,
             'sagDakika': e['sagDakika'] ?? 0,
+            'kategori': e['kategori'] ?? 'Milk',
+            'solidAciklama': e['solidAciklama'],
             'babyId': e['babyId'],
           },
         )
@@ -716,6 +720,8 @@ class VeriYonetici {
                   'tur': e['tur'] ?? '',
                   'solDakika': e['solDakika'] ?? 0,
                   'sagDakika': e['sagDakika'] ?? 0,
+                  'kategori': e['kategori'] ?? 'Milk',
+                  'solidAciklama': e['solidAciklama'],
                   'babyId': e['babyId'],
                 })
             .toList(),

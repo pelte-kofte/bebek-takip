@@ -262,6 +262,39 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
+  Widget _buildChartEmptyState(bool isDark, Color textColor, Color subtitleColor) {
+    final remaining = 3 - _records.length;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.show_chart_rounded,
+              size: 56,
+              color: const Color(0xFFD4C4E8).withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Grafik için daha fazla veri gerekli',
+              style: AppTypography.h3(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$remaining ölçüm daha ekleyin',
+              style: AppTypography.bodySmall(context).copyWith(
+                color: subtitleColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildRecordsList(bool isDark) {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
@@ -345,6 +378,11 @@ class _GrowthScreenState extends State<GrowthScreen> {
     final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
     final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
 
+    // Need at least 3 records for a meaningful chart
+    if (_records.length < 3) {
+      return _buildChartEmptyState(isDark, textColor, subtitleColor);
+    }
+
     // Sort records by date ascending for charts
     final sorted = List<Map<String, dynamic>>.from(_records)
       ..sort((a, b) => (a['tarih'] as DateTime).compareTo(b['tarih'] as DateTime));
@@ -359,7 +397,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
       if (boy != null) boyData.add((boy as num).toDouble());
       if (kilo != null) kiloData.add((kilo as num).toDouble());
       final t = r['tarih'] as DateTime;
-      labels.add('${t.day}/${t.month}');
+      // Month-level labels only
+      labels.add(Dil.aylar[t.month - 1].substring(0, 3));
     }
 
     final activeData = _chartMetric == 0 ? boyData : kiloData;
@@ -756,21 +795,35 @@ class _GrowthChartPainter extends CustomPainter {
 
     // Draw dots and x-axis labels
     for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 5, dotBorderPaint);
-      canvas.drawCircle(points[i], 3.5, dotPaint);
+      final isLast = i == points.length - 1;
 
-      // X-axis labels (show a subset if too many)
-      if (data.length <= 8 || i % ((data.length / 6).ceil()) == 0 || i == data.length - 1) {
-        if (i < labels.length) {
-          final tp = TextPainter(
-            text: TextSpan(text: labels[i], style: labelStyle),
-            textDirection: TextDirection.ltr,
-          )..layout();
-          tp.paint(
-            canvas,
-            Offset(points[i].dx - tp.width / 2, topPad + chartH + 6),
-          );
-        }
+      if (isLast) {
+        // Highlight most recent data point with larger dot and glow
+        final glowPaint = Paint()
+          ..color = lineColor.withValues(alpha: 0.3)
+          ..style = PaintingStyle.fill;
+        canvas.drawCircle(points[i], 10, glowPaint);
+        canvas.drawCircle(points[i], 6, dotBorderPaint);
+        canvas.drawCircle(points[i], 4.5, dotPaint);
+      } else {
+        canvas.drawCircle(points[i], 5, dotBorderPaint);
+        canvas.drawCircle(points[i], 3.5, dotPaint);
+      }
+
+      // X-axis labels: show only a few (first, last, and evenly spaced)
+      final showLabel = i == 0 ||
+          i == data.length - 1 ||
+          (data.length > 4 && i == data.length ~/ 2);
+
+      if (showLabel && i < labels.length) {
+        final tp = TextPainter(
+          text: TextSpan(text: labels[i], style: labelStyle),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        tp.paint(
+          canvas,
+          Offset(points[i].dx - tp.width / 2, topPad + chartH + 6),
+        );
       }
     }
   }

@@ -5,6 +5,7 @@ import '../main.dart';
 import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/decorative_background.dart';
+import '../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -107,7 +108,7 @@ class _SplashScreenState extends State<SplashScreen>
                 children: [
                   const Spacer(flex: 2),
 
-                  // Cuddle Image with float animation
+                  // Decorative illustration with float animation
                   AnimatedBuilder(
                     animation: Listenable.merge([
                       _logoController,
@@ -119,20 +120,21 @@ class _SplashScreenState extends State<SplashScreen>
                         child: Transform.scale(
                           scale: _logoScale.value,
                           child: Container(
-                            width: 280,
-                            height: 280,
+                            width: 300,
+                            height: 300,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
+                              borderRadius: BorderRadius.circular(50),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.3),
-                                  blurRadius: 50,
-                                  offset: const Offset(0, 20),
+                                  color: AppColors.primary.withOpacity(0.2),
+                                  blurRadius: 60,
+                                  spreadRadius: 5,
+                                  offset: const Offset(0, 25),
                                 ),
                               ],
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(40),
+                              borderRadius: BorderRadius.circular(50),
                               child: Image.asset(
                                 'assets/icons/illustration/parents.png',
                                 fit: BoxFit.contain,
@@ -149,42 +151,47 @@ class _SplashScreenState extends State<SplashScreen>
                   // App Title
                   FadeTransition(
                     opacity: _fadeIn,
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    child: Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return Column(
                           children: [
-                            const Text('🌱 ', style: TextStyle(fontSize: 32)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text('🌱 ', style: TextStyle(fontSize: 32)),
+                                Text(
+                                  l10n.appName,
+                                  style: AppTypography.h1(context).copyWith(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: AppSpacing.md),
+
+                            // Tagline
                             Text(
-                              'Bebek Takip',
-                              style: AppTypography.h1(context).copyWith(
-                                fontSize: 36,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -1,
-                              ),
+                              l10n.tagline,
+                              style: AppTypography.body(context),
+                            ),
+
+                            SizedBox(height: AppSpacing.sm),
+
+                            // Features Row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildFeatureChip('✓ ${l10n.freeForever}'),
+                                const SizedBox(width: 16),
+                                _buildFeatureChip('✓ ${l10n.securePrivate}'),
+                              ],
                             ),
                           ],
-                        ),
-                        SizedBox(height: AppSpacing.md),
-
-                        // Tagline
-                        Text(
-                          'Parenting made simple & memorable.',
-                          style: AppTypography.body(context),
-                        ),
-
-                        SizedBox(height: AppSpacing.sm),
-
-                        // Features Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _buildFeatureChip('✓ Free Forever'),
-                            const SizedBox(width: 16),
-                            _buildFeatureChip('✓ Secure & Private'),
-                          ],
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
 
@@ -196,45 +203,50 @@ class _SplashScreenState extends State<SplashScreen>
                     child: AnimatedOpacity(
                       opacity: _canTap ? 1.0 : 0.0,
                       duration: const Duration(milliseconds: 500),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 32,
-                              vertical: 16,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.4),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context)!;
+                          return Column(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 16,
                                 ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Başlamak için dokun',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(30),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withOpacity(0.4),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 10),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.white,
-                                  size: 20,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      l10n.tapToStart,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    const Icon(
+                                      Icons.arrow_forward,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -280,42 +292,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingData> _pages = [
+  List<OnboardingData> _getPages(AppLocalizations l10n) => [
     OnboardingData(
       icon: 'assets/icons/illustration/nursing.png',
-      title: 'Feeding Tracker',
-      description:
-          'Log nursing, bottles, and solids with ease. Spot patterns naturally.',
+      title: l10n.feedingTracker,
+      description: l10n.feedingTrackerDesc,
       color: AppColors.accentBlue,
       bgColor: const Color(0xFFEFF6FF),
     ),
     OnboardingData(
       icon: 'assets/icons/illustration/sleeping.png',
-      title: 'Sleep Patterns',
-      description:
-          'Understand your baby\'s rhythm and improve sleep quality for everyone.',
+      title: l10n.sleepPatterns,
+      description: l10n.sleepPatternsDesc,
       color: AppColors.accentLavender,
       bgColor: const Color(0xFFF5F3FF),
     ),
     OnboardingData(
       icon: 'assets/icons/illustration/growing.png',
-      title: 'Growth Charts',
-      description:
-          'Visualize height and weight changes over time with beautiful charts.',
+      title: l10n.growthCharts,
+      description: l10n.growthChartsDesc,
       color: AppColors.accentGreen,
       bgColor: const Color(0xFFF0FDF4),
     ),
     OnboardingData(
       icon: 'assets/icons/illustration/cuddle.png',
-      title: 'Precious Memories',
-      description: 'Save milestones and funny moments. They grow up so fast!',
+      title: l10n.preciousMemories,
+      description: l10n.preciousMemoriesDesc,
       color: AppColors.primary,
       bgColor: const Color(0xFFFFF1F2),
     ),
   ];
 
-  void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
+  void _nextPage(int pagesLength) {
+    if (_currentPage < pagesLength - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
@@ -335,8 +344,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final pages = _getPages(l10n);
+
     return Scaffold(
-      backgroundColor: _pages[_currentPage].bgColor,
+      backgroundColor: pages[_currentPage].bgColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -349,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Progress dots
                   Row(
                     children: List.generate(
-                      _pages.length,
+                      pages.length,
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
                         margin: const EdgeInsets.only(right: 8),
@@ -357,8 +369,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 8,
                         decoration: BoxDecoration(
                           color: _currentPage == index
-                              ? _pages[_currentPage].color
-                              : _pages[_currentPage].color.withOpacity(0.3),
+                              ? pages[_currentPage].color
+                              : pages[_currentPage].color.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -368,9 +380,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   TextButton(
                     onPressed: _completeOnboarding,
                     child: Text(
-                      'Skip',
+                      l10n.skip,
                       style: TextStyle(
-                        color: _pages[_currentPage].color,
+                        color: pages[_currentPage].color,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -387,9 +399,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   setState(() => _currentPage = index);
                   HapticFeedback.selectionClick();
                 },
-                itemCount: _pages.length,
+                itemCount: pages.length,
                 itemBuilder: (context, index) {
-                  return _buildPage(_pages[index]);
+                  return _buildPage(pages[index]);
                 },
               ),
             ),
@@ -403,7 +415,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     HapticFeedback.mediumImpact();
-                    _nextPage();
+                    _nextPage(pages.length);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.textPrimaryLight,
@@ -418,9 +430,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        _currentPage == _pages.length - 1
-                            ? 'Start Your Journey'
-                            : 'Continue',
+                        _currentPage == pages.length - 1
+                            ? l10n.startYourJourney
+                            : l10n.continueBtn,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -443,28 +455,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icon/Image
+          const Spacer(flex: 1),
+
+          // Decorative illustration (top area)
           Container(
-            width: 200,
-            height: 200,
-            padding: const EdgeInsets.all(24),
+            width: 260,
+            height: 260,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(50),
               boxShadow: [
                 BoxShadow(
-                  color: data.color.withOpacity(0.2),
-                  blurRadius: 40,
+                  color: data.color.withOpacity(0.15),
+                  blurRadius: 60,
+                  spreadRadius: 10,
                   offset: const Offset(0, 20),
                 ),
               ],
             ),
-            child: Image.asset(data.icon, fit: BoxFit.contain),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.asset(
+                data.icon,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
 
-          const SizedBox(height: 48),
+          const SizedBox(height: 56),
 
           // Title
           Text(
@@ -490,6 +508,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: AppColors.textSecondaryLight,
             ),
           ),
+
+          const Spacer(flex: 2),
         ],
       ),
     );

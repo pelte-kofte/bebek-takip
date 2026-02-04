@@ -3,14 +3,21 @@ import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDateP
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../widgets/decorative_background.dart';
+import '../l10n/app_localizations.dart';
 
 enum ActivityType { mama, bez, uyku }
 
 class ActivitiesScreen extends StatefulWidget {
   final ActivityType? initialTab;
   final int? refreshTrigger;
+  final bool fromHome;
 
-  const ActivitiesScreen({super.key, this.initialTab, this.refreshTrigger});
+  const ActivitiesScreen({
+    super.key,
+    this.initialTab,
+    this.refreshTrigger,
+    this.fromHome = false,
+  });
 
   @override
   State<ActivitiesScreen> createState() => _ActivitiesScreenState();
@@ -63,11 +70,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   bool _isToday(DateTime date) => _isSameDay(date, DateTime.now());
 
-  String _formatDateHeader(DateTime date) {
+  String _formatDateHeader(DateTime date, AppLocalizations l10n) {
+    final monthNames = [
+      l10n.january, l10n.february, l10n.march, l10n.april,
+      l10n.may, l10n.june, l10n.july, l10n.august,
+      l10n.september, l10n.october, l10n.november, l10n.december
+    ];
     if (_isToday(date)) {
-      return '${Dil.bugun}, ${date.day} ${Dil.aylar[date.month - 1]}';
+      return '${l10n.today}, ${date.day} ${monthNames[date.month - 1]}';
     }
-    return '${date.day} ${Dil.aylar[date.month - 1]} ${date.year}';
+    return '${date.day} ${monthNames[date.month - 1]} ${date.year}';
   }
 
   @override
@@ -89,8 +101,36 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     children: [
                       Row(
                         children: [
+                          if (widget.fromHome) ...[
+                            GestureDetector(
+                              onTap: () => Navigator.pop(context),
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: isDark ? const Color(0xFF2A2A3A) : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: isDark
+                                      ? null
+                                      : [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(alpha: 0.05),
+                                            blurRadius: 8,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                ),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: textColor,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                          ],
                           Text(
-                            Dil.aktiviteler,
+                            AppLocalizations.of(context)!.activities,
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -110,32 +150,37 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 // Compact Category Tabs
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildCompactTab(
-                          'assets/icons/illustration/bottle2.png',
-                          'MAMA',
-                          ActivityType.mama,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _buildCompactTab(
-                          'assets/icons/illustration/diaper_clean.png',
-                          'BEZ',
-                          ActivityType.bez,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: _buildCompactTab(
-                          'assets/icons/illustration/sleeping_moon2.png',
-                          'UYKU',
-                          ActivityType.uyku,
-                        ),
-                      ),
-                    ],
+                  child: Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _buildCompactTab(
+                              Icons.local_drink_outlined,
+                              l10n.feeding_tab,
+                              ActivityType.mama,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildCompactTab(
+                              Icons.baby_changing_station_outlined,
+                              l10n.diaper_tab,
+                              ActivityType.bez,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: _buildCompactTab(
+                              Icons.bedtime_outlined,
+                              l10n.sleep_tab,
+                              ActivityType.uyku,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
 
@@ -157,6 +202,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final cardColor = isDark
         ? const Color(0xFF1E1E1E)
         : const Color(0xFFFFFBF5);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
@@ -201,7 +247,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    _formatDateHeader(_selectedDate),
+                    _formatDateHeader(_selectedDate, l10n),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -226,7 +272,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildCompactTab(String iconPath, String label, ActivityType type) {
+  Widget _buildCompactTab(IconData icon, String label, ActivityType type) {
     final isActive = _activeType == type;
 
     return GestureDetector(
@@ -248,11 +294,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              iconPath,
-              width: 28,
-              height: 28,
-              fit: BoxFit.contain,
+            Icon(
+              icon,
+              size: 24,
+              color: isActive
+                  ? const Color(0xFFFFB4A2)
+                  : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
             ),
             const SizedBox(width: 6),
             Text(
@@ -307,6 +354,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+    final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getMamaKayitlari();
     final kayitlar = _filterByDate(tumKayitlar, 'tarih');
@@ -321,10 +369,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        'assets/icons/illustration/bottle2.png',
-        'İlk mama zamanı geldi mi?',
-        'Bebeğinizin beslenmesini takip edin',
+        Icons.local_drink_outlined,
+        l10n.firstFeedingTime,
+        l10n.trackBabyFeeding,
         isDark,
+        l10n,
       );
     }
 
@@ -337,7 +386,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'ÖZET',
+                l10n.summary,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -379,7 +428,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   children: [
                     if (toplamDakika > 0)
                       Text(
-                        '${Dil.emzirme}: $toplamDakika ${Dil.dk}',
+                        '${l10n.breastfeeding}: $toplamDakika ${l10n.minAbbrev}',
                         style: const TextStyle(
                           color: Color(0xFF333333),
                           fontSize: 15,
@@ -393,7 +442,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     if (toplamMl > 0)
                       Text(
-                        '${Dil.biberon}: $toplamMl ml',
+                        '${l10n.bottle}: $toplamMl ml',
                         style: const TextStyle(
                           color: Color(0xFF333333),
                           fontSize: 15,
@@ -401,7 +450,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         ),
                       ),
                     Text(
-                      '(${kayitlar.length} ${Dil.kayit})',
+                      '(${kayitlar.length} ${l10n.record})',
                       style: const TextStyle(
                         color: Color(0xFF888888),
                         fontSize: 14,
@@ -421,7 +470,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           child: Row(
             children: [
               Text(
-                'SON AKTİVİTELER',
+                l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -446,21 +495,28 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final sol = kayit['solDakika'] ?? 0;
               final sag = kayit['sagDakika'] ?? 0;
               final miktar = kayit['miktar'] ?? 0;
+              final kategori = kayit['kategori'] as String? ?? 'Milk';
+              final solidAciklama = kayit['solidAciklama'] as String?;
 
               String title;
               String subtitle;
+              IconData icon = Icons.local_drink_outlined;
 
-              if (tur == 'Anne Sütü') {
-                title = Dil.emzirme;
+              if (kategori == 'Solid' || tur == 'Katı Gıda') {
+                title = 'Katı';
+                subtitle = 'Ek gıda';
+                icon = Icons.restaurant_outlined;
+              } else if (tur == 'Anne Sütü') {
+                title = l10n.breastfeeding;
                 subtitle =
-                    'Sol $sol${Dil.dk} • Sağ $sag${Dil.dk} (${Dil.toplam}: ${sol + sag}${Dil.dk})';
+                    '${l10n.left} $sol${l10n.minAbbrev} • ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: ${sol + sag}${l10n.minAbbrev})';
               } else {
                 title = '$miktar ml';
-                subtitle = tur == 'Formül' ? Dil.formula : Dil.biberonAnneSutu;
+                subtitle = tur == 'Formül' ? l10n.formula : l10n.bottleBreastMilk;
               }
 
               return _buildListItem(
-                iconPath: 'assets/icons/illustration/bottle2.png',
+                icon: icon,
                 title: title,
                 subtitle: subtitle,
                 time: _formatTime(tarih),
@@ -470,6 +526,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 subtitleColor: subtitleColor,
                 onEdit: () => _editMama(originalIndex, kayit),
                 onDelete: () => _deleteMama(originalIndex),
+                notes: (kategori == 'Solid' && solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : null,
               );
             },
           ),
@@ -483,16 +540,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+    final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getKakaKayitlari();
     final kayitlar = _filterByDate(tumKayitlar, 'tarih');
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        'assets/icons/illustration/diaper_clean.png',
-        'Bez değiştirme zamanı!',
-        'Hijyen takibini burada yapın',
+        Icons.baby_changing_station_outlined,
+        l10n.diaperChangeTime,
+        l10n.trackHygiene,
         isDark,
+        l10n,
       );
     }
 
@@ -509,7 +568,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'ÖZET',
+                l10n.summary,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -542,21 +601,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBezSummary(
-                'assets/icons/illustration/diaper_wet.png',
-                islak,
-                Dil.islak,
-              ),
-              _buildBezSummary(
-                'assets/icons/illustration/diaper_dirty.png',
-                kirli,
-                Dil.kirli,
-              ),
-              _buildBezSummary(
-                'assets/icons/illustration/diaper_clean.png',
-                ikisi,
-                Dil.ikisiBirden,
-              ),
+              _buildBezSummary(islak, l10n.wet),
+              _buildBezSummary(kirli, l10n.dirty),
+              _buildBezSummary(ikisi, l10n.both),
             ],
           ),
         ),
@@ -568,7 +615,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           child: Row(
             children: [
               Text(
-                'SON AKTİVİTELER',
+                l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -591,17 +638,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final originalIndex = tumKayitlar.indexOf(kayit);
               final tur = kayit['tur'] ?? '';
 
-              String iconPath = 'assets/icons/illustration/diaper_clean.png';
+              IconData diaperIcon = Icons.baby_changing_station_outlined;
               if (tur == Dil.islak) {
-                iconPath = 'assets/icons/illustration/diaper_wet.png';
+                diaperIcon = Icons.water_drop_outlined;
               } else if (tur == Dil.kirli) {
-                iconPath = 'assets/icons/illustration/diaper_dirty.png';
+                diaperIcon = Icons.cloud_outlined;
               }
 
               return _buildListItem(
-                iconPath: iconPath,
+                icon: diaperIcon,
                 title: tur,
-                subtitle: Dil.bezDegisimi,
+                subtitle: l10n.diaperChange,
                 time: _formatTime(tarih),
                 color: const Color(0xFF9C27B0),
                 cardColor: cardColor,
@@ -623,16 +670,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final subtitleColor = isDark ? Colors.grey.shade400 : Colors.grey;
+    final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getUykuKayitlari();
     final kayitlar = _filterByDate(tumKayitlar, 'bitis');
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
-        'assets/icons/illustration/sleeping_moon2.png',
-        'Tatlı rüyalar...',
-        'Uyku düzenini buradan izleyin',
+        Icons.bedtime_outlined,
+        l10n.sweetDreams,
+        l10n.trackSleepPattern,
         isDark,
+        l10n,
       );
     }
 
@@ -652,7 +701,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'ÖZET',
+                l10n.summary,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -687,7 +736,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${Dil.toplam}: $saat ${Dil.sa} $dakika ${Dil.dk}',
+                '${l10n.total}: $saat ${l10n.hourAbbrev} $dakika ${l10n.minAbbrev}',
                 style: const TextStyle(
                   color: Color(0xFF333333),
                   fontSize: 15,
@@ -708,7 +757,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           child: Row(
             children: [
               Text(
-                'SON AKTİVİTELER',
+                l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
@@ -733,8 +782,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final originalIndex = tumKayitlar.indexOf(kayit);
 
               return _buildListItem(
-                iconPath: 'assets/icons/illustration/sleeping_moon2.png',
-                title: _formatDuration(sure),
+                icon: Icons.bedtime_outlined,
+                title: _formatDuration(sure, l10n),
                 subtitle: '${_formatTime(baslangic)} - ${_formatTime(bitis)}',
                 time: '',
                 color: const Color(0xFF3F51B5),
@@ -751,7 +800,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildBezSummary(String iconPath, int count, String label) {
+  Widget _buildBezSummary(int count, String label) {
     return Column(
       children: [
         Text(
@@ -774,10 +823,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildEmptyState(
-    String iconPath,
+    IconData icon,
     String title,
     String subtitle,
     bool isDark,
+    AppLocalizations l10n,
   ) {
     return Center(
       child: Padding(
@@ -802,7 +852,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 ],
               ),
-              child: Image.asset(iconPath, width: 56, height: 56),
+              child: Icon(icon, size: 48, color: const Color(0xFFFFB4A2)),
             ),
             const SizedBox(height: 20),
             Text(
@@ -856,7 +906,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          Dil.baskaTarihSec,
+                          l10n.selectAnotherDate,
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
@@ -876,7 +926,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildListItem({
-    required String iconPath,
+    required IconData icon,
     required String title,
     required String subtitle,
     required String time,
@@ -930,14 +980,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     ],
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(6),
-                    child: Image.asset(
-                      iconPath,
-                      width: 44,
-                      height: 44,
-                      fit: BoxFit.contain,
-                    ),
+                  child: Icon(
+                    icon,
+                    size: 32,
+                    color: color,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -1040,6 +1086,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   void _editMama(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     String tur = kayit['tur'] ?? 'Anne Sütü';
     int solDakika = kayit['solDakika'] ?? 0;
     int sagDakika = kayit['sagDakika'] ?? 0;
@@ -1071,7 +1118,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '✏️ ${Dil.beslenmeDuzenle}',
+                    '✏️ ${l10n.editFeeding}',
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -1084,21 +1131,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     children: [
                       _buildTurButton(
                         '🤱',
-                        Dil.emzirme,
+                        l10n.breastfeeding,
                         'Anne Sütü',
                         tur,
                         (t) => setModalState(() => tur = t),
                       ),
                       _buildTurButton(
                         '🍼',
-                        Dil.formula,
+                        l10n.formula,
                         'Formül',
                         tur,
                         (t) => setModalState(() => tur = t),
                       ),
                       _buildTurButton(
                         '🥛',
-                        Dil.biberon,
+                        l10n.bottleBreastMilk,
                         'Biberon Anne Sütü',
                         tur,
                         (t) => setModalState(() => tur = t),
@@ -1112,7 +1159,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         solDakika = s;
                         sagDakika = sa;
                       });
-                    }, isDark),
+                    }, isDark, l10n),
                   ],
                   if (tur == 'Formül' || tur == 'Biberon Anne Sütü') ...[
                     _buildMiktarEditor(
@@ -1157,7 +1204,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     await VeriYonetici.saveMamaKayitlari(kayitlar);
                     Navigator.pop(ctx);
                     setState(() {});
-                  }, const Color(0xFFE91E63)),
+                  }, const Color(0xFFE91E63), l10n),
                 ],
               ),
             ),
@@ -1179,6 +1226,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   void _editKaka(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     String tur = kayit['tur'];
     final DateTime originalTarih = kayit['tarih'];
     TimeOfDay editedTime = TimeOfDay(
@@ -1206,7 +1254,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '✏️ ${Dil.bez} ${Dil.duzenle}',
+                  '✏️ ${l10n.editDiaper}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -1344,7 +1392,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   await VeriYonetici.saveKakaKayitlari(kayitlar);
                   Navigator.pop(ctx);
                   setState(() {});
-                }, const Color(0xFF9C27B0)),
+                }, const Color(0xFF9C27B0), l10n),
               ],
             ),
           );
@@ -1365,6 +1413,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   void _editUyku(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     DateTime baslangic = kayit['baslangic'];
     DateTime bitis = kayit['bitis'];
     TimeOfDay baslangicSaat = TimeOfDay(
@@ -1391,7 +1440,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '✏️ ${Dil.uykuDuzenle}',
+                  '✏️ ${l10n.editSleep}',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -1403,7 +1452,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _buildTimeColumn(
-                      Dil.baslangic,
+                      l10n.start,
                       baslangicSaat,
                       (picked) {
                         setModalState(() => baslangicSaat = picked);
@@ -1416,7 +1465,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       color: isDark ? Colors.grey.shade400 : Colors.grey,
                     ),
                     _buildTimeColumn(
-                      Dil.bitis,
+                      l10n.end,
                       bitisSaat,
                       (picked) {
                         setModalState(() => bitisSaat = picked);
@@ -1455,7 +1504,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   await VeriYonetici.saveUykuKayitlari(kayitlar);
                   Navigator.pop(ctx);
                   setState(() {});
-                }, const Color(0xFF3F51B5)),
+                }, const Color(0xFF3F51B5), l10n),
               ],
             ),
           );
@@ -1517,6 +1566,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     int sag,
     Function(int, int) onChanged,
     bool isDark,
+    AppLocalizations l10n,
   ) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1528,9 +1578,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       ),
       child: Column(
         children: [
-          _buildMemeRow('Sol', '👈', sol, (v) => onChanged(v, sag), isDark),
+          _buildMemeRow(l10n.left, '👈', sol, (v) => onChanged(v, sag), isDark, l10n),
           const SizedBox(height: 16),
-          _buildMemeRow('Sağ', '👉', sag, (v) => onChanged(sol, v), isDark),
+          _buildMemeRow(l10n.right, '👉', sag, (v) => onChanged(sol, v), isDark, l10n),
         ],
       ),
     );
@@ -1542,6 +1592,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     int dakika,
     Function(int) onChanged,
     bool isDark,
+    AppLocalizations l10n,
   ) {
     return Row(
       children: [
@@ -1561,7 +1612,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(width: 12),
         Text(
-          '$dakika ${Dil.dk}',
+          '$dakika ${l10n.minAbbrev}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -1629,6 +1680,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   /// Shows a Cupertino-style time picker in a bottom sheet
   Future<TimeOfDay?> _showCupertinoTimePicker(BuildContext context, TimeOfDay initialTime) async {
+    final l10n = AppLocalizations.of(context)!;
     TimeOfDay selectedTime = initialTime;
 
     final result = await showModalBottomSheet<TimeOfDay>(
@@ -1661,7 +1713,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      Dil.iptal,
+                      l10n.cancel,
                       style: const TextStyle(
                         color: Color(0xFF866F65),
                         fontSize: 16,
@@ -1671,7 +1723,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context, selectedTime),
                     child: Text(
-                      Dil.tamam,
+                      l10n.ok,
                       style: const TextStyle(
                         color: Color(0xFFFF998A),
                         fontWeight: FontWeight.w600,
@@ -1785,7 +1837,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildSaveButton(VoidCallback onPressed, Color color) {
+  Widget _buildSaveButton(VoidCallback onPressed, Color color, AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -1798,7 +1850,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
         ),
         child: Text(
-          '✓ ${Dil.guncelle}',
+          '✓ ${l10n.update}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -1849,17 +1901,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   Future<bool?> _showDeleteConfirm() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          '🗑️ ${Dil.sil}',
+          '🗑️ ${l10n.delete}',
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(
-          Dil.silmekIstiyor,
+          l10n.deleteConfirm,
           style: TextStyle(
             color: isDark ? Colors.grey.shade300 : Colors.black87,
           ),
@@ -1867,12 +1920,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(Dil.iptal),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(Dil.sil, style: const TextStyle(color: Colors.white)),
+            child: Text(l10n.delete, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -1881,7 +1934,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   String _formatTime(DateTime date) =>
       '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  String _formatDuration(Duration d) => d.inHours > 0
-      ? '${d.inHours} ${Dil.sa} ${d.inMinutes % 60} ${Dil.dk}'
-      : '${d.inMinutes} ${Dil.dk}';
+  String _formatDuration(Duration d, AppLocalizations l10n) => d.inHours > 0
+      ? '${d.inHours} ${l10n.hourAbbrev} ${d.inMinutes % 60} ${l10n.minAbbrev}'
+      : '${d.inMinutes} ${l10n.minAbbrev}';
 }

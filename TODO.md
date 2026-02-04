@@ -4,14 +4,14 @@ Son Güncelleme: 29 Aralık 2024
 
 ## V2 – Product & UX
 
-- [ ] Günün İpuçları (Home)
-- [ ] Gelecek Aşılar (Home + Vaccines)
+- [x] Günün İpuçları (Home)
+- [x] Gelecek Aşılar (Home + Vaccines)
 - [ ] Weekly / Monthly Reports
 - [ ] Grandma Mode (read-only)
 - [ ] Activities UX v2
 - [ ] Landing page sadeleştirme
 - [ ] Growth chart polish
-- [ ] çoklu kullanım anne-baba
+- [ ] Çoklu kullanım anne-baba
 - [ ] Günün İpuçları
   - Local hardcoded tips (offline default)
   - Firebase Remote override (optional)
