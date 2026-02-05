@@ -7,6 +7,7 @@ import '../models/ikonlar.dart';
 import 'package:flutter/services.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
+import '../services/reminder_service.dart';
 import 'settings_screen.dart';
 import 'activities_screen.dart';
 import 'add_growth_screen.dart';
@@ -208,6 +209,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     await VeriYonetici.saveMamaKayitlari(kayitlar);
+
+    // Schedule feeding reminder if enabled
+    if (VeriYonetici.isFeedingReminderEnabled()) {
+      final reminderService = ReminderService();
+      await reminderService.initialize();
+      await reminderService.scheduleFeedingReminder(
+        lastFeedingTime: DateTime.now(),
+        intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
+      );
+    }
 
     final kaydedilenSol = solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0);
     final kaydedilenSag = sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0);

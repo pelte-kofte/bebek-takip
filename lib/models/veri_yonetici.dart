@@ -19,6 +19,13 @@ class VeriYonetici {
   static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
+
+  // Reminder settings
+  static bool _feedingReminderEnabled = false;
+  static int _feedingReminderInterval = 180; // 3 hours default
+  static bool _diaperReminderEnabled = false;
+  static int _diaperReminderInterval = 120; // 2 hours default
+
   static String _babyName = 'Sofia';
   static DateTime _birthDate = DateTime(2024, 9, 17);
   static String? _babyPhotoPath;
@@ -61,6 +68,12 @@ class VeriYonetici {
     // Settings
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
+
+    // Reminder settings
+    _feedingReminderEnabled = _prefs!.getBool('feeding_reminder_enabled') ?? false;
+    _feedingReminderInterval = _prefs!.getInt('feeding_reminder_interval') ?? 180;
+    _diaperReminderEnabled = _prefs!.getBool('diaper_reminder_enabled') ?? false;
+    _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
 
     // Sync cached baby fields from active baby
     if (_babies.isNotEmpty && _babies.any((b) => b.id == _activeBabyId)) {
@@ -654,6 +667,36 @@ class VeriYonetici {
   static Future<void> setDarkMode(bool value) async {
     _darkMode = value;
     await _prefs!.setBool('dark_mode', value);
+  }
+
+  // ============ REMINDER SETTINGS ============
+
+  static bool isFeedingReminderEnabled() => _feedingReminderEnabled;
+
+  static Future<void> setFeedingReminderEnabled(bool value) async {
+    _feedingReminderEnabled = value;
+    await _prefs!.setBool('feeding_reminder_enabled', value);
+  }
+
+  static int getFeedingReminderInterval() => _feedingReminderInterval;
+
+  static Future<void> setFeedingReminderInterval(int minutes) async {
+    _feedingReminderInterval = minutes;
+    await _prefs!.setInt('feeding_reminder_interval', minutes);
+  }
+
+  static bool isDiaperReminderEnabled() => _diaperReminderEnabled;
+
+  static Future<void> setDiaperReminderEnabled(bool value) async {
+    _diaperReminderEnabled = value;
+    await _prefs!.setBool('diaper_reminder_enabled', value);
+  }
+
+  static int getDiaperReminderInterval() => _diaperReminderInterval;
+
+  static Future<void> setDiaperReminderInterval(int minutes) async {
+    _diaperReminderInterval = minutes;
+    await _prefs!.setInt('diaper_reminder_interval', minutes);
   }
 
   // ============ BABY NAME & BIRTH DATE ============

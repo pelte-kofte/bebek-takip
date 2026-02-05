@@ -4,6 +4,7 @@ import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
+import '../services/reminder_service.dart';
 import 'rapor_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -14,6 +15,104 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  final ReminderService _reminderService = ReminderService();
+
+  bool _feedingReminderEnabled = false;
+  int _feedingReminderInterval = 180;
+  bool _diaperReminderEnabled = false;
+  int _diaperReminderInterval = 120;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadReminderSettings();
+  }
+
+  void _loadReminderSettings() {
+    setState(() {
+      _feedingReminderEnabled = VeriYonetici.isFeedingReminderEnabled();
+      _feedingReminderInterval = VeriYonetici.getFeedingReminderInterval();
+      _diaperReminderEnabled = VeriYonetici.isDiaperReminderEnabled();
+      _diaperReminderInterval = VeriYonetici.getDiaperReminderInterval();
+    });
+  }
+
+  String _formatInterval(int minutes) {
+    if (minutes < 60) return '$minutes dk';
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    if (mins == 0) return '$hours saat';
+    return '$hours saat $mins dk';
+  }
+
+  Future<void> _toggleFeedingReminder(bool value) async {
+    setState(() => _feedingReminderEnabled = value);
+    await VeriYonetici.setFeedingReminderEnabled(value);
+    if (!value) {
+      await _reminderService.cancelFeedingReminder();
+    }
+  }
+
+  Future<void> _toggleDiaperReminder(bool value) async {
+    setState(() => _diaperReminderEnabled = value);
+    await VeriYonetici.setDiaperReminderEnabled(value);
+    if (!value) {
+      await _reminderService.cancelDiaperReminder();
+    }
+  }
+
+  void _showIntervalPicker({
+    required String title,
+    required int currentValue,
+    required Function(int) onSelected,
+  }) {
+    final intervals = [60, 90, 120, 150, 180, 210, 240];
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                ),
+              ),
+            ),
+            ...intervals.map((interval) => ListTile(
+              title: Text(
+                _formatInterval(interval),
+                style: TextStyle(
+                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                  fontWeight: interval == currentValue ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              trailing: interval == currentValue
+                  ? const Icon(Icons.check, color: Color(0xFFFFB4A2))
+                  : null,
+              onTap: () {
+                onSelected(interval);
+                Navigator.pop(context);
+              },
+            )),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -125,12 +224,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFFFE5E0),
                             iconColor: const Color(0xFFFFB4A2),
                             title: Dil.mamaHatirlatici,
-                            subtitle: 'Her 3 saatte bir hatırlat',
-                            value: true,
-                            onChanged: (value) {},
+                            subtitle: _feedingReminderEnabled
+                                ? 'Her ${_formatInterval(_feedingReminderInterval)}'
+                                : 'Kapalı',
+                            value: _feedingReminderEnabled,
+                            onChanged: _toggleFeedingReminder,
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                           ),
+                          if (_feedingReminderEnabled) ...[
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => _showIntervalPicker(
+                                title: 'Beslenme Hatırlatıcı Aralığı',
+                                currentValue: _feedingReminderInterval,
+                                onSelected: (value) async {
+                                  setState(() => _feedingReminderInterval = value);
+                                  await VeriYonetici.setFeedingReminderInterval(value);
+                                },
+                              ),
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 60),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.schedule, size: 16, color: const Color(0xFFFFB4A2)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      _formatInterval(_feedingReminderInterval),
+                                      style: const TextStyle(
+                                        color: Color(0xFFFFB4A2),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(Icons.expand_more, size: 16, color: const Color(0xFFFFB4A2)),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                           Divider(
                             color: subtitleColor.withValues(alpha: 0.1),
                             height: 24,
@@ -140,12 +278,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFE5E0F7),
                             iconColor: subtitleColor,
                             title: Dil.bezHatirlatici,
-                            subtitle: 'Her 2 saatte bir kontrol et',
-                            value: false,
-                            onChanged: (value) {},
+                            subtitle: _diaperReminderEnabled
+                                ? 'Her ${_formatInterval(_diaperReminderInterval)}'
+                                : 'Kapalı',
+                            value: _diaperReminderEnabled,
+                            onChanged: _toggleDiaperReminder,
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                           ),
+                          if (_diaperReminderEnabled) ...[
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () => _showIntervalPicker(
+                                title: 'Bez Hatırlatıcı Aralığı',
+                                currentValue: _diaperReminderInterval,
+                                onSelected: (value) async {
+                                  setState(() => _diaperReminderInterval = value);
+                                  await VeriYonetici.setDiaperReminderInterval(value);
+                                },
+                              ),
+                              child: Container(
+                                margin: const EdgeInsets.only(left: 60),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.schedule, size: 16, color: subtitleColor),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      _formatInterval(_diaperReminderInterval),
+                                      style: TextStyle(
+                                        color: subtitleColor,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Icon(Icons.expand_more, size: 16, color: subtitleColor),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

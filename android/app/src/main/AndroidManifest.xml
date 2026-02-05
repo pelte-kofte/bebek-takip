@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Notification permissions for sleep timer -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
-        android:label="bebek_takip"
+        android:label="NILICO"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

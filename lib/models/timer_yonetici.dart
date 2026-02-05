@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/sleep_notification_service.dart';
 
 /// Singleton class for managing timers across screens
 /// Persists timer state even when navigating between screens
@@ -7,6 +8,9 @@ class TimerYonetici {
   static final TimerYonetici _instance = TimerYonetici._internal();
   factory TimerYonetici() => _instance;
   TimerYonetici._internal();
+
+  final SleepNotificationService _notificationService =
+      SleepNotificationService();
 
   SharedPreferences? _prefs;
 
@@ -33,6 +37,8 @@ class TimerYonetici {
   /// Initialize the timer manager
   Future<void> init(SharedPreferences prefs) async {
     _prefs = prefs;
+    await _notificationService.initialize();
+    await _notificationService.requestPermissions();
     await _loadState();
   }
 
@@ -67,6 +73,8 @@ class TimerYonetici {
       try {
         _uykuBaslangic = DateTime.parse(uykuStr);
         _startUykuUpdateTimer();
+        // Resume notification if sleep was active
+        await _notificationService.showSleepNotification(_uykuBaslangic!);
       } catch (e) {
         _uykuBaslangic = null;
       }
@@ -181,6 +189,9 @@ class TimerYonetici {
     await _prefs?.setString('active_uyku_start', _uykuBaslangic!.toIso8601String());
 
     _startUykuUpdateTimer();
+
+    // Show lock screen notification
+    await _notificationService.showSleepNotification(_uykuBaslangic!);
   }
 
   /// Stop uyku timer and return the data
@@ -209,6 +220,9 @@ class TimerYonetici {
     _uykuUpdateTimer?.cancel();
     _uykuUpdateTimer = null;
     _uykuController.add(null);
+
+    // Cancel lock screen notification
+    await _notificationService.cancelSleepNotification();
   }
 
   /// Start broadcasting emzirme updates
@@ -297,5 +311,6 @@ class TimerYonetici {
     _uykuUpdateTimer?.cancel();
     _emzirmeController.close();
     _uykuController.close();
+    _notificationService.dispose();
   }
 }

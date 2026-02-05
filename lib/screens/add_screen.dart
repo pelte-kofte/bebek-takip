@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDateP
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../l10n/app_localizations.dart';
+import '../services/reminder_service.dart';
 
 class AddScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -49,6 +50,26 @@ class _AddScreenState extends State<AddScreen> {
     _diaperNotesController.dispose();
     _solidFoodController.dispose();
     super.dispose();
+  }
+
+  Future<void> _scheduleFeedingReminderIfEnabled() async {
+    if (!VeriYonetici.isFeedingReminderEnabled()) return;
+    final reminderService = ReminderService();
+    await reminderService.initialize();
+    await reminderService.scheduleFeedingReminder(
+      lastFeedingTime: DateTime.now(),
+      intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
+    );
+  }
+
+  Future<void> _scheduleDiaperReminderIfEnabled() async {
+    if (!VeriYonetici.isDiaperReminderEnabled()) return;
+    final reminderService = ReminderService();
+    await reminderService.initialize();
+    await reminderService.scheduleDiaperReminder(
+      lastDiaperTime: DateTime.now(),
+      intervalMinutes: VeriYonetici.getDiaperReminderInterval(),
+    );
   }
 
   /// Shows a Cupertino-style time picker in a bottom sheet
@@ -1481,6 +1502,7 @@ class _AddScreenState extends State<AddScreen> {
       });
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
+      await _scheduleFeedingReminderIfEnabled();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
@@ -1510,6 +1532,7 @@ class _AddScreenState extends State<AddScreen> {
       }
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
+      await _scheduleFeedingReminderIfEnabled();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
@@ -1575,6 +1598,7 @@ class _AddScreenState extends State<AddScreen> {
       });
 
       await VeriYonetici.saveKakaKayitlari(kayitlar);
+      await _scheduleDiaperReminderIfEnabled();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
