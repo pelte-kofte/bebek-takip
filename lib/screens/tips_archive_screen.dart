@@ -18,19 +18,21 @@ class TipsArchiveScreen extends StatelessWidget {
         : const Color(0xFF7A749E);
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
 
-    // Compute baby age in months
+    // Compute baby age for today's tip highlight only
     final birthDate = VeriYonetici.getBirthDate();
     final now = DateTime.now();
-    final babyAgeInMonths =
-        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    int months = (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    // Subtract 1 if we haven't reached the birth day yet this month
+    if (now.day < birthDate.day) {
+      months -= 1;
+    }
+    final babyAgeInMonths = months < 0 ? 0 : months;
 
-    // Filter tips by baby's age
-    final filteredTips = DailyTip.tips.where((tip) {
-      return babyAgeInMonths >= tip.minMonth && babyAgeInMonths < tip.maxMonth;
-    }).toList();
-
-    // Get today's tip for this baby's age
+    // Get today's tip (age-filtered) for highlighting
     final todayTip = DailyTip.todayForBaby(babyAgeInMonths);
+
+    // Show ALL tips in archive (no age filtering)
+    final allTips = DailyTip.tips;
 
     return DecorativeBackground(
       preset: BackgroundPreset.home,
@@ -101,10 +103,10 @@ class TipsArchiveScreen extends StatelessWidget {
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  itemCount: filteredTips.length,
+                  itemCount: allTips.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final tip = filteredTips[index];
+                    final tip = allTips[index];
                     final isToday = tip.id == todayTip.id;
 
                     return Container(

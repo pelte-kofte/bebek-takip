@@ -16,6 +16,7 @@ class VaccinesScreen extends StatefulWidget {
 
 class _VaccinesScreenState extends State<VaccinesScreen> {
   List<Map<String, dynamic>> _vaccines = [];
+  int? _selectedMonth; // null means show all, 0-60 for specific month
 
   @override
   void initState() {
@@ -39,6 +40,33 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   List<Map<String, dynamic>> _getUpcomingVaccines() {
     return _vaccines.where((v) => v['durum'] == 'bekleniyor').toList();
+  }
+
+  /// Extracts month number from 'donem' field
+  /// Returns null if cannot parse (e.g., "4-6 Yaş")
+  int? _getMonthFromDonem(String donem) {
+    if (donem == 'Doğumda') return 0;
+    // Match patterns like "1. Ay", "2. Ay", "12. Ay", "18. Ay", "24. Ay"
+    final monthMatch = RegExp(r'^(\d+)\.\s*Ay$').firstMatch(donem);
+    if (monthMatch != null) {
+      return int.tryParse(monthMatch.group(1)!);
+    }
+    // Match year patterns like "4-6 Yaş" -> convert to months (48-72)
+    final yearMatch = RegExp(r'^(\d+)(-\d+)?\s*Yaş$').firstMatch(donem);
+    if (yearMatch != null) {
+      final years = int.tryParse(yearMatch.group(1)!);
+      if (years != null) return years * 12;
+    }
+    return null;
+  }
+
+  /// Returns vaccines filtered by selected month
+  List<Map<String, dynamic>> _getFilteredVaccines() {
+    if (_selectedMonth == null) return _vaccines;
+    return _vaccines.where((v) {
+      final month = _getMonthFromDonem(v['donem'] ?? '');
+      return month == _selectedMonth;
+    }).toList();
   }
 
   String _getChildAge() {
@@ -569,6 +597,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               Column(
                 children: [
                   _buildHeader(isDark),
+                  _buildMonthSelector(isDark),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: _vaccines.isEmpty
                         ? SingleChildScrollView(
@@ -586,8 +616,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
                             buildDefaultDragHandles: false,
                             onReorder: _onReorder,
-                            itemCount: _vaccines.length + 1,
+                            itemCount: _getFilteredVaccines().length + 1,
                             itemBuilder: (context, index) {
+                              final filteredVaccines = _getFilteredVaccines();
                               if (index == 0) {
                                 return Padding(
                                   key: const ValueKey('baby_info'),
@@ -596,15 +627,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 );
                               }
                               final vaccineIndex = index - 1;
-                              final vaccine = _vaccines[vaccineIndex];
+                              final vaccine = filteredVaccines[vaccineIndex];
+                              // Get the actual index in _vaccines for editing/deleting
+                              final actualIndex = _vaccines.indexOf(vaccine);
                               final isCompleted =
                                   vaccine['durum'] == 'uygulandi';
                               return Padding(
-                                key: ValueKey(vaccine['id'] ?? vaccineIndex),
+                                key: ValueKey(vaccine['id'] ?? actualIndex),
                                 padding: const EdgeInsets.only(bottom: 12),
                                 child: _buildReorderableVaccineCard(
                                   vaccine,
-                                  vaccineIndex,
+                                  actualIndex,
                                   isDark,
                                   isCompleted,
                                 ),
@@ -630,10 +663,41 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   Widget _buildHeader(bool isDark) {
     final l10n = AppLocalizations.of(context)!;
+    final canPop = Navigator.canPop(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       child: Row(
         children: [
+          if (canPop) ...[
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.bgDarkCard : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isDark
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                ),
+                child: Icon(
+                  Icons.arrow_back,
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : const Color(0xFF2D1A18),
+                  size: 20,
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
           Expanded(
             child: Text(l10n.myVaccines, style: AppTypography.h1(context)),
           ),
@@ -819,17 +883,19 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         ),
         child: Row(
           children: [
-            ReorderableDragStartListener(
-              index: index + 1,
-              child: Icon(
-                Icons.drag_indicator,
-                color: isDark
-                    ? AppColors.textSecondaryDark.withOpacity(0.4)
-                    : const Color(0xFF866F65).withOpacity(0.4),
-                size: 20,
+            // Only show drag handle when not filtering
+            if (_selectedMonth == null)
+              ReorderableDragStartListener(
+                index: index + 1,
+                child: Icon(
+                  Icons.drag_indicator,
+                  color: isDark
+                      ? AppColors.textSecondaryDark.withValues(alpha: 0.4)
+                      : const Color(0xFF866F65).withValues(alpha: 0.4),
+                  size: 20,
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
+            if (_selectedMonth == null) const SizedBox(width: 8),
             Container(
               width: 48,
               height: 48,
@@ -1075,6 +1141,73 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMonthSelector(bool isDark) {
+    // Month options: All, 0 (Doğumda), 1, 2, 4, 6, 9, 12, 18, 24, 48, 60
+    final monthOptions = <int?>[
+      null, // All
+      0, 1, 2, 4, 6, 9, 12, 18, 24, 48, 60,
+    ];
+
+    String getMonthLabel(int? month) {
+      if (month == null) return 'Tümü';
+      if (month == 0) return 'Doğum';
+      if (month < 12) return '$month. Ay';
+      if (month == 12) return '1 Yaş';
+      if (month < 24) return '$month. Ay';
+      if (month == 24) return '2 Yaş';
+      if (month == 48) return '4 Yaş';
+      if (month == 60) return '5 Yaş';
+      return '$month. Ay';
+    }
+
+    return SizedBox(
+      height: 40,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: monthOptions.length,
+        separatorBuilder: (context, index) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final month = monthOptions[index];
+          final isSelected = _selectedMonth == month;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedMonth = month;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? AppColors.primary
+                    : (isDark ? AppColors.bgDarkCard : Colors.white),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: isSelected
+                      ? AppColors.primary
+                      : AppColors.primary.withValues(alpha: 0.2),
+                ),
+              ),
+              child: Text(
+                getMonthLabel(month),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                  color: isSelected
+                      ? Colors.white
+                      : (isDark
+                            ? AppColors.textSecondaryDark
+                            : const Color(0xFF866F65)),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

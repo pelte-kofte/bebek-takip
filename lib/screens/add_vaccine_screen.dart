@@ -84,6 +84,115 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     }
   }
 
+  /// Returns true if the selected period is a custom one (not in presets)
+  bool get _isCustomPeriod {
+    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'Doğumda';
+  }
+
+  void _showCustomMonthPicker() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    int selectedMonth = 0;
+
+    // Try to parse current custom period if any (e.g., "3. Ay" -> 3)
+    if (_isCustomPeriod) {
+      final match = RegExp(r'^(\d+)\.\s*Ay$').firstMatch(_selectedPeriod);
+      if (match != null) {
+        selectedMonth = int.tryParse(match.group(1)!) ?? 0;
+      }
+    }
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.06)
+                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        Dil.iptal,
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : const Color(0xFF866F65),
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Ay Seçin',
+                      style: AppTypography.h3(context),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedPeriod = selectedMonth == 0
+                              ? 'Doğumda'
+                              : '$selectedMonth. Ay';
+                        });
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        Dil.tamam,
+                        style: TextStyle(
+                          color: const Color(0xFFFFB4A2),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(
+                    initialItem: selectedMonth,
+                  ),
+                  itemExtent: 40,
+                  onSelectedItemChanged: (index) {
+                    selectedMonth = index;
+                  },
+                  children: List.generate(61, (index) {
+                    final label = index == 0 ? 'Doğumda' : '$index. Ay';
+                    return Center(
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : AppColors.textPrimaryLight,
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _selectDate() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     DateTime tempDate = _selectedDate ?? DateTime.now();
@@ -305,6 +414,136 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildPeriodSelector(bool isDark) {
+    // Build the list of chips to display
+    final List<Widget> chips = [];
+
+    // Add preset period chips
+    for (final period in _periods) {
+      final isSelected = _selectedPeriod == period;
+      chips.add(
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedPeriod = period;
+            });
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color(0xFFFFB4A2)
+                  : (isDark
+                        ? AppColors.bgDarkCard.withOpacity(0.9)
+                        : Colors.white.withOpacity(0.9)),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected
+                    ? const Color(0xFFFFB4A2)
+                    : const Color(0xFFFFB4A2).withOpacity(0.1),
+              ),
+              boxShadow: [
+                if (isSelected)
+                  BoxShadow(
+                    color: const Color(0xFFFFB4A2).withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+              ],
+            ),
+            child: Text(
+              period,
+              style: AppTypography.label(context).copyWith(
+                color: isSelected
+                    ? Colors.white
+                    : (isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textPrimaryLight),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Add custom period chip if a non-preset month is selected
+    if (_isCustomPeriod) {
+      chips.add(
+        GestureDetector(
+          onTap: _showCustomMonthPicker,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 10,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFB4A2),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: const Color(0xFFFFB4A2)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Text(
+              _selectedPeriod,
+              style: AppTypography.label(context).copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Add "+ Diğer Ay" button
+    chips.add(
+      GestureDetector(
+        onTap: _showCustomMonthPicker,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
+          ),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                : Colors.white.withValues(alpha: 0.9),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+              style: BorderStyle.solid,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.add,
+                size: 16,
+                color: const Color(0xFFFFB4A2),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Diğer Ay',
+                style: AppTypography.label(context).copyWith(
+                  color: const Color(0xFFFFB4A2),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -324,54 +563,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: _periods.map((period) {
-            final isSelected = _selectedPeriod == period;
-            return GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedPeriod = period;
-                });
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? const Color(0xFFFFB4A2)
-                      : (isDark
-                            ? AppColors.bgDarkCard.withOpacity(0.9)
-                            : Colors.white.withOpacity(0.9)),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected
-                        ? const Color(0xFFFFB4A2)
-                        : const Color(0xFFFFB4A2).withOpacity(0.1),
-                  ),
-                  boxShadow: [
-                    if (isSelected)
-                      BoxShadow(
-                        color: const Color(0xFFFFB4A2).withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                  ],
-                ),
-                child: Text(
-                  period,
-                  style: AppTypography.label(context).copyWith(
-                    color: isSelected
-                        ? Colors.white
-                        : (isDark
-                              ? AppColors.textPrimaryDark
-                              : AppColors.textPrimaryLight),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            );
-          }).toList(),
+          children: chips,
         ),
       ],
     );
