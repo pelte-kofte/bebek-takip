@@ -75,39 +75,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                  ),
                 ),
               ),
-            ),
-            ...intervals.map((interval) => ListTile(
-              title: Text(
-                _formatInterval(interval),
-                style: TextStyle(
-                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
-                  fontWeight: interval == currentValue ? FontWeight.bold : FontWeight.normal,
+              ...intervals.map((interval) => ListTile(
+                title: Text(
+                  _formatInterval(interval),
+                  style: TextStyle(
+                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                    fontWeight: interval == currentValue ? FontWeight.bold : FontWeight.normal,
+                  ),
                 ),
-              ),
-              trailing: interval == currentValue
-                  ? const Icon(Icons.check, color: Color(0xFFFFB4A2))
-                  : null,
-              onTap: () {
-                onSelected(interval);
-                Navigator.pop(context);
-              },
-            )),
-            const SizedBox(height: 16),
-          ],
+                trailing: interval == currentValue
+                    ? const Icon(Icons.check, color: Color(0xFFFFB4A2))
+                    : null,
+                onTap: () {
+                  onSelected(interval);
+                  Navigator.pop(context);
+                },
+              )),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -411,7 +414,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           _buildInfoTile(
                             Dil.gelistirici,
-                            'Bebek Takip',
+                            'Nilico',
                             textColor,
                             subtitleColor,
                           ),

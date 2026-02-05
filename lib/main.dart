@@ -62,7 +62,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bebek Takip',
+      title: 'Nilico',
       debugShowCheckedModeBanner: false,
       themeMode: _themeMode,
       theme: AppTheme.lightTheme,

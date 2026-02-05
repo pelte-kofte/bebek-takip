@@ -51,9 +51,9 @@ class SleepNotificationService {
     // Show initial notification
     await _updateNotification();
 
-    // Update notification every second
+    // Update notification every 60 seconds (minute-level precision)
     _updateTimer?.cancel();
-    _updateTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _updateTimer = Timer.periodic(const Duration(seconds: 60), (_) {
       _updateNotification();
     });
   }

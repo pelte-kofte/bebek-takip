@@ -54,7 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int get babyAgeInMonths {
     final now = DateTime.now();
-    int months = (now.year - _birthDate.year) * 12 + now.month - _birthDate.month;
+    int months =
+        (now.year - _birthDate.year) * 12 + now.month - _birthDate.month;
     // Subtract 1 if we haven't reached the birth day yet this month
     if (now.day < _birthDate.day) {
       months -= 1;

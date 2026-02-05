@@ -1,6 +1,6 @@
 class Dil {
   // Genel
-  static const String appName = 'Bebek Takip';
+  static const String appName = 'Nilico';
   static const String kaydet = 'Kaydet';
   static const String guncelle = 'Güncelle';
   static const String iptal = 'İptal';

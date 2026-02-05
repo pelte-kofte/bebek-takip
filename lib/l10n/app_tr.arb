@@ -1,7 +1,7 @@
 {
   "@@locale": "tr",
 
-  "appName": "Bebek Takip",
+  "appName": "Nilico",
   "tagline": "Ebeveynlik artik daha kolay ve unutulmaz.",
   "freeForever": "Tamamen Ücretsiz",
   "securePrivate": "Güvenli ve Gizli",
@@ -153,8 +153,8 @@
   "pdfMobileOnly": "PDF paylaşımı mobilde kullanılabilir",
   "sharingMobileOnly": "Paylaşım mobilde kullanılabilir",
   "pdfSaved": "PDF başarıyla kaydedildi!",
-  "babyTrackerReport": "Bebek Takip Raporu",
-  "generatedWith": "Bebek Takip Uygulaması ile oluşturuldu",
+  "babyTrackerReport": "Nilico Raporu",
+  "generatedWith": "Nilico ile oluşturuldu",
 
   "months": "ay",
   "january": "Ocak",

@@ -9,7 +9,7 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appName => 'Bebek Takip';
+  String get appName => 'Nilico';
 
   @override
   String get tagline => 'Ebeveynlik artik daha kolay ve unutulmaz.';
@@ -436,10 +436,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get pdfSaved => 'PDF başarıyla kaydedildi!';
 
   @override
-  String get babyTrackerReport => 'Bebek Takip Raporu';
+  String get babyTrackerReport => 'Nilico Raporu';
 
   @override
-  String get generatedWith => 'Bebek Takip Uygulaması ile oluşturuldu';
+  String get generatedWith => 'Nilico ile oluşturuldu';
 
   @override
   String get months => 'ay';

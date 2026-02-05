@@ -1324,7 +1324,7 @@ class _RaporScreenState extends State<RaporScreen> {
                   child: pw.Column(
                     children: [
                       pw.Text(
-                        'Bebek Takip Raporu',
+                        'Nilico Raporu',
                         style: pw.TextStyle(
                           fontSize: 24,
                           fontWeight: pw.FontWeight.bold,
@@ -1380,7 +1380,7 @@ class _RaporScreenState extends State<RaporScreen> {
                 pw.Spacer(),
                 pw.Center(
                   child: pw.Text(
-                    'Bebek Takip Uygulaması ile oluşturuldu',
+                    'Nilico ile oluşturuldu',
                     style: const pw.TextStyle(
                       fontSize: 10,
                       color: PdfColors.grey500,
@@ -1403,7 +1403,7 @@ class _RaporScreenState extends State<RaporScreen> {
       await file.writeAsBytes(bytes);
 
       // Share PDF (works on both web and mobile)
-      await Share.shareXFiles([XFile(file.path)], text: 'Bebek Takip Raporu');
+      await Share.shareXFiles([XFile(file.path)], text: 'Nilico Raporu');
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
