@@ -159,7 +159,10 @@ class _SplashScreenState extends State<SplashScreen>
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text('🌱 ', style: TextStyle(fontSize: 32)),
+                                const Text(
+                                  '🌱 ',
+                                  style: TextStyle(fontSize: 32),
+                                ),
                                 Text(
                                   l10n.appName,
                                   style: AppTypography.h1(context).copyWith(
@@ -475,10 +478,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Image.asset(
-                data.icon,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(data.icon, fit: BoxFit.contain),
             ),
           ),
 

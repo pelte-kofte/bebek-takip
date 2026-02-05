@@ -254,7 +254,26 @@ class _HomeScreenState extends State<HomeScreen> {
   void _stopUykuAndSave() async {
     final data = await _timerYonetici.stopUyku();
 
-    if (data == null || _uykuSaniye < 60) {
+    if (data == null) {
+      setState(() {
+        _uykuSaniye = 0;
+      });
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.sleepTooShort),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final baslangic = data['baslangic'] as DateTime;
+    final bitis = data['bitis'] as DateTime;
+    final duration = bitis.difference(baslangic);
+
+    if (duration.inMinutes < 1) {
       setState(() {
         _uykuSaniye = 0;
       });
