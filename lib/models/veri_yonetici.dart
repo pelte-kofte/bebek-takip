@@ -50,11 +50,31 @@ class VeriYonetici {
     _babies = _loadBabies();
     _activeBabyId = _prefs!.getString('active_baby_id') ?? '';
 
-    if (_babies.isEmpty || !_babies.any((b) => b.id == _activeBabyId)) {
-      if (_babies.isNotEmpty) {
-        _activeBabyId = _babies.first.id;
-        await _prefs!.setString('active_baby_id', _activeBabyId);
-      }
+    // ALWAYS ensure at least one baby exists (critical for guest mode)
+    if (_babies.isEmpty) {
+      // Create default baby from legacy data or use defaults
+      final defaultName = _prefs!.getString('baby_name') ?? 'Baby';
+      final defaultPhotoPath = _prefs!.getString('baby_photo_path');
+      final birthDateStr = _prefs!.getString('birth_date');
+      final defaultBirthDate = birthDateStr != null
+          ? DateTime.parse(birthDateStr)
+          : DateTime.now().subtract(const Duration(days: 30)); // 1 month old default
+
+      final defaultBaby = Baby(
+        id: Baby.generateId(),
+        name: defaultName,
+        birthDate: defaultBirthDate,
+        photoPath: defaultPhotoPath,
+      );
+
+      _babies.add(defaultBaby);
+      _activeBabyId = defaultBaby.id;
+      await _saveBabies();
+      await _prefs!.setString('active_baby_id', _activeBabyId);
+    } else if (!_babies.any((b) => b.id == _activeBabyId)) {
+      // Babies exist but active ID is invalid - use first baby
+      _activeBabyId = _babies.first.id;
+      await _prefs!.setString('active_baby_id', _activeBabyId);
     }
 
     // Load all data into cache (babyId included in each record)
@@ -78,18 +98,38 @@ class VeriYonetici {
     _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
 
     // Sync cached baby fields from active baby
+    // After our guarantees above, this should always succeed
     if (_babies.isNotEmpty && _babies.any((b) => b.id == _activeBabyId)) {
       final baby = getActiveBaby();
       _babyName = baby.name;
       _birthDate = baby.birthDate;
       _babyPhotoPath = baby.photoPath;
     } else {
-      _babyName = _prefs!.getString('baby_name') ?? 'Sofia';
+      // Fallback - should never happen after our fix above
+      _babyName = _prefs!.getString('baby_name') ?? 'Baby';
       _babyPhotoPath = _prefs!.getString('baby_photo_path');
       final birthDateStr = _prefs!.getString('birth_date');
       _birthDate = birthDateStr != null
           ? DateTime.parse(birthDateStr)
-          : DateTime(2024, 9, 17);
+          : DateTime.now().subtract(const Duration(days: 30));
+    }
+
+    // CRITICAL: Final validation - ensure we ALWAYS have a valid active baby
+    if (_babies.isEmpty || _activeBabyId.isEmpty || !_babies.any((b) => b.id == _activeBabyId)) {
+      // This should never happen, but if it does, create emergency default baby
+      final emergencyBaby = Baby(
+        id: Baby.generateId(),
+        name: 'Baby',
+        birthDate: DateTime.now().subtract(const Duration(days: 30)),
+        photoPath: null,
+      );
+      _babies.add(emergencyBaby);
+      _activeBabyId = emergencyBaby.id;
+      _babyName = emergencyBaby.name;
+      _birthDate = emergencyBaby.birthDate;
+      _babyPhotoPath = emergencyBaby.photoPath;
+      await _saveBabies();
+      await _prefs!.setString('active_baby_id', _activeBabyId);
     }
 
     // Initialize TimerYonetici
@@ -189,7 +229,29 @@ class VeriYonetici {
   }
 
   static Baby getActiveBaby() {
-    return _babies.firstWhere((b) => b.id == _activeBabyId);
+    try {
+      return _babies.firstWhere((b) => b.id == _activeBabyId);
+    } catch (e) {
+      // Emergency fallback - should never happen after proper init
+      // If it does, return first baby or create a default
+      if (_babies.isNotEmpty) {
+        return _babies.first;
+      }
+      // Absolute last resort - create and return a temp baby
+      final emergencyBaby = Baby(
+        id: Baby.generateId(),
+        name: 'Baby',
+        birthDate: DateTime.now().subtract(const Duration(days: 30)),
+        photoPath: null,
+      );
+      _babies.add(emergencyBaby);
+      _activeBabyId = emergencyBaby.id;
+      _babyName = emergencyBaby.name;
+      _birthDate = emergencyBaby.birthDate;
+      _saveBabies(); // Save async without await
+      _prefs?.setString('active_baby_id', _activeBabyId);
+      return emergencyBaby;
+    }
   }
 
   static String getActiveBabyId() {
@@ -713,6 +775,10 @@ class VeriYonetici {
   // ============ BABY NAME & BIRTH DATE ============
 
   static String getBabyName() {
+    // Safety: ensure we never return empty name
+    if (_babyName.isEmpty) {
+      return 'Baby';
+    }
     return _babyName;
   }
 
@@ -723,6 +789,10 @@ class VeriYonetici {
   }
 
   static DateTime getBirthDate() {
+    // Safety: ensure we never return invalid date
+    if (_birthDate.year < 1900) {
+      return DateTime.now().subtract(const Duration(days: 30));
+    }
     return _birthDate;
   }
 

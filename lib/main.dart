@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'l10n/app_localizations.dart';
+import 'firebase_options.dart';
 import 'screens/home_screen.dart';
 import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
@@ -11,9 +13,27 @@ import 'models/dil.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 
+class AppNavigator {
+  static final key = GlobalKey<NavigatorState>();
+
+  static void goToRoot(Widget screen) {
+    final state = key.currentState;
+    if (state == null) return;
+    state.pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => screen),
+      (route) => false,
+    );
+  }
+}
+
 void main() async {
   // Initialize Flutter bindings
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase (required before FirebaseAuth usage)
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   // Initialize VeriYonetici (loads all data into cache)
   await VeriYonetici.init();
@@ -64,6 +84,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
     return MaterialApp(
       title: 'Nilico',
       debugShowCheckedModeBanner: false,
+      navigatorKey: AppNavigator.key,
       themeMode: _themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -73,10 +94,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('tr'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('tr')],
       home: const SplashScreen(),
     );
   }
@@ -126,9 +144,16 @@ class _MainScreenState extends State<MainScreen> {
       MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),
     ];
 
+    final safeIndex = _selectedIndex == 2 ? 0 : _selectedIndex;
+
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final bottomBarHeight = 56.0 + bottomInset + 16.0;
+
     return Scaffold(
-      body: screens[_selectedIndex],
-      bottomNavigationBar: Container(
+      body: SizedBox.expand(child: screens[safeIndex]),
+      bottomNavigationBar: SizedBox(
+        height: bottomBarHeight,
+        child: Container(
         decoration: BoxDecoration(
           color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
           boxShadow: [
@@ -144,14 +169,47 @@ class _MainScreenState extends State<MainScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                Expanded(child: Center(child: _buildNavItem(0, Icons.home_rounded, Dil.navAnaSayfa))),
-                Expanded(child: Center(child: _buildNavItem(1, Icons.bar_chart_rounded, Dil.navAktiviteler))),
+                Expanded(
+                  child: Center(
+                    child: _buildNavItem(
+                      0,
+                      Icons.home_rounded,
+                      Dil.navAnaSayfa,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: _buildNavItem(
+                      1,
+                      Icons.bar_chart_rounded,
+                      Dil.navAktiviteler,
+                    ),
+                  ),
+                ),
                 Expanded(child: Center(child: _buildAddButton())),
-                Expanded(child: Center(child: _buildNavItem(3, Icons.vaccines_outlined, Dil.asilar))),
-                Expanded(child: Center(child: _buildNavItem(4, Icons.emoji_events_rounded, Dil.navGelisim))),
+                Expanded(
+                  child: Center(
+                    child: _buildNavItem(
+                      3,
+                      Icons.vaccines_outlined,
+                      Dil.asilar,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Center(
+                    child: _buildNavItem(
+                      4,
+                      Icons.emoji_events_rounded,
+                      Dil.navGelisim,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
+        ),
         ),
       ),
     );

@@ -353,6 +353,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
+    final hasValidPhoto = _babyPhotoPath != null &&
+        _babyPhotoPath!.isNotEmpty &&
+        File(_babyPhotoPath!).existsSync();
 
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
     final kakaKayitlari = VeriYonetici.getKakaKayitlari();
@@ -455,19 +458,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                             offset: Offset(0, 2),
                                           ),
                                         ],
-                                  image: _babyPhotoPath != null
+                                  image: hasValidPhoto
                                       ? DecorationImage(
-                                          image: FileImage(File(_babyPhotoPath!)),
+                                          image: FileImage(
+                                            File(_babyPhotoPath!),
+                                          ),
                                           fit: BoxFit.cover,
                                         )
                                       : null,
                                 ),
-                                child: _babyPhotoPath == null
+                                child: !hasValidPhoto
                                     ? Icon(
                                         Icons.child_care,
                                         color: isDark
                                             ? Colors.white54
-                                            : AppColors.primary.withValues(alpha: 0.7),
+                                            : AppColors.primary.withValues(
+                                                alpha: 0.7,
+                                              ),
                                         size: 24,
                                       )
                                     : null,

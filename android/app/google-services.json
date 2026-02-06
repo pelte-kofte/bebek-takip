@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "132866671898",
+    "project_id": "nilico-c8f58",
+    "storage_bucket": "nilico-c8f58.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:132866671898:android:bbabc619342965e68558a3",
+        "android_client_info": {
+          "package_name": "com.example.bebek_takip"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-0HoZQiemVXskJ3LG5W6YxGqWATF7rxY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

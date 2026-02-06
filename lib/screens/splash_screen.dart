@@ -87,10 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
       nextScreen = const MainScreen();
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => nextScreen),
-    );
+    AppNavigator.goToRoot(nextScreen);
   }
 
   @override
@@ -345,19 +342,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _completeOnboarding() {
-    VeriYonetici.setFirstLaunchComplete();
+  void _completeOnboarding() async {
+    await VeriYonetici.setFirstLaunchComplete();
 
     // Show login entry screen if not shown yet
     final showLoginEntry = !VeriYonetici.isLoginEntryShown();
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => showLoginEntry
-            ? const LoginEntryScreen()
-            : const MainScreen(),
-      ),
+    if (!mounted) return;
+
+    AppNavigator.goToRoot(
+      showLoginEntry ? const LoginEntryScreen() : const MainScreen(),
     );
   }
 

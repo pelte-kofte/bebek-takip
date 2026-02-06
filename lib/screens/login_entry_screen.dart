@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +18,17 @@ class LoginEntryScreen extends StatefulWidget {
 
 class _LoginEntryScreenState extends State<LoginEntryScreen> {
   bool _isLoading = false;
+
+  // Check if platform supports Apple Sign In (iOS only, not web/Android)
+  bool get _supportsAppleSignIn {
+    if (kIsWeb) return false;
+    return defaultTargetPlatform == TargetPlatform.iOS;
+  }
+
+  // Check if platform supports Google Sign In (not web)
+  bool get _supportsGoogleSignIn {
+    return !kIsWeb;
+  }
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
@@ -89,10 +100,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   void _proceedToApp() async {
     await VeriYonetici.setLoginEntryShown();
     if (mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
+      AppNavigator.goToRoot(const MainScreen());
     }
   }
 
@@ -171,7 +179,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                 Column(
                   children: [
                     // Apple Sign In (iOS only)
-                    if (Platform.isIOS)
+                    if (_supportsAppleSignIn)
                       _buildSignInButton(
                         onTap: _signInWithApple,
                         icon: Icons.apple,
@@ -180,22 +188,24 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                         textColor: isDark ? Colors.black : Colors.white,
                       ),
 
-                    if (Platform.isIOS) const SizedBox(height: 12),
+                    if (_supportsAppleSignIn && _supportsGoogleSignIn)
+                      const SizedBox(height: 12),
 
-                    // Google Sign In
-                    _buildSignInButton(
-                      onTap: _signInWithGoogle,
-                      icon: null,
-                      googleLogo: true,
-                      label: l10n.signInWithGoogle,
-                      backgroundColor: isDark
-                          ? const Color(0xFF2D2D3A)
-                          : Colors.white,
-                      textColor: isDark ? Colors.white : const Color(0xFF2D1A18),
-                      borderColor: isDark
-                          ? Colors.white.withValues(alpha: 0.1)
-                          : const Color(0xFFE0E0E0),
-                    ),
+                    // Google Sign In (disabled on web)
+                    if (_supportsGoogleSignIn)
+                      _buildSignInButton(
+                        onTap: _signInWithGoogle,
+                        icon: null,
+                        googleLogo: true,
+                        label: l10n.signInWithGoogle,
+                        backgroundColor: isDark
+                            ? const Color(0xFF2D2D3A)
+                            : Colors.white,
+                        textColor: isDark ? Colors.white : const Color(0xFF2D1A18),
+                        borderColor: isDark
+                            ? Colors.white.withValues(alpha: 0.1)
+                            : const Color(0xFFE0E0E0),
+                      ),
                   ],
                 ),
 
