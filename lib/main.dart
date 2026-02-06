@@ -143,13 +143,12 @@ class _MainScreenState extends State<MainScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildNavItem(0, Icons.home_rounded, Dil.navAnaSayfa),
-                _buildNavItem(1, Icons.bar_chart_rounded, Dil.navAktiviteler),
-                _buildAddButton(),
-                _buildNavItem(3, Icons.vaccines_outlined, Dil.asilar),
-                _buildNavItem(4, Icons.emoji_events_rounded, Dil.navGelisim),
+                Expanded(child: Center(child: _buildNavItem(0, Icons.home_rounded, Dil.navAnaSayfa))),
+                Expanded(child: Center(child: _buildNavItem(1, Icons.bar_chart_rounded, Dil.navAktiviteler))),
+                Expanded(child: Center(child: _buildAddButton())),
+                Expanded(child: Center(child: _buildNavItem(3, Icons.vaccines_outlined, Dil.asilar))),
+                Expanded(child: Center(child: _buildNavItem(4, Icons.emoji_events_rounded, Dil.navGelisim))),
               ],
             ),
           ),

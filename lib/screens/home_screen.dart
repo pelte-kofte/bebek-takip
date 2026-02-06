@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:io';
 import '../models/veri_yonetici.dart';
 import '../models/timer_yonetici.dart';
 import '../models/dil.dart';
@@ -51,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Baby info
   String _babyName = 'Sofia';
   DateTime _birthDate = DateTime(2024, 9, 17);
+  String? _babyPhotoPath;
 
   int get babyAgeInMonths {
     final now = DateTime.now();
@@ -92,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _babyName = VeriYonetici.getBabyName();
       _birthDate = VeriYonetici.getBirthDate();
+      _babyPhotoPath = VeriYonetici.getBabyPhotoPath();
     });
   }
 
@@ -452,8 +455,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                             offset: Offset(0, 2),
                                           ),
                                         ],
+                                  image: _babyPhotoPath != null
+                                      ? DecorationImage(
+                                          image: FileImage(File(_babyPhotoPath!)),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : null,
                                 ),
-                                child: SizedBox.shrink(),
+                                child: _babyPhotoPath == null
+                                    ? Icon(
+                                        Icons.child_care,
+                                        color: isDark
+                                            ? Colors.white54
+                                            : AppColors.primary.withValues(alpha: 0.7),
+                                        size: 24,
+                                      )
+                                    : null,
                               ),
                               const SizedBox(width: 12),
                               Column(

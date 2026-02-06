@@ -87,7 +87,7 @@
   "record": "record",
   "records": "records",
 
-  "breastfeeding": "Breastfeeding",
+  "breastfeeding": "Nursing",
   "bottleBreastMilk": "Bottle (Breast milk)",
   "total": "Total",
   "diaperChange": "Diaper change",
@@ -232,7 +232,7 @@
   "atLeast2Measurements": "At least 2 measurements needed for chart",
   "growthTracking": "Growth Tracking",
 
-  "feedingTimer": "FEEDING",
+  "feedingTimer": "NURSING",
   "sleepingTimer": "SLEEPING",
   "stopAndSave": "STOP & SAVE",
   "activeTimer": "ACTIVE",

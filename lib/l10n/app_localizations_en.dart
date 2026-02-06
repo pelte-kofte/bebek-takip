@@ -226,7 +226,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get records => 'records';
 
   @override
-  String get breastfeeding => 'Breastfeeding';
+  String get breastfeeding => 'Nursing';
 
   @override
   String get bottleBreastMilk => 'Bottle (Breast milk)';
@@ -523,7 +523,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get growthTracking => 'Growth Tracking';
 
   @override
-  String get feedingTimer => 'FEEDING';
+  String get feedingTimer => 'NURSING';
 
   @override
   String get sleepingTimer => 'SLEEPING';

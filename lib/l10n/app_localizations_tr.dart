@@ -522,7 +522,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get growthTracking => 'Büyüme Takibi';
 
   @override
-  String get feedingTimer => 'MAMA';
+  String get feedingTimer => 'EMZİRME';
 
   @override
   String get sleepingTimer => 'UYKU';
