@@ -6,6 +6,7 @@ import '../theme/app_theme.dart';
 import '../theme/app_spacing.dart';
 import '../widgets/decorative_background.dart';
 import '../l10n/app_localizations.dart';
+import 'login_entry_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -75,13 +76,20 @@ class _SplashScreenState extends State<SplashScreen>
     HapticFeedback.mediumImpact();
 
     final isFirstLaunch = VeriYonetici.isFirstLaunch();
+    final showLoginEntry = !VeriYonetici.isLoginEntryShown();
+
+    Widget nextScreen;
+    if (isFirstLaunch) {
+      nextScreen = const OnboardingScreen();
+    } else if (showLoginEntry) {
+      nextScreen = const LoginEntryScreen();
+    } else {
+      nextScreen = const MainScreen();
+    }
 
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) =>
-            isFirstLaunch ? const OnboardingScreen() : const MainScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => nextScreen),
     );
   }
 
@@ -339,9 +347,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _completeOnboarding() {
     VeriYonetici.setFirstLaunchComplete();
+
+    // Show login entry screen if not shown yet
+    final showLoginEntry = !VeriYonetici.isLoginEntryShown();
+
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MainScreen()),
+      MaterialPageRoute(
+        builder: (context) => showLoginEntry
+            ? const LoginEntryScreen()
+            : const MainScreen(),
+      ),
     );
   }
 

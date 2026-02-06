@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import '../services/reminder_service.dart';
+import '../l10n/app_localizations.dart';
 import 'rapor_screen.dart';
+import 'login_entry_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -194,6 +197,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // HESAP Section
+                    _buildAccountSection(cardColor, textColor, subtitleColor),
+                    const SizedBox(height: 24),
+
                     // GÖRÜNÜM Section
                     _buildSectionHeader(Dil.gorunum, subtitleColor),
                     const SizedBox(height: 12),
@@ -443,6 +450,156 @@ class _SettingsScreenState extends State<SettingsScreen> {
         letterSpacing: 1.0,
       ),
     );
+  }
+
+  Widget _buildAccountSection(Color cardColor, Color textColor, Color subtitleColor) {
+    final l10n = AppLocalizations.of(context)!;
+    final user = FirebaseAuth.instance.currentUser;
+    final isLoggedIn = user != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader(l10n.account, subtitleColor),
+        const SizedBox(height: 12),
+        _buildCard(
+          cardColor: cardColor,
+          child: Column(
+            children: [
+              // User status row
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: isLoggedIn
+                          ? const Color(0xFFE8F5E9)
+                          : const Color(0xFFE5E0F7),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isLoggedIn ? Icons.person : Icons.person_outline,
+                      color: isLoggedIn
+                          ? const Color(0xFF4CAF50)
+                          : subtitleColor,
+                      size: 22,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isLoggedIn
+                              ? l10n.signedInAs(user.email ?? user.displayName ?? 'User')
+                              : l10n.guestMode,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: subtitleColor,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isLoggedIn
+                              ? (user.email ?? user.displayName ?? 'User')
+                              : l10n.continueWithoutLogin,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              // Sign In / Sign Out button
+              GestureDetector(
+                onTap: () async {
+                  if (isLoggedIn) {
+                    await _signOut();
+                  } else {
+                    _navigateToLogin();
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: isLoggedIn
+                        ? const Color(0xFFFFE5E0)
+                        : const Color(0xFFFFB4A2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isLoggedIn ? Icons.logout : Icons.login,
+                        color: isLoggedIn
+                            ? Colors.red.shade400
+                            : Colors.white,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        isLoggedIn ? l10n.signOut : l10n.signIn,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: isLoggedIn
+                              ? Colors.red.shade400
+                              : Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      setState(() {});
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Signed out successfully'),
+            backgroundColor: Color(0xFFFFB4A2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _navigateToLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginEntryScreen()),
+    ).then((_) {
+      // Refresh the UI when returning from login screen
+      setState(() {});
+    });
   }
 
   Widget _buildCard({

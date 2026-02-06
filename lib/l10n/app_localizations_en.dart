@@ -665,4 +665,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String daysAgo(int count) {
     return '${count}d ago';
   }
+
+  @override
+  String get welcomeToNilico => 'Welcome to Nilico';
+
+  @override
+  String get loginBenefitText =>
+      'Sign in to backup your data and sync across devices. You can always do this later.';
+
+  @override
+  String get signInWithApple => 'Sign in with Apple';
+
+  @override
+  String get signInWithGoogle => 'Sign in with Google';
+
+  @override
+  String get continueWithoutLogin => 'Continue without login';
+
+  @override
+  String get loginOptionalNote =>
+      'Login is optional. All features work without an account.';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String signedInAs(String email) {
+    return 'Signed in as $email';
+  }
+
+  @override
+  String get guestMode => 'Guest Mode';
 }

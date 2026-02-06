@@ -223,5 +223,17 @@
   "justNow": "az önce",
   "minutesAgo": "{count} dk önce",
   "hoursAgo": "{count} sa önce",
-  "daysAgo": "{count} gün önce"
+  "daysAgo": "{count} gün önce",
+
+  "welcomeToNilico": "Nilico'ya Hoş Geldiniz",
+  "loginBenefitText": "Verilerinizi yedeklemek ve cihazlar arası senkronize etmek için giriş yapın. Bunu daha sonra da yapabilirsiniz.",
+  "signInWithApple": "Apple ile giriş yap",
+  "signInWithGoogle": "Google ile giriş yap",
+  "continueWithoutLogin": "Giriş yapmadan devam et",
+  "loginOptionalNote": "Giriş isteğe bağlıdır. Tüm özellikler hesap olmadan çalışır.",
+  "account": "Hesap",
+  "signIn": "Giriş Yap",
+  "signOut": "Çıkış Yap",
+  "signedInAs": "{email} olarak giriş yapıldı",
+  "guestMode": "Misafir Modu"
 }

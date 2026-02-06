@@ -338,5 +338,22 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+
+  "welcomeToNilico": "Welcome to Nilico",
+  "loginBenefitText": "Sign in to backup your data and sync across devices. You can always do this later.",
+  "signInWithApple": "Sign in with Apple",
+  "signInWithGoogle": "Sign in with Google",
+  "continueWithoutLogin": "Continue without login",
+  "loginOptionalNote": "Login is optional. All features work without an account.",
+  "account": "Account",
+  "signIn": "Sign In",
+  "signOut": "Sign Out",
+  "signedInAs": "Signed in as {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "guestMode": "Guest Mode"
 }

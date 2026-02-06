@@ -19,6 +19,7 @@ class VeriYonetici {
   static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
+  static bool _loginEntryShown = false;
 
   // Reminder settings
   static bool _feedingReminderEnabled = false;
@@ -68,6 +69,7 @@ class VeriYonetici {
     // Settings
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
     _firstLaunch = _prefs!.getBool('first_launch') ?? true;
+    _loginEntryShown = _prefs!.getBool('login_entry_shown') ?? false;
 
     // Reminder settings
     _feedingReminderEnabled = _prefs!.getBool('feeding_reminder_enabled') ?? false;
@@ -658,6 +660,15 @@ class VeriYonetici {
   static Future<void> setFirstLaunchComplete() async {
     _firstLaunch = false;
     await _prefs!.setBool('first_launch', false);
+  }
+
+  static bool isLoginEntryShown() {
+    return _loginEntryShown;
+  }
+
+  static Future<void> setLoginEntryShown() async {
+    _loginEntryShown = true;
+    await _prefs!.setBool('login_entry_shown', true);
   }
 
   static bool isDarkMode() {

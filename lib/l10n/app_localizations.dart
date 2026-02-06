@@ -521,7 +521,7 @@ abstract class AppLocalizations {
   /// No description provided for @breastfeeding.
   ///
   /// In en, this message translates to:
-  /// **'Breastfeeding'**
+  /// **'Nursing'**
   String get breastfeeding;
 
   /// No description provided for @bottleBreastMilk.
@@ -1079,7 +1079,7 @@ abstract class AppLocalizations {
   /// No description provided for @feedingTimer.
   ///
   /// In en, this message translates to:
-  /// **'FEEDING'**
+  /// **'NURSING'**
   String get feedingTimer;
 
   /// No description provided for @sleepingTimer.
@@ -1309,6 +1309,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}d ago'**
   String daysAgo(int count);
+
+  /// No description provided for @welcomeToNilico.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Nilico'**
+  String get welcomeToNilico;
+
+  /// No description provided for @loginBenefitText.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to backup your data and sync across devices. You can always do this later.'**
+  String get loginBenefitText;
+
+  /// No description provided for @signInWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get signInWithApple;
+
+  /// No description provided for @signInWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get signInWithGoogle;
+
+  /// No description provided for @continueWithoutLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without login'**
+  String get continueWithoutLogin;
+
+  /// No description provided for @loginOptionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Login is optional. All features work without an account.'**
+  String get loginOptionalNote;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @signedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String signedInAs(String email);
+
+  /// No description provided for @guestMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest Mode'**
+  String get guestMode;
 }
 
 class _AppLocalizationsDelegate

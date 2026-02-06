@@ -663,4 +663,41 @@ class AppLocalizationsTr extends AppLocalizations {
   String daysAgo(int count) {
     return '$count gün önce';
   }
+
+  @override
+  String get welcomeToNilico => 'Nilico\'ya Hoş Geldiniz';
+
+  @override
+  String get loginBenefitText =>
+      'Verilerinizi yedeklemek ve cihazlar arası senkronize etmek için giriş yapın. Bunu daha sonra da yapabilirsiniz.';
+
+  @override
+  String get signInWithApple => 'Apple ile giriş yap';
+
+  @override
+  String get signInWithGoogle => 'Google ile giriş yap';
+
+  @override
+  String get continueWithoutLogin => 'Giriş yapmadan devam et';
+
+  @override
+  String get loginOptionalNote =>
+      'Giriş isteğe bağlıdır. Tüm özellikler hesap olmadan çalışır.';
+
+  @override
+  String get account => 'Hesap';
+
+  @override
+  String get signIn => 'Giriş Yap';
+
+  @override
+  String get signOut => 'Çıkış Yap';
+
+  @override
+  String signedInAs(String email) {
+    return '$email olarak giriş yapıldı';
+  }
+
+  @override
+  String get guestMode => 'Misafir Modu';
 }
