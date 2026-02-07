@@ -32,9 +32,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase (required before FirebaseAuth usage)
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize VeriYonetici (loads all data into cache)
   await VeriYonetici.init();
@@ -162,62 +160,62 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: SizedBox(
         height: bottomBarHeight,
         child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
-          boxShadow: [
-            BoxShadow(
-              color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Center(
-                    child: _buildNavItem(
-                      0,
-                      Icons.home_rounded,
-                      Dil.navAnaSayfa,
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
+            boxShadow: [
+              BoxShadow(
+                color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: _buildNavItem(
+                        0,
+                        Icons.home_rounded,
+                        Dil.navAnaSayfa,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: _buildNavItem(
-                      1,
-                      Icons.bar_chart_rounded,
-                      Dil.navAktiviteler,
+                  Expanded(
+                    child: Center(
+                      child: _buildNavItem(
+                        1,
+                        Icons.bar_chart_rounded,
+                        Dil.navAktiviteler,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(child: Center(child: _buildAddButton())),
-                Expanded(
-                  child: Center(
-                    child: _buildNavItem(
-                      3,
-                      Icons.vaccines_outlined,
-                      Dil.asilar,
+                  Expanded(child: Center(child: _buildAddButton())),
+                  Expanded(
+                    child: Center(
+                      child: _buildNavItem(
+                        3,
+                        Icons.vaccines_outlined,
+                        Dil.asilar,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: _buildNavItem(
-                      4,
-                      Icons.emoji_events_rounded,
-                      Dil.navGelisim,
+                  Expanded(
+                    child: Center(
+                      child: _buildNavItem(
+                        4,
+                        Icons.emoji_events_rounded,
+                        Dil.navGelisim,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
