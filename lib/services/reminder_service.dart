@@ -7,6 +7,10 @@ class ReminderService {
   factory ReminderService() => _instance;
   ReminderService._internal();
 
+  static bool _timeZonesInitialized = false;
+  bool _permissionsRequested = false;
+  bool _permissionsGranted = false;
+
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
@@ -15,10 +19,16 @@ class ReminderService {
 
   bool _initialized = false;
 
+  static void initializeTimeZonesOnce() {
+    if (_timeZonesInitialized) return;
+    tz_data.initializeTimeZones();
+    _timeZonesInitialized = true;
+  }
+
   Future<void> initialize() async {
     if (_initialized) return;
 
-    tz_data.initializeTimeZones();
+    initializeTimeZonesOnce();
 
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -38,6 +48,8 @@ class ReminderService {
   }
 
   Future<bool> requestPermissions() async {
+    if (_permissionsRequested) return _permissionsGranted;
+    _permissionsRequested = true;
     try {
       // Request Android notification permissions (Android 13+)
       final androidPlugin = _notifications
@@ -45,7 +57,10 @@ class ReminderService {
               AndroidFlutterLocalNotificationsPlugin>();
       if (androidPlugin != null) {
         final granted = await androidPlugin.requestNotificationsPermission();
-        if (granted != true) return false;
+        if (granted != true) {
+          _permissionsGranted = false;
+          return false;
+        }
       }
 
       // Request iOS permissions
@@ -58,11 +73,16 @@ class ReminderService {
           badge: false,
           sound: true,
         );
-        if (granted != true) return false;
+        if (granted != true) {
+          _permissionsGranted = false;
+          return false;
+        }
       }
 
+      _permissionsGranted = true;
       return true;
     } catch (e) {
+      _permissionsGranted = false;
       return false;
     }
   }

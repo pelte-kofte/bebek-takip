@@ -6,13 +6,13 @@ Son Güncelleme: 29 Aralık 2024
 
 - [x] Günün İpuçları (Home)
 - [x] Gelecek Aşılar (Home + Vaccines)
-- [ ] Weekly / Monthly Reports
+- [x] Weekly / Monthly Reports
 - [ ] Grandma Mode (read-only)
-- [ ] Activities UX v2
+- [x] Activities UX v2
 - [ ] Landing page sadeleştirme
 - [ ] Growth chart polish
 - [ ] Çoklu kullanım anne-baba
-- [ ] Günün İpuçları
+- [x] Günün İpuçları
   - Local hardcoded tips (offline default)
   - Firebase Remote override (optional)
   - Local daily cache (date-based)

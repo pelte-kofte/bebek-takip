@@ -12,6 +12,7 @@ import 'models/veri_yonetici.dart';
 import 'models/dil.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
+import 'services/reminder_service.dart';
 
 class AppNavigator {
   static final key = GlobalKey<NavigatorState>();
@@ -37,6 +38,13 @@ void main() async {
 
   // Initialize VeriYonetici (loads all data into cache)
   await VeriYonetici.init();
+
+  // Initialize timezones once for scheduled reminders
+  ReminderService.initializeTimeZonesOnce();
+  // Initialize reminder notifications and request permissions once on launch
+  final reminderService = ReminderService();
+  await reminderService.initialize();
+  await reminderService.requestPermissions();
 
   runApp(const BabyTrackerApp());
 }
