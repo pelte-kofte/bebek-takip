@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
@@ -74,9 +75,18 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   }
 
   bool get _hasPhoto =>
-      _photoPath != null && File(_photoPath!).existsSync();
+      !kIsWeb && _photoPath != null && File(_photoPath!).existsSync();
 
   Future<void> _pickPhoto() async {
+    if (kIsWeb) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Web sürümünde fotoğraf yükleme desteklenmiyor.'),
+        ),
+      );
+      return;
+    }
     final XFile? image = await _imagePicker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 512,

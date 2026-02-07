@@ -91,7 +91,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get home => 'Ana Sayfa';
 
   @override
-  String get activities => 'Aktiviteler';
+  String get activities => 'Bakım';
 
   @override
   String get vaccines => 'Aşılar';
@@ -112,7 +112,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get nursing => 'Emzirme';
 
   @override
-  String get bottle => 'Biberon';
+  String get bottle => 'Beslenme';
 
   @override
   String get sleep => 'Uyku';
@@ -552,7 +552,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noActivitiesLast24h => 'Son 24 saatte aktivite yok';
 
   @override
-  String get bottleFeeding => 'Biberon';
+  String get bottleFeeding => 'Beslenme';
 
   @override
   String get trackYourBabyGrowth => 'Bebeğinizin büyümesini takip edin';

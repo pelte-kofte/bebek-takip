@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @activities.
   ///
   /// In en, this message translates to:
-  /// **'Activities'**
+  /// **'Care'**
   String get activities;
 
   /// No description provided for @vaccines.
@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @bottle.
   ///
   /// In en, this message translates to:
-  /// **'Bottle'**
+  /// **'Feeding'**
   String get bottle;
 
   /// No description provided for @sleep.
@@ -1139,7 +1139,7 @@ abstract class AppLocalizations {
   /// No description provided for @bottleFeeding.
   ///
   /// In en, this message translates to:
-  /// **'Bottle Feeding'**
+  /// **'Feeding'**
   String get bottleFeeding;
 
   /// No description provided for @trackYourBabyGrowth.

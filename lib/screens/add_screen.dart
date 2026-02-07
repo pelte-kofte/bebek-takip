@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode;
+import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTimerPicker, CupertinoTimerPickerMode;
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
+import '../theme/app_theme.dart';
 
 class AddScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -33,6 +34,7 @@ class _AddScreenState extends State<AddScreen> {
 
   // Diaper fields
   String _diaperType = 'both'; // 'wet', 'dirty', or 'both'
+  late TimeOfDay _diaperTime;
   final TextEditingController _diaperNotesController = TextEditingController();
 
   // Validation error message
@@ -43,6 +45,7 @@ class _AddScreenState extends State<AddScreen> {
     super.initState();
     selectedActivity = widget.initialActivity ?? 'breastfeeding';
     _sleepStartTime = TimeOfDay.now();
+    _diaperTime = TimeOfDay.now();
   }
 
   @override
@@ -75,15 +78,16 @@ class _AddScreenState extends State<AddScreen> {
   /// Shows a Cupertino-style time picker in a bottom sheet
   Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initialTime) async {
     TimeOfDay selectedTime = initialTime;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final result = await showModalBottomSheet<TimeOfDay>(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         height: 280,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFBF5),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           children: [
@@ -156,14 +160,88 @@ class _AddScreenState extends State<AddScreen> {
     return result;
   }
 
+  /// Shows a Cupertino-style duration picker (hours + minutes) in a bottom sheet
+  Future<Duration?> _showCupertinoDurationPicker(Duration initialDuration) async {
+    Duration selectedDuration = initialDuration;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final result = await showModalBottomSheet<Duration>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 280,
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(top: 12, bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      Dil.iptal,
+                      style: TextStyle(
+                        color: const Color(0xFF866F65),
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, selectedDuration),
+                    child: Text(
+                      Dil.tamam,
+                      style: TextStyle(
+                        color: const Color(0xFFFF998A),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: CupertinoTimerPicker(
+                mode: CupertinoTimerPickerMode.hm,
+                initialTimerDuration: initialDuration,
+                onTimerDurationChanged: (Duration duration) {
+                  selectedDuration = duration;
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return result;
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDark ? AppColors.bgDarkCard : AppColors.bgLightCard;
+    final surfaceColor = isDark ? AppColors.bgDarkSurface : Colors.white;
 
     return Container(
       constraints: BoxConstraints(maxHeight: screenHeight * 0.95),
-      decoration: const BoxDecoration(
-        color: Color(0xFFFFF8F0),
+      decoration: BoxDecoration(
+        color: sheetBg,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Stack(
@@ -217,7 +295,7 @@ class _AddScreenState extends State<AddScreen> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: surfaceColor,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -227,9 +305,9 @@ class _AddScreenState extends State<AddScreen> {
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
-                            color: Color(0xFF4A3F3F),
+                            color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
                             size: 20,
                           ),
                         ),
@@ -318,22 +396,22 @@ class _AddScreenState extends State<AddScreen> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
+                          color: isDark ? AppColors.bgDarkSurface : Colors.white.withValues(alpha: 0.95),
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                            color: const Color(
-                              0xFFE5E0F7,
-                            ).withValues(alpha: 0.5),
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.08)
+                                : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(
-                                0xFFE5E0F7,
-                              ).withValues(alpha: 0.3),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
+                          boxShadow: isDark
+                              ? []
+                              : [
+                                  BoxShadow(
+                                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  ),
+                                ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -347,17 +425,17 @@ class _AddScreenState extends State<AddScreen> {
                                     children: [
                                       Text(
                                         l10n.side,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 13,
                                           fontWeight: FontWeight.w600,
-                                          color: Color(0xFF7A749E),
+                                          color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF7A749E),
                                         ),
                                       ),
                                       const Spacer(),
                                       Container(
                                         padding: const EdgeInsets.all(3),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: surfaceColor,
                                           borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Row(
@@ -386,7 +464,9 @@ class _AddScreenState extends State<AddScreen> {
                                                     fontWeight: FontWeight.w600,
                                                     color: selectedSide == 'left'
                                                         ? Colors.white
-                                                        : const Color(0xFF7A749E),
+                                                        : isDark
+                                                            ? Colors.white.withValues(alpha: 0.7)
+                                                            : const Color(0xFF7A749E),
                                                   ),
                                                 ),
                                               ),
@@ -414,7 +494,9 @@ class _AddScreenState extends State<AddScreen> {
                                                     fontWeight: FontWeight.w600,
                                                     color: selectedSide == 'right'
                                                         ? Colors.white
-                                                        : const Color(0xFF7A749E),
+                                                        : isDark
+                                                            ? Colors.white.withValues(alpha: 0.7)
+                                                            : const Color(0xFF7A749E),
                                                   ),
                                                 ),
                                               ),
@@ -427,105 +509,96 @@ class _AddScreenState extends State<AddScreen> {
                                 },
                               ),
                               const SizedBox(height: 16),
-                              // Compact duration picker (minutes only)
+                              // Duration picker (Cupertino style)
                               Builder(
                                 builder: (context) {
                                   final l10n = AppLocalizations.of(context)!;
-                                  return Row(
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        l10n.duration,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xFF7A749E),
+                                        l10n.duration.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
+                                          letterSpacing: 2.0,
                                         ),
                                       ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () => setState(
-                                            () => minutes = (minutes - 1).clamp(
-                                              0,
-                                              60,
-                                            ),
+                                      const SizedBox(height: 12),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          final picked = await _showCupertinoDurationPicker(
+                                            Duration(minutes: minutes),
+                                          );
+                                          if (picked != null) {
+                                            setState(() => minutes = picked.inMinutes);
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 14,
                                           ),
-                                          child: Container(
-                                            width: 32,
-                                            height: 32,
-                                            decoration: BoxDecoration(
-                                              color: const Color(0xFFF4EDF9),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.remove,
-                                              color: Color(0xFF7A749E),
-                                              size: 18,
-                                            ),
+                                          decoration: BoxDecoration(
+                                            color: surfaceColor,
+                                            borderRadius: BorderRadius.circular(16),
+                                            boxShadow: isDark ? null : const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                            border: isDark ? Border.all(color: Colors.white.withValues(alpha: 0.15)) : null,
                                           ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Text(
-                                          '$minutes min',
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF2D1A18),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        GestureDetector(
-                                          onTap: () => setState(
-                                            () => minutes = (minutes + 1).clamp(
-                                              0,
-                                              60,
-                                            ),
-                                          ),
-                                          child: Container(
-                                            width: 32,
-                                            height: 32,
-                                            decoration: BoxDecoration(
-                                              color: const Color(
-                                                0xFFFF998A,
-                                              ).withValues(alpha: 0.2),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                            ),
-                                            child: const Icon(
-                                              Icons.add,
-                                              color: Color(0xFFFF998A),
-                                              size: 18,
-                                            ),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                width: 40,
+                                                height: 40,
+                                                decoration: BoxDecoration(
+                                                  color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF4EDF9),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: const Center(
+                                                  child: Icon(Icons.timer_outlined, size: 24, color: Color(0xFFFF998A)),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 16),
+                                              Text(
+                                                minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSet,
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: minutes > 0
+                                                      ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
+                                                      : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                              Icon(
+                                                Icons.access_time,
+                                                color: isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E),
+                                                size: 20,
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
+                                      ),
+                                    ],
+                                  );
                                 },
                               ),
                             ],
                             if (selectedActivity == 'bottle') ...[
                               // Category selector (Milk/Solid)
-                              const Text(
+                              Text(
                                 'CATEGORY',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
@@ -533,7 +606,7 @@ class _AddScreenState extends State<AddScreen> {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.5),
+                                  color: surfaceColor.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Row(
@@ -544,7 +617,7 @@ class _AddScreenState extends State<AddScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
-                                            color: feedingCategory == 'Milk' ? Colors.white : Colors.transparent,
+                                            color: feedingCategory == 'Milk' ? surfaceColor : Colors.transparent,
                                             borderRadius: BorderRadius.circular(12),
                                             boxShadow: feedingCategory == 'Milk'
                                                 ? const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))]
@@ -558,7 +631,9 @@ class _AddScreenState extends State<AddScreen> {
                                               fontWeight: FontWeight.bold,
                                               color: feedingCategory == 'Milk'
                                                   ? const Color(0xFFFF998A)
-                                                  : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                                  : isDark
+                                                      ? Colors.white.withValues(alpha: 0.7)
+                                                      : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
                                             ),
                                           ),
                                         ),
@@ -571,7 +646,7 @@ class _AddScreenState extends State<AddScreen> {
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
-                                            color: feedingCategory == 'Solid' ? Colors.white : Colors.transparent,
+                                            color: feedingCategory == 'Solid' ? surfaceColor : Colors.transparent,
                                             borderRadius: BorderRadius.circular(12),
                                             boxShadow: feedingCategory == 'Solid'
                                                 ? const [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))]
@@ -585,7 +660,9 @@ class _AddScreenState extends State<AddScreen> {
                                               fontWeight: FontWeight.bold,
                                               color: feedingCategory == 'Solid'
                                                   ? const Color(0xFFFF998A)
-                                                  : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
+                                                  : isDark
+                                                      ? Colors.white.withValues(alpha: 0.7)
+                                                      : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
                                             ),
                                           ),
                                         ),
@@ -598,18 +675,18 @@ class _AddScreenState extends State<AddScreen> {
                               // Show different content based on category
                               if (feedingCategory == 'Solid') ...[
                                 // Solid food description
-                                const Text(
+                                Text(
                                   'NE VERİLDİ?',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4A3F3F),
+                                    color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                     letterSpacing: 2.0,
                                   ),
                                 ),
                                 const SizedBox(height: 12),
                                 Material(
-                                  color: const Color(0xFFFDFCFB),
+                                  color: isDark ? AppColors.bgDarkCard : const Color(0xFFFDFCFB),
                                   borderRadius: BorderRadius.circular(24),
                                   child: TextField(
                                     controller: _solidFoodController,
@@ -617,7 +694,7 @@ class _AddScreenState extends State<AddScreen> {
                                     decoration: InputDecoration(
                                       hintText: 'Ör: Muz püresi, havuç...',
                                       hintStyle: TextStyle(
-                                        color: const Color(0xFF4A3F3F).withValues(alpha: 0.3),
+                                        color: isDark ? Colors.white.withValues(alpha: 0.3) : const Color(0xFF4A3F3F).withValues(alpha: 0.3),
                                         fontSize: 14,
                                       ),
                                       border: InputBorder.none,
@@ -625,19 +702,19 @@ class _AddScreenState extends State<AddScreen> {
                                     ),
                                     style: TextStyle(
                                       fontSize: 14,
-                                      color: const Color(0xFF4A3F3F).withValues(alpha: 0.8),
+                                      color: isDark ? Colors.white.withValues(alpha: 0.8) : const Color(0xFF4A3F3F).withValues(alpha: 0.8),
                                     ),
                                   ),
                                 ),
                               ] else ...[
                               // Amount section (for Milk)
-                              const Center(
+                              Center(
                                 child: Text(
                                   'AMOUNT',
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF4A3F3F),
+                                    color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                     letterSpacing: 2.0,
                                   ),
                                 ),
@@ -658,7 +735,7 @@ class _AddScreenState extends State<AddScreen> {
                                       width: 44,
                                       height: 44,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: surfaceColor,
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: const [
                                           BoxShadow(
@@ -668,10 +745,10 @@ class _AddScreenState extends State<AddScreen> {
                                           ),
                                         ],
                                       ),
-                                      child: const Center(
+                                      child: Center(
                                         child: Icon(
                                           Icons.remove,
-                                          color: Color(0xFF7A749E),
+                                          color: isDark ? Colors.white.withValues(alpha: 0.7) : const Color(0xFF7A749E),
                                           size: 24,
                                         ),
                                       ),
@@ -683,7 +760,7 @@ class _AddScreenState extends State<AddScreen> {
                                     width: 48,
                                     height: 48,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: surfaceColor,
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: const [
                                         BoxShadow(
@@ -706,10 +783,10 @@ class _AddScreenState extends State<AddScreen> {
                                     children: [
                                       Text(
                                         bottleAmount.toString(),
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 40,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF4A3F3F),
+                                          color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
                                         ),
                                       ),
                                       const SizedBox(width: 4),
@@ -718,9 +795,9 @@ class _AddScreenState extends State<AddScreen> {
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
-                                          color: const Color(
-                                            0xFF4A3F3F,
-                                          ).withValues(alpha: 0.4),
+                                          color: isDark
+                                              ? Colors.white.withValues(alpha: 0.4)
+                                              : const Color(0xFF4A3F3F).withValues(alpha: 0.4),
                                           fontStyle: FontStyle.italic,
                                         ),
                                       ),
@@ -736,7 +813,7 @@ class _AddScreenState extends State<AddScreen> {
                                       width: 44,
                                       height: 44,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: surfaceColor,
                                         borderRadius: BorderRadius.circular(12),
                                         boxShadow: const [
                                           BoxShadow(
@@ -759,12 +836,12 @@ class _AddScreenState extends State<AddScreen> {
                               ),
                               const SizedBox(height: 24),
                               // Milk type selector
-                              const Text(
+                              Text(
                                 'MILK TYPE',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
@@ -772,7 +849,7 @@ class _AddScreenState extends State<AddScreen> {
                               Container(
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.5),
+                                  color: surfaceColor.withValues(alpha: 0.5),
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Row(
@@ -787,7 +864,7 @@ class _AddScreenState extends State<AddScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: milkType == 'breast'
-                                                ? Colors.white
+                                                ? surfaceColor
                                                 : Colors.transparent,
                                             borderRadius: BorderRadius.circular(
                                               12,
@@ -810,9 +887,9 @@ class _AddScreenState extends State<AddScreen> {
                                               fontWeight: FontWeight.bold,
                                               color: milkType == 'breast'
                                                   ? const Color(0xFFFF998A)
-                                                  : const Color(
-                                                      0xFF4A3F3F,
-                                                    ).withValues(alpha: 0.6),
+                                                  : isDark
+                                                      ? Colors.white.withValues(alpha: 0.7)
+                                                      : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
                                             ),
                                           ),
                                         ),
@@ -830,7 +907,7 @@ class _AddScreenState extends State<AddScreen> {
                                           ),
                                           decoration: BoxDecoration(
                                             color: milkType == 'formula'
-                                                ? Colors.white
+                                                ? surfaceColor
                                                 : Colors.transparent,
                                             borderRadius: BorderRadius.circular(
                                               12,
@@ -853,9 +930,9 @@ class _AddScreenState extends State<AddScreen> {
                                               fontWeight: FontWeight.bold,
                                               color: milkType == 'formula'
                                                   ? const Color(0xFFFF998A)
-                                                  : const Color(
-                                                      0xFF4A3F3F,
-                                                    ).withValues(alpha: 0.6),
+                                                  : isDark
+                                                      ? Colors.white.withValues(alpha: 0.7)
+                                                      : const Color(0xFF4A3F3F).withValues(alpha: 0.6),
                                             ),
                                           ),
                                         ),
@@ -868,12 +945,12 @@ class _AddScreenState extends State<AddScreen> {
                             ],
                             if (selectedActivity == 'sleep') ...[
                               // Sleep started at
-                              const Text(
+                              Text(
                                 'SLEEP STARTED AT',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
@@ -891,15 +968,16 @@ class _AddScreenState extends State<AddScreen> {
                                     vertical: 14,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: surfaceColor,
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: const [
+                                    boxShadow: isDark ? null : const [
                                       BoxShadow(
                                         color: Colors.black12,
                                         blurRadius: 4,
                                         offset: Offset(0, 2),
                                       ),
                                     ],
+                                    border: isDark ? Border.all(color: Colors.white.withValues(alpha: 0.15)) : null,
                                   ),
                                   child: Row(
                                     children: [
@@ -907,7 +985,7 @@ class _AddScreenState extends State<AddScreen> {
                                         width: 40,
                                         height: 40,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFF4EDF9),
+                                          color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF4EDF9),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
@@ -919,16 +997,16 @@ class _AddScreenState extends State<AddScreen> {
                                       const SizedBox(width: 16),
                                       Text(
                                         '${_sleepStartTime.hour.toString().padLeft(2, '0')}:${_sleepStartTime.minute.toString().padLeft(2, '0')}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF4A3F3F),
+                                          color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
                                         ),
                                       ),
                                       const Spacer(),
-                                      const Icon(
+                                      Icon(
                                         Icons.access_time,
-                                        color: Color(0xFF7A749E),
+                                        color: isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E),
                                         size: 20,
                                       ),
                                     ],
@@ -937,12 +1015,12 @@ class _AddScreenState extends State<AddScreen> {
                               ),
                               const SizedBox(height: 20),
                               // Woke up at
-                              const Text(
+                              Text(
                                 'WOKE UP AT',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
@@ -962,15 +1040,16 @@ class _AddScreenState extends State<AddScreen> {
                                     vertical: 14,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: surfaceColor,
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: const [
+                                    boxShadow: isDark ? null : const [
                                       BoxShadow(
                                         color: Colors.black12,
                                         blurRadius: 4,
                                         offset: Offset(0, 2),
                                       ),
                                     ],
+                                    border: isDark ? Border.all(color: Colors.white.withValues(alpha: 0.15)) : null,
                                   ),
                                   child: Row(
                                     children: [
@@ -978,7 +1057,7 @@ class _AddScreenState extends State<AddScreen> {
                                         width: 40,
                                         height: 40,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFF4EDF9),
+                                          color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFF4EDF9),
                                           borderRadius: BorderRadius.circular(
                                             12,
                                           ),
@@ -1000,14 +1079,14 @@ class _AddScreenState extends State<AddScreen> {
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                           color: _sleepEndTime != null
-                                              ? const Color(0xFF4A3F3F)
-                                              : const Color(0xFF7A749E),
+                                              ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
+                                              : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
                                         ),
                                       ),
                                       const Spacer(),
-                                      const Icon(
+                                      Icon(
                                         Icons.access_time,
-                                        color: Color(0xFF7A749E),
+                                        color: isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E),
                                         size: 20,
                                       ),
                                     ],
@@ -1041,10 +1120,10 @@ class _AddScreenState extends State<AddScreen> {
                                       const SizedBox(width: 8),
                                       Text(
                                         'Total sleep: ${_calculateSleepDuration()}',
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Color(0xFF4A3F3F),
+                                          color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
                                         ),
                                       ),
                                     ],
@@ -1054,12 +1133,12 @@ class _AddScreenState extends State<AddScreen> {
                             ],
                             if (selectedActivity == 'diaper') ...[
                               // Diaper type selector
-                              const Text(
+                              Text(
                                 'TYPE',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
@@ -1078,14 +1157,16 @@ class _AddScreenState extends State<AddScreen> {
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'wet'
                                               ? const Color(0xFFFF998A)
-                                              : Colors.white,
+                                              : surfaceColor,
                                           borderRadius: BorderRadius.circular(
                                             24,
                                           ),
                                           border: Border.all(
                                             color: _diaperType == 'wet'
                                                 ? const Color(0xFFFF998A)
-                                                : Colors.transparent,
+                                                : isDark
+                                                    ? Colors.white.withValues(alpha: 0.15)
+                                                    : Colors.transparent,
                                             width: 2,
                                           ),
                                           boxShadow: _diaperType == 'wet'
@@ -1110,7 +1191,9 @@ class _AddScreenState extends State<AddScreen> {
                                                     ? Colors.white.withValues(
                                                         alpha: 0.3,
                                                       )
-                                                    : const Color(0xFFF4EDF9),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.08)
+                                                        : const Color(0xFFF4EDF9),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
@@ -1118,7 +1201,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 child: Icon(
                                                   Icons.water_drop_outlined,
                                                   size: 24,
-                                                  color: _diaperType == 'wet' ? Colors.white : const Color(0xFF7A749E),
+                                                  color: _diaperType == 'wet'
+                                                      ? Colors.white
+                                                      : isDark
+                                                          ? Colors.white.withValues(alpha: 0.7)
+                                                          : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1130,9 +1217,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'wet'
                                                     ? Colors.white
-                                                    : const Color(
-                                                        0xFF4A3F3F,
-                                                      ).withValues(alpha: 0.6),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.7)
+                                                        : const Color(
+                                                            0xFF4A3F3F,
+                                                          ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1153,14 +1242,16 @@ class _AddScreenState extends State<AddScreen> {
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'dirty'
                                               ? const Color(0xFFFF998A)
-                                              : Colors.white,
+                                              : surfaceColor,
                                           borderRadius: BorderRadius.circular(
                                             24,
                                           ),
                                           border: Border.all(
                                             color: _diaperType == 'dirty'
                                                 ? const Color(0xFFFF998A)
-                                                : Colors.transparent,
+                                                : isDark
+                                                    ? Colors.white.withValues(alpha: 0.15)
+                                                    : Colors.transparent,
                                             width: 2,
                                           ),
                                           boxShadow: _diaperType == 'dirty'
@@ -1185,7 +1276,9 @@ class _AddScreenState extends State<AddScreen> {
                                                     ? Colors.white.withValues(
                                                         alpha: 0.3,
                                                       )
-                                                    : const Color(0xFFF4EDF9),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.08)
+                                                        : const Color(0xFFF4EDF9),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
@@ -1193,7 +1286,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 child: Icon(
                                                   Icons.cloud_outlined,
                                                   size: 24,
-                                                  color: _diaperType == 'dirty' ? Colors.white : const Color(0xFF7A749E),
+                                                  color: _diaperType == 'dirty'
+                                                      ? Colors.white
+                                                      : isDark
+                                                          ? Colors.white.withValues(alpha: 0.7)
+                                                          : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1205,9 +1302,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'dirty'
                                                     ? Colors.white
-                                                    : const Color(
-                                                        0xFF4A3F3F,
-                                                      ).withValues(alpha: 0.6),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.7)
+                                                        : const Color(
+                                                            0xFF4A3F3F,
+                                                          ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1228,14 +1327,16 @@ class _AddScreenState extends State<AddScreen> {
                                         decoration: BoxDecoration(
                                           color: _diaperType == 'both'
                                               ? const Color(0xFFFF998A)
-                                              : Colors.white,
+                                              : surfaceColor,
                                           borderRadius: BorderRadius.circular(
                                             24,
                                           ),
                                           border: Border.all(
                                             color: _diaperType == 'both'
                                                 ? const Color(0xFFFF998A)
-                                                : Colors.transparent,
+                                                : isDark
+                                                    ? Colors.white.withValues(alpha: 0.15)
+                                                    : Colors.transparent,
                                             width: 2,
                                           ),
                                           boxShadow: _diaperType == 'both'
@@ -1260,7 +1361,9 @@ class _AddScreenState extends State<AddScreen> {
                                                     ? Colors.white.withValues(
                                                         alpha: 0.3,
                                                       )
-                                                    : const Color(0xFFF4EDF9),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.08)
+                                                        : const Color(0xFFF4EDF9),
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                               ),
@@ -1268,7 +1371,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 child: Icon(
                                                   Icons.baby_changing_station_outlined,
                                                   size: 24,
-                                                  color: _diaperType == 'both' ? Colors.white : const Color(0xFF7A749E),
+                                                  color: _diaperType == 'both'
+                                                      ? Colors.white
+                                                      : isDark
+                                                          ? Colors.white.withValues(alpha: 0.7)
+                                                          : const Color(0xFF7A749E),
                                                 ),
                                               ),
                                             ),
@@ -1280,9 +1387,11 @@ class _AddScreenState extends State<AddScreen> {
                                                 fontWeight: FontWeight.bold,
                                                 color: _diaperType == 'both'
                                                     ? Colors.white
-                                                    : const Color(
-                                                        0xFF4A3F3F,
-                                                      ).withValues(alpha: 0.6),
+                                                    : isDark
+                                                        ? Colors.white.withValues(alpha: 0.7)
+                                                        : const Color(
+                                                            0xFF4A3F3F,
+                                                          ).withValues(alpha: 0.6),
                                               ),
                                             ),
                                           ],
@@ -1293,19 +1402,91 @@ class _AddScreenState extends State<AddScreen> {
                                 ],
                               ),
                               const SizedBox(height: 24),
+                              // Time picker
+                              Text(
+                                'TIME',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
+                                  letterSpacing: 2.0,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              GestureDetector(
+                                onTap: () async {
+                                  final picked = await _showCupertinoTimePicker(_diaperTime);
+                                  if (picked != null) {
+                                    setState(() => _diaperTime = picked);
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 14,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: surfaceColor,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: isDark
+                                        ? Border.all(color: Colors.white.withValues(alpha: 0.1))
+                                        : null,
+                                    boxShadow: isDark
+                                        ? []
+                                        : const [
+                                            BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 4,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF4EDF9),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: const Center(
+                                          child: Icon(Icons.access_time, size: 24, color: Color(0xFFFF998A)),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      Text(
+                                        '${_diaperTime.hour.toString().padLeft(2, '0')}:${_diaperTime.minute.toString().padLeft(2, '0')}',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Icon(
+                                        Icons.access_time,
+                                        color: isDark ? Colors.white.withValues(alpha: 0.4) : const Color(0xFF7A749E),
+                                        size: 20,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
                               // Optional notes
-                              const Text(
+                              Text(
                                 'OPTIONAL NOTES',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3F3F),
+                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
                                   letterSpacing: 2.0,
                                 ),
                               ),
                               const SizedBox(height: 12),
                               Material(
-                                color: const Color(0xFFFDFCFB),
+                                color: isDark ? AppColors.bgDarkCard : const Color(0xFFFDFCFB),
                                 borderRadius: BorderRadius.circular(24),
                                 child: TextField(
                                   controller: _diaperNotesController,
@@ -1314,9 +1495,9 @@ class _AddScreenState extends State<AddScreen> {
                                     hintText:
                                         'Add a note about the diaper change...',
                                     hintStyle: TextStyle(
-                                      color: const Color(
-                                        0xFF4A3F3F,
-                                      ).withValues(alpha: 0.3),
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.3)
+                                          : const Color(0xFF4A3F3F).withValues(alpha: 0.3),
                                       fontSize: 14,
                                     ),
                                     border: InputBorder.none,
@@ -1324,9 +1505,9 @@ class _AddScreenState extends State<AddScreen> {
                                   ),
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: const Color(
-                                      0xFF4A3F3F,
-                                    ).withValues(alpha: 0.8),
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.8)
+                                        : const Color(0xFF4A3F3F).withValues(alpha: 0.8),
                                   ),
                                 ),
                               ),
@@ -1409,6 +1590,7 @@ class _AddScreenState extends State<AddScreen> {
 
   Widget _buildCompactActivityChip(String type, Widget icon, String label) {
     final isSelected = selectedActivity == type;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Expanded(
       child: GestureDetector(
@@ -1421,19 +1603,21 @@ class _AddScreenState extends State<AddScreen> {
           decoration: BoxDecoration(
             color: isSelected
                 ? const Color(0xFFFF998A).withValues(alpha: 0.15)
-                : Colors.white,
+                : (isDark ? AppColors.bgDarkCard : Colors.white),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
                   ? const Color(0xFFFF998A)
-                  : const Color(0xFFE5E0F7),
+                  : isDark
+                      ? Colors.white.withValues(alpha: 0.2)
+                      : const Color(0xFFE5E0F7),
               width: isSelected ? 2 : 1,
             ),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Opacity(opacity: isSelected ? 1.0 : 0.5, child: icon),
+              Opacity(opacity: isSelected ? 1.0 : (isDark ? 0.7 : 0.5), child: icon),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -1442,7 +1626,9 @@ class _AddScreenState extends State<AddScreen> {
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   color: isSelected
                       ? const Color(0xFFFF998A)
-                      : const Color(0xFF7A749E),
+                      : isDark
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : const Color(0xFF7A749E),
                 ),
               ),
             ],
@@ -1591,8 +1777,14 @@ class _AddScreenState extends State<AddScreen> {
           turkceTur = Dil.ikisiBirden;
       }
 
+      final now = DateTime.now();
+      final diaperDateTime = DateTime(
+        now.year, now.month, now.day,
+        _diaperTime.hour, _diaperTime.minute,
+      );
+
       kayitlar.insert(0, {
-        'tarih': DateTime.now(),
+        'tarih': diaperDateTime,
         'tur': turkceTur,
         'notlar': _diaperNotesController.text,
       });

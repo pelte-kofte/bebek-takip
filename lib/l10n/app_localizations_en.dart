@@ -91,7 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get activities => 'Activities';
+  String get activities => 'Care';
 
   @override
   String get vaccines => 'Vaccines';
@@ -112,7 +112,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nursing => 'Nursing';
 
   @override
-  String get bottle => 'Bottle';
+  String get bottle => 'Feeding';
 
   @override
   String get sleep => 'Sleep';
@@ -553,7 +553,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noActivitiesLast24h => 'No activities in the last 24 hours';
 
   @override
-  String get bottleFeeding => 'Bottle Feeding';
+  String get bottleFeeding => 'Feeding';
 
   @override
   String get trackYourBabyGrowth => 'Track your baby\'s growth';

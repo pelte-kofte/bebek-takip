@@ -274,6 +274,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   Widget _buildCompactTab(IconData icon, String label, ActivityType type) {
     final isActive = _activeType == type;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final unselectedBg = isDark ? const Color(0xFF2A2A3A) : Colors.transparent;
+    final unselectedBorder = isDark
+        ? Colors.white.withValues(alpha: 0.25)
+        : const Color(0xFFE5E0F7).withValues(alpha: 0.5);
+    final unselectedFg = isDark
+        ? Colors.white.withValues(alpha: 0.7)
+        : const Color(0xFF1d0e0c).withValues(alpha: 0.6);
 
     return GestureDetector(
       onTap: () => setState(() => _activeType = type),
@@ -282,12 +291,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         decoration: BoxDecoration(
           color: isActive
               ? const Color(0xFFFFB4A2).withValues(alpha: 0.15)
-              : Colors.transparent,
+              : unselectedBg,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isActive
-                ? const Color(0xFFFFB4A2)
-                : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+            color: isActive ? const Color(0xFFFFB4A2) : unselectedBorder,
             width: isActive ? 2 : 1,
           ),
         ),
@@ -297,9 +304,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             Icon(
               icon,
               size: 24,
-              color: isActive
-                  ? const Color(0xFFFFB4A2)
-                  : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
+              color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
             ),
             const SizedBox(width: 6),
             Text(
@@ -308,9 +313,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
                 letterSpacing: 0.3,
-                color: isActive
-                    ? const Color(0xFFFFB4A2)
-                    : const Color(0xFF1d0e0c).withValues(alpha: 0.6),
+                color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
               ),
             ),
           ],

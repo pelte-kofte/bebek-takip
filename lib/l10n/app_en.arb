@@ -30,7 +30,7 @@
   "no": "No",
 
   "home": "Home",
-  "activities": "Activities",
+  "activities": "Care",
   "vaccines": "Vaccines",
   "development": "Development",
   "settings": "Settings",
@@ -38,7 +38,7 @@
   "addActivity": "Add Activity",
   "whatHappened": "What happened?",
   "nursing": "Nursing",
-  "bottle": "Bottle",
+  "bottle": "Feeding",
   "sleep": "Sleep",
   "diaper": "Diaper",
 
@@ -242,7 +242,7 @@
   "recentActivity": "RECENT ACTIVITY",
   "seeHistory": "SEE HISTORY",
   "noActivitiesLast24h": "No activities in the last 24 hours",
-  "bottleFeeding": "Bottle Feeding",
+  "bottleFeeding": "Feeding",
   "trackYourBabyGrowth": "Track your baby's growth",
   "addHeightWeightMeasurements": "Add weight and height measurements",
   "addFirstMeasurement": "Add first measurement",

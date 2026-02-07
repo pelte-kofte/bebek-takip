@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import '../models/veri_yonetici.dart';
 import '../models/timer_yonetici.dart';
 import '../models/dil.dart';
@@ -353,7 +354,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
-    final hasValidPhoto = _babyPhotoPath != null &&
+    final hasValidPhoto = !kIsWeb &&
+        _babyPhotoPath != null &&
         _babyPhotoPath!.isNotEmpty &&
         File(_babyPhotoPath!).existsSync();
 

@@ -19,10 +19,8 @@ class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _logoController;
   late AnimationController _fadeController;
-  late AnimationController _floatController;
   late Animation<double> _logoScale;
   late Animation<double> _fadeIn;
-  late Animation<double> _float;
   bool _canTap = false;
 
   @override
@@ -39,11 +37,6 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
     );
 
-    _floatController = AnimationController(
-      duration: const Duration(milliseconds: 2500),
-      vsync: this,
-    )..repeat(reverse: true);
-
     _logoScale = Tween<double>(begin: 0.3, end: 1.0).animate(
       CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
@@ -52,10 +45,6 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
-
-    _float = Tween<double>(begin: -10.0, end: 10.0).animate(
-      CurvedAnimation(parent: _floatController, curve: Curves.easeInOut),
-    );
 
     _logoController.forward();
     Future.delayed(const Duration(milliseconds: 400), () {
@@ -94,7 +83,6 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _logoController.dispose();
     _fadeController.dispose();
-    _floatController.dispose();
     super.dispose();
   }
 
@@ -115,35 +103,29 @@ class _SplashScreenState extends State<SplashScreen>
 
                   // Decorative illustration with float animation
                   AnimatedBuilder(
-                    animation: Listenable.merge([
-                      _logoController,
-                      _floatController,
-                    ]),
+                    animation: _logoController,
                     builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(0, _float.value),
-                        child: Transform.scale(
-                          scale: _logoScale.value,
-                          child: Container(
-                            width: 300,
-                            height: 300,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.2),
-                                  blurRadius: 60,
-                                  spreadRadius: 5,
-                                  offset: const Offset(0, 25),
-                                ),
-                              ],
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: Image.asset(
-                                'assets/icons/illustration/parents.png',
-                                fit: BoxFit.contain,
+                      return Transform.scale(
+                        scale: _logoScale.value,
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withOpacity(0.2),
+                                blurRadius: 60,
+                                spreadRadius: 5,
+                                offset: const Offset(0, 25),
                               ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: Image.asset(
+                              'assets/app_icon/app_icon.png',
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ),

@@ -30,7 +30,7 @@
   "no": "Hayır",
 
   "home": "Ana Sayfa",
-  "activities": "Aktiviteler",
+  "activities": "Bakım",
   "vaccines": "Aşılar",
   "development": "Gelişim",
   "settings": "Ayarlar",
@@ -38,7 +38,7 @@
   "addActivity": "Aktivite Ekle",
   "whatHappened": "Ne oldu?",
   "nursing": "Emzirme",
-  "bottle": "Biberon",
+  "bottle": "Beslenme",
   "sleep": "Uyku",
   "diaper": "Bez",
 
@@ -195,7 +195,7 @@
   "recentActivity": "SON AKTİVİTELER",
   "seeHistory": "GEÇMİŞİ GÖR",
   "noActivitiesLast24h": "Son 24 saatte aktivite yok",
-  "bottleFeeding": "Biberon",
+  "bottleFeeding": "Beslenme",
   "trackYourBabyGrowth": "Bebeğinizin büyümesini takip edin",
   "addHeightWeightMeasurements": "Boy ve kilo ölçümlerini ekleyin",
   "addFirstMeasurement": "İlk ölçümü ekle",

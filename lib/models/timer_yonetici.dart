@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/sleep_notification_service.dart';
+import '../services/reminder_service.dart';
+import 'veri_yonetici.dart';
 
 /// Singleton class for managing timers across screens
 /// Persists timer state even when navigating between screens
@@ -39,7 +41,72 @@ class TimerYonetici {
     _prefs = prefs;
     await _notificationService.initialize();
     await _notificationService.requestPermissions();
+
+    // Register foreground notification action handler
+    SleepNotificationService.onActionReceived = _handleNotificationAction;
+
     await _loadState();
+  }
+
+  /// Handle notification action button taps (foreground)
+  void _handleNotificationAction(String actionId) {
+    if (actionId == 'STOP_SLEEP_TIMER') {
+      _stopAndSaveUykuFromNotification();
+    } else if (actionId == 'STOP_NURSING_TIMER') {
+      _stopAndSaveEmzirmeFromNotification();
+    }
+  }
+
+  /// Stop sleep timer and save activity from notification action
+  Future<void> _stopAndSaveUykuFromNotification() async {
+    final data = await stopUyku();
+    if (data == null) return;
+
+    final baslangic = data['baslangic'] as DateTime;
+    final bitis = data['bitis'] as DateTime;
+    final duration = bitis.difference(baslangic);
+    if (duration.inMinutes < 1) return;
+
+    final kayitlar = VeriYonetici.getUykuKayitlari();
+    kayitlar.insert(0, {
+      'baslangic': data['baslangic'],
+      'bitis': data['bitis'],
+      'sure': data['sure'],
+    });
+    await VeriYonetici.saveUykuKayitlari(kayitlar);
+  }
+
+  /// Stop nursing timer and save activity from notification action
+  Future<void> _stopAndSaveEmzirmeFromNotification() async {
+    final data = await stopEmzirme();
+    if (data == null) return;
+
+    final solSaniye = data['solSaniye'] as int;
+    final sagSaniye = data['sagSaniye'] as int;
+    if (solSaniye == 0 && sagSaniye == 0) return;
+
+    final solDakika = (solSaniye / 60).ceil();
+    final sagDakika = (sagSaniye / 60).ceil();
+
+    final kayitlar = VeriYonetici.getMamaKayitlari();
+    kayitlar.insert(0, {
+      'tarih': data['tarih'] ?? DateTime.now(),
+      'tur': 'Anne Sütü',
+      'solDakika': solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0),
+      'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
+      'miktar': 0,
+    });
+    await VeriYonetici.saveMamaKayitlari(kayitlar);
+
+    // Schedule feeding reminder if enabled
+    if (VeriYonetici.isFeedingReminderEnabled()) {
+      final reminderService = ReminderService();
+      await reminderService.initialize();
+      await reminderService.scheduleFeedingReminder(
+        lastFeedingTime: DateTime.now(),
+        intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
+      );
+    }
   }
 
   /// Load saved timer states from preferences
@@ -59,6 +126,9 @@ class TimerYonetici {
         _solToplamSaniye = _prefs?.getInt('active_emzirme_sol_saniye') ?? 0;
         _sagToplamSaniye = _prefs?.getInt('active_emzirme_sag_saniye') ?? 0;
         _startEmzirmeUpdateTimer();
+        // Resume notification if nursing was active
+        await _notificationService.showNursingNotification(
+            _emzirmeBaslangic!, _emzirmeTaraf);
       } catch (e) {
         _emzirmeBaslangic = null;
         _emzirmeIlkBaslangic = null;
@@ -100,6 +170,9 @@ class TimerYonetici {
     }
 
     _startEmzirmeUpdateTimer();
+
+    // Show persistent nursing notification
+    await _notificationService.showNursingNotification(_emzirmeBaslangic!, taraf);
   }
 
   /// Switch emzirme side (sol <-> sag)
@@ -130,6 +203,9 @@ class TimerYonetici {
 
     // Restart update timer
     _startEmzirmeUpdateTimer();
+
+    // Update notification with new side
+    await _notificationService.updateNursingSide(newTaraf);
   }
 
   /// Stop emzirme timer and return the data
@@ -179,6 +255,9 @@ class TimerYonetici {
     _emzirmeUpdateTimer?.cancel();
     _emzirmeUpdateTimer = null;
     _emzirmeController.add(null);
+
+    // Cancel nursing notification
+    await _notificationService.cancelNursingNotification();
   }
 
   /// Start uyku timer

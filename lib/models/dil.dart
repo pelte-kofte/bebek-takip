@@ -74,7 +74,7 @@ class Dil {
   static const String tarihSec = 'Tarih Seç';
   
   // Aktiviteler
-  static const String aktiviteler = 'Aktiviteler';
+  static const String aktiviteler = 'Bakım';
   static const String kayitYok = 'Bu tarihte kayıt yok';
   static const String baskaTarihSec = 'Başka tarih seç';
   static const String kayit = 'kayıt';
@@ -130,7 +130,7 @@ class Dil {
   
   // Navigasyon
   static const String navAnaSayfa = 'Ana Sayfa';
-  static const String navAktiviteler = 'Aktiviteler';
+  static const String navAktiviteler = 'Bakım';
   static const String navGelisim = 'Gelişim';
   static const String navAyarlar = 'Ayarlar';
   

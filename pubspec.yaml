@@ -53,3 +53,4 @@ flutter:
   assets:
     - assets/icons/illustration/
     - assets/illustrations/tips/
+    - assets/app_icon/
