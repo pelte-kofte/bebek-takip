@@ -9,7 +9,6 @@ import 'screens/milestones_screen.dart';
 import 'screens/add_screen.dart';
 import 'screens/vaccines_screen.dart';
 import 'models/veri_yonetici.dart';
-import 'models/dil.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
@@ -141,6 +140,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     final screens = [
       HomeScreen(key: ValueKey('home_$_refreshKey'), onDataChanged: _refresh),
@@ -180,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: _buildNavItem(
                         0,
                         Icons.home_rounded,
-                        Dil.navAnaSayfa,
+                        l10n.home,
                       ),
                     ),
                   ),
@@ -189,7 +189,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: _buildNavItem(
                         1,
                         Icons.bar_chart_rounded,
-                        Dil.navAktiviteler,
+                        l10n.activities,
                       ),
                     ),
                   ),
@@ -199,7 +199,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: _buildNavItem(
                         3,
                         Icons.vaccines_outlined,
-                        Dil.asilar,
+                        l10n.vaccines,
                       ),
                     ),
                   ),
@@ -208,7 +208,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: _buildNavItem(
                         4,
                         Icons.emoji_events_rounded,
-                        Dil.navGelisim,
+                        l10n.development,
                       ),
                     ),
                   ),

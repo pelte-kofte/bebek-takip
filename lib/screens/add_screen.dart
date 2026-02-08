@@ -1133,85 +1133,91 @@ class _AddScreenState extends State<AddScreen> {
                             ],
                             if (selectedActivity == 'diaper') ...[
                               // Diaper type selector
-                              Text(
-                                'TYPE',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  // Wet button
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () =>
-                                          setState(() => _diaperType = 'wet'),
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 16,
+                              Builder(
+                                builder: (context) {
+                                  final l10n = AppLocalizations.of(context)!;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'TYPE',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? Colors.white.withValues(alpha: 0.6) : const Color(0xFF4A3F3F),
+                                          letterSpacing: 2.0,
                                         ),
-                                        decoration: BoxDecoration(
-                                          color: _diaperType == 'wet'
-                                              ? const Color(0xFFFF998A)
-                                              : surfaceColor,
-                                          borderRadius: BorderRadius.circular(
-                                            24,
-                                          ),
-                                          border: Border.all(
-                                            color: _diaperType == 'wet'
-                                                ? const Color(0xFFFF998A)
-                                                : isDark
-                                                    ? Colors.white.withValues(alpha: 0.15)
-                                                    : Colors.transparent,
-                                            width: 2,
-                                          ),
-                                          boxShadow: _diaperType == 'wet'
-                                              ? [
-                                                  BoxShadow(
-                                                    color: const Color(
-                                                      0xFFFF998A,
-                                                    ).withValues(alpha: 0.2),
-                                                    blurRadius: 12,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ]
-                                              : [],
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: BoxDecoration(
-                                                color: _diaperType == 'wet'
-                                                    ? Colors.white.withValues(
-                                                        alpha: 0.3,
-                                                      )
-                                                    : isDark
-                                                        ? Colors.white.withValues(alpha: 0.08)
-                                                        : const Color(0xFFF4EDF9),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                              child: Center(
-                                                child: Icon(
-                                                  Icons.water_drop_outlined,
-                                                  size: 24,
-                                                  color: _diaperType == 'wet'
-                                                      ? Colors.white
-                                                      : isDark
-                                                          ? Colors.white.withValues(alpha: 0.7)
-                                                          : const Color(0xFF7A749E),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        children: [
+                                          // Wet button
+                                          Expanded(
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  setState(() => _diaperType = 'wet'),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical: 16,
                                                 ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              'Wet',
+                                                decoration: BoxDecoration(
+                                                  color: _diaperType == 'wet'
+                                                      ? const Color(0xFFFF998A)
+                                                      : surfaceColor,
+                                                  borderRadius: BorderRadius.circular(
+                                                    24,
+                                                  ),
+                                                  border: Border.all(
+                                                    color: _diaperType == 'wet'
+                                                        ? const Color(0xFFFF998A)
+                                                        : isDark
+                                                            ? Colors.white.withValues(alpha: 0.15)
+                                                            : Colors.transparent,
+                                                    width: 2,
+                                                  ),
+                                                  boxShadow: _diaperType == 'wet'
+                                                      ? [
+                                                          BoxShadow(
+                                                            color: const Color(
+                                                              0xFFFF998A,
+                                                            ).withValues(alpha: 0.2),
+                                                            blurRadius: 12,
+                                                            offset: const Offset(0, 4),
+                                                          ),
+                                                        ]
+                                                      : [],
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    Container(
+                                                      width: 32,
+                                                      height: 32,
+                                                      decoration: BoxDecoration(
+                                                        color: _diaperType == 'wet'
+                                                            ? Colors.white.withValues(
+                                                                alpha: 0.3,
+                                                              )
+                                                            : isDark
+                                                                ? Colors.white.withValues(alpha: 0.08)
+                                                                : const Color(0xFFF4EDF9),
+                                                        borderRadius:
+                                                            BorderRadius.circular(8),
+                                                      ),
+                                                      child: Center(
+                                                        child: Icon(
+                                                          Icons.water_drop_outlined,
+                                                          size: 24,
+                                                          color: _diaperType == 'wet'
+                                                              ? Colors.white
+                                                              : isDark
+                                                                  ? Colors.white.withValues(alpha: 0.7)
+                                                                  : const Color(0xFF7A749E),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Text(
+                                                      l10n.wet,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -1296,7 +1302,7 @@ class _AddScreenState extends State<AddScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              'Dirty',
+                                              l10n.dirty,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -1381,7 +1387,7 @@ class _AddScreenState extends State<AddScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              'Both',
+                                              l10n.both,
                                               style: TextStyle(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.bold,
@@ -1400,6 +1406,10 @@ class _AddScreenState extends State<AddScreen> {
                                     ),
                                   ),
                                 ],
+                              ),
+                                    ],
+                                  );
+                                },
                               ),
                               const SizedBox(height: 24),
                               // Time picker
@@ -1705,6 +1715,7 @@ class _AddScreenState extends State<AddScreen> {
           'miktar': 0,
           'kategori': 'Solid',
           'solidAciklama': _solidFoodController.text.isNotEmpty ? _solidFoodController.text : null,
+          'solidDakika': 0,
         });
       } else {
         kayitlar.insert(0, {

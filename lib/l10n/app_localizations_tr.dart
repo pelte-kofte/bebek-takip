@@ -145,7 +145,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get milk => 'Süt';
 
   @override
-  String get solid => 'Katı Gıda';
+  String get solid => 'Katı';
 
   @override
   String get whatWasGiven => 'NE VERiLDi?';
@@ -403,7 +403,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get rightBreast => 'Sağ Meme';
 
   @override
-  String get solidFood => 'Katı Gıda';
+  String get solidFood => 'Ek gıda';
 
   @override
   String get diaperChanges => 'Bez Değişimi';

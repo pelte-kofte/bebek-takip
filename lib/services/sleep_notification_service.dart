@@ -214,6 +214,8 @@ class SleepNotificationService {
       presentAlert: true,
       presentBadge: false,
       presentSound: false,
+      presentBanner: true,
+      presentList: true,
       categoryIdentifier: 'SLEEP_TIMER_CATEGORY',
     );
 
@@ -292,6 +294,8 @@ class SleepNotificationService {
       presentAlert: true,
       presentBadge: false,
       presentSound: false,
+      presentBanner: true,
+      presentList: true,
       categoryIdentifier: 'NURSING_TIMER_CATEGORY',
     );
 

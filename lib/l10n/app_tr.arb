@@ -51,7 +51,7 @@
 
   "category": "KATEGORi",
   "milk": "Süt",
-  "solid": "Katı Gıda",
+  "solid": "Katı",
   "whatWasGiven": "NE VERiLDi?",
   "solidFoodHint": "Or: Muz püresi, havuç...",
   "amount": "MiKTAR",
@@ -142,7 +142,7 @@
   "avgDuration": "Ort. Süre",
   "leftBreast": "Sol Meme",
   "rightBreast": "Sağ Meme",
-  "solidFood": "Katı Gıda",
+  "solidFood": "Ek gıda",
   "diaperChanges": "Bez Değişimi",
   "longestSleep": "En Uzun Uyku",
   "sleepCount": "Uyku Sayısı",
