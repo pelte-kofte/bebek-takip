@@ -1334,10 +1334,16 @@ abstract class AppLocalizations {
   /// **'Welcome to Nilico'**
   String get welcomeToNilico;
 
+  /// No description provided for @createYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get createYourAccount;
+
   /// No description provided for @loginBenefitText.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to backup your data and sync across devices. You can always do this later.'**
+  /// **'Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.'**
   String get loginBenefitText;
 
   /// No description provided for @signInWithApple.
@@ -1393,6 +1399,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest Mode'**
   String get guestMode;
+
+  /// No description provided for @signInToProtectData.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to protect your data'**
+  String get signInToProtectData;
+
+  /// No description provided for @backupSyncComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & sync coming soon'**
+  String get backupSyncComingSoon;
 }
 
 class _AppLocalizationsDelegate

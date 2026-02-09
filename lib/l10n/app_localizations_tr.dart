@@ -678,8 +678,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get welcomeToNilico => 'Nilico\'ya Hoş Geldiniz';
 
   @override
+  String get createYourAccount => 'Hesabını oluştur';
+
+  @override
   String get loginBenefitText =>
-      'Verilerinizi yedeklemek ve cihazlar arası senkronize etmek için giriş yapın. Bunu daha sonra da yapabilirsiniz.';
+      'Verilerini güvende tutmak ve yakında gelecek yedekleme özellikleri için giriş yapabilirsin. İstersen giriş yapmadan da devam edebilirsin.';
 
   @override
   String get signInWithApple => 'Apple ile giriş yap';
@@ -710,4 +713,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get guestMode => 'Misafir Modu';
+
+  @override
+  String get signInToProtectData => 'Verilerini korumak için giriş yap';
+
+  @override
+  String get backupSyncComingSoon => 'Yedekleme ve senkronizasyon yakında';
 }

@@ -146,7 +146,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
 
               // Title
               Text(
-                l10n.welcomeToNilico,
+                l10n.createYourAccount,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,

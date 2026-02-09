@@ -548,7 +548,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           isLoggedIn
                               ? (user.email ?? user.displayName ?? 'User')
-                              : l10n.continueWithoutLogin,
+                              : l10n.signInToProtectData,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -556,6 +556,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
+                        if (!isLoggedIn) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.backupSyncComingSoon,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: subtitleColor.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

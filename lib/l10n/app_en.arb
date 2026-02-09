@@ -344,7 +344,8 @@
   },
 
   "welcomeToNilico": "Welcome to Nilico",
-  "loginBenefitText": "Sign in to backup your data and sync across devices. You can always do this later.",
+  "createYourAccount": "Create your account",
+  "loginBenefitText": "Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.",
   "signInWithApple": "Sign in with Apple",
   "signInWithGoogle": "Sign in with Google",
   "continueWithoutLogin": "Continue without login",
@@ -358,5 +359,7 @@
       "email": {"type": "String"}
     }
   },
-  "guestMode": "Guest Mode"
+  "guestMode": "Guest Mode",
+  "signInToProtectData": "Sign in to protect your data",
+  "backupSyncComingSoon": "Backup & sync coming soon"
 }

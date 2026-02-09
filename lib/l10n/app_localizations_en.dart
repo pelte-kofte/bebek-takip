@@ -680,8 +680,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeToNilico => 'Welcome to Nilico';
 
   @override
+  String get createYourAccount => 'Create your account';
+
+  @override
   String get loginBenefitText =>
-      'Sign in to backup your data and sync across devices. You can always do this later.';
+      'Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.';
 
   @override
   String get signInWithApple => 'Sign in with Apple';
@@ -712,4 +715,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestMode => 'Guest Mode';
+
+  @override
+  String get signInToProtectData => 'Sign in to protect your data';
+
+  @override
+  String get backupSyncComingSoon => 'Backup & sync coming soon';
 }
