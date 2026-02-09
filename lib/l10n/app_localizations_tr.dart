@@ -52,6 +52,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Kilometre taşları ve komik anları kaydedin. Çok çabuk büyüyorlar!';
 
   @override
+  String get dailyRhythm => 'Günlük Ritim';
+
+  @override
+  String get dailyRhythmDesc =>
+      'Yumuşak rutinler, sakin günler ve huzurlu geceler getirir.';
+
+  @override
   String get skip => 'Atla';
 
   @override
@@ -98,6 +105,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get development => 'Gelişim';
+
+  @override
+  String get memories => 'Anılar';
 
   @override
   String get settings => 'Ayarlar';

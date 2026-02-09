@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
@@ -21,9 +22,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   final ReminderService _reminderService = ReminderService();
 
   bool _feedingReminderEnabled = false;
-  int _feedingReminderInterval = 180;
   bool _diaperReminderEnabled = false;
-  int _diaperReminderInterval = 120;
+  TimeOfDay _feedingReminderTime = const TimeOfDay(hour: 14, minute: 0);
+  TimeOfDay _diaperReminderTime = const TimeOfDay(hour: 14, minute: 0);
 
   @override
   void initState() {
@@ -34,18 +35,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _loadReminderSettings() {
     setState(() {
       _feedingReminderEnabled = VeriYonetici.isFeedingReminderEnabled();
-      _feedingReminderInterval = VeriYonetici.getFeedingReminderInterval();
       _diaperReminderEnabled = VeriYonetici.isDiaperReminderEnabled();
-      _diaperReminderInterval = VeriYonetici.getDiaperReminderInterval();
+      _feedingReminderTime = TimeOfDay(
+        hour: VeriYonetici.getFeedingReminderHour(),
+        minute: VeriYonetici.getFeedingReminderMinute(),
+      );
+      _diaperReminderTime = TimeOfDay(
+        hour: VeriYonetici.getDiaperReminderHour(),
+        minute: VeriYonetici.getDiaperReminderMinute(),
+      );
     });
   }
 
-  String _formatInterval(int minutes) {
-    if (minutes < 60) return '$minutes dk';
-    final hours = minutes ~/ 60;
-    final mins = minutes % 60;
-    if (mins == 0) return '$hours saat';
-    return '$hours saat $mins dk';
+  String _formatTime(TimeOfDay time) {
+    final h = time.hour.toString().padLeft(2, '0');
+    final m = time.minute.toString().padLeft(2, '0');
+    return '$h:$m';
   }
 
   Future<void> _toggleFeedingReminder(bool value) async {
@@ -64,13 +69,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showIntervalPicker({
+  void _showTimePicker({
     required String title,
-    required int currentValue,
-    required Function(int) onSelected,
+    required TimeOfDay currentValue,
+    required Function(TimeOfDay) onSelected,
   }) {
-    final intervals = [60, 90, 120, 150, 180, 210, 240];
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    var tempTime = currentValue;
 
     showModalBottomSheet(
       context: context,
@@ -80,40 +85,73 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      Dil.iptal,
+                      style: TextStyle(
+                        color: isDark ? AppColors.textSecondaryDark : const Color(0xFF866F65),
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
-                ),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                    ),
+                  ),
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      onSelected(tempTime);
+                      Navigator.pop(context);
+                    },
+                    child: const Text(
+                      'Tamam',
+                      style: TextStyle(
+                        color: Color(0xFFFF998A),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              ...intervals.map((interval) => ListTile(
-                title: Text(
-                  _formatInterval(interval),
-                  style: TextStyle(
-                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
-                    fontWeight: interval == currentValue ? FontWeight.bold : FontWeight.normal,
-                  ),
+            ),
+            SizedBox(
+              height: 220,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true,
+                initialDateTime: DateTime(
+                  0,
+                  1,
+                  1,
+                  currentValue.hour,
+                  currentValue.minute,
                 ),
-                trailing: interval == currentValue
-                    ? const Icon(Icons.check, color: Color(0xFFFFB4A2))
-                    : null,
-                onTap: () {
-                  onSelected(interval);
-                  Navigator.pop(context);
+                onDateTimeChanged: (dateTime) {
+                  tempTime = TimeOfDay(
+                    hour: dateTime.hour,
+                    minute: dateTime.minute,
+                  );
                 },
-              )),
-              const SizedBox(height: 16),
-            ],
-          ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
         ),
       ),
     );
@@ -201,7 +239,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildAccountSection(cardColor, textColor, subtitleColor),
                     const SizedBox(height: 24),
 
-                    // GÖRÜNÜM Section
+                    // GÃ–RÃœNÃœM Section
                     _buildSectionHeader(Dil.gorunum, subtitleColor),
                     const SizedBox(height: 12),
                     _buildCard(
@@ -222,7 +260,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // BİLDİRİMLER Section
+                    // BÄ°LDÄ°RÄ°MLER Section
                     _buildSectionHeader(Dil.bildirimler, subtitleColor),
                     const SizedBox(height: 12),
                     _buildCard(
@@ -235,8 +273,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconColor: const Color(0xFFFFB4A2),
                             title: Dil.mamaHatirlatici,
                             subtitle: _feedingReminderEnabled
-                                ? 'Her ${_formatInterval(_feedingReminderInterval)}'
-                                : 'Kapalı',
+                                ? 'Saat ${_formatTime(_feedingReminderTime)}'
+                                : 'KapalÄ±',
                             value: _feedingReminderEnabled,
                             onChanged: _toggleFeedingReminder,
                             textColor: textColor,
@@ -245,12 +283,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (_feedingReminderEnabled) ...[
                             const SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _showIntervalPicker(
-                                title: 'Beslenme Hatırlatıcı Aralığı',
-                                currentValue: _feedingReminderInterval,
+                              onTap: () => _showTimePicker(
+                                title: 'Hatırlatma Saati',
+                                currentValue: _feedingReminderTime,
                                 onSelected: (value) async {
-                                  setState(() => _feedingReminderInterval = value);
-                                  await VeriYonetici.setFeedingReminderInterval(value);
+                                  setState(() => _feedingReminderTime = value);
+                                  await VeriYonetici.setFeedingReminderTime(
+                                    value.hour,
+                                    value.minute,
+                                  );
                                 },
                               ),
                               child: Container(
@@ -266,7 +307,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     Icon(Icons.schedule, size: 16, color: const Color(0xFFFFB4A2)),
                                     const SizedBox(width: 6),
                                     Text(
-                                      _formatInterval(_feedingReminderInterval),
+                                      _formatTime(_feedingReminderTime),
                                       style: const TextStyle(
                                         color: Color(0xFFFFB4A2),
                                         fontWeight: FontWeight.w600,
@@ -289,8 +330,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconColor: subtitleColor,
                             title: Dil.bezHatirlatici,
                             subtitle: _diaperReminderEnabled
-                                ? 'Her ${_formatInterval(_diaperReminderInterval)}'
-                                : 'Kapalı',
+                                ? 'Saat ${_formatTime(_diaperReminderTime)}'
+                                : 'KapalÄ±',
                             value: _diaperReminderEnabled,
                             onChanged: _toggleDiaperReminder,
                             textColor: textColor,
@@ -299,12 +340,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           if (_diaperReminderEnabled) ...[
                             const SizedBox(height: 8),
                             GestureDetector(
-                              onTap: () => _showIntervalPicker(
-                                title: 'Bez Hatırlatıcı Aralığı',
-                                currentValue: _diaperReminderInterval,
+                              onTap: () => _showTimePicker(
+                                title: 'Hatırlatma Saati',
+                                currentValue: _diaperReminderTime,
                                 onSelected: (value) async {
-                                  setState(() => _diaperReminderInterval = value);
-                                  await VeriYonetici.setDiaperReminderInterval(value);
+                                  setState(() => _diaperReminderTime = value);
+                                  await VeriYonetici.setDiaperReminderTime(
+                                    value.hour,
+                                    value.minute,
+                                  );
                                 },
                               ),
                               child: Container(
@@ -320,7 +364,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     Icon(Icons.schedule, size: 16, color: subtitleColor),
                                     const SizedBox(width: 6),
                                     Text(
-                                      _formatInterval(_diaperReminderInterval),
+                                      _formatTime(_diaperReminderTime),
                                       style: TextStyle(
                                         color: subtitleColor,
                                         fontWeight: FontWeight.w600,
@@ -338,7 +382,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // VERİ YÖNETİMİ Section
+                    // VERÄ° YÃ–NETÄ°MÄ° Section
                     _buildSectionHeader(Dil.veriYonetimi, subtitleColor),
                     const SizedBox(height: 12),
                     _buildCard(
@@ -349,8 +393,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             icon: Icons.analytics_outlined,
                             iconBgColor: const Color(0xFFE5E0F7),
                             iconColor: subtitleColor,
-                            title: 'Rapor Oluştur',
-                            subtitle: 'Haftalık/Aylık istatistikler',
+                            title: 'Rapor OluÅŸtur',
+                            subtitle: 'HaftalÄ±k/AylÄ±k istatistikler',
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                             onTap: () {
@@ -371,7 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFE5E0F7),
                             iconColor: subtitleColor,
                             title: Dil.verileriDisaAktar,
-                            subtitle: 'JSON formatında indir',
+                            subtitle: 'JSON formatÄ±nda indir',
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                             onTap: () {
@@ -392,7 +436,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFFFE5E0),
                             iconColor: Colors.red.shade400,
                             title: Dil.tumVerileriSil,
-                            subtitle: 'Tüm kayıtları kalıcı olarak sil',
+                            subtitle: 'TÃ¼m kayÄ±tlarÄ± kalÄ±cÄ± olarak sil',
                             textColor: Colors.red.shade400,
                             subtitleColor: subtitleColor,
                             onTap: () => _showDeleteDialog(isDark, textColor, subtitleColor),
@@ -825,7 +869,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Tüm veriler silindi!'),
+                  content: Text('TÃ¼m veriler silindi!'),
                   backgroundColor: Color(0xFFFFB4A2),
                 ),
               );
@@ -850,3 +894,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
+
+
+

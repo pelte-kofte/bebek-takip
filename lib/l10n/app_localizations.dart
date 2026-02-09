@@ -176,6 +176,18 @@ abstract class AppLocalizations {
   /// **'Save milestones and funny moments. They grow up so fast!'**
   String get preciousMemoriesDesc;
 
+  /// No description provided for @dailyRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Rhythm'**
+  String get dailyRhythm;
+
+  /// No description provided for @dailyRhythmDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle routines bring calm days and peaceful nights.'**
+  String get dailyRhythmDesc;
+
   /// No description provided for @skip.
   ///
   /// In en, this message translates to:
@@ -271,6 +283,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Development'**
   String get development;
+
+  /// No description provided for @memories.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories'**
+  String get memories;
 
   /// No description provided for @settings.
   ///

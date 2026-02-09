@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import '../models/veri_yonetici.dart';
 import '../main.dart';
 import '../theme/app_theme.dart';
-import '../theme/app_spacing.dart';
-import '../widgets/decorative_background.dart';
 import '../l10n/app_localizations.dart';
 import 'login_entry_screen.dart';
 
@@ -16,10 +14,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _logoController;
+    with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
-  late Animation<double> _logoScale;
   late Animation<double> _fadeIn;
   bool _canTap = false;
 
@@ -27,18 +23,9 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    _logoController = AnimationController(
-      duration: const Duration(milliseconds: 1200),
-      vsync: this,
-    );
-
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
-    );
-
-    _logoScale = Tween<double>(begin: 0.3, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
 
     _fadeIn = Tween<double>(
@@ -46,9 +33,8 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.0,
     ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
 
-    _logoController.forward();
     Future.delayed(const Duration(milliseconds: 400), () {
-      _fadeController.forward();
+      if (mounted) _fadeController.forward();
     });
 
     // 2 saniye sonra dokunmaya izin ver
@@ -81,171 +67,153 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _logoController.dispose();
     _fadeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return GestureDetector(
       onTap: _goToNextScreen,
       child: Scaffold(
-        backgroundColor: AppColors.bgLight,
-        body: DecorativeBackground(
-          preset: BackgroundPreset.home,
-          child: SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(flex: 2),
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Full-screen hero image
+            Image.asset('assets/onboarding/welcome.png', fit: BoxFit.cover),
 
-                  // Decorative illustration with float animation
-                  AnimatedBuilder(
-                    animation: _logoController,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _logoScale.value,
-                        child: Container(
-                          width: 300,
-                          height: 300,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(50),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withOpacity(0.2),
-                                blurRadius: 60,
-                                spreadRadius: 5,
-                                offset: const Offset(0, 25),
+            // Bottom gradient overlay for readability
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.15),
+                      Colors.black.withValues(alpha: 0.55),
+                      Colors.black.withValues(alpha: 0.75),
+                    ],
+                    stops: const [0.0, 0.35, 0.55, 0.75, 1.0],
+                  ),
+                ),
+              ),
+            ),
+
+            // Content overlay — bottom-aligned
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Brand + copy
+                        FadeTransition(
+                          opacity: _fadeIn,
+                          child: Column(
+                            children: [
+                              // App name (text only, no emoji)
+                              Text(
+                                l10n.appName,
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: -1,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+
+                              // Tagline
+                              Text(
+                                l10n.tagline,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white.withValues(alpha: 0.85),
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Feature chips (Wrap for small screens)
+                              Wrap(
+                                spacing: 10,
+                                runSpacing: 8,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  _buildFeatureChip('✓ ${l10n.freeForever}'),
+                                  _buildFeatureChip('✓ ${l10n.securePrivate}'),
+                                ],
                               ),
                             ],
                           ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Image.asset(
-                              'assets/app_icon/app_icon.png',
-                              fit: BoxFit.contain,
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // CTA button
+                        FadeTransition(
+                          opacity: _fadeIn,
+                          child: AnimatedOpacity(
+                            opacity: _canTap ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 500),
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary,
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppColors.primary.withValues(
+                                      alpha: 0.4,
+                                    ),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    l10n.tapToStart,
+                                    style: const TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
 
-                  SizedBox(height: AppSpacing.xxl),
-
-                  // App Title
-                  FadeTransition(
-                    opacity: _fadeIn,
-                    child: Builder(
-                      builder: (context) {
-                        final l10n = AppLocalizations.of(context)!;
-                        return Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Text(
-                                  '🌱 ',
-                                  style: TextStyle(fontSize: 32),
-                                ),
-                                Text(
-                                  l10n.appName,
-                                  style: AppTypography.h1(context).copyWith(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: -1,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: AppSpacing.md),
-
-                            // Tagline
-                            Text(
-                              l10n.tagline,
-                              style: AppTypography.body(context),
-                            ),
-
-                            SizedBox(height: AppSpacing.sm),
-
-                            // Features Row
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildFeatureChip('✓ ${l10n.freeForever}'),
-                                const SizedBox(width: 16),
-                                _buildFeatureChip('✓ ${l10n.securePrivate}'),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
+                        const SizedBox(height: 24),
+                      ],
                     ),
                   ),
-
-                  const Spacer(flex: 2),
-
-                  // Tap to continue
-                  FadeTransition(
-                    opacity: _fadeIn,
-                    child: AnimatedOpacity(
-                      opacity: _canTap ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 500),
-                      child: Builder(
-                        builder: (context) {
-                          final l10n = AppLocalizations.of(context)!;
-                          return Column(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(30),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: AppColors.primary.withOpacity(0.4),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      l10n.tapToStart,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -253,17 +221,18 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildFeatureChip(String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: BoxDecoration(
-        color: AppColors.accentGreen.withOpacity(0.2),
+        color: Colors.white.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondaryLight,
+          color: Colors.white.withValues(alpha: 0.9),
         ),
       ),
     );
@@ -284,32 +253,39 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   List<OnboardingData> _getPages(AppLocalizations l10n) => [
     OnboardingData(
-      icon: 'assets/icons/illustration/nursing.png',
+      icon: 'assets/onboarding/nursing.png',
       title: l10n.feedingTracker,
       description: l10n.feedingTrackerDesc,
       color: AppColors.accentBlue,
       bgColor: const Color(0xFFEFF6FF),
     ),
     OnboardingData(
-      icon: 'assets/icons/illustration/sleeping.png',
+      icon: 'assets/onboarding/sleeping.png',
       title: l10n.sleepPatterns,
       description: l10n.sleepPatternsDesc,
       color: AppColors.accentLavender,
       bgColor: const Color(0xFFF5F3FF),
     ),
     OnboardingData(
-      icon: 'assets/icons/illustration/growing.png',
+      icon: 'assets/onboarding/growing.png',
       title: l10n.growthCharts,
       description: l10n.growthChartsDesc,
       color: AppColors.accentGreen,
       bgColor: const Color(0xFFF0FDF4),
     ),
     OnboardingData(
-      icon: 'assets/icons/illustration/cuddle.png',
+      icon: 'assets/onboarding/cuddle.png',
       title: l10n.preciousMemories,
       description: l10n.preciousMemoriesDesc,
       color: AppColors.primary,
       bgColor: const Color(0xFFFFF1F2),
+    ),
+    OnboardingData(
+      icon: 'assets/onboarding/onboarding_daily_rhythm.png',
+      title: l10n.dailyRhythm,
+      description: l10n.dailyRhythmDesc,
+      color: AppColors.accentPeach,
+      bgColor: const Color(0xFFFFF8F0),
     ),
   ];
 

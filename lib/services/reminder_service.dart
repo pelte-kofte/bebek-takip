@@ -181,6 +181,90 @@ class ReminderService {
     );
   }
 
+  /// Schedule a feeding reminder notification at an exact time
+  Future<void> scheduleFeedingReminderAt(DateTime scheduledAt) async {
+    if (!_initialized) await initialize();
+
+    // Cancel any existing feeding reminder
+    await cancelFeedingReminder();
+
+    // Don't schedule if time is in the past
+    if (scheduledAt.isBefore(DateTime.now())) return;
+
+    const androidDetails = AndroidNotificationDetails(
+      'feeding_reminder_channel',
+      'Beslenme HatÄ±rlatÄ±cÄ±',
+      channelDescription: 'Beslenme hatÄ±rlatÄ±cÄ± bildirimleri',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: false,
+      presentSound: true,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.zonedSchedule(
+      _feedingReminderId,
+      'ğŸ¼ Beslenme HatÄ±rlatÄ±cÄ±',
+      'BebeÄŸinizi besleme zamanÄ± geldi',
+      tz.TZDateTime.from(scheduledAt, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  /// Schedule a diaper reminder notification at an exact time
+  Future<void> scheduleDiaperReminderAt(DateTime scheduledAt) async {
+    if (!_initialized) await initialize();
+
+    // Cancel any existing diaper reminder
+    await cancelDiaperReminder();
+
+    // Don't schedule if time is in the past
+    if (scheduledAt.isBefore(DateTime.now())) return;
+
+    const androidDetails = AndroidNotificationDetails(
+      'diaper_reminder_channel',
+      'Bez HatÄ±rlatÄ±cÄ±',
+      channelDescription: 'Bez deÄŸiÅŸimi hatÄ±rlatÄ±cÄ± bildirimleri',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: false,
+      presentSound: true,
+    );
+
+    const details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.zonedSchedule(
+      _diaperReminderId,
+      'ğŸ‘¶ Bez HatÄ±rlatÄ±cÄ±',
+      'BebeÄŸinizin bezini kontrol etme zamanÄ±',
+      tz.TZDateTime.from(scheduledAt, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
   /// Cancel feeding reminder
   Future<void> cancelFeedingReminder() async {
     await _notifications.cancel(_feedingReminderId);

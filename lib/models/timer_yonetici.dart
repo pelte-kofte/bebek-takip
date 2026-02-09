@@ -102,10 +102,18 @@ class TimerYonetici {
     if (VeriYonetici.isFeedingReminderEnabled()) {
       final reminderService = ReminderService();
       await reminderService.initialize();
-      await reminderService.scheduleFeedingReminder(
-        lastFeedingTime: DateTime.now(),
-        intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
+      final now = DateTime.now();
+      var scheduledAt = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        VeriYonetici.getFeedingReminderHour(),
+        VeriYonetici.getFeedingReminderMinute(),
       );
+      if (scheduledAt.isBefore(now)) {
+        scheduledAt = scheduledAt.add(const Duration(days: 1));
+      }
+      await reminderService.scheduleFeedingReminderAt(scheduledAt);
     }
   }
 

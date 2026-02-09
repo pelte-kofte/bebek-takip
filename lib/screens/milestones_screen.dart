@@ -5,6 +5,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/veri_yonetici.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/decorative_background.dart';
 
 // Photo style enum for privacy-friendly sharing
@@ -124,6 +125,49 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     );
   }
 
+  Future<void> _deleteMilestone(Map<String, dynamic> milestone) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFFFFFBF5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Delete memory?',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        content: const Text(
+          'This memory will be permanently deleted.',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Color(0xFFFF6B6B)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final milestones = VeriYonetici.getMilestones();
+      milestones.removeWhere((m) => m['id'] == milestone['id']);
+      await VeriYonetici.saveMilestones(milestones);
+      _loadMilestones();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return DecorativeBackground(
@@ -139,35 +183,17 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   horizontal: 24,
                   vertical: 16,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Milestones',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFFFB4A2),
-                        letterSpacing: -0.5,
-                      ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    AppLocalizations.of(context)!.memories,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFFB4A2),
+                      letterSpacing: -0.5,
                     ),
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.search,
-                          color: Color(0xFF4A3E39),
-                          size: 20,
-                        ),
-                        onPressed: () {},
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               // Content
@@ -179,29 +205,39 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             ],
           ),
         ),
-        floatingActionButton: Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          child: FloatingActionButton.extended(
-            onPressed: _showAddMilestoneSheet,
-            backgroundColor: const Color(0xFFFFB4A2),
-            elevation: 8,
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text(
-              'Add Milestone',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ),
-        ),
+        floatingActionButton: _milestones.isNotEmpty
+            ? Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: FloatingActionButton.extended(
+                  onPressed: _showAddMilestoneSheet,
+                  backgroundColor: const Color(0xFFFFB4A2),
+                  elevation: 8,
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text(
+                    'Add Memory',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              )
+            : null,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark
+        ? Colors.white.withValues(alpha: 0.9)
+        : const Color(0xFF4A3E39).withValues(alpha: 0.85);
+    final subtitleColor = isDark
+        ? Colors.white.withValues(alpha: 0.65)
+        : const Color(0xFF4A3E39).withValues(alpha: 0.5);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(48),
@@ -225,16 +261,27 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             ),
             const SizedBox(height: 28),
             Text(
-              'Your baby\'s first moments\nwill appear here',
+              'Every moment is precious',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF4A3E39).withValues(alpha: 0.8),
-                height: 1.4,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: titleColor,
+                height: 1.3,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 8),
+            Text(
+              'First smile, first steps...\nSave them before they fade',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: subtitleColor,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 36),
             GestureDetector(
               onTap: _showAddMilestoneSheet,
               child: Container(
@@ -254,7 +301,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   ],
                 ),
                 child: const Text(
-                  'Add first memory',
+                  'Add Memory',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -415,20 +462,64 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                             ],
                           ),
                         ),
-                        // Action buttons
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildActionButton(
-                              icon: Icons.edit_outlined,
-                              onTap: () => _showEditMilestoneSheet(milestone),
+                        // Overflow menu
+                        SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: PopupMenuButton<String>(
+                            icon: Icon(
+                              Icons.more_horiz,
+                              size: 18,
+                              color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
                             ),
-                            const SizedBox(width: 6),
-                            _buildActionButton(
-                              icon: Icons.share_outlined,
-                              onTap: () => _shareMilestone(milestone),
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                          ],
+                            color: const Color(0xFFFFFBF5),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'edit':
+                                  _showEditMilestoneSheet(milestone);
+                                case 'share':
+                                  _shareMilestone(milestone);
+                                case 'delete':
+                                  _deleteMilestone(milestone);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                    SizedBox(width: 10),
+                                    Text('Edit', style: TextStyle(color: Color(0xFF4A3E39))),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'share',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                    SizedBox(width: 10),
+                                    Text('Share', style: TextStyle(color: Color(0xFF4A3E39))),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
+                                    SizedBox(width: 10),
+                                    Text('Delete', style: TextStyle(color: Color(0xFFFF6B6B))),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -437,7 +528,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                       const SizedBox(height: 10),
                       Text(
                         milestone['note'],
-                        maxLines: 2,
+                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
@@ -456,30 +547,6 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFFBF5),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: const Color(0xFFE5E0F7).withValues(alpha: 0.6),
-          ),
-        ),
-        child: Icon(
-          icon,
-          size: 16,
-          color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-        ),
-      ),
-    );
-  }
 }
 
 // Add Milestone Screen (Full Screen Modal)
@@ -676,7 +743,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                       ),
                       // Title
                       const Text(
-                        'Add Milestone',
+                        'Add Memory',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -811,9 +878,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        // Milestone title
+                        // Memory title
                         Text(
-                          'Milestone title',
+                          'Title',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -979,7 +1046,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                       ],
                     ),
                     child: const Text(
-                      'Save Milestone',
+                      'Save Memory',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
@@ -1212,7 +1279,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
         backgroundColor: const Color(0xFFFFFBF5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text(
-          'Delete milestone?',
+          'Delete memory?',
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
         content: const Text(
@@ -1910,6 +1977,50 @@ class MilestoneDetailScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _deleteMemory(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFFFFFBF5),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Delete memory?',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        content: const Text(
+          'This memory will be permanently deleted.',
+          style: TextStyle(color: Color(0xFF4A3E39)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Color(0xFFFF6B6B)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final milestones = VeriYonetici.getMilestones();
+      milestones.removeWhere((m) => m['id'] == milestone['id']);
+      await VeriYonetici.saveMilestones(milestones);
+      onSaved();
+      if (context.mounted) Navigator.pop(context);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasPhoto = milestone['photoPath'] != null &&
@@ -1987,10 +2098,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      // Share button
-                      GestureDetector(
-                        onTap: () => _shareMilestone(context),
-                        child: Container(
+                      // Actions menu
+                      PopupMenuButton<String>(
+                        icon: Container(
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
@@ -2005,36 +2115,57 @@ class MilestoneDetailScreen extends StatelessWidget {
                             ],
                           ),
                           child: Icon(
-                            Icons.share_outlined,
+                            Icons.more_horiz,
                             color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
                             size: 20,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Edit button
-                      GestureDetector(
-                        onTap: () => _showEditSheet(context),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFB4A2),
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.edit_outlined,
-                            color: Colors.white,
-                            size: 20,
-                          ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
+                        color: const Color(0xFFFFFBF5),
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'edit':
+                              _showEditSheet(context);
+                            case 'share':
+                              _shareMilestone(context);
+                            case 'delete':
+                              _deleteMemory(context);
+                          }
+                        },
+                        itemBuilder: (ctx) => [
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                SizedBox(width: 10),
+                                Text('Edit', style: TextStyle(color: Color(0xFF4A3E39))),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'share',
+                            child: Row(
+                              children: [
+                                Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                SizedBox(width: 10),
+                                Text('Share', style: TextStyle(color: Color(0xFF4A3E39))),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
+                                SizedBox(width: 10),
+                                Text('Delete', style: TextStyle(color: Color(0xFFFF6B6B))),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -2067,7 +2198,7 @@ class MilestoneDetailScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(24),
                               child: buildPlatformImage(
                                 milestone['photoPath'],
-                                fit: BoxFit.contain,
+                                fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
                                       height: 200,

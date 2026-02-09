@@ -57,22 +57,43 @@ class _AddScreenState extends State<AddScreen> {
 
   Future<void> _scheduleFeedingReminderIfEnabled() async {
     if (!VeriYonetici.isFeedingReminderEnabled()) return;
+    final scheduledAt = _nextReminderDateTime(
+      TimeOfDay(
+        hour: VeriYonetici.getFeedingReminderHour(),
+        minute: VeriYonetici.getFeedingReminderMinute(),
+      ),
+    );
     final reminderService = ReminderService();
     await reminderService.initialize();
-    await reminderService.scheduleFeedingReminder(
-      lastFeedingTime: DateTime.now(),
-      intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
-    );
+    await reminderService.scheduleFeedingReminderAt(scheduledAt);
   }
 
   Future<void> _scheduleDiaperReminderIfEnabled() async {
     if (!VeriYonetici.isDiaperReminderEnabled()) return;
+    final scheduledAt = _nextReminderDateTime(
+      TimeOfDay(
+        hour: VeriYonetici.getDiaperReminderHour(),
+        minute: VeriYonetici.getDiaperReminderMinute(),
+      ),
+    );
     final reminderService = ReminderService();
     await reminderService.initialize();
-    await reminderService.scheduleDiaperReminder(
-      lastDiaperTime: DateTime.now(),
-      intervalMinutes: VeriYonetici.getDiaperReminderInterval(),
+    await reminderService.scheduleDiaperReminderAt(scheduledAt);
+  }
+
+  DateTime _nextReminderDateTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final scheduled = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
     );
+    if (scheduled.isBefore(now)) {
+      return scheduled.add(const Duration(days: 1));
+    }
+    return scheduled;
   }
 
   /// Shows a Cupertino-style time picker in a bottom sheet

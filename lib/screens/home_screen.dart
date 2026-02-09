@@ -217,12 +217,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // Schedule feeding reminder if enabled
     if (VeriYonetici.isFeedingReminderEnabled()) {
+      final scheduledAt = _nextReminderDateTime(
+        TimeOfDay(
+          hour: VeriYonetici.getFeedingReminderHour(),
+          minute: VeriYonetici.getFeedingReminderMinute(),
+        ),
+      );
       final reminderService = ReminderService();
       await reminderService.initialize();
-      await reminderService.scheduleFeedingReminder(
-        lastFeedingTime: DateTime.now(),
-        intervalMinutes: VeriYonetici.getFeedingReminderInterval(),
-      );
+      await reminderService.scheduleFeedingReminderAt(scheduledAt);
     }
 
     final kaydedilenSol = solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0);
@@ -342,6 +345,21 @@ class _HomeScreenState extends State<HomeScreen> {
     final dk = (saniye % 3600) ~/ 60;
     final sn = saniye % 60;
     return '${saat.toString().padLeft(2, '0')}:${dk.toString().padLeft(2, '0')}:${sn.toString().padLeft(2, '0')}';
+  }
+
+  DateTime _nextReminderDateTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final scheduled = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
+    if (scheduled.isBefore(now)) {
+      return scheduled.add(const Duration(days: 1));
+    }
+    return scheduled;
   }
 
   bool get _emzirmeAktif => _timerYonetici.isEmzirmeActive;

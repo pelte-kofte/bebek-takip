@@ -15,6 +15,8 @@
   "growthChartsDesc": "Boy ve kilo degişimlerini güzel grafiklerle görselleştirin.",
   "preciousMemories": "Değerli Anılar",
   "preciousMemoriesDesc": "Kilometre taşları ve komik anları kaydedin. Çok çabuk büyüyorlar!",
+  "dailyRhythm": "Günlük Ritim",
+  "dailyRhythmDesc": "Yumuşak rutinler, sakin günler ve huzurlu geceler getirir.",
   "skip": "Atla",
   "startYourJourney": "Yolculuğuna Başla",
   "continueBtn": "Devam",
@@ -33,6 +35,7 @@
   "activities": "Bakım",
   "vaccines": "Aşılar",
   "development": "Gelişim",
+  "memories": "Anılar",
   "settings": "Ayarlar",
 
   "addActivity": "Aktivite Ekle",

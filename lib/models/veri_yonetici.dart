@@ -26,6 +26,10 @@ class VeriYonetici {
   static int _feedingReminderInterval = 180; // 3 hours default
   static bool _diaperReminderEnabled = false;
   static int _diaperReminderInterval = 120; // 2 hours default
+  static int _feedingReminderHour = 14;
+  static int _feedingReminderMinute = 0;
+  static int _diaperReminderHour = 14;
+  static int _diaperReminderMinute = 0;
 
   static String _babyName = 'Sofia';
   static DateTime _birthDate = DateTime(2024, 9, 17);
@@ -96,6 +100,10 @@ class VeriYonetici {
     _feedingReminderInterval = _prefs!.getInt('feeding_reminder_interval') ?? 180;
     _diaperReminderEnabled = _prefs!.getBool('diaper_reminder_enabled') ?? false;
     _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
+    _feedingReminderHour = _prefs!.getInt('feeding_reminder_time_h') ?? 14;
+    _feedingReminderMinute = _prefs!.getInt('feeding_reminder_time_m') ?? 0;
+    _diaperReminderHour = _prefs!.getInt('diaper_reminder_time_h') ?? 14;
+    _diaperReminderMinute = _prefs!.getInt('diaper_reminder_time_m') ?? 0;
 
     // Sync cached baby fields from active baby
     // After our guarantees above, this should always succeed
@@ -758,6 +766,17 @@ class VeriYonetici {
     await _prefs!.setInt('feeding_reminder_interval', minutes);
   }
 
+  static int getFeedingReminderHour() => _feedingReminderHour;
+
+  static int getFeedingReminderMinute() => _feedingReminderMinute;
+
+  static Future<void> setFeedingReminderTime(int hour, int minute) async {
+    _feedingReminderHour = hour;
+    _feedingReminderMinute = minute;
+    await _prefs!.setInt('feeding_reminder_time_h', hour);
+    await _prefs!.setInt('feeding_reminder_time_m', minute);
+  }
+
   static bool isDiaperReminderEnabled() => _diaperReminderEnabled;
 
   static Future<void> setDiaperReminderEnabled(bool value) async {
@@ -770,6 +789,17 @@ class VeriYonetici {
   static Future<void> setDiaperReminderInterval(int minutes) async {
     _diaperReminderInterval = minutes;
     await _prefs!.setInt('diaper_reminder_interval', minutes);
+  }
+
+  static int getDiaperReminderHour() => _diaperReminderHour;
+
+  static int getDiaperReminderMinute() => _diaperReminderMinute;
+
+  static Future<void> setDiaperReminderTime(int hour, int minute) async {
+    _diaperReminderHour = hour;
+    _diaperReminderMinute = minute;
+    await _prefs!.setInt('diaper_reminder_time_h', hour);
+    await _prefs!.setInt('diaper_reminder_time_m', minute);
   }
 
   // ============ BABY NAME & BIRTH DATE ============

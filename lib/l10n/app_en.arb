@@ -15,6 +15,8 @@
   "growthChartsDesc": "Visualize height and weight changes over time with beautiful charts.",
   "preciousMemories": "Precious Memories",
   "preciousMemoriesDesc": "Save milestones and funny moments. They grow up so fast!",
+  "dailyRhythm": "Daily Rhythm",
+  "dailyRhythmDesc": "Gentle routines bring calm days and peaceful nights.",
   "skip": "Skip",
   "startYourJourney": "Start Your Journey",
   "continueBtn": "Continue",
@@ -33,6 +35,7 @@
   "activities": "Care",
   "vaccines": "Vaccines",
   "development": "Development",
+  "memories": "Memories",
   "settings": "Settings",
 
   "addActivity": "Add Activity",

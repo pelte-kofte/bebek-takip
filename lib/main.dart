@@ -208,7 +208,7 @@ class _MainScreenState extends State<MainScreen> {
                       child: _buildNavItem(
                         4,
                         Icons.emoji_events_rounded,
-                        l10n.development,
+                        l10n.memories,
                       ),
                     ),
                   ),

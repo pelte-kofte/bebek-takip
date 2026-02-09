@@ -52,6 +52,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Save milestones and funny moments. They grow up so fast!';
 
   @override
+  String get dailyRhythm => 'Daily Rhythm';
+
+  @override
+  String get dailyRhythmDesc =>
+      'Gentle routines bring calm days and peaceful nights.';
+
+  @override
   String get skip => 'Skip';
 
   @override
@@ -98,6 +105,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get development => 'Development';
+
+  @override
+  String get memories => 'Memories';
 
   @override
   String get settings => 'Settings';
