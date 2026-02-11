@@ -104,6 +104,8 @@ class SleepNotificationService {
   static const int _sleepNotificationId = 1001;
   static const int _nursingNotificationId = 1002;
 
+  bool _initialized = false;
+
   Timer? _sleepUpdateTimer;
   DateTime? _sleepStartTime;
 
@@ -115,6 +117,9 @@ class SleepNotificationService {
   static Function(String actionId)? onActionReceived;
 
   Future<void> initialize() async {
+    if (_initialized) return;
+    _initialized = true;
+
     const androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     final iosSettings = DarwinInitializationSettings(
@@ -165,7 +170,7 @@ class SleepNotificationService {
     await _notifications
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(alert: true, badge: false, sound: false);
+        ?.requestPermissions(alert: true, badge: false, sound: true);
   }
 
   // ============ SLEEP NOTIFICATION ============

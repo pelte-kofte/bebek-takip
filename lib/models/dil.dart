@@ -12,7 +12,7 @@ class Dil {
   static const String dk = 'dk';
   static const String saat = 'saat';
   static const String sa = 'sa';
-  
+
   // Ana Sayfa
   static const String anaSayfa = 'Ana Sayfa';
   static const String sonAktiviteler = 'Son Aktiviteler';
@@ -22,7 +22,7 @@ class Dil {
   static const String buyumeTakibi = 'Büyüme Takibi';
   static const String henuzKayitYok = 'Henüz kayıt yok';
   static const String henuzOlcumYok = 'Henüz ölçüm yok';
-  
+
   // Beslenme
   static const String beslenme = 'Beslenme';
   static const String beslenmeEkle = 'Beslenme Ekle';
@@ -36,7 +36,7 @@ class Dil {
   static const String sagMeme = 'Sağ Meme';
   static const String toplam = 'Toplam';
   static const String sonBeslenme = 'Son Beslenme';
-  
+
   // Bez
   static const String bez = 'Bez';
   static const String bezDegisimi = 'Bez Değişimi';
@@ -45,7 +45,7 @@ class Dil {
   static const String kirli = 'Kirli';
   static const String ikisiBirden = 'İkisi Birden';
   static const String sonBezDegisimi = 'Son Bez';
-  
+
   // Uyku
   static const String uyku = 'Uyku';
   static const String uykuEkle = 'Uyku Ekle';
@@ -55,7 +55,7 @@ class Dil {
   static const String sure = 'Süre';
   static const String uyanik = 'Uyanık';
   static const String sonUyku = 'Son Uyku';
-  
+
   // Anı
   static const String ani = 'Anı';
   static const String anilar = 'Anılar';
@@ -63,7 +63,7 @@ class Dil {
   static const String aniDuzenle = 'Anı Düzenle';
   static const String baslik = 'Başlık';
   static const String not = 'Not';
-  
+
   // Ölçüm
   static const String olcum = 'Ölçüm';
   static const String olcumEkle = 'Ölçüm Ekle';
@@ -72,13 +72,13 @@ class Dil {
   static const String basCevresi = 'Baş Çevresi';
   static const String opsiyonel = 'opsiyonel';
   static const String tarihSec = 'Tarih Seç';
-  
+
   // Aktiviteler
   static const String aktiviteler = 'Bakım';
   static const String kayitYok = 'Bu tarihte kayıt yok';
   static const String baskaTarihSec = 'Başka tarih seç';
   static const String kayit = 'kayıt';
-  
+
   // Gelişim
   static const String gelisimAsamalari = 'Gelişim Aşamaları';
   static const String ilerleme = 'İlerleme';
@@ -107,7 +107,7 @@ class Dil {
   static const String doz = 'Doz';
   static const String aylik = 'Aylık';
   static const String gunluk = 'Günlük';
-  
+
   // Ayarlar
   static const String ayarlar = 'Ayarlar';
   static const String gorunum = 'Görünüm';
@@ -127,27 +127,27 @@ class Dil {
   static const String hakkinda = 'Hakkında';
   static const String versiyon = 'Versiyon';
   static const String gelistirici = 'Geliştirici';
-  
+
   // Navigasyon
   static const String navAnaSayfa = 'Ana Sayfa';
   static const String navAktiviteler = 'Bakım';
   static const String navGelisim = 'Gelişim';
   static const String navAyarlar = 'Ayarlar';
-  
+
   // Zaman
   static const String dakikaOnce = 'dakika önce';
   static const String saatOnce = 'saat önce';
   static const String gunOnce = 'gün önce';
   static const String azOnce = 'az önce';
-  
+
   // Silme onayı
   static const String silmekIstiyor = 'Bu kaydı silmek istediğine emin misin?';
   static const String evet = 'Evet';
   static const String hayir = 'Hayır';
-  
+
   // Ne eklemek istersin
   static const String neEklemekIstersin = 'Ne eklemek istersin?';
-  
+
   // Bebek Profili
   static const String bebekProfili = 'Bebek Profili';
   static const String notlar = 'Notlar';

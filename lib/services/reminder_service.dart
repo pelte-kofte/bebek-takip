@@ -27,23 +27,7 @@ class ReminderService {
 
   Future<void> initialize() async {
     if (_initialized) return;
-
     initializeTimeZonesOnce();
-
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: false,
-      requestSoundPermission: true,
-    );
-
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
-
-    await _notifications.initialize(initSettings);
     _initialized = true;
   }
 

@@ -1,6 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
@@ -19,17 +22,23 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  static const String _privacyPolicyUrl = 'https://example.com/privacy-policy';
+  static const String _termsOfUseUrl = 'https://example.com/terms-of-use';
+
   final ReminderService _reminderService = ReminderService();
 
   bool _feedingReminderEnabled = false;
   bool _diaperReminderEnabled = false;
   TimeOfDay _feedingReminderTime = const TimeOfDay(hour: 14, minute: 0);
   TimeOfDay _diaperReminderTime = const TimeOfDay(hour: 14, minute: 0);
+  String _appVersion = '1.0.0';
+  String _buildNumber = '1';
 
   @override
   void initState() {
     super.initState();
     _loadReminderSettings();
+    _loadAppInfo();
   }
 
   void _loadReminderSettings() {
@@ -47,16 +56,79 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Future<void> _loadAppInfo() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    if (!mounted) return;
+    setState(() {
+      _appVersion = packageInfo.version;
+      _buildNumber = packageInfo.buildNumber;
+    });
+  }
+
+  DateTime _nextReminderDateTime(TimeOfDay time) {
+    final now = DateTime.now();
+    final scheduled = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    if (scheduled.isBefore(now)) {
+      return scheduled.add(const Duration(days: 1));
+    }
+    return scheduled;
+  }
+
   String _formatTime(TimeOfDay time) {
     final h = time.hour.toString().padLeft(2, '0');
     final m = time.minute.toString().padLeft(2, '0');
     return '$h:$m';
   }
 
+  Future<void> _openExternalUrl(String url) async {
+    final uri = Uri.parse(url);
+    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Link açılamadı'),
+          backgroundColor: Color(0xFFFFB4A2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _sendFeedbackEmail() async {
+    final subject = 'Nilico Feedback (iOS build $_appVersion+$_buildNumber)';
+    final body = StringBuffer()
+      ..writeln('Device model: Unknown')
+      ..writeln('iOS version: ${Platform.operatingSystemVersion}')
+      ..writeln('App version/build: $_appVersion+$_buildNumber')
+      ..writeln()
+      ..writeln('Feedback:');
+
+    final emailUri = Uri(
+      scheme: 'mailto',
+      queryParameters: {
+        'subject': subject,
+        'body': body.toString(),
+      },
+    );
+
+    final launched = await launchUrl(emailUri);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('E-posta uygulaması açılamadı'),
+          backgroundColor: Color(0xFFFFB4A2),
+        ),
+      );
+    }
+  }
+
   Future<void> _toggleFeedingReminder(bool value) async {
     setState(() => _feedingReminderEnabled = value);
     await VeriYonetici.setFeedingReminderEnabled(value);
-    if (!value) {
+    if (value) {
+      await _reminderService.initialize();
+      final scheduledAt = _nextReminderDateTime(_feedingReminderTime);
+      await _reminderService.scheduleFeedingReminderAt(scheduledAt);
+    } else {
       await _reminderService.cancelFeedingReminder();
     }
   }
@@ -64,7 +136,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _toggleDiaperReminder(bool value) async {
     setState(() => _diaperReminderEnabled = value);
     await VeriYonetici.setDiaperReminderEnabled(value);
-    if (!value) {
+    if (value) {
+      await _reminderService.initialize();
+      final scheduledAt = _nextReminderDateTime(_diaperReminderTime);
+      await _reminderService.scheduleDiaperReminderAt(scheduledAt);
+    } else {
       await _reminderService.cancelDiaperReminder();
     }
   }
@@ -274,7 +350,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             title: Dil.mamaHatirlatici,
                             subtitle: _feedingReminderEnabled
                                 ? 'Saat ${_formatTime(_feedingReminderTime)}'
-                                : 'KapalÄ±',
+                                : 'Kapalı',
                             value: _feedingReminderEnabled,
                             onChanged: _toggleFeedingReminder,
                             textColor: textColor,
@@ -292,6 +368,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     value.hour,
                                     value.minute,
                                   );
+                                  if (_feedingReminderEnabled) {
+                                    await _reminderService.initialize();
+                                    final scheduledAt = _nextReminderDateTime(value);
+                                    await _reminderService.scheduleFeedingReminderAt(scheduledAt);
+                                  }
                                 },
                               ),
                               child: Container(
@@ -331,7 +412,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             title: Dil.bezHatirlatici,
                             subtitle: _diaperReminderEnabled
                                 ? 'Saat ${_formatTime(_diaperReminderTime)}'
-                                : 'KapalÄ±',
+                                : 'Kapalı',
                             value: _diaperReminderEnabled,
                             onChanged: _toggleDiaperReminder,
                             textColor: textColor,
@@ -349,6 +430,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     value.hour,
                                     value.minute,
                                   );
+                                  if (_diaperReminderEnabled) {
+                                    await _reminderService.initialize();
+                                    final scheduledAt = _nextReminderDateTime(value);
+                                    await _reminderService.scheduleDiaperReminderAt(scheduledAt);
+                                  }
                                 },
                               ),
                               child: Container(
@@ -393,8 +479,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             icon: Icons.analytics_outlined,
                             iconBgColor: const Color(0xFFE5E0F7),
                             iconColor: subtitleColor,
-                            title: 'Rapor OluÅŸtur',
-                            subtitle: 'HaftalÄ±k/AylÄ±k istatistikler',
+                            title: 'Rapor Oluştur',
+                            subtitle: 'Haftalık/Aylık istatistikler',
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                             onTap: () {
@@ -415,7 +501,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFE5E0F7),
                             iconColor: subtitleColor,
                             title: Dil.verileriDisaAktar,
-                            subtitle: 'JSON formatÄ±nda indir',
+                            subtitle: 'JSON formatında indir',
                             textColor: textColor,
                             subtitleColor: subtitleColor,
                             onTap: () {
@@ -436,7 +522,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             iconBgColor: const Color(0xFFFFE5E0),
                             iconColor: Colors.red.shade400,
                             title: Dil.tumVerileriSil,
-                            subtitle: 'TÃ¼m kayÄ±tlarÄ± kalÄ±cÄ± olarak sil',
+                            subtitle: 'Tüm kayıtları kalıcı olarak sil',
                             textColor: Colors.red.shade400,
                             subtitleColor: subtitleColor,
                             onTap: () => _showDeleteDialog(isDark, textColor, subtitleColor),
@@ -455,7 +541,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         children: [
                           _buildInfoTile(
                             Dil.versiyon,
-                            '1.0.0',
+                            '$_appVersion+$_buildNumber',
                             textColor,
                             subtitleColor,
                           ),
@@ -468,6 +554,48 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             'Nilico',
                             textColor,
                             subtitleColor,
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildActionTile(
+                            icon: Icons.feedback_outlined,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: 'Send Feedback',
+                            subtitle: 'Mail ile geri bildirim gönder',
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                            onTap: _sendFeedbackEmail,
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildActionTile(
+                            icon: Icons.privacy_tip_outlined,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: 'Privacy Policy',
+                            subtitle: 'Gizlilik politikasını görüntüle',
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                            onTap: () => _openExternalUrl(_privacyPolicyUrl),
+                          ),
+                          Divider(
+                            color: subtitleColor.withValues(alpha: 0.1),
+                            height: 24,
+                          ),
+                          _buildActionTile(
+                            icon: Icons.description_outlined,
+                            iconBgColor: const Color(0xFFE5E0F7),
+                            iconColor: subtitleColor,
+                            title: 'Terms of Use',
+                            subtitle: 'Kullanım koşullarını görüntüle',
+                            textColor: textColor,
+                            subtitleColor: subtitleColor,
+                            onTap: () => _openExternalUrl(_termsOfUseUrl),
                           ),
                         ],
                       ),
@@ -879,7 +1007,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('TÃ¼m veriler silindi!'),
+                  content: Text('Tüm veriler silindi!'),
                   backgroundColor: Color(0xFFFFB4A2),
                 ),
               );
@@ -904,6 +1032,3 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-
-
-

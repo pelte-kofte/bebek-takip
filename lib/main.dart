@@ -38,10 +38,6 @@ void main() async {
 
   // Initialize timezones once for scheduled reminders
   ReminderService.initializeTimeZonesOnce();
-  // Initialize reminder notifications and request permissions once on launch
-  final reminderService = ReminderService();
-  await reminderService.initialize();
-  await reminderService.requestPermissions();
 
   runApp(const BabyTrackerApp());
 }
