@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Nilico – Terms of Use / Kullanım Şartları</title>
+  <style>
+    body { font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial; line-height: 1.6; margin: 24px; color: #111; }
+    h1,h2 { line-height: 1.2; }
+    .meta { color:#666; margin-top:-10px; }
+    .lang { display:flex; gap:10px; margin:16px 0 24px; }
+    .btn { border:1px solid #ddd; padding:8px 12px; border-radius:10px; cursor:pointer; background:#fff; }
+    .btn.active { border-color:#4a56e2; }
+    .card { max-width: 900px; }
+    a { color:#4a56e2; }
+    ul { padding-left: 18px; }
+  </style>
+  <script>
+    function setLang(lang){
+      document.getElementById('tr').style.display = (lang==='tr') ? 'block' : 'none';
+      document.getElementById('en').style.display = (lang==='en') ? 'block' : 'none';
+      document.getElementById('btn-tr').classList.toggle('active', lang==='tr');
+      document.getElementById('btn-en').classList.toggle('active', lang==='en');
+      document.documentElement.lang = lang;
+    }
+    window.addEventListener('DOMContentLoaded', () => setLang('tr'));
+  </script>
+</head>
+<body>
+  <div class="card">
+    <h1>Nilico – Terms of Use / Kullanım Şartları</h1>
+    <p class="meta">Last updated / Son güncelleme: [11 Şubat 2026]</p>
+
+    <div class="lang">
+      <button id="btn-tr" class="btn" onclick="setLang('tr')">Türkçe</button>
+      <button id="btn-en" class="btn" onclick="setLang('en')">English</button>
+    </div>
+
+    <!-- TR -->
+    <div id="tr">
+      <h2>Kullanım Şartları</h2>
+      <p>Nilico’yu kullanarak bu şartları kabul etmiş olursunuz. Kabul etmiyorsanız uygulamayı kullanmayın.</p>
+
+      <h2>1) Hizmetin kapsamı</h2>
+      <p>Nilico; takip, hatırlatıcılar, raporlar ve anı kaydı gibi özellikler sunar. Özellikler zamanla değişebilir.</p>
+
+      <h2>2) Tıbbi uyarı</h2>
+      <p>Nilico tıbbi danışmanlık değildir. Sağlıkla ilgili kararlar için doktorunuza danışın.</p>
+
+      <h2>3) Hesap (isteğe bağlı)</h2>
+      <p>Apple/Google ile giriş yapabilirsiniz. “Misafir” olarak da kullanabilirsiniz. Hesap güvenliğiniz sizden sorumludur.</p>
+
+      <h2>4) Sorumluluk</h2>
+      <p>Uygulamaya girilen verilerin doğruluğu kullanıcı sorumluluğundadır. Yürürlükteki yasaların izin verdiği ölçüde dolaylı zararlardan sorumlu değiliz.</p>
+
+      <h2>5) Yasaklı kullanım</h2>
+      <ul>
+        <li>Tersine mühendislik, kötüye kullanım, güvenliği zayıflatma</li>
+        <li>Başka kullanıcıların verilerine izinsiz erişim girişimleri</li>
+        <li>Hizmeti engelleme veya zarar verme</li>
+      </ul>
+
+      <h2>6) Fikri mülkiyet</h2>
+      <p>Nilico’ya ait marka, logo ve arayüz (kullanıcı verileri hariç) bize aittir.</p>
+
+      <h2>7) Ücretlendirme</h2>
+      <p>Uygulama ücretsiz veya ücretli planlar içerebilir. Ücretli özellikler varsa uygulama içinde belirtilir.</p>
+
+      <h2>8) Değişiklikler</h2>
+      <p>Şartlar zaman zaman güncellenebilir. Güncel sürüm bu sayfada yayınlanır.</p>
+
+      <h2>9) İletişim</h2>
+      <p>Destek: <a href="mailto:[destek@nilico.app]">[destek@nilico.app]</a></p>
+    </div>
+
+    <!-- EN -->
+    <div id="en" style="display:none">
+      <h2>Terms of Use</h2>
+      <p>By using Nilico, you agree to these terms. If you do not agree, do not use the App.</p>
+
+      <h2>1) Scope</h2>
+      <p>Nilico provides tracking, reminders, reports, and memory saving features. Features may change over time.</p>
+
+      <h2>2) Medical disclaimer</h2>
+      <p>Nilico is not medical advice or a medical device. Consult a healthcare professional for medical decisions.</p>
+
+      <h2>3) Account (optional)</h2>
+      <p>You may sign in with Apple/Google or continue as a guest. You are responsible for your account security.</p>
+
+      <h2>4) Responsibility</h2>
+      <p>You are responsible for the accuracy of the data you enter. To the extent permitted by law, we are not liable for indirect damages.</p>
+
+      <h2>5) Prohibited use</h2>
+      <ul>
+        <li>Reverse engineering, abuse, or weakening security</li>
+        <li>Attempting unauthorized access to other users’ data</li>
+        <li>Disrupting or harming the service</li>
+      </ul>
+
+      <h2>6) Intellectual property</h2>
+      <p>Nilico’s brand, logo, and UI (excluding your content) are owned by us.</p>
+
+      <h2>7) Pricing</h2>
+      <p>The App may include free or paid plans. Paid features will be disclosed in-app.</p>
+
+      <h2>8) Changes</h2>
+      <p>We may update these terms from time to time. The latest version will be published on this page.</p>
+
+      <h2>9) Contact</h2>
+      <p>Support: <a href="mailto:[support@nilico.app]">[support@nilico.app]</a></p>
+    </div>
+  </div>
+</body>
+</html>
