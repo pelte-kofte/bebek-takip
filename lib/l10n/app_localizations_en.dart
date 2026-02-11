@@ -227,7 +227,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get summary => 'SUMMARY';
 
   @override
-  String get recentActivities => 'RECENT ACTIVITIES';
+  String get recentActivities => 'RECENT CARE RECORDS';
 
   @override
   String get record => 'record';
@@ -554,7 +554,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastSleep => 'LAST SLEEP';
 
   @override
-  String get recentActivity => 'RECENT ACTIVITY';
+  String get recentActivity => 'RECENT CARE RECORDS';
 
   @override
   String get seeHistory => 'SEE HISTORY';
@@ -721,4 +721,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupSyncComingSoon => 'Backup & sync coming soon';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyPolicySubtitle => 'View privacy policy';
+
+  @override
+  String get termsOfUse => 'Terms of Use';
+
+  @override
+  String get termsOfUseSubtitle => 'View terms and conditions';
+
+  @override
+  String get pageCouldNotOpen => 'Could not open page';
 }

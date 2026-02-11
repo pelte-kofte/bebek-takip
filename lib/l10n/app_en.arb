@@ -86,7 +86,7 @@
 
   "today": "Today",
   "summary": "SUMMARY",
-  "recentActivities": "RECENT ACTIVITIES",
+  "recentActivities": "RECENT CARE RECORDS",
   "record": "record",
   "records": "records",
 
@@ -242,7 +242,7 @@
   "lastFed": "LAST FED",
   "lastDiaper": "LAST DIAPER",
   "lastSleep": "LAST SLEEP",
-  "recentActivity": "RECENT ACTIVITY",
+  "recentActivity": "RECENT CARE RECORDS",
   "seeHistory": "SEE HISTORY",
   "noActivitiesLast24h": "No activities in the last 24 hours",
   "bottleFeeding": "Feeding",
@@ -361,5 +361,11 @@
   },
   "guestMode": "Guest Mode",
   "signInToProtectData": "Sign in to protect your data",
-  "backupSyncComingSoon": "Backup & sync coming soon"
+  "backupSyncComingSoon": "Backup & sync coming soon",
+
+  "privacyPolicy": "Privacy Policy",
+  "privacyPolicySubtitle": "View privacy policy",
+  "termsOfUse": "Terms of Use",
+  "termsOfUseSubtitle": "View terms and conditions",
+  "pageCouldNotOpen": "Could not open page"
 }

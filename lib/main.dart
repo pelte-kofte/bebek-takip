@@ -173,11 +173,7 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   Expanded(
                     child: Center(
-                      child: _buildNavItem(
-                        0,
-                        Icons.home_rounded,
-                        l10n.home,
-                      ),
+                      child: _buildNavItem(0, Icons.home_rounded, l10n.home),
                     ),
                   ),
                   Expanded(

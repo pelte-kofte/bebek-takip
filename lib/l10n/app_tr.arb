@@ -81,7 +81,7 @@
 
   "today": "Bugün",
   "summary": "ÖZET",
-  "recentActivities": "SON AKTiViTELER",
+  "recentActivities": "SON BAKIM VERİLERİ",
   "record": "kayıt",
   "records": "kayıt",
 
@@ -195,7 +195,7 @@
   "lastFed": "SON MAMA",
   "lastDiaper": "SON BEZ",
   "lastSleep": "SON UYKU",
-  "recentActivity": "SON AKTİVİTELER",
+  "recentActivity": "SON BAKIM VERİLERİ",
   "seeHistory": "GEÇMİŞİ GÖR",
   "noActivitiesLast24h": "Son 24 saatte aktivite yok",
   "bottleFeeding": "Beslenme",
@@ -241,5 +241,11 @@
   "signedInAs": "{email} olarak giriş yapıldı",
   "guestMode": "Misafir Modu",
   "signInToProtectData": "Verilerini korumak için giriş yap",
-  "backupSyncComingSoon": "Yedekleme ve senkronizasyon yakında"
+  "backupSyncComingSoon": "Yedekleme ve senkronizasyon yakında",
+
+  "privacyPolicy": "Gizlilik Politikası",
+  "privacyPolicySubtitle": "Gizlilik politikasını görüntüle",
+  "termsOfUse": "Kullanım Şartları",
+  "termsOfUseSubtitle": "Kullanım koşullarını görüntüle",
+  "pageCouldNotOpen": "Sayfa açılamadı"
 }

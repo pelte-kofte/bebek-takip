@@ -228,9 +228,6 @@ class _HomeScreenState extends State<HomeScreen> {
       await reminderService.scheduleFeedingReminderAt(scheduledAt);
     }
 
-    final kaydedilenSol = solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0);
-    final kaydedilenSag = sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0);
-
     setState(() {
       _solAktif = false;
       _sagAktif = false;
@@ -240,17 +237,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     widget.onDataChanged?.call();
-
-    if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          l10n.breastfeedingSavedSnack(kaydedilenSol, kaydedilenSag),
-        ),
-        backgroundColor: AppColors.primary,
-      ),
-    );
   }
 
   // UYKU FONKSİYONLARI
@@ -265,14 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _uykuSaniye = 0;
       });
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.sleepTooShort),
-          backgroundColor: Colors.orange,
-        ),
-      );
       return;
     }
 
@@ -284,14 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _uykuSaniye = 0;
       });
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.sleepTooShort),
-          backgroundColor: Colors.orange,
-        ),
-      );
       return;
     }
 
@@ -310,28 +280,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await VeriYonetici.saveUykuKayitlari(kayitlar);
 
-    final dakika = _uykuSaniye ~/ 60;
-    final saat = dakika ~/ 60;
-    final kalanDakika = dakika % 60;
-
     setState(() {
       _uykuSaniye = 0;
       _uykuKaydediliyor = false;
     });
 
     widget.onDataChanged?.call();
-
-    final l10n = AppLocalizations.of(context)!;
-    String sureText = saat > 0
-        ? '$saat${l10n.hourAbbrev} $kalanDakika${l10n.minAbbrev}'
-        : '$dakika${l10n.minAbbrev}';
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.sleepSavedSnack(sureText)),
-        backgroundColor: AppColors.accentLavender,
-      ),
-    );
   }
 
   String _formatSaniye(int saniye) {

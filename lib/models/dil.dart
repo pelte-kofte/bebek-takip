@@ -15,7 +15,7 @@ class Dil {
 
   // Ana Sayfa
   static const String anaSayfa = 'Ana Sayfa';
-  static const String sonAktiviteler = 'Son Aktiviteler';
+  static const String sonAktiviteler = 'Son Bakım Verileri';
   static const String bugun = 'Bugün';
   static const String zaman = 'Zaman Çizelgesi';
   static const String son24Saat = 'Son 24 saat';
@@ -120,7 +120,7 @@ class Dil {
   static const String mamaHatirlatici = 'Beslenme Hatırlatıcı';
   static const String bezHatirlatici = 'Bez Hatırlatıcı';
   static const String veriYonetimi = 'Veri Yönetimi';
-  static const String verileriDisaAktar = 'Verileri Dışa Aktar';
+
   static const String tumVerileriSil = 'Tüm Verileri Sil';
   static const String dikkat = 'Dikkat';
   static const String silmeUyarisi = 'Tüm veriler silinecek. Bu işlem geri alınamaz!';

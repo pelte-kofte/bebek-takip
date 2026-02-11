@@ -1,3 +1,4 @@
 {
-    "terminal.integrated.confirmOnKill": "never"
+    "terminal.integrated.confirmOnKill": "never",
+    "chatgpt.openOnStartup": false
 }

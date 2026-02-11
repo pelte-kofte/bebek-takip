@@ -226,7 +226,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get summary => 'ÖZET';
 
   @override
-  String get recentActivities => 'SON AKTiViTELER';
+  String get recentActivities => 'SON BAKIM VERİLERİ';
 
   @override
   String get record => 'kayıt';
@@ -553,7 +553,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastSleep => 'SON UYKU';
 
   @override
-  String get recentActivity => 'SON AKTİVİTELER';
+  String get recentActivity => 'SON BAKIM VERİLERİ';
 
   @override
   String get seeHistory => 'GEÇMİŞİ GÖR';
@@ -719,4 +719,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get backupSyncComingSoon => 'Yedekleme ve senkronizasyon yakında';
+
+  @override
+  String get privacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get privacyPolicySubtitle => 'Gizlilik politikasını görüntüle';
+
+  @override
+  String get termsOfUse => 'Kullanım Şartları';
+
+  @override
+  String get termsOfUseSubtitle => 'Kullanım koşullarını görüntüle';
+
+  @override
+  String get pageCouldNotOpen => 'Sayfa açılamadı';
 }

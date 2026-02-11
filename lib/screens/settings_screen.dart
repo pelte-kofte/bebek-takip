@@ -1,9 +1,8 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
@@ -22,8 +21,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  static const String _privacyPolicyUrl = 'https://example.com/privacy-policy';
-  static const String _termsOfUseUrl = 'https://example.com/terms-of-use';
+  static const String _privacyPolicyUrl =
+      'https://pelte-kofte.github.io/bebek-takip/privacy.html';
+  static const String _termsOfUseUrl =
+      'https://pelte-kofte.github.io/bebek-takip/terms.html';
 
   final ReminderService _reminderService = ReminderService();
 
@@ -31,14 +32,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _diaperReminderEnabled = false;
   TimeOfDay _feedingReminderTime = const TimeOfDay(hour: 14, minute: 0);
   TimeOfDay _diaperReminderTime = const TimeOfDay(hour: 14, minute: 0);
-  String _appVersion = '1.0.0';
-  String _buildNumber = '1';
 
   @override
   void initState() {
     super.initState();
     _loadReminderSettings();
-    _loadAppInfo();
   }
 
   void _loadReminderSettings() {
@@ -56,18 +54,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Future<void> _loadAppInfo() async {
-    final packageInfo = await PackageInfo.fromPlatform();
-    if (!mounted) return;
-    setState(() {
-      _appVersion = packageInfo.version;
-      _buildNumber = packageInfo.buildNumber;
-    });
-  }
-
   DateTime _nextReminderDateTime(TimeOfDay time) {
     final now = DateTime.now();
-    final scheduled = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final scheduled = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      time.hour,
+      time.minute,
+    );
     if (scheduled.isBefore(now)) {
       return scheduled.add(const Duration(days: 1));
     }
@@ -80,42 +75,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return '$h:$m';
   }
 
-  Future<void> _openExternalUrl(String url) async {
+  Future<void> _openInAppUrl(String url) async {
     final uri = Uri.parse(url);
-    final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!launched && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Link açılamadı'),
-          backgroundColor: Color(0xFFFFB4A2),
-        ),
-      );
+    final LaunchMode mode;
+    if (kIsWeb) {
+      mode = LaunchMode.externalApplication;
+    } else {
+      mode = LaunchMode.platformDefault;
     }
-  }
-
-  Future<void> _sendFeedbackEmail() async {
-    final subject = 'Nilico Feedback (iOS build $_appVersion+$_buildNumber)';
-    final body = StringBuffer()
-      ..writeln('Device model: Unknown')
-      ..writeln('iOS version: ${Platform.operatingSystemVersion}')
-      ..writeln('App version/build: $_appVersion+$_buildNumber')
-      ..writeln()
-      ..writeln('Feedback:');
-
-    final emailUri = Uri(
-      scheme: 'mailto',
-      queryParameters: {
-        'subject': subject,
-        'body': body.toString(),
-      },
-    );
-
-    final launched = await launchUrl(emailUri);
+    final launched = await launchUrl(uri, mode: mode);
     if (!launched && mounted) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('E-posta uygulaması açılamadı'),
-          backgroundColor: Color(0xFFFFB4A2),
+        SnackBar(
+          content: Text(l10n.pageCouldNotOpen),
+          backgroundColor: const Color(0xFFFFB4A2),
         ),
       );
     }
@@ -175,7 +149,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     child: Text(
                       Dil.iptal,
                       style: TextStyle(
-                        color: isDark ? AppColors.textSecondaryDark : const Color(0xFF866F65),
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : const Color(0xFF866F65),
                         fontSize: 16,
                       ),
                     ),
@@ -185,7 +161,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : const Color(0xFF2D1A18),
                     ),
                   ),
                   CupertinoButton(
@@ -238,8 +216,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark ? AppColors.bgDark : const Color(0xFFFFFBF5);
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
-    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : const Color(0xFF2D1A18);
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF7A749E);
+    final l10n = AppLocalizations.of(context)!;
 
     return DecorativeBackground(
       preset: BackgroundPreset.settings,
@@ -252,359 +235,367 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                 child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: textColor,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        Dil.ayarlar,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Uygulama tercihleri',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: subtitleColor,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // HESAP Section
-                    _buildAccountSection(cardColor, textColor, subtitleColor),
-                    const SizedBox(height: 24),
-
-                    // GÃ–RÃœNÃœM Section
-                    _buildSectionHeader(Dil.gorunum, subtitleColor),
-                    const SizedBox(height: 12),
-                    _buildCard(
-                      cardColor: cardColor,
-                      child: _buildSwitchTile(
-                        icon: isDark ? Icons.dark_mode : Icons.light_mode,
-                        iconBgColor: const Color(0xFFE5E0F7),
-                        iconColor: subtitleColor,
-                        title: Dil.karanlikMod,
-                        subtitle: Dil.karanlikModAciklama,
-                        value: BabyTrackerApp.of(context)?.isDarkMode ?? false,
-                        onChanged: (value) {
-                          BabyTrackerApp.of(context)?.toggleTheme();
-                        },
-                        textColor: textColor,
-                        subtitleColor: subtitleColor,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // BÄ°LDÄ°RÄ°MLER Section
-                    _buildSectionHeader(Dil.bildirimler, subtitleColor),
-                    const SizedBox(height: 12),
-                    _buildCard(
-                      cardColor: cardColor,
-                      child: Column(
-                        children: [
-                          _buildSwitchTile(
-                            icon: Icons.restaurant,
-                            iconBgColor: const Color(0xFFFFE5E0),
-                            iconColor: const Color(0xFFFFB4A2),
-                            title: Dil.mamaHatirlatici,
-                            subtitle: _feedingReminderEnabled
-                                ? 'Saat ${_formatTime(_feedingReminderTime)}'
-                                : 'Kapalı',
-                            value: _feedingReminderEnabled,
-                            onChanged: _toggleFeedingReminder,
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                          ),
-                          if (_feedingReminderEnabled) ...[
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () => _showTimePicker(
-                                title: 'Hatırlatma Saati',
-                                currentValue: _feedingReminderTime,
-                                onSelected: (value) async {
-                                  setState(() => _feedingReminderTime = value);
-                                  await VeriYonetici.setFeedingReminderTime(
-                                    value.hour,
-                                    value.minute,
-                                  );
-                                  if (_feedingReminderEnabled) {
-                                    await _reminderService.initialize();
-                                    final scheduledAt = _nextReminderDateTime(value);
-                                    await _reminderService.scheduleFeedingReminderAt(scheduledAt);
-                                  }
-                                },
-                              ),
-                              child: Container(
-                                margin: const EdgeInsets.only(left: 60),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.schedule, size: 16, color: const Color(0xFFFFB4A2)),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      _formatTime(_feedingReminderTime),
-                                      style: const TextStyle(
-                                        color: Color(0xFFFFB4A2),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Icon(Icons.expand_more, size: 16, color: const Color(0xFFFFB4A2)),
-                                  ],
-                                ),
-                              ),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
                             ),
                           ],
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildSwitchTile(
-                            icon: Icons.baby_changing_station,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: Dil.bezHatirlatici,
-                            subtitle: _diaperReminderEnabled
-                                ? 'Saat ${_formatTime(_diaperReminderTime)}'
-                                : 'Kapalı',
-                            value: _diaperReminderEnabled,
-                            onChanged: _toggleDiaperReminder,
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                          ),
-                          if (_diaperReminderEnabled) ...[
-                            const SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () => _showTimePicker(
-                                title: 'Hatırlatma Saati',
-                                currentValue: _diaperReminderTime,
-                                onSelected: (value) async {
-                                  setState(() => _diaperReminderTime = value);
-                                  await VeriYonetici.setDiaperReminderTime(
-                                    value.hour,
-                                    value.minute,
-                                  );
-                                  if (_diaperReminderEnabled) {
-                                    await _reminderService.initialize();
-                                    final scheduledAt = _nextReminderDateTime(value);
-                                    await _reminderService.scheduleDiaperReminderAt(scheduledAt);
-                                  }
-                                },
-                              ),
-                              child: Container(
-                                margin: const EdgeInsets.only(left: 60),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.schedule, size: 16, color: subtitleColor),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      _formatTime(_diaperReminderTime),
-                                      style: TextStyle(
-                                        color: subtitleColor,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Icon(Icons.expand_more, size: 16, color: subtitleColor),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: textColor,
+                          size: 20,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // VERÄ° YÃ–NETÄ°MÄ° Section
-                    _buildSectionHeader(Dil.veriYonetimi, subtitleColor),
-                    const SizedBox(height: 12),
-                    _buildCard(
-                      cardColor: cardColor,
-                      child: Column(
-                        children: [
-                          _buildActionTile(
-                            icon: Icons.analytics_outlined,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: 'Rapor Oluştur',
-                            subtitle: 'Haftalık/Aylık istatistikler',
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RaporScreen(),
-                                ),
-                              );
-                            },
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          Dil.ayarlar,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                            letterSpacing: -0.5,
                           ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Uygulama tercihleri',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: subtitleColor,
+                            letterSpacing: 0.2,
                           ),
-                          _buildActionTile(
-                            icon: Icons.download_outlined,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: Dil.verileriDisaAktar,
-                            subtitle: 'JSON formatında indir',
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(Dil.yapilandiriliyor),
-                                  backgroundColor: const Color(0xFFFFB4A2),
-                                ),
-                              );
-                            },
-                          ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildActionTile(
-                            icon: Icons.delete_outline,
-                            iconBgColor: const Color(0xFFFFE5E0),
-                            iconColor: Colors.red.shade400,
-                            title: Dil.tumVerileriSil,
-                            subtitle: 'Tüm kayıtları kalıcı olarak sil',
-                            textColor: Colors.red.shade400,
-                            subtitleColor: subtitleColor,
-                            onTap: () => _showDeleteDialog(isDark, textColor, subtitleColor),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 24),
-
-                    // HAKKINDA Section
-                    _buildSectionHeader(Dil.hakkinda, subtitleColor),
-                    const SizedBox(height: 12),
-                    _buildCard(
-                      cardColor: cardColor,
-                      child: Column(
-                        children: [
-                          _buildInfoTile(
-                            Dil.versiyon,
-                            '$_appVersion+$_buildNumber',
-                            textColor,
-                            subtitleColor,
-                          ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildInfoTile(
-                            Dil.gelistirici,
-                            'Nilico',
-                            textColor,
-                            subtitleColor,
-                          ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildActionTile(
-                            icon: Icons.feedback_outlined,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: 'Send Feedback',
-                            subtitle: 'Mail ile geri bildirim gönder',
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                            onTap: _sendFeedbackEmail,
-                          ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildActionTile(
-                            icon: Icons.privacy_tip_outlined,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: 'Privacy Policy',
-                            subtitle: 'Gizlilik politikasını görüntüle',
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                            onTap: () => _openExternalUrl(_privacyPolicyUrl),
-                          ),
-                          Divider(
-                            color: subtitleColor.withValues(alpha: 0.1),
-                            height: 24,
-                          ),
-                          _buildActionTile(
-                            icon: Icons.description_outlined,
-                            iconBgColor: const Color(0xFFE5E0F7),
-                            iconColor: subtitleColor,
-                            title: 'Terms of Use',
-                            subtitle: 'Kullanım koşullarını görüntüle',
-                            textColor: textColor,
-                            subtitleColor: subtitleColor,
-                            onTap: () => _openExternalUrl(_termsOfUseUrl),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 32),
                   ],
                 ),
               ),
-            ),
+
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // HESAP Section
+                      _buildAccountSection(cardColor, textColor, subtitleColor),
+                      const SizedBox(height: 24),
+
+                      // GÃ–RÃœNÃœM Section
+                      _buildSectionHeader(Dil.gorunum, subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        cardColor: cardColor,
+                        child: _buildSwitchTile(
+                          icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                          iconBgColor: const Color(0xFFE5E0F7),
+                          iconColor: subtitleColor,
+                          title: Dil.karanlikMod,
+                          subtitle: Dil.karanlikModAciklama,
+                          value:
+                              BabyTrackerApp.of(context)?.isDarkMode ?? false,
+                          onChanged: (value) {
+                            BabyTrackerApp.of(context)?.toggleTheme();
+                          },
+                          textColor: textColor,
+                          subtitleColor: subtitleColor,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // BÄ°LDÄ°RÄ°MLER Section
+                      _buildSectionHeader(Dil.bildirimler, subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        cardColor: cardColor,
+                        child: Column(
+                          children: [
+                            _buildSwitchTile(
+                              icon: Icons.restaurant,
+                              iconBgColor: const Color(0xFFFFE5E0),
+                              iconColor: const Color(0xFFFFB4A2),
+                              title: Dil.mamaHatirlatici,
+                              subtitle: _feedingReminderEnabled
+                                  ? 'Saat ${_formatTime(_feedingReminderTime)}'
+                                  : 'Kapalı',
+                              value: _feedingReminderEnabled,
+                              onChanged: _toggleFeedingReminder,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                            ),
+                            if (_feedingReminderEnabled) ...[
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () => _showTimePicker(
+                                  title: 'Hatırlatma Saati',
+                                  currentValue: _feedingReminderTime,
+                                  onSelected: (value) async {
+                                    setState(
+                                      () => _feedingReminderTime = value,
+                                    );
+                                    await VeriYonetici.setFeedingReminderTime(
+                                      value.hour,
+                                      value.minute,
+                                    );
+                                    if (_feedingReminderEnabled) {
+                                      await _reminderService.initialize();
+                                      final scheduledAt = _nextReminderDateTime(
+                                        value,
+                                      );
+                                      await _reminderService
+                                          .scheduleFeedingReminderAt(
+                                            scheduledAt,
+                                          );
+                                    }
+                                  },
+                                ),
+                                child: Container(
+                                  margin: const EdgeInsets.only(left: 60),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFFFFB4A2,
+                                    ).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.schedule,
+                                        size: 16,
+                                        color: const Color(0xFFFFB4A2),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        _formatTime(_feedingReminderTime),
+                                        style: const TextStyle(
+                                          color: Color(0xFFFFB4A2),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.expand_more,
+                                        size: 16,
+                                        color: const Color(0xFFFFB4A2),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildSwitchTile(
+                              icon: Icons.baby_changing_station,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: Dil.bezHatirlatici,
+                              subtitle: _diaperReminderEnabled
+                                  ? 'Saat ${_formatTime(_diaperReminderTime)}'
+                                  : 'Kapalı',
+                              value: _diaperReminderEnabled,
+                              onChanged: _toggleDiaperReminder,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                            ),
+                            if (_diaperReminderEnabled) ...[
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () => _showTimePicker(
+                                  title: 'Hatırlatma Saati',
+                                  currentValue: _diaperReminderTime,
+                                  onSelected: (value) async {
+                                    setState(() => _diaperReminderTime = value);
+                                    await VeriYonetici.setDiaperReminderTime(
+                                      value.hour,
+                                      value.minute,
+                                    );
+                                    if (_diaperReminderEnabled) {
+                                      await _reminderService.initialize();
+                                      final scheduledAt = _nextReminderDateTime(
+                                        value,
+                                      );
+                                      await _reminderService
+                                          .scheduleDiaperReminderAt(
+                                            scheduledAt,
+                                          );
+                                    }
+                                  },
+                                ),
+                                child: Container(
+                                  margin: const EdgeInsets.only(left: 60),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFFE5E0F7,
+                                    ).withValues(alpha: 0.3),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.schedule,
+                                        size: 16,
+                                        color: subtitleColor,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        _formatTime(_diaperReminderTime),
+                                        style: TextStyle(
+                                          color: subtitleColor,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.expand_more,
+                                        size: 16,
+                                        color: subtitleColor,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // VERÄ° YÃ–NETÄ°MÄ° Section
+                      _buildSectionHeader(Dil.veriYonetimi, subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        cardColor: cardColor,
+                        child: Column(
+                          children: [
+                            _buildActionTile(
+                              icon: Icons.analytics_outlined,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: 'Rapor Oluştur',
+                              subtitle: 'Haftalık/Aylık istatistikler',
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const RaporScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildActionTile(
+                              icon: Icons.delete_outline,
+                              iconBgColor: const Color(0xFFFFE5E0),
+                              iconColor: Colors.red.shade400,
+                              title: Dil.tumVerileriSil,
+                              subtitle: 'Tüm kayıtları kalıcı olarak sil',
+                              textColor: Colors.red.shade400,
+                              subtitleColor: subtitleColor,
+                              onTap: () => _showDeleteDialog(
+                                isDark,
+                                textColor,
+                                subtitleColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // HAKKINDA Section
+                      _buildSectionHeader(Dil.hakkinda, subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        cardColor: cardColor,
+                        child: Column(
+                          children: [
+                            _buildInfoTile(
+                              Dil.versiyon,
+                              '1.0.0',
+                              textColor,
+                              subtitleColor,
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildInfoTile(
+                              Dil.gelistirici,
+                              'Nilico',
+                              textColor,
+                              subtitleColor,
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildActionTile(
+                              icon: Icons.privacy_tip_outlined,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: l10n.privacyPolicy,
+                              subtitle: l10n.privacyPolicySubtitle,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              onTap: () => _openInAppUrl(_privacyPolicyUrl),
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildActionTile(
+                              icon: Icons.description_outlined,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: l10n.termsOfUse,
+                              subtitle: l10n.termsOfUseSubtitle,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              onTap: () => _openInAppUrl(_termsOfUseUrl),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -624,7 +615,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildAccountSection(Color cardColor, Color textColor, Color subtitleColor) {
+  Widget _buildAccountSection(
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     final user = FirebaseAuth.instance.currentUser;
     final isLoggedIn = user != null;
@@ -665,12 +660,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           isLoggedIn
-                              ? l10n.signedInAs(user.email ?? user.displayName ?? 'User')
+                              ? l10n.signedInAs(
+                                  user.email ?? user.displayName ?? 'User',
+                                )
                               : l10n.guestMode,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: subtitleColor,
-                          ),
+                          style: TextStyle(fontSize: 13, color: subtitleColor),
                         ),
                         const SizedBox(height: 2),
                         Text(
@@ -723,9 +717,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       Icon(
                         isLoggedIn ? Icons.logout : Icons.login,
-                        color: isLoggedIn
-                            ? Colors.red.shade400
-                            : Colors.white,
+                        color: isLoggedIn ? Colors.red.shade400 : Colors.white,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
@@ -784,10 +776,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Widget _buildCard({
-    required Color cardColor,
-    required Widget child,
-  }) {
+  Widget _buildCard({required Color cardColor, required Widget child}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -844,10 +833,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 2),
               Text(
                 subtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: subtitleColor,
-                ),
+                style: TextStyle(fontSize: 13, color: subtitleColor),
               ),
             ],
           ),
@@ -902,19 +888,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: subtitleColor,
-                  ),
+                  style: TextStyle(fontSize: 13, color: subtitleColor),
                 ),
               ],
             ),
           ),
-          Icon(
-            Icons.chevron_right,
-            color: subtitleColor,
-            size: 24,
-          ),
+          Icon(Icons.chevron_right, color: subtitleColor, size: 24),
         ],
       ),
     );
@@ -929,13 +908,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 15,
-            color: subtitleColor,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 15, color: subtitleColor)),
         Text(
           value,
           style: TextStyle(
@@ -984,10 +957,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         content: Text(
           Dil.silmeUyarisi,
-          style: TextStyle(
-            fontSize: 15,
-            color: subtitleColor,
-          ),
+          style: TextStyle(fontSize: 15, color: subtitleColor),
         ),
         actions: [
           TextButton(

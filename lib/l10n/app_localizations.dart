@@ -521,7 +521,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentActivities.
   ///
   /// In en, this message translates to:
-  /// **'RECENT ACTIVITIES'**
+  /// **'RECENT CARE RECORDS'**
   String get recentActivities;
 
   /// No description provided for @record.
@@ -1139,7 +1139,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentActivity.
   ///
   /// In en, this message translates to:
-  /// **'RECENT ACTIVITY'**
+  /// **'RECENT CARE RECORDS'**
   String get recentActivity;
 
   /// No description provided for @seeHistory.
@@ -1411,6 +1411,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup & sync coming soon'**
   String get backupSyncComingSoon;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @privacyPolicySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View privacy policy'**
+  String get privacyPolicySubtitle;
+
+  /// No description provided for @termsOfUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get termsOfUse;
+
+  /// No description provided for @termsOfUseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View terms and conditions'**
+  String get termsOfUseSubtitle;
+
+  /// No description provided for @pageCouldNotOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open page'**
+  String get pageCouldNotOpen;
 }
 
 class _AppLocalizationsDelegate
