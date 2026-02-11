@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>132866671898-kniipbk303nvnumn3oto5i5oeoeaua1n.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.132866671898-kniipbk303nvnumn3oto5i5oeoeaua1n</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCUfm-jVAXlOYe7fNFYCfATPZaP3vIiiIU</string>
 	<key>GCM_SENDER_ID</key>
@@ -9,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.nilico.babytracker</string>
+	<string>com.Nilico.Baby</string>
 	<key>PROJECT_ID</key>
 	<string>nilico-c8f58</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:132866671898:ios:0cbc040d67785d6f8558a3</string>
+	<string>1:132866671898:ios:ceb554c6057dc9d08558a3</string>
 </dict>
 </plist>
