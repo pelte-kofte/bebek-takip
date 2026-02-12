@@ -11,12 +11,12 @@ void _onBackgroundNotificationResponse(NotificationResponse response) async {
   if (actionId == null || actionId.isEmpty) return;
 
   final prefs = await SharedPreferences.getInstance();
-  final activeBabyId = prefs.getString('active_baby_id') ?? '';
   final notifications = FlutterLocalNotificationsPlugin();
 
   if (actionId == 'STOP_SLEEP_TIMER') {
-    final uykuStr = prefs.getString('active_uyku_start');
-    if (uykuStr != null && uykuStr.isNotEmpty) {
+    final timerBabyId = prefs.getString('active_uyku_baby_id');
+    final uykuStr = prefs.getString('active_uyku_start_$timerBabyId');
+    if (uykuStr != null && uykuStr.isNotEmpty && timerBabyId != null) {
       final baslangic = DateTime.parse(uykuStr);
       final bitis = DateTime.now();
       final sure = bitis.difference(baslangic);
@@ -33,20 +33,22 @@ void _onBackgroundNotificationResponse(NotificationResponse response) async {
           'baslangic': baslangic.toIso8601String(),
           'bitis': bitis.toIso8601String(),
           'sure': sure.inMinutes,
-          'babyId': activeBabyId,
+          'babyId': timerBabyId,
         });
         await prefs.setString('uyku_kayitlari', jsonEncode(records));
       }
-      await prefs.remove('active_uyku_start');
+      await prefs.remove('active_uyku_start_$timerBabyId');
+      await prefs.remove('active_uyku_baby_id');
     }
     await notifications.cancel(SleepNotificationService._sleepNotificationId);
   } else if (actionId == 'STOP_NURSING_TIMER') {
-    final startStr = prefs.getString('active_emzirme_ilk_start');
-    if (startStr != null && startStr.isNotEmpty) {
-      final emzirmeStart = prefs.getString('active_emzirme_start');
-      final taraf = prefs.getString('active_emzirme_taraf');
-      int solSaniye = prefs.getInt('active_emzirme_sol_saniye') ?? 0;
-      int sagSaniye = prefs.getInt('active_emzirme_sag_saniye') ?? 0;
+    final timerBabyId = prefs.getString('active_emzirme_baby_id');
+    final startStr = prefs.getString('active_emzirme_ilk_start_$timerBabyId');
+    if (startStr != null && startStr.isNotEmpty && timerBabyId != null) {
+      final emzirmeStart = prefs.getString('active_emzirme_start_$timerBabyId');
+      final taraf = prefs.getString('active_emzirme_taraf_$timerBabyId');
+      int solSaniye = prefs.getInt('active_emzirme_sol_saniye_$timerBabyId') ?? 0;
+      int sagSaniye = prefs.getInt('active_emzirme_sag_saniye_$timerBabyId') ?? 0;
 
       if (emzirmeStart != null) {
         final segmentStart = DateTime.parse(emzirmeStart);
@@ -77,17 +79,18 @@ void _onBackgroundNotificationResponse(NotificationResponse response) async {
           'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
           'miktar': 0,
           'kategori': 'Milk',
-          'babyId': activeBabyId,
+          'babyId': timerBabyId,
         });
         await prefs.setString('mama_kayitlari', jsonEncode(records));
       }
     }
-    await prefs.remove('active_emzirme_start');
-    await prefs.remove('active_emzirme_ilk_start');
-    await prefs.remove('active_emzirme_tur');
-    await prefs.remove('active_emzirme_taraf');
-    await prefs.remove('active_emzirme_sol_saniye');
-    await prefs.remove('active_emzirme_sag_saniye');
+    await prefs.remove('active_emzirme_start_$timerBabyId');
+    await prefs.remove('active_emzirme_ilk_start_$timerBabyId');
+    await prefs.remove('active_emzirme_tur_$timerBabyId');
+    await prefs.remove('active_emzirme_taraf_$timerBabyId');
+    await prefs.remove('active_emzirme_sol_saniye_$timerBabyId');
+    await prefs.remove('active_emzirme_sag_saniye_$timerBabyId');
+    await prefs.remove('active_emzirme_baby_id');
     await notifications.cancel(SleepNotificationService._nursingNotificationId);
   }
 }
@@ -105,13 +108,6 @@ class SleepNotificationService {
   static const int _nursingNotificationId = 1002;
 
   bool _initialized = false;
-
-  Timer? _sleepUpdateTimer;
-  DateTime? _sleepStartTime;
-
-  Timer? _nursingUpdateTimer;
-  DateTime? _nursingStartTime;
-  String? _nursingTaraf;
 
   /// Foreground action callback — set by TimerYonetici
   static Function(String actionId)? onActionReceived;
@@ -176,25 +172,7 @@ class SleepNotificationService {
   // ============ SLEEP NOTIFICATION ============
 
   Future<void> showSleepNotification(DateTime startTime) async {
-    _sleepStartTime = startTime;
-    await _updateSleepNotification();
-    _sleepUpdateTimer?.cancel();
-    _sleepUpdateTimer = Timer.periodic(const Duration(seconds: 60), (_) {
-      _updateSleepNotification();
-    });
-  }
-
-  Future<void> _updateSleepNotification() async {
-    if (_sleepStartTime == null) return;
-
-    final elapsed = DateTime.now().difference(_sleepStartTime!);
-    final hours = elapsed.inHours;
-    final minutes = elapsed.inMinutes % 60;
-    final timeString = hours > 0
-        ? '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}'
-        : '${elapsed.inMinutes.toString().padLeft(2, '0')}:${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}';
-
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       'sleep_timer_channel',
       'Uyku Zamanlayıcı',
       channelDescription: 'Uyku zamanlayıcı bildirimleri',
@@ -206,7 +184,7 @@ class SleepNotificationService {
       playSound: false,
       enableVibration: false,
       icon: '@mipmap/ic_launcher',
-      actions: const [
+      actions: [
         AndroidNotificationAction(
           'STOP_SLEEP_TIMER',
           'Durdur',
@@ -224,7 +202,7 @@ class SleepNotificationService {
       categoryIdentifier: 'SLEEP_TIMER_CATEGORY',
     );
 
-    final details = NotificationDetails(
+    const details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -232,49 +210,23 @@ class SleepNotificationService {
     await _notifications.show(
       _sleepNotificationId,
       'Uyku devam ediyor',
-      'Geçen süre: $timeString',
+      'Durdurmak için bildirime dokunun',
       details,
     );
   }
 
   Future<void> cancelSleepNotification() async {
-    _sleepUpdateTimer?.cancel();
-    _sleepUpdateTimer = null;
-    _sleepStartTime = null;
     await _notifications.cancel(_sleepNotificationId);
   }
 
   // ============ NURSING NOTIFICATION ============
 
   Future<void> showNursingNotification(DateTime startTime, String? taraf) async {
-    _nursingStartTime = startTime;
-    _nursingTaraf = taraf;
-    await _updateNursingNotification();
-    _nursingUpdateTimer?.cancel();
-    _nursingUpdateTimer = Timer.periodic(const Duration(seconds: 60), (_) {
-      _updateNursingNotification();
-    });
-  }
-
-  Future<void> updateNursingSide(String? taraf) async {
-    _nursingTaraf = taraf;
-    await _updateNursingNotification();
-  }
-
-  Future<void> _updateNursingNotification() async {
-    if (_nursingStartTime == null) return;
-
-    final elapsed = DateTime.now().difference(_nursingStartTime!);
-    final minutes = elapsed.inMinutes;
-    final seconds = elapsed.inSeconds % 60;
-    final timeString =
-        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-
-    final sideText = _nursingTaraf != null
-        ? ' (${_nursingTaraf == 'sol' ? 'Sol' : 'Sağ'})'
+    final sideText = taraf != null
+        ? ' (${taraf == 'sol' ? 'Sol' : 'Sağ'})'
         : '';
 
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       'nursing_timer_channel',
       'Emzirme Zamanlayıcı',
       channelDescription: 'Emzirme zamanlayıcı bildirimleri',
@@ -286,7 +238,7 @@ class SleepNotificationService {
       playSound: false,
       enableVibration: false,
       icon: '@mipmap/ic_launcher',
-      actions: const [
+      actions: [
         AndroidNotificationAction(
           'STOP_NURSING_TIMER',
           'Durdur',
@@ -312,23 +264,66 @@ class SleepNotificationService {
     await _notifications.show(
       _nursingNotificationId,
       'Emzirme devam ediyor$sideText',
-      'Geçen süre: $timeString',
+      'Durdurmak için bildirime dokunun',
+      details,
+    );
+  }
+
+  Future<void> updateNursingSide(String? taraf) async {
+    final sideText = taraf != null
+        ? ' (${taraf == 'sol' ? 'Sol' : 'Sağ'})'
+        : '';
+
+    const androidDetails = AndroidNotificationDetails(
+      'nursing_timer_channel',
+      'Emzirme Zamanlayıcı',
+      channelDescription: 'Emzirme zamanlayıcı bildirimleri',
+      importance: Importance.low,
+      priority: Priority.low,
+      ongoing: true,
+      autoCancel: false,
+      showWhen: false,
+      playSound: false,
+      enableVibration: false,
+      icon: '@mipmap/ic_launcher',
+      actions: [
+        AndroidNotificationAction(
+          'STOP_NURSING_TIMER',
+          'Durdur',
+          showsUserInterface: true,
+        ),
+      ],
+    );
+
+    const iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: false,
+      presentSound: false,
+      presentBanner: true,
+      presentList: true,
+      categoryIdentifier: 'NURSING_TIMER_CATEGORY',
+    );
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.show(
+      _nursingNotificationId,
+      'Emzirme devam ediyor$sideText',
+      'Durdurmak için bildirime dokunun',
       details,
     );
   }
 
   Future<void> cancelNursingNotification() async {
-    _nursingUpdateTimer?.cancel();
-    _nursingUpdateTimer = null;
-    _nursingStartTime = null;
-    _nursingTaraf = null;
     await _notifications.cancel(_nursingNotificationId);
   }
 
   // ============ DISPOSE ============
 
   void dispose() {
-    _sleepUpdateTimer?.cancel();
-    _nursingUpdateTimer?.cancel();
+    // Nothing to dispose
   }
 }
