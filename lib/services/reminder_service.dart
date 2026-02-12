@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 
 class ReminderService {
   static final ReminderService _instance = ReminderService._internal();
@@ -17,6 +18,20 @@ class ReminderService {
   static const int _feedingReminderId = 2001;
   static const int _diaperReminderId = 2002;
 
+  static const String _feedingTitleKey = 'feeding_reminder_title';
+  static const String _feedingBodyKey = 'feeding_reminder_body';
+  static const String _diaperTitleKey = 'diaper_reminder_title';
+  static const String _diaperBodyKey = 'diaper_reminder_body';
+
+  static const String _defaultFeedingTitle =
+      '\u{1F37C} Beslenme Hat\u0131rlat\u0131c\u0131';
+  static const String _defaultFeedingBody =
+      'Bebe\u011Finizi besleme zaman\u0131 geldi';
+  static const String _defaultDiaperTitle =
+      '\u{1F476} Bez Hat\u0131rlat\u0131c\u0131';
+  static const String _defaultDiaperBody =
+      'Bebe\u011Finizin bezini kontrol etme zaman\u0131';
+
   bool _initialized = false;
 
   static void initializeTimeZonesOnce() {
@@ -28,6 +43,7 @@ class ReminderService {
   Future<void> initialize() async {
     if (_initialized) return;
     initializeTimeZonesOnce();
+    await _ensureReminderStringsUtf8();
     _initialized = true;
   }
 
@@ -65,7 +81,7 @@ class ReminderService {
 
       _permissionsGranted = true;
       return true;
-    } catch (e) {
+    } catch (_) {
       _permissionsGranted = false;
       return false;
     }
@@ -78,43 +94,20 @@ class ReminderService {
   }) async {
     if (!_initialized) await initialize();
 
-    // Cancel any existing feeding reminder
     await cancelFeedingReminder();
-
     final scheduledTime = lastFeedingTime.add(Duration(minutes: intervalMinutes));
-
-    // Don't schedule if time is in the past
     if (scheduledTime.isBefore(DateTime.now())) return;
 
-    const androidDetails = AndroidNotificationDetails(
-      'feeding_reminder_channel',
-      'Beslenme Hatırlatıcı',
-      channelDescription: 'Beslenme hatırlatıcı bildirimleri',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: false,
-      presentSound: true,
-    );
-
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    await _notifications.zonedSchedule(
-      _feedingReminderId,
-      '🍼 Beslenme Hatırlatıcı',
-      'Bebeğinizi besleme zamanı geldi',
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+    final content = await _readFeedingReminderContent();
+    await _scheduleReminder(
+      id: _feedingReminderId,
+      title: content.title,
+      body: content.body,
+      scheduledAt: scheduledTime,
+      scheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidChannelId: 'feeding_reminder_channel',
+      androidChannelName: 'Beslenme Hat\u0131rlat\u0131c\u0131',
+      androidChannelDescription: 'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
     );
   }
 
@@ -125,43 +118,21 @@ class ReminderService {
   }) async {
     if (!_initialized) await initialize();
 
-    // Cancel any existing diaper reminder
     await cancelDiaperReminder();
-
     final scheduledTime = lastDiaperTime.add(Duration(minutes: intervalMinutes));
-
-    // Don't schedule if time is in the past
     if (scheduledTime.isBefore(DateTime.now())) return;
 
-    const androidDetails = AndroidNotificationDetails(
-      'diaper_reminder_channel',
-      'Bez Hatırlatıcı',
-      channelDescription: 'Bez değişimi hatırlatıcı bildirimleri',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: false,
-      presentSound: true,
-    );
-
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    await _notifications.zonedSchedule(
-      _diaperReminderId,
-      '👶 Bez Hatırlatıcı',
-      'Bebeğinizin bezini kontrol etme zamanı',
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+    final content = await _readDiaperReminderContent();
+    await _scheduleReminder(
+      id: _diaperReminderId,
+      title: content.title,
+      body: content.body,
+      scheduledAt: scheduledTime,
+      scheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidChannelId: 'diaper_reminder_channel',
+      androidChannelName: 'Bez Hat\u0131rlat\u0131c\u0131',
+      androidChannelDescription:
+          'Bez de\u011Fi\u015Fimi hat\u0131rlat\u0131c\u0131 bildirimleri',
     );
   }
 
@@ -169,41 +140,19 @@ class ReminderService {
   Future<void> scheduleFeedingReminderAt(DateTime scheduledAt) async {
     if (!_initialized) await initialize();
 
-    // Cancel any existing feeding reminder
     await cancelFeedingReminder();
-
-    // Don't schedule if time is in the past
     if (scheduledAt.isBefore(DateTime.now())) return;
 
-    const androidDetails = AndroidNotificationDetails(
-      'feeding_reminder_channel',
-      'Beslenme HatÄ±rlatÄ±cÄ±',
-      channelDescription: 'Beslenme hatÄ±rlatÄ±cÄ± bildirimleri',
-      importance: Importance.high,
-      priority: Priority.high,
-      icon: '@mipmap/ic_launcher',
-    );
-
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: false,
-      presentSound: true,
-    );
-
-    const details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    await _notifications.zonedSchedule(
-      _feedingReminderId,
-      'ğŸ¼ Beslenme HatÄ±rlatÄ±cÄ±',
-      'BebeÄŸinizi besleme zamanÄ± geldi',
-      tz.TZDateTime.from(scheduledAt, tz.local),
-      details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
+    final content = await _readFeedingReminderContent();
+    await _scheduleReminder(
+      id: _feedingReminderId,
+      title: content.title,
+      body: content.body,
+      scheduledAt: scheduledAt,
+      scheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidChannelId: 'feeding_reminder_channel',
+      androidChannelName: 'Beslenme Hat\u0131rlat\u0131c\u0131',
+      androidChannelDescription: 'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
     );
   }
 
@@ -211,16 +160,37 @@ class ReminderService {
   Future<void> scheduleDiaperReminderAt(DateTime scheduledAt) async {
     if (!_initialized) await initialize();
 
-    // Cancel any existing diaper reminder
     await cancelDiaperReminder();
-
-    // Don't schedule if time is in the past
     if (scheduledAt.isBefore(DateTime.now())) return;
 
-    const androidDetails = AndroidNotificationDetails(
-      'diaper_reminder_channel',
-      'Bez HatÄ±rlatÄ±cÄ±',
-      channelDescription: 'Bez deÄŸiÅŸimi hatÄ±rlatÄ±cÄ± bildirimleri',
+    final content = await _readDiaperReminderContent();
+    await _scheduleReminder(
+      id: _diaperReminderId,
+      title: content.title,
+      body: content.body,
+      scheduledAt: scheduledAt,
+      scheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidChannelId: 'diaper_reminder_channel',
+      androidChannelName: 'Bez Hat\u0131rlat\u0131c\u0131',
+      androidChannelDescription:
+          'Bez de\u011Fi\u015Fimi hat\u0131rlat\u0131c\u0131 bildirimleri',
+    );
+  }
+
+  Future<void> _scheduleReminder({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledAt,
+    required AndroidScheduleMode scheduleMode,
+    required String androidChannelId,
+    required String androidChannelName,
+    required String androidChannelDescription,
+  }) async {
+    final androidDetails = AndroidNotificationDetails(
+      androidChannelId,
+      androidChannelName,
+      channelDescription: androidChannelDescription,
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
@@ -232,21 +202,63 @@ class ReminderService {
       presentSound: true,
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     await _notifications.zonedSchedule(
-      _diaperReminderId,
-      'ğŸ‘¶ Bez HatÄ±rlatÄ±cÄ±',
-      'BebeÄŸinizin bezini kontrol etme zamanÄ±',
+      id,
+      title,
+      body,
       tz.TZDateTime.from(scheduledAt, tz.local),
       details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: scheduleMode,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+  }
+
+  Future<void> _ensureReminderStringsUtf8() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final feedingTitle =
+        _sanitizeReminderText(prefs.getString(_feedingTitleKey), _defaultFeedingTitle);
+    final feedingBody =
+        _sanitizeReminderText(prefs.getString(_feedingBodyKey), _defaultFeedingBody);
+    final diaperTitle =
+        _sanitizeReminderText(prefs.getString(_diaperTitleKey), _defaultDiaperTitle);
+    final diaperBody =
+        _sanitizeReminderText(prefs.getString(_diaperBodyKey), _defaultDiaperBody);
+
+    // Persist normalized strings to keep storage clean and consistent.
+    await prefs.setString(_feedingTitleKey, feedingTitle);
+    await prefs.setString(_feedingBodyKey, feedingBody);
+    await prefs.setString(_diaperTitleKey, diaperTitle);
+    await prefs.setString(_diaperBodyKey, diaperBody);
+  }
+
+  Future<_ReminderContent> _readFeedingReminderContent() async {
+    final prefs = await SharedPreferences.getInstance();
+    return _ReminderContent(
+      title:
+          _sanitizeReminderText(prefs.getString(_feedingTitleKey), _defaultFeedingTitle),
+      body: _sanitizeReminderText(prefs.getString(_feedingBodyKey), _defaultFeedingBody),
+    );
+  }
+
+  Future<_ReminderContent> _readDiaperReminderContent() async {
+    final prefs = await SharedPreferences.getInstance();
+    return _ReminderContent(
+      title: _sanitizeReminderText(prefs.getString(_diaperTitleKey), _defaultDiaperTitle),
+      body: _sanitizeReminderText(prefs.getString(_diaperBodyKey), _defaultDiaperBody),
+    );
+  }
+
+  String _sanitizeReminderText(String? value, String fallback) {
+    if (value == null || value.trim().isEmpty) return fallback;
+    if (value.contains('\uFFFD') || value.contains('�')) return fallback;
+    return value;
   }
 
   /// Cancel feeding reminder
@@ -264,4 +276,14 @@ class ReminderService {
     await cancelFeedingReminder();
     await cancelDiaperReminder();
   }
+}
+
+class _ReminderContent {
+  final String title;
+  final String body;
+
+  const _ReminderContent({
+    required this.title,
+    required this.body,
+  });
 }

@@ -30,11 +30,14 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser == null) {
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
         return;
       }
 
@@ -49,11 +52,13 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
       await FirebaseAuth.instance.signInWithCredential(credential);
       _proceedToApp();
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign in failed: ${e.toString()}'),
+            content: Text('Google sign-in failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
