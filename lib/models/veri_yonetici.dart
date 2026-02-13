@@ -16,6 +16,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _boyKiloKayitlari = [];
   static List<Map<String, dynamic>> _milestones = [];
   static List<Map<String, dynamic>> _asiKayitlari = [];
+  static List<Map<String, dynamic>> _ilacKayitlari = [];
   static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
@@ -89,6 +90,7 @@ class VeriYonetici {
     _boyKiloKayitlari = _loadBoyKiloKayitlari();
     _milestones = _loadMilestones();
     _asiKayitlari = _loadAsiKayitlari();
+    _ilacKayitlari = _loadIlacKayitlari();
 
     // Settings
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
@@ -192,6 +194,7 @@ class VeriYonetici {
     await _tagExistingRecords('boykilo_kayitlari', defaultBabyId);
     await _tagExistingRecords('milestones', defaultBabyId);
     await _tagExistingRecords('asi_kayitlari', defaultBabyId);
+    await _tagExistingRecords('ilac_kayitlari', defaultBabyId);
 
     await _prefs!.setBool(_migrationKey, true);
   }
@@ -274,6 +277,8 @@ class VeriYonetici {
       _babyName = baby.name;
       _birthDate = baby.birthDate;
       _babyPhotoPath = baby.photoPath;
+      // Reload timer state for the new baby
+      await TimerYonetici().onActiveBabyChanged(babyId);
     }
   }
 
@@ -304,6 +309,7 @@ class VeriYonetici {
     _boyKiloKayitlari.removeWhere((r) => r['babyId'] == babyId);
     _milestones.removeWhere((r) => r['babyId'] == babyId);
     _asiKayitlari.removeWhere((r) => r['babyId'] == babyId);
+    _ilacKayitlari.removeWhere((r) => r['babyId'] == babyId);
 
     if (_activeBabyId == babyId) {
       await setActiveBaby(_babies.first.id);
@@ -721,6 +727,67 @@ class VeriYonetici {
     _vaccineVersion.value++;
   }
 
+  // ============ İLAÇLAR ============
+
+  static List<Map<String, dynamic>> _loadIlacKayitlari() {
+    try {
+      final data = _prefs!.getString('ilac_kayitlari');
+      if (data == null || data.isEmpty) return [];
+      final list = jsonDecode(data) as List;
+      return list
+          .map(
+            (e) => Map<String, dynamic>.from({
+              'id': e['id'],
+              'babyId': e['babyId'] ?? _activeBabyId,
+              'name': e['name'] ?? '',
+              'type': e['type'] ?? 'medication',
+              'dosage': e['dosage'],
+              'scheduleText': e['scheduleText'],
+              'notes': e['notes'],
+              'isActive': e['isActive'] ?? true,
+              'createdAt': DateTime.parse(e['createdAt']),
+            }),
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static List<Map<String, dynamic>> getIlacKayitlari() {
+    return _ilacKayitlari
+        .where((r) => r['babyId'] == _activeBabyId)
+        .toList();
+  }
+
+  static Future<void> saveIlacKayitlari(
+    List<Map<String, dynamic>> kayitlar,
+  ) async {
+    for (final r in kayitlar) {
+      r['babyId'] = _activeBabyId;
+    }
+
+    _ilacKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _ilacKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+
+    final data = _ilacKayitlari
+        .map(
+          (e) => {
+            'id': e['id'],
+            'babyId': e['babyId'],
+            'name': e['name'],
+            'type': e['type'],
+            'dosage': e['dosage'],
+            'scheduleText': e['scheduleText'],
+            'notes': e['notes'],
+            'isActive': e['isActive'] ?? true,
+            'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
+          },
+        )
+        .toList();
+    await _prefs!.setString('ilac_kayitlari', jsonEncode(data));
+  }
+
   // ============ TEMA & SETTINGS ============
 
   static bool isFirstLaunch() {
@@ -857,6 +924,7 @@ class VeriYonetici {
     _boyKiloKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
     _milestones.removeWhere((r) => r['babyId'] == _activeBabyId);
     _asiKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _ilacKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
 
     await _saveAllCollections();
   }
@@ -970,6 +1038,25 @@ class VeriYonetici {
                   'durum': e['durum'] ?? 'bekleniyor',
                   'notlar': e['notlar'] ?? '',
                   'babyId': e['babyId'],
+                })
+            .toList(),
+      ),
+    );
+
+    await _prefs!.setString(
+      'ilac_kayitlari',
+      jsonEncode(
+        _ilacKayitlari
+            .map((e) => {
+                  'id': e['id'],
+                  'babyId': e['babyId'],
+                  'name': e['name'],
+                  'type': e['type'],
+                  'dosage': e['dosage'],
+                  'scheduleText': e['scheduleText'],
+                  'notes': e['notes'],
+                  'isActive': e['isActive'] ?? true,
+                  'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
                 })
             .toList(),
       ),

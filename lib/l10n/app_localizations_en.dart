@@ -736,4 +736,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pageCouldNotOpen => 'Could not open page';
+
+  @override
+  String get health => 'Health';
+
+  @override
+  String get medications => 'Medications';
+
+  @override
+  String get noMedications => 'No medications/supplements yet';
+
+  @override
+  String get medication => 'Medication';
+
+  @override
+  String get supplement => 'Supplement';
+
+  @override
+  String get addMedication => 'Add Medication';
+
+  @override
+  String get editMedication => 'Edit Medication';
+
+  @override
+  String get medicationName => 'Name';
+
+  @override
+  String get medicationNameRequired => 'Please enter a name';
+
+  @override
+  String get dosage => 'Dosage';
+
+  @override
+  String get schedule => 'Schedule';
+
+  @override
+  String get notes => 'Notes';
 }

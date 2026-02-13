@@ -15,8 +15,8 @@ class ReminderService {
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
-  static const int _feedingReminderId = 2001;
-  static const int _diaperReminderId = 2002;
+  static const int feedingReminderId = 2001;
+  static const int diaperReminderId = 2002;
 
   static const String _feedingTitleKey = 'feeding_reminder_title';
   static const String _feedingBodyKey = 'feeding_reminder_body';
@@ -100,7 +100,7 @@ class ReminderService {
 
     final content = await _readFeedingReminderContent();
     await _scheduleReminder(
-      id: _feedingReminderId,
+      id: feedingReminderId,
       title: content.title,
       body: content.body,
       scheduledAt: scheduledTime,
@@ -124,7 +124,7 @@ class ReminderService {
 
     final content = await _readDiaperReminderContent();
     await _scheduleReminder(
-      id: _diaperReminderId,
+      id: diaperReminderId,
       title: content.title,
       body: content.body,
       scheduledAt: scheduledTime,
@@ -145,7 +145,7 @@ class ReminderService {
 
     final content = await _readFeedingReminderContent();
     await _scheduleReminder(
-      id: _feedingReminderId,
+      id: feedingReminderId,
       title: content.title,
       body: content.body,
       scheduledAt: scheduledAt,
@@ -165,7 +165,7 @@ class ReminderService {
 
     final content = await _readDiaperReminderContent();
     await _scheduleReminder(
-      id: _diaperReminderId,
+      id: diaperReminderId,
       title: content.title,
       body: content.body,
       scheduledAt: scheduledAt,
@@ -187,19 +187,40 @@ class ReminderService {
     required String androidChannelName,
     required String androidChannelDescription,
   }) async {
+    final isFeeding = id == feedingReminderId;
+    final actionSuffix = isFeeding ? 'FEEDING' : 'DIAPER';
+
     final androidDetails = AndroidNotificationDetails(
       androidChannelId,
       androidChannelName,
       channelDescription: androidChannelDescription,
       importance: Importance.high,
       priority: Priority.high,
+      autoCancel: true,
       icon: '@mipmap/ic_launcher',
+      actions: [
+        AndroidNotificationAction(
+          'DONE_$actionSuffix',
+          'Tamam',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'RESCHEDULE_$actionSuffix',
+          'Tekrar Kur',
+          showsUserInterface: true,
+        ),
+      ],
     );
 
-    const iosDetails = DarwinNotificationDetails(
+    final iosDetails = DarwinNotificationDetails(
       presentAlert: true,
-      presentBadge: false,
+      presentBadge: true,
       presentSound: true,
+      presentBanner: true,
+      presentList: true,
+      interruptionLevel: InterruptionLevel.timeSensitive,
+      categoryIdentifier:
+          isFeeding ? 'FEEDING_REMINDER_CATEGORY' : 'DIAPER_REMINDER_CATEGORY',
     );
 
     final details = NotificationDetails(
@@ -207,6 +228,7 @@ class ReminderService {
       iOS: iosDetails,
     );
 
+    // One-shot: no matchDateTimeComponents → fires once, never repeats
     await _notifications.zonedSchedule(
       id,
       title,
@@ -263,12 +285,12 @@ class ReminderService {
 
   /// Cancel feeding reminder
   Future<void> cancelFeedingReminder() async {
-    await _notifications.cancel(_feedingReminderId);
+    await _notifications.cancel(feedingReminderId);
   }
 
   /// Cancel diaper reminder
   Future<void> cancelDiaperReminder() async {
-    await _notifications.cancel(_diaperReminderId);
+    await _notifications.cancel(diaperReminderId);
   }
 
   /// Cancel all reminders

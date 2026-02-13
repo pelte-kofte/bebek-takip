@@ -8,7 +8,8 @@ import 'add_vaccine_screen.dart';
 import 'package:intl/intl.dart';
 
 class VaccinesScreen extends StatefulWidget {
-  const VaccinesScreen({super.key});
+  final bool embedded;
+  const VaccinesScreen({super.key, this.embedded = false});
 
   @override
   State<VaccinesScreen> createState() => _VaccinesScreenState();
@@ -583,80 +584,89 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
+  Widget _buildContent(bool isDark) {
+    return SafeArea(
+      top: !widget.embedded,
+      bottom: !widget.embedded,
+      child: Stack(
+        children: [
+          Column(
+            children: [
+              _buildHeader(isDark),
+              _buildMonthSelector(isDark),
+              const SizedBox(height: 16),
+              Expanded(
+                child: _vaccines.isEmpty
+                    ? SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildBabyInfoCard(isDark),
+                            const SizedBox(height: 32),
+                            _buildEmptyState(isDark),
+                          ],
+                        ),
+                      )
+                    : ReorderableListView.builder(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
+                        buildDefaultDragHandles: false,
+                        onReorder: _onReorder,
+                        itemCount: _getFilteredVaccines().length + 1,
+                        itemBuilder: (context, index) {
+                          final filteredVaccines = _getFilteredVaccines();
+                          if (index == 0) {
+                            return Padding(
+                              key: const ValueKey('baby_info'),
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: _buildBabyInfoCard(isDark),
+                            );
+                          }
+                          final vaccineIndex = index - 1;
+                          final vaccine = filteredVaccines[vaccineIndex];
+                          final actualIndex = _vaccines.indexOf(vaccine);
+                          final isCompleted =
+                              vaccine['durum'] == 'uygulandi';
+                          return Padding(
+                            key: ValueKey(vaccine['id'] ?? actualIndex),
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildReorderableVaccineCard(
+                              vaccine,
+                              actualIndex,
+                              isDark,
+                              isCompleted,
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+
+          Positioned(
+            bottom: 32,
+            left: 24,
+            right: 24,
+            child: _buildAddButton(),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    if (widget.embedded) {
+      return _buildContent(isDark);
+    }
 
     return DecorativeBackground(
       preset: BackgroundPreset.vaccines,
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Stack(
-            children: [
-              Column(
-                children: [
-                  _buildHeader(isDark),
-                  _buildMonthSelector(isDark),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: _vaccines.isEmpty
-                        ? SingleChildScrollView(
-                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildBabyInfoCard(isDark),
-                                const SizedBox(height: 32),
-                                _buildEmptyState(isDark),
-                              ],
-                            ),
-                          )
-                        : ReorderableListView.builder(
-                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
-                            buildDefaultDragHandles: false,
-                            onReorder: _onReorder,
-                            itemCount: _getFilteredVaccines().length + 1,
-                            itemBuilder: (context, index) {
-                              final filteredVaccines = _getFilteredVaccines();
-                              if (index == 0) {
-                                return Padding(
-                                  key: const ValueKey('baby_info'),
-                                  padding: const EdgeInsets.only(bottom: 24),
-                                  child: _buildBabyInfoCard(isDark),
-                                );
-                              }
-                              final vaccineIndex = index - 1;
-                              final vaccine = filteredVaccines[vaccineIndex];
-                              // Get the actual index in _vaccines for editing/deleting
-                              final actualIndex = _vaccines.indexOf(vaccine);
-                              final isCompleted =
-                                  vaccine['durum'] == 'uygulandi';
-                              return Padding(
-                                key: ValueKey(vaccine['id'] ?? actualIndex),
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: _buildReorderableVaccineCard(
-                                  vaccine,
-                                  actualIndex,
-                                  isDark,
-                                  isCompleted,
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ],
-              ),
-
-              Positioned(
-                bottom: 32,
-                left: 24,
-                right: 24,
-                child: _buildAddButton(),
-              ),
-            ],
-          ),
-        ),
+        body: _buildContent(isDark),
       ),
     );
   }

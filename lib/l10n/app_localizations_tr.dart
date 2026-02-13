@@ -734,4 +734,40 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get pageCouldNotOpen => 'Sayfa açılamadı';
+
+  @override
+  String get health => 'Sağlık';
+
+  @override
+  String get medications => 'İlaçlar';
+
+  @override
+  String get noMedications => 'Henüz ilaç/takviye eklenmedi';
+
+  @override
+  String get medication => 'İlaç';
+
+  @override
+  String get supplement => 'Takviye';
+
+  @override
+  String get addMedication => 'İlaç Ekle';
+
+  @override
+  String get editMedication => 'İlacı Düzenle';
+
+  @override
+  String get medicationName => 'Ad';
+
+  @override
+  String get medicationNameRequired => 'Lütfen bir ad girin';
+
+  @override
+  String get dosage => 'Doz';
+
+  @override
+  String get schedule => 'Kullanım Sıklığı';
+
+  @override
+  String get notes => 'Notlar';
 }

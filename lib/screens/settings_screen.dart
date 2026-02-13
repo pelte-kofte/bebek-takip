@@ -1,14 +1,15 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import '../main.dart';
 import '../models/veri_yonetici.dart';
 import '../models/dil.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import '../services/reminder_service.dart';
+import '../services/sleep_notification_service.dart';
 import '../l10n/app_localizations.dart';
 import 'rapor_screen.dart';
 import 'login_entry_screen.dart';
@@ -591,6 +592,70 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
+                      // DEBUG section (only in debug builds)
+                      if (kDebugMode) ...[
+                        const SizedBox(height: 24),
+                        _buildSectionHeader('DEBUG', subtitleColor),
+                        const SizedBox(height: 12),
+                        _buildCard(
+                          cardColor: cardColor,
+                          child: Column(
+                            children: [
+                              _buildActionTile(
+                                icon: Icons.notifications_active,
+                                iconBgColor: const Color(0xFFFFE5E0),
+                                iconColor: Colors.orange,
+                                title: 'Test Sleep Notification',
+                                subtitle: 'Fire sleep notification now',
+                                textColor: textColor,
+                                subtitleColor: subtitleColor,
+                                onTap: () async {
+                                  final svc = SleepNotificationService();
+                                  await svc.initialize();
+                                  await svc.requestPermissions();
+                                  await svc.showSleepNotification(DateTime.now());
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Sleep notification fired'),
+                                        backgroundColor: Color(0xFFFFB4A2),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                              Divider(
+                                color: subtitleColor.withValues(alpha: 0.1),
+                                height: 24,
+                              ),
+                              _buildActionTile(
+                                icon: Icons.notifications_active,
+                                iconBgColor: const Color(0xFFE5E0F7),
+                                iconColor: Colors.purple,
+                                title: 'Test Nursing Notification',
+                                subtitle: 'Fire nursing notification now',
+                                textColor: textColor,
+                                subtitleColor: subtitleColor,
+                                onTap: () async {
+                                  final svc = SleepNotificationService();
+                                  await svc.initialize();
+                                  await svc.requestPermissions();
+                                  await svc.showNursingNotification(DateTime.now(), 'sol');
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Nursing notification fired'),
+                                        backgroundColor: Color(0xFFE5E0F7),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+
                       const SizedBox(height: 32),
                     ],
                   ),

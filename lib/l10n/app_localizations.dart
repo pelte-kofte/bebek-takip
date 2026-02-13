@@ -1441,6 +1441,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open page'**
   String get pageCouldNotOpen;
+
+  String get health;
+
+  String get medications;
+
+  String get noMedications;
+
+  String get medication;
+
+  String get supplement;
+
+  String get addMedication;
+
+  String get editMedication;
+
+  String get medicationName;
+
+  String get medicationNameRequired;
+
+  String get dosage;
+
+  String get schedule;
+
+  String get notes;
 }
 
 class _AppLocalizationsDelegate

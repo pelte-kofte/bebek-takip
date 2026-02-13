@@ -367,5 +367,18 @@
   "privacyPolicySubtitle": "View privacy policy",
   "termsOfUse": "Terms of Use",
   "termsOfUseSubtitle": "View terms and conditions",
-  "pageCouldNotOpen": "Could not open page"
+  "pageCouldNotOpen": "Could not open page",
+
+  "health": "Health",
+  "medications": "Medications",
+  "noMedications": "No medications/supplements yet",
+  "medication": "Medication",
+  "supplement": "Supplement",
+  "addMedication": "Add Medication",
+  "editMedication": "Edit Medication",
+  "medicationName": "Name",
+  "medicationNameRequired": "Please enter a name",
+  "dosage": "Dosage",
+  "schedule": "Schedule",
+  "notes": "Notes"
 }

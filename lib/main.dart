@@ -7,7 +7,7 @@ import 'screens/home_screen.dart';
 import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
 import 'screens/add_screen.dart';
-import 'screens/vaccines_screen.dart';
+import 'screens/health_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
@@ -142,7 +142,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(key: ValueKey('home_$_refreshKey'), onDataChanged: _refresh),
       ActivitiesScreen(refreshTrigger: _refreshKey),
       const SizedBox(),
-      VaccinesScreen(key: ValueKey('vaccines_$_refreshKey')),
+      HealthScreen(key: ValueKey('health_$_refreshKey')),
       MilestonesScreen(key: ValueKey('milestones_$_refreshKey')),
     ];
 
@@ -190,8 +190,8 @@ class _MainScreenState extends State<MainScreen> {
                     child: Center(
                       child: _buildNavItem(
                         3,
-                        Icons.vaccines_outlined,
-                        l10n.vaccines,
+                        Icons.medical_services_outlined,
+                        l10n.health,
                       ),
                     ),
                   ),

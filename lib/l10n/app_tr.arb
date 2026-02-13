@@ -247,5 +247,18 @@
   "privacyPolicySubtitle": "Gizlilik politikasını görüntüle",
   "termsOfUse": "Kullanım Şartları",
   "termsOfUseSubtitle": "Kullanım koşullarını görüntüle",
-  "pageCouldNotOpen": "Sayfa açılamadı"
+  "pageCouldNotOpen": "Sayfa açılamadı",
+
+  "health": "Sağlık",
+  "medications": "İlaçlar",
+  "noMedications": "Henüz ilaç/takviye eklenmedi",
+  "medication": "İlaç",
+  "supplement": "Takviye",
+  "addMedication": "İlaç Ekle",
+  "editMedication": "İlacı Düzenle",
+  "medicationName": "Ad",
+  "medicationNameRequired": "Lütfen bir ad girin",
+  "dosage": "Doz",
+  "schedule": "Kullanım Sıklığı",
+  "notes": "Notlar"
 }

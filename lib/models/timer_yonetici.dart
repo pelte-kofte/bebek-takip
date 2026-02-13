@@ -59,15 +59,33 @@ class TimerYonetici {
     }
   }
 
-  /// Stop sleep timer and save activity from notification action
+  /// Stop sleep timer and save activity from notification action.
+  /// Reads timer owner from prefs so it works even if user switched babies.
   Future<void> _stopAndSaveUykuFromNotification() async {
-    final timerBabyId = _activeBabyId; // Save baby ID before stopping
-    final data = await stopUyku();
-    if (data == null) return;
+    final timerBabyId = _prefs?.getString('active_uyku_baby_id');
+    if (timerBabyId == null || timerBabyId.isEmpty) return;
 
-    final baslangic = data['baslangic'] as DateTime;
-    final bitis = data['bitis'] as DateTime;
+    final uykuStr = _prefs?.getString('active_uyku_start_$timerBabyId');
+    if (uykuStr == null || uykuStr.isEmpty) return;
+
+    final baslangic = DateTime.parse(uykuStr);
+    final bitis = DateTime.now();
     final duration = bitis.difference(baslangic);
+
+    // Clear prefs for this timer
+    await _prefs?.remove('active_uyku_start_$timerBabyId');
+    await _prefs?.remove('active_uyku_baby_id');
+    await _notificationService.cancelSleepNotification();
+
+    // If this baby is currently loaded in memory, clear in-memory state too
+    if (_activeBabyId == timerBabyId) {
+      _uykuBaslangic = null;
+      if (_emzirmeBaslangic == null) _activeBabyId = null;
+      _uykuUpdateTimer?.cancel();
+      _uykuUpdateTimer = null;
+      _uykuController.add(null);
+    }
+
     if (duration.inMinutes < 1) return;
 
     // Load all records and insert with timer's baby ID
@@ -87,14 +105,56 @@ class TimerYonetici {
     await _prefs?.setString('uyku_kayitlari', jsonEncode(records));
   }
 
-  /// Stop nursing timer and save activity from notification action
+  /// Stop nursing timer and save activity from notification action.
+  /// Reads timer owner from prefs so it works even if user switched babies.
   Future<void> _stopAndSaveEmzirmeFromNotification() async {
-    final timerBabyId = _activeBabyId; // Save baby ID before stopping
-    final data = await stopEmzirme();
-    if (data == null) return;
+    final timerBabyId = _prefs?.getString('active_emzirme_baby_id');
+    if (timerBabyId == null || timerBabyId.isEmpty) return;
 
-    final solSaniye = data['solSaniye'] as int;
-    final sagSaniye = data['sagSaniye'] as int;
+    final emzirmeStr = _prefs?.getString('active_emzirme_start_$timerBabyId');
+    if (emzirmeStr == null || emzirmeStr.isEmpty) return;
+
+    // Calculate side totals from prefs
+    final emzirmeBaslangic = DateTime.parse(emzirmeStr);
+    final taraf = _prefs?.getString('active_emzirme_taraf_$timerBabyId');
+    int solSaniye = _prefs?.getInt('active_emzirme_sol_saniye_$timerBabyId') ?? 0;
+    int sagSaniye = _prefs?.getInt('active_emzirme_sag_saniye_$timerBabyId') ?? 0;
+
+    // Add current running time to active side
+    final currentDuration = DateTime.now().difference(emzirmeBaslangic);
+    if (taraf == 'sol') {
+      solSaniye += currentDuration.inSeconds;
+    } else if (taraf == 'sag') {
+      sagSaniye += currentDuration.inSeconds;
+    }
+
+    final emzirmeIlkStr = _prefs?.getString('active_emzirme_ilk_start_$timerBabyId');
+    final tarih = emzirmeIlkStr != null ? DateTime.parse(emzirmeIlkStr) : DateTime.now();
+
+    // Clear prefs for this timer
+    await _prefs?.remove('active_emzirme_start_$timerBabyId');
+    await _prefs?.remove('active_emzirme_ilk_start_$timerBabyId');
+    await _prefs?.remove('active_emzirme_tur_$timerBabyId');
+    await _prefs?.remove('active_emzirme_taraf_$timerBabyId');
+    await _prefs?.remove('active_emzirme_sol_saniye_$timerBabyId');
+    await _prefs?.remove('active_emzirme_sag_saniye_$timerBabyId');
+    await _prefs?.remove('active_emzirme_baby_id');
+    await _notificationService.cancelNursingNotification();
+
+    // If this baby is currently loaded in memory, clear in-memory state too
+    if (_activeBabyId == timerBabyId) {
+      _emzirmeBaslangic = null;
+      _emzirmeIlkBaslangic = null;
+      _aktifEmzirmeTuru = null;
+      _emzirmeTaraf = null;
+      _solToplamSaniye = 0;
+      _sagToplamSaniye = 0;
+      if (_uykuBaslangic == null) _activeBabyId = null;
+      _emzirmeUpdateTimer?.cancel();
+      _emzirmeUpdateTimer = null;
+      _emzirmeController.add(null);
+    }
+
     if (solSaniye == 0 && sagSaniye == 0) return;
 
     final solDakika = (solSaniye / 60).ceil();
@@ -109,7 +169,7 @@ class TimerYonetici {
       } catch (_) {}
     }
     records.insert(0, {
-      'tarih': (data['tarih'] as DateTime? ?? DateTime.now()).toIso8601String(),
+      'tarih': tarih.toIso8601String(),
       'tur': 'Anne Sütü',
       'solDakika': solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0),
       'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
@@ -138,53 +198,88 @@ class TimerYonetici {
     }
   }
 
+  /// Called when user switches the active baby.
+  /// Reloads timer state for the new baby and emits stream updates.
+  Future<void> onActiveBabyChanged(String babyId) async {
+    // Stop broadcasting old baby's timers
+    _emzirmeUpdateTimer?.cancel();
+    _emzirmeUpdateTimer = null;
+    _uykuUpdateTimer?.cancel();
+    _uykuUpdateTimer = null;
+
+    await _loadStateForBaby(babyId);
+  }
+
   /// Load saved timer states from preferences
   Future<void> _loadState() async {
     final currentBabyId = _prefs?.getString('active_baby_id') ?? '';
+    await _loadStateForBaby(currentBabyId);
+  }
+
+  /// Load timer state for a specific baby from preferences
+  Future<void> _loadStateForBaby(String babyId) async {
+    // Reset in-memory state
+    _activeBabyId = null;
+    _emzirmeBaslangic = null;
+    _emzirmeIlkBaslangic = null;
+    _aktifEmzirmeTuru = null;
+    _emzirmeTaraf = null;
+    _solToplamSaniye = 0;
+    _sagToplamSaniye = 0;
+    _uykuBaslangic = null;
 
     // Load emzirme timer (scoped to baby)
     final emzirmeBabyId = _prefs?.getString('active_emzirme_baby_id');
-    if (emzirmeBabyId == currentBabyId) {
-      final emzirmeStr = _prefs?.getString('active_emzirme_start_$emzirmeBabyId');
-      final emzirmeIlkStr = _prefs?.getString('active_emzirme_ilk_start_$emzirmeBabyId');
+    if (emzirmeBabyId == babyId) {
+      final emzirmeStr = _prefs?.getString('active_emzirme_start_$babyId');
+      final emzirmeIlkStr = _prefs?.getString('active_emzirme_ilk_start_$babyId');
 
       if (emzirmeStr != null && emzirmeStr.isNotEmpty) {
         try {
-          _activeBabyId = emzirmeBabyId;
+          _activeBabyId = babyId;
           _emzirmeBaslangic = DateTime.parse(emzirmeStr);
           _emzirmeIlkBaslangic = emzirmeIlkStr != null
               ? DateTime.parse(emzirmeIlkStr)
               : _emzirmeBaslangic;
-          _aktifEmzirmeTuru = _prefs?.getString('active_emzirme_tur_$emzirmeBabyId');
-          _emzirmeTaraf = _prefs?.getString('active_emzirme_taraf_$emzirmeBabyId');
-          _solToplamSaniye = _prefs?.getInt('active_emzirme_sol_saniye_$emzirmeBabyId') ?? 0;
-          _sagToplamSaniye = _prefs?.getInt('active_emzirme_sag_saniye_$emzirmeBabyId') ?? 0;
+          _aktifEmzirmeTuru = _prefs?.getString('active_emzirme_tur_$babyId');
+          _emzirmeTaraf = _prefs?.getString('active_emzirme_taraf_$babyId');
+          _solToplamSaniye = _prefs?.getInt('active_emzirme_sol_saniye_$babyId') ?? 0;
+          _sagToplamSaniye = _prefs?.getInt('active_emzirme_sag_saniye_$babyId') ?? 0;
           _startEmzirmeUpdateTimer();
           // Resume notification if nursing was active
           await _notificationService.showNursingNotification(
               _emzirmeBaslangic!, _emzirmeTaraf);
         } catch (e) {
-          await _clearEmzirme();
+          _emzirmeBaslangic = null;
+          _emzirmeIlkBaslangic = null;
         }
       }
     }
 
     // Load uyku timer (scoped to baby)
     final uykuBabyId = _prefs?.getString('active_uyku_baby_id');
-    if (uykuBabyId == currentBabyId) {
-      final uykuStr = _prefs?.getString('active_uyku_start_$uykuBabyId');
+    if (uykuBabyId == babyId) {
+      final uykuStr = _prefs?.getString('active_uyku_start_$babyId');
 
       if (uykuStr != null && uykuStr.isNotEmpty) {
         try {
-          _activeBabyId = uykuBabyId;
+          _activeBabyId = babyId;
           _uykuBaslangic = DateTime.parse(uykuStr);
           _startUykuUpdateTimer();
           // Resume notification if sleep was active
           await _notificationService.showSleepNotification(_uykuBaslangic!);
         } catch (e) {
-          await _clearUyku();
+          _uykuBaslangic = null;
         }
       }
+    }
+
+    // Emit null for inactive timers so UI clears
+    if (_emzirmeBaslangic == null) {
+      _emzirmeController.add(null);
+    }
+    if (_uykuBaslangic == null) {
+      _uykuController.add(null);
     }
   }
 
