@@ -258,6 +258,7 @@ class _AddScreenState extends State<AddScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final sheetBg = isDark ? AppColors.bgDarkCard : AppColors.bgLightCard;
     final surfaceColor = isDark ? AppColors.bgDarkSurface : Colors.white;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       constraints: BoxConstraints(maxHeight: screenHeight * 0.95),
@@ -587,17 +588,21 @@ class _AddScreenState extends State<AddScreen> {
                                                 ),
                                               ),
                                               const SizedBox(width: 16),
-                                              Text(
-                                                minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSet,
-                                                style: TextStyle(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: minutes > 0
-                                                      ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
-                                                      : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
+                                              Expanded(
+                                                child: Text(
+                                                  minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSet,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: minutes > 0
+                                                        ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
+                                                        : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
+                                                  ),
                                                 ),
                                               ),
-                                              const Spacer(),
+                                              const SizedBox(width: 12),
                                               Icon(
                                                 Icons.access_time,
                                                 color: isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E),
@@ -615,7 +620,7 @@ class _AddScreenState extends State<AddScreen> {
                             if (selectedActivity == 'bottle') ...[
                               // Category selector (Milk/Solid)
                               Text(
-                                'CATEGORY',
+                                l10n.category,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -645,7 +650,7 @@ class _AddScreenState extends State<AddScreen> {
                                                 : [],
                                           ),
                                           child: Text(
-                                            'Milk',
+                                            l10n.milk,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 14,
@@ -674,7 +679,7 @@ class _AddScreenState extends State<AddScreen> {
                                                 : [],
                                           ),
                                           child: Text(
-                                            'Solid',
+                                            l10n.solid,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 14,
@@ -713,7 +718,7 @@ class _AddScreenState extends State<AddScreen> {
                                     controller: _solidFoodController,
                                     maxLines: 2,
                                     decoration: InputDecoration(
-                                      hintText: 'Ör: Muz püresi, havuç...',
+                                      hintText: l10n.solidFoodHint,
                                       hintStyle: TextStyle(
                                         color: isDark ? Colors.white.withValues(alpha: 0.3) : const Color(0xFF4A3F3F).withValues(alpha: 0.3),
                                         fontSize: 14,
@@ -731,7 +736,7 @@ class _AddScreenState extends State<AddScreen> {
                               // Amount section (for Milk)
                               Center(
                                 child: Text(
-                                  'AMOUNT',
+                                  l10n.amount,
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
@@ -858,7 +863,7 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 24),
                               // Milk type selector
                               Text(
-                                'MILK TYPE',
+                                l10n.milkType,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -901,7 +906,7 @@ class _AddScreenState extends State<AddScreen> {
                                                 : [],
                                           ),
                                           child: Text(
-                                            'Breast milk',
+                                            l10n.breastMilk,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 14,
@@ -944,7 +949,7 @@ class _AddScreenState extends State<AddScreen> {
                                                 : [],
                                           ),
                                           child: Text(
-                                            'Formula',
+                                            l10n.formula,
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
                                               fontSize: 14,
@@ -967,7 +972,7 @@ class _AddScreenState extends State<AddScreen> {
                             if (selectedActivity == 'sleep') ...[
                               // Sleep started at
                               Text(
-                                'SLEEP STARTED AT',
+                                l10n.sleepStartedAt,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1024,7 +1029,7 @@ class _AddScreenState extends State<AddScreen> {
                                           color: isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F),
                                         ),
                                       ),
-                                      const Spacer(),
+                                      const SizedBox(width: 12),
                                       Icon(
                                         Icons.access_time,
                                         color: isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E),
@@ -1037,7 +1042,7 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 20),
                               // Woke up at
                               Text(
-                                'WOKE UP AT',
+                                l10n.wokeUpAt,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1092,16 +1097,20 @@ class _AddScreenState extends State<AddScreen> {
                                         ),
                                       ),
                                       const SizedBox(width: 16),
-                                      Text(
-                                        _sleepEndTime != null
-                                            ? '${_sleepEndTime!.hour.toString().padLeft(2, '0')}:${_sleepEndTime!.minute.toString().padLeft(2, '0')}'
-                                            : 'Tap to set',
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: _sleepEndTime != null
-                                              ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
-                                              : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
+                                      Expanded(
+                                        child: Text(
+                                          _sleepEndTime != null
+                                              ? '${_sleepEndTime!.hour.toString().padLeft(2, '0')}:${_sleepEndTime!.minute.toString().padLeft(2, '0')}'
+                                              : l10n.tapToSet,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: _sleepEndTime != null
+                                                ? (isDark ? AppColors.textPrimaryDark : const Color(0xFF4A3F3F))
+                                                : (isDark ? Colors.white.withValues(alpha: 0.5) : const Color(0xFF7A749E)),
+                                          ),
                                         ),
                                       ),
                                       const Spacer(),
@@ -1140,7 +1149,7 @@ class _AddScreenState extends State<AddScreen> {
                                       ),
                                       const SizedBox(width: 8),
                                       Text(
-                                        'Total sleep: ${_calculateSleepDuration()}',
+                                        l10n.totalSleep(_calculateSleepDuration()),
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -1161,7 +1170,7 @@ class _AddScreenState extends State<AddScreen> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'TYPE',
+                                        l10n.healthType,
                                         style: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
@@ -1435,7 +1444,7 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 24),
                               // Time picker
                               Text(
-                                'TIME',
+                                l10n.healthTime,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1507,7 +1516,7 @@ class _AddScreenState extends State<AddScreen> {
                               const SizedBox(height: 24),
                               // Optional notes
                               Text(
-                                'OPTIONAL NOTES',
+                                l10n.optionalNotes,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -1523,8 +1532,7 @@ class _AddScreenState extends State<AddScreen> {
                                   controller: _diaperNotesController,
                                   maxLines: 3,
                                   decoration: InputDecoration(
-                                    hintText:
-                                        'Add a note about the diaper change...',
+                                    hintText: l10n.diaperNoteHint,
                                     hintStyle: TextStyle(
                                       color: isDark
                                           ? Colors.white.withValues(alpha: 0.3)
@@ -1594,10 +1602,10 @@ class _AddScreenState extends State<AddScreen> {
                                   color: const Color(0xFFFF998A),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Text(
-                                  'Save',
+                                child: Text(
+                                  l10n.save,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white,
@@ -1680,18 +1688,19 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   void _saveActivity() async {
+    final l10n = AppLocalizations.of(context)!;
     // Validation: prevent saving activities with zero values
     if (selectedActivity == 'breastfeeding' && minutes == 0) {
-      _showValidationError('Please set a duration');
+      _showValidationError(l10n.pleaseSetDuration);
       return;
     }
     if (selectedActivity == 'bottle' && feedingCategory == 'Milk' && bottleAmount == 0) {
-      _showValidationError('Please set an amount');
+      _showValidationError(l10n.pleaseSetAmount);
       return;
     }
     if (selectedActivity == 'sleep') {
       if (_sleepEndTime == null) {
-        _showValidationError('Please set wake up time');
+        _showValidationError(l10n.pleaseSetWakeUpTime);
         return;
       }
       // Check if duration would be 0
@@ -1700,7 +1709,7 @@ class _AddScreenState extends State<AddScreen> {
       var endDT = DateTime(now.year, now.month, now.day, _sleepEndTime!.hour, _sleepEndTime!.minute);
       if (endDT.isBefore(startDT)) endDT = endDT.add(const Duration(days: 1));
       if (endDT.difference(startDT).inMinutes == 0) {
-        _showValidationError('Sleep duration must be greater than 0');
+        _showValidationError(l10n.sleepDurationMustBeGreater);
         return;
       }
     }

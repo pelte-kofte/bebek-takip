@@ -52,13 +52,13 @@
   "minAbbrev": "min",
   "hourAbbrev": "h",
 
-  "category": "CATEGORY",
+  "category": "Category",
   "milk": "Milk",
   "solid": "Solid",
   "whatWasGiven": "WHAT WAS GIVEN?",
   "solidFoodHint": "E.g.: Banana puree, carrot...",
-  "amount": "AMOUNT",
-  "milkType": "MILK TYPE",
+  "amount": "Amount",
+  "milkType": "Milk Type",
   "breastMilk": "Breast milk",
   "formula": "Formula",
 
@@ -72,11 +72,13 @@
     }
   },
 
-  "type": "TYPE",
+  "type": "Type",
+  "healthType": "Type",
+  "healthTime": "Time",
   "wet": "Wet",
   "dirty": "Dirty",
   "both": "Both",
-  "optionalNotes": "OPTIONAL NOTES",
+  "optionalNotes": "Optional notes",
   "diaperNoteHint": "Add a note about the diaper change...",
 
   "pleaseSetDuration": "Please set a duration",

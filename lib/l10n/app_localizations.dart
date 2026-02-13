@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @category.
   ///
   /// In en, this message translates to:
-  /// **'CATEGORY'**
+  /// **'Category'**
   String get category;
 
   /// No description provided for @milk.
@@ -401,13 +401,13 @@ abstract class AppLocalizations {
   /// No description provided for @amount.
   ///
   /// In en, this message translates to:
-  /// **'AMOUNT'**
+  /// **'Amount'**
   String get amount;
 
   /// No description provided for @milkType.
   ///
   /// In en, this message translates to:
-  /// **'MILK TYPE'**
+  /// **'Milk Type'**
   String get milkType;
 
   /// No description provided for @breastMilk.
@@ -449,8 +449,20 @@ abstract class AppLocalizations {
   /// No description provided for @type.
   ///
   /// In en, this message translates to:
-  /// **'TYPE'**
+  /// **'Type'**
   String get type;
+
+  /// No description provided for @healthType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get healthType;
+
+  /// No description provided for @healthTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get healthTime;
 
   /// No description provided for @wet.
   ///
@@ -473,7 +485,7 @@ abstract class AppLocalizations {
   /// No description provided for @optionalNotes.
   ///
   /// In en, this message translates to:
-  /// **'OPTIONAL NOTES'**
+  /// **'Optional notes'**
   String get optionalNotes;
 
   /// No description provided for @diaperNoteHint.

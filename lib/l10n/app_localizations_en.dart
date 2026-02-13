@@ -149,7 +149,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hourAbbrev => 'h';
 
   @override
-  String get category => 'CATEGORY';
+  String get category => 'Category';
 
   @override
   String get milk => 'Milk';
@@ -164,10 +164,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get solidFoodHint => 'E.g.: Banana puree, carrot...';
 
   @override
-  String get amount => 'AMOUNT';
+  String get amount => 'Amount';
 
   @override
-  String get milkType => 'MILK TYPE';
+  String get milkType => 'Milk Type';
 
   @override
   String get breastMilk => 'Breast milk';
@@ -190,7 +190,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get type => 'TYPE';
+  String get type => 'Type';
+
+  @override
+  String get healthType => 'Type';
+
+  @override
+  String get healthTime => 'Time';
 
   @override
   String get wet => 'Wet';
@@ -202,7 +208,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get both => 'Both';
 
   @override
-  String get optionalNotes => 'OPTIONAL NOTES';
+  String get optionalNotes => 'Optional notes';
 
   @override
   String get diaperNoteHint => 'Add a note about the diaper change...';

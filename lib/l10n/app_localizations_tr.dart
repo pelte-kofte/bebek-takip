@@ -149,13 +149,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hourAbbrev => 'sa';
 
   @override
-  String get category => 'KATEGORi';
+  String get category => 'Kategori';
 
   @override
   String get milk => 'Süt';
 
   @override
-  String get solid => 'Katı';
+  String get solid => 'Ek gıda';
 
   @override
   String get whatWasGiven => 'NE VERiLDi?';
@@ -164,7 +164,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get solidFoodHint => 'Or: Muz püresi, havuç...';
 
   @override
-  String get amount => 'MiKTAR';
+  String get amount => 'Miktar';
 
   @override
   String get milkType => 'Süt Türü';
@@ -173,7 +173,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get breastMilk => 'Anne sütü';
 
   @override
-  String get formula => 'Formul';
+  String get formula => 'Mama';
 
   @override
   String get sleepStartedAt => 'UYKU BAŞLANGICI';
@@ -190,7 +190,13 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get type => 'TÜR';
+  String get type => 'Tür';
+
+  @override
+  String get healthType => 'Tür';
+
+  @override
+  String get healthTime => 'Saat';
 
   @override
   String get wet => 'Islak';
@@ -199,10 +205,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dirty => 'Kirli';
 
   @override
-  String get both => 'İkisi Birden';
+  String get both => 'İkisi birden';
 
   @override
-  String get optionalNotes => 'OPSiYONEL NOTLAR';
+  String get optionalNotes => 'Not (Opsiyonel)';
 
   @override
   String get diaperNoteHint => 'Bez değişimi hakkında not ekleyin...';
