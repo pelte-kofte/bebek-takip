@@ -1442,28 +1442,76 @@ abstract class AppLocalizations {
   /// **'Could not open page'**
   String get pageCouldNotOpen;
 
+  /// No description provided for @health.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
   String get health;
 
+  /// No description provided for @medications.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications'**
   String get medications;
 
+  /// No description provided for @noMedications.
+  ///
+  /// In en, this message translates to:
+  /// **'No medications/supplements yet'**
   String get noMedications;
 
+  /// No description provided for @medication.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication'**
   String get medication;
 
+  /// No description provided for @supplement.
+  ///
+  /// In en, this message translates to:
+  /// **'Supplement'**
   String get supplement;
 
+  /// No description provided for @addMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Medication'**
   String get addMedication;
 
+  /// No description provided for @editMedication.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Medication'**
   String get editMedication;
 
+  /// No description provided for @medicationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
   String get medicationName;
 
+  /// No description provided for @medicationNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
   String get medicationNameRequired;
 
+  /// No description provided for @dosage.
+  ///
+  /// In en, this message translates to:
+  /// **'Dosage'**
   String get dosage;
 
+  /// No description provided for @schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
   String get schedule;
 
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
   String get notes;
 }
 

@@ -1,6 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
@@ -78,20 +78,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _openInAppUrl(String url) async {
     final uri = Uri.parse(url);
-    final LaunchMode mode;
-    if (kIsWeb) {
-      mode = LaunchMode.externalApplication;
-    } else {
-      mode = LaunchMode.platformDefault;
-    }
+
+    final LaunchMode mode =
+        kIsWeb ? LaunchMode.externalApplication : LaunchMode.platformDefault;
+
     final launched = await launchUrl(uri, mode: mode);
+
     if (!launched && mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pageCouldNotOpen),
-          backgroundColor: const Color(0xFFFFB4A2),
-        ),
+        SnackBar(content: Text(l10n.pageCouldNotOpen)),
       );
     }
   }
