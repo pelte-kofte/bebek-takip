@@ -56,9 +56,10 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
         setState(() => _isLoading = false);
       }
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Google sign-in failed: ${e.toString()}'),
+            content: Text(l10n.googleSignInFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -86,9 +87,10 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign in failed: ${e.toString()}'),
+            content: Text(l10n.signInFailed(e.toString())),
             backgroundColor: Colors.red,
           ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/ikonlar.dart';
 
@@ -214,8 +215,8 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: const InputDecoration(
-                          hintText: 'örn. 7.5',
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.growthWeightHint,
                           hintStyle: TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
@@ -271,8 +272,8 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         keyboardType: const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
-                        decoration: const InputDecoration(
-                          hintText: 'örn. 68.5',
+                        decoration: InputDecoration(
+                          hintText: AppLocalizations.of(context)!.growthHeightHint,
                           hintStyle: TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
@@ -327,7 +328,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         controller: _notesController,
                         maxLines: 3,
                         decoration: InputDecoration(
-                          hintText: 'Doktor kontrolü, aşı günü vb...',
+                          hintText: AppLocalizations.of(context)!.growthNotesHint,
                           hintStyle: TextStyle(
                             color: const Color(0xFF7A749E).withOpacity(0.6),
                             fontSize: 14,
@@ -383,11 +384,12 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
   }
 
   void _saveGrowth() async {
+    final l10n = AppLocalizations.of(context)!;
     // Validate required fields
     if (_weightController.text.isEmpty || _heightController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen kilo ve boy bilgilerini girin'),
+        SnackBar(
+          content: Text(l10n.pleaseEnterWeightHeight),
           backgroundColor: Color(0xFFFFB4A2),
         ),
       );

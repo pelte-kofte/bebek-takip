@@ -1,0 +1,439 @@
+{
+  "@@locale": "es",
+
+  "appName": "Nilico",
+  "tagline": "Crianza simple e inolvidable.",
+  "freeForever": "Gratis para siempre",
+  "securePrivate": "Seguro y privado",
+  "tapToStart": "Toca para empezar",
+
+  "feedingTracker": "Registro de alimentación",
+  "feedingTrackerDesc": "Registra lactancia, biberones y sólidos fácilmente. Detecta patrones de forma natural.",
+  "sleepPatterns": "Patrones de sueño",
+  "sleepPatternsDesc": "Comprende el ritmo de tu bebé y mejora la calidad del sueño para todos.",
+  "growthCharts": "Gráficos de crecimiento",
+  "growthChartsDesc": "Visualiza los cambios de altura y peso a lo largo del tiempo con gráficos hermosos.",
+  "preciousMemories": "Recuerdos preciosos",
+  "preciousMemoriesDesc": "Guarda hitos y momentos divertidos. ¡Crecen muy rápido!",
+  "dailyRhythm": "Ritmo diario",
+  "dailyRhythmDesc": "Las rutinas suaves traen días tranquilos y noches apacibles.",
+  "skip": "Omitir",
+  "startYourJourney": "Comienza tu aventura",
+  "continueBtn": "Continuar",
+
+  "save": "Guardar",
+  "update": "Actualizar",
+  "cancel": "Cancelar",
+  "delete": "Eliminar",
+  "edit": "Editar",
+  "ok": "OK",
+  "add": "Añadir",
+  "yes": "Sí",
+  "no": "No",
+  "share": "Compartir",
+  "mlAbbrev": "ml",
+  "selectTime": "Seleccionar hora",
+  "tapToSetTime": "Establecer hora",
+  "notificationSleepFired": "Notificación de sueño enviada",
+  "notificationNursingFired": "Notificación de lactancia enviada",
+  "signedOutSuccessfully": "Sesión cerrada correctamente",
+  "errorWithMessage": "Error: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "allDataDeleted": "Todos los datos eliminados",
+  "googleSignInFailed": "Error al iniciar sesión con Google: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "signInFailed": "Error al iniciar sesión: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "webPhotoUploadUnsupported": "La carga de fotos no está disponible en la web",
+  "babyDataDeleted": "Datos de {name} eliminados",
+  "@babyDataDeleted": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "babyNameHint": "Nombre del bebé",
+  "babyNotesHint": "Alergias, preferencias, notas...",
+  "vaccineNameHint": "ej. Hepatitis B, BCG, vacuna combinada",
+  "vaccineDoseHint": "ej. Dosis 1, DTaP-IPV-Hib",
+  "vaccineNameCannotBeEmpty": "El nombre de la vacuna no puede estar vacío",
+  "growthWeightHint": "ej. 7,5",
+  "growthHeightHint": "ej. 68,5",
+  "growthNotesHint": "Visita al médico, día de vacunación, etc.",
+  "pleaseEnterWeightHeight": "Introduce peso y altura",
+  "memoryTitleHint": "ej. Primeros pasos",
+  "memoryNoteHint": "Escribe el recuerdo...",
+
+  "home": "Inicio",
+  "activities": "Cuidados",
+  "vaccines": "Vacunas",
+  "development": "Desarrollo",
+  "memories": "Recuerdos",
+  "settings": "Ajustes",
+
+  "addActivity": "Añadir actividad",
+  "whatHappened": "¿Qué pasó?",
+  "nursing": "Lactancia",
+  "bottle": "Biberón",
+  "sleep": "Sueño",
+  "diaper": "Pañal",
+
+  "side": "Lado",
+  "left": "Izquierdo",
+  "right": "Derecho",
+  "duration": "Duración",
+  "minAbbrev": "min",
+  "hourAbbrev": "h",
+
+  "category": "Categoría",
+  "milk": "Leche",
+  "solid": "Sólido",
+  "whatWasGiven": "¿QUÉ SE DIO?",
+  "solidFoodHint": "Ej.: puré de plátano, zanahoria...",
+  "amount": "Cantidad",
+  "milkType": "Tipo de leche",
+  "breastMilk": "Leche materna",
+  "formula": "Fórmula",
+
+  "sleepStartedAt": "SUEÑO EMPEZÓ A LAS",
+  "wokeUpAt": "SE DESPERTÓ A LAS",
+  "tapToSet": "Establecer hora",
+  "totalSleep": "Sueño total: {duration}",
+  "@totalSleep": {
+    "placeholders": {
+      "duration": {"type": "String"}
+    }
+  },
+
+  "type": "Tipo",
+  "healthType": "Tipo",
+  "healthTime": "Hora",
+  "wet": "Mojado",
+  "dirty": "Sucio",
+  "both": "Ambos",
+  "optionalNotes": "Notas opcionales",
+  "diaperNoteHint": "Añade una nota sobre el cambio de pañal...",
+
+  "pleaseSetDuration": "Establece una duración",
+  "pleaseSetAmount": "Establece una cantidad",
+  "pleaseSetWakeUpTime": "Establece la hora de despertar",
+  "sleepDurationMustBeGreater": "La duración del sueño debe ser mayor que 0",
+
+  "today": "Hoy",
+  "summary": "RESUMEN",
+  "recentActivities": "REGISTROS DE CUIDADOS RECIENTES",
+  "record": "registro",
+  "records": "registros",
+
+  "breastfeeding": "Lactancia",
+  "bottleBreastMilk": "Biberón (leche materna)",
+  "total": "Total",
+  "diaperChange": "Cambio de pañal",
+
+  "firstFeedingTime": "¿Hora de la primera toma?",
+  "trackBabyFeeding": "Registra la alimentación de tu bebé",
+  "diaperChangeTime": "¡Hora de cambiar el pañal!",
+  "trackHygiene": "Registra la higiene aquí",
+  "sweetDreams": "Dulces sueños...",
+  "trackSleepPattern": "Registra el patrón de sueño aquí",
+  "selectAnotherDate": "Seleccionar otra fecha",
+
+  "editFeeding": "Editar alimentación",
+  "editDiaper": "Editar pañal",
+  "editSleep": "Editar sueño",
+  "start": "Inicio",
+  "end": "Fin",
+
+  "attention": "Atención",
+  "deleteConfirm": "¿Estás seguro de que quieres eliminar este registro?",
+
+  "myVaccines": "Mis vacunas",
+  "addVaccine": "Añadir vacuna",
+  "applied": "Aplicada",
+  "pending": "Pendiente",
+  "upcomingVaccines": "Próximas vacunas",
+  "completedVaccines": "Vacunas completadas",
+  "selectDate": "Seleccionar fecha",
+  "calendar": "Calendario",
+  "turkishVaccineCalendar": "Calendario de vacunación turco",
+  "vaccinesAvailable": "{count} vacunas disponibles",
+  "@vaccinesAvailable": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "selectAll": "Seleccionar todo",
+  "clear": "Limpiar",
+  "alreadyAdded": "Ya añadida",
+  "addVaccines": "Añadir {count} vacunas",
+  "@addVaccines": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "selectVaccine": "Seleccionar vacuna",
+  "vaccinesAdded": "{count} vacunas añadidas",
+  "@vaccinesAdded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "noVaccineRecords": "No hay registros de vacunas aún",
+  "loadTurkishCalendar": "Carga el calendario turco o añade manualmente",
+  "loadTurkishVaccineCalendar": "Cargar calendario de vacunación turco",
+  "loadCalendarTitle": "Cargar calendario de vacunación turco",
+  "loadCalendarDesc": "Se cargará el calendario de vacunación turco estándar. Las vacunas existentes no se eliminarán.",
+
+  "ageYears": "{years} años",
+  "@ageYears": {
+    "placeholders": {
+      "years": {"type": "int"}
+    }
+  },
+  "ageYearsMonths": "{years} año {months} meses",
+  "@ageYearsMonths": {
+    "placeholders": {
+      "years": {"type": "int"},
+      "months": {"type": "int"}
+    }
+  },
+  "ageMonthsDays": "{months} meses {days} días",
+  "@ageMonthsDays": {
+    "placeholders": {
+      "months": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "ageDays": "{days} días",
+  "@ageDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "weeklyReport": "Informe semanal",
+  "monthlyReport": "Informe mensual",
+  "weekly": "Semanal",
+  "monthly": "Mensual",
+  "feeding": "Alimentación",
+  "totalBreastfeeding": "Total lactancia",
+  "totalDuration": "Duración total",
+  "dailyAvg": "Prom. diario",
+  "avgDuration": "Duración prom.",
+  "leftBreast": "Pecho izquierdo",
+  "rightBreast": "Pecho derecho",
+  "solidFood": "Alimento sólido",
+  "diaperChanges": "Cambios de pañal",
+  "longestSleep": "Sueño más largo",
+  "sleepCount": "Núm. de sueños",
+  "growth": "Crecimiento",
+  "height": "Altura",
+  "weight": "Peso",
+  "saveAsPdf": "Guardar como PDF",
+  "pdfMobileOnly": "El PDF está disponible en móvil",
+  "sharingMobileOnly": "Compartir está disponible en móvil",
+  "pdfSaved": "¡PDF guardado correctamente!",
+  "babyTrackerReport": "Informe del seguimiento del bebé",
+  "generatedWith": "Generado con Baby Tracker App",
+
+  "months": "meses",
+  "january": "Enero",
+  "february": "Febrero",
+  "march": "Marzo",
+  "april": "Abril",
+  "may": "Mayo",
+  "june": "Junio",
+  "july": "Julio",
+  "august": "Agosto",
+  "september": "Septiembre",
+  "october": "Octubre",
+  "november": "Noviembre",
+  "december": "Diciembre",
+
+  "addOptionalNote": "Añadir nota (opcional)",
+  "times": "veces",
+
+  "feeding_tab": "ALIMENTACIÓN",
+  "diaper_tab": "PAÑAL",
+  "sleep_tab": "SUEÑO",
+  "list": "Lista",
+  "chart": "Gráfico",
+  "noMeasurements": "No hay mediciones aún",
+  "addMeasurements": "Añade mediciones de altura y peso",
+  "moreDataNeeded": "Se necesitan más datos para el gráfico",
+  "addMoreMeasurements": "Añade {count} mediciones más",
+  "@addMoreMeasurements": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "atLeast2Measurements": "Se necesitan al menos 2 mediciones para el gráfico",
+  "growthTracking": "Seguimiento de crecimiento",
+
+  "feedingTimer": "LACTANCIA",
+  "sleepingTimer": "DURMIENDO",
+  "stopAndSave": "PARAR Y GUARDAR",
+  "activeTimer": "ACTIVO",
+  "lastFed": "ÚLT. ALIMENTACIÓN",
+  "lastDiaper": "ÚLT. PAÑAL",
+  "lastSleep": "ÚLT. SUEÑO",
+  "recentActivity": "REGISTROS DE CUIDADOS RECIENTES",
+  "seeHistory": "VER HISTORIAL",
+  "noActivitiesLast24h": "Sin actividad en las últimas 24 horas",
+  "bottleFeeding": "Biberón",
+  "trackYourBabyGrowth": "Sigue el crecimiento de tu bebé",
+  "addHeightWeightMeasurements": "Añade mediciones de peso y altura",
+  "addFirstMeasurement": "Añadir primera medición",
+  "lastUpdatedToday": "Actualizado hoy",
+  "lastUpdated1Day": "Actualizado hace 1 día",
+  "lastUpdatedDays": "Actualizado hace {days} días",
+  "@lastUpdatedDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "viewGrowthCharts": "VER GRÁFICOS DE CRECIMIENTO",
+  "weightLabel": "PESO",
+  "heightLabel": "ALTURA",
+  "mAgo": "hace {count}min",
+  "@mAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hmAgo": "hace {hours}h {minutes}min",
+  "@hmAgo": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "dAgo": "hace {days}d",
+  "@dAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "noRecordsYet": "No hay registros aún",
+  "dailyTip": "CONSEJO DEL DÍA",
+  "allTips": "Todos los consejos",
+  "upcomingVaccine": "PRÓXIMA VACUNA",
+  "nextVaccineLabel": "Siguiente: {name}",
+  "@nextVaccineLabel": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "leftMinRightMin": "I {left}min • D {right}min",
+  "@leftMinRightMin": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "breastfeedingSavedSnack": "✅ Lactancia guardada: I {left}min, D {right}min",
+  "@breastfeedingSavedSnack": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "sleepSavedSnack": "✅ Sueño guardado: {duration}",
+  "@sleepSavedSnack": {
+    "placeholders": {
+      "duration": {"type": "String"}
+    }
+  },
+  "sleepTooShort": "⚠️ Sueño menor a 1 minuto, no guardado",
+  "kgThisMonth": "+{value}kg este mes",
+  "@kgThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "cmThisMonth": "+{value}cm este mes",
+  "@cmThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "noSleep": "Sin sueño",
+  "justNow": "ahora mismo",
+  "minutesAgo": "hace {count} min",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "hace {count}h",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "daysAgo": "hace {count}d",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "welcomeToNilico": "Bienvenido a Nilico",
+  "createYourAccount": "Crea tu cuenta",
+  "loginBenefitText": "Inicia sesión para prepararte para las funciones de copia de seguridad y sincronización que llegarán pronto. También puedes continuar sin iniciar sesión.",
+  "signInWithApple": "Iniciar sesión con Apple",
+  "signInWithGoogle": "Iniciar sesión con Google",
+  "continueWithoutLogin": "Continuar sin iniciar sesión",
+  "loginOptionalNote": "El inicio de sesión es opcional. Todas las funciones funcionan sin cuenta.",
+  "account": "Cuenta",
+  "signIn": "Iniciar sesión",
+  "signOut": "Cerrar sesión",
+  "signedInAs": "Conectado como {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "guestMode": "Modo invitado",
+  "signInToProtectData": "Inicia sesión para proteger tus datos",
+  "backupSyncComingSoon": "Copia de seguridad y sincronización pronto",
+
+  "privacyPolicy": "Política de privacidad",
+  "privacyPolicySubtitle": "Ver política de privacidad",
+  "termsOfUse": "Términos de uso",
+  "termsOfUseSubtitle": "Ver términos y condiciones",
+  "pageCouldNotOpen": "No se pudo abrir la página",
+
+  "health": "Salud",
+  "medications": "Medicamentos",
+  "noMedications": "No hay medicamentos ni suplementos aún",
+  "medication": "Medicamento",
+  "supplement": "Suplemento",
+  "addMedication": "Añadir medicamento",
+  "editMedication": "Editar medicamento",
+  "medicationName": "Nombre",
+  "medicationNameRequired": "Introduce un nombre",
+  "dosage": "Dosis",
+  "schedule": "Horario",
+  "notes": "Notas",
+
+  "language": "Idioma",
+  "systemDefault": "Sistema",
+  "turkish": "Türkçe",
+  "english": "English",
+  "russian": "Русский",
+  "ukrainian": "Українська",
+  "spanish": "Español",
+  "languageUpdated": "Idioma actualizado"
+}

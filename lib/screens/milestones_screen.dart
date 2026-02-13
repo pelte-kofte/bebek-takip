@@ -488,33 +488,33 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                               }
                             },
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: Row(
                                   children: [
                                     Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
                                     SizedBox(width: 10),
-                                    Text('Edit', style: TextStyle(color: Color(0xFF4A3E39))),
+                                    Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: Color(0xFF4A3E39))),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'share',
                                 child: Row(
                                   children: [
                                     Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
                                     SizedBox(width: 10),
-                                    Text('Share', style: TextStyle(color: Color(0xFF4A3E39))),
+                                    Text(AppLocalizations.of(context)!.share, style: TextStyle(color: Color(0xFF4A3E39))),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: Row(
                                   children: [
                                     Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
                                     SizedBox(width: 10),
-                                    Text('Delete', style: TextStyle(color: Color(0xFFFF6B6B))),
+                                    Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Color(0xFFFF6B6B))),
                                   ],
                                 ),
                               ),
@@ -893,7 +893,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         TextField(
                           controller: _titleController,
                           decoration: InputDecoration(
-                            hintText: 'e.g. First Steps',
+                            hintText: AppLocalizations.of(context)!.memoryTitleHint,
                             hintStyle: TextStyle(
                               color: const Color(
                                 0xFF4A3E39,
@@ -981,7 +981,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           controller: _noteController,
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: 'Write down the memory...',
+                            hintText: AppLocalizations.of(context)!.memoryNoteHint,
                             hintStyle: TextStyle(
                               color: const Color(
                                 0xFF4A3E39,
@@ -1559,7 +1559,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   TextField(
                     controller: _titleController,
                     decoration: InputDecoration(
-                      hintText: 'e.g. First smile',
+                      hintText: AppLocalizations.of(context)!.memoryTitleHint,
                       hintStyle: TextStyle(
                         color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
                       ),
@@ -1639,7 +1639,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                     controller: _noteController,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      hintText: 'Add a memory note...',
+                      hintText: AppLocalizations.of(context)!.memoryNoteHint,
                       hintStyle: TextStyle(
                         color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
                       ),
@@ -2135,33 +2135,33 @@ class MilestoneDetailScreen extends StatelessWidget {
                           }
                         },
                         itemBuilder: (ctx) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'edit',
                             child: Row(
                               children: [
                                 Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
                                 SizedBox(width: 10),
-                                Text('Edit', style: TextStyle(color: Color(0xFF4A3E39))),
+                                Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: Color(0xFF4A3E39))),
                               ],
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'share',
                             child: Row(
                               children: [
                                 Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
                                 SizedBox(width: 10),
-                                Text('Share', style: TextStyle(color: Color(0xFF4A3E39))),
+                                Text(AppLocalizations.of(context)!.share, style: TextStyle(color: Color(0xFF4A3E39))),
                               ],
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'delete',
                             child: Row(
                               children: [
                                 Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
                                 SizedBox(width: 10),
-                                Text('Delete', style: TextStyle(color: Color(0xFFFF6B6B))),
+                                Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Color(0xFFFF6B6B))),
                               ],
                             ),
                           ),

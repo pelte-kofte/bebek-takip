@@ -30,6 +30,50 @@
   "add": "Add",
   "yes": "Yes",
   "no": "No",
+  "share": "Share",
+  "mlAbbrev": "ml",
+  "selectTime": "Select time",
+  "tapToSetTime": "Set time",
+  "notificationSleepFired": "Sleep notification fired",
+  "notificationNursingFired": "Nursing notification fired",
+  "signedOutSuccessfully": "Signed out successfully",
+  "errorWithMessage": "Error: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "allDataDeleted": "All data deleted",
+  "googleSignInFailed": "Google sign-in failed: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "signInFailed": "Sign in failed: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "webPhotoUploadUnsupported": "Photo upload is not supported on web",
+  "babyDataDeleted": "{name} data deleted",
+  "@babyDataDeleted": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "babyNameHint": "Baby name",
+  "babyNotesHint": "Allergies, preferences, notes...",
+  "vaccineNameHint": "e.g. Hepatitis B, BCG, combo vaccine",
+  "vaccineDoseHint": "e.g. Dose 1, DTaP-IPV-Hib",
+  "vaccineNameCannotBeEmpty": "Vaccine name cannot be empty",
+  "growthWeightHint": "e.g. 7.5",
+  "growthHeightHint": "e.g. 68.5",
+  "growthNotesHint": "Doctor visit, vaccine day, etc.",
+  "pleaseEnterWeightHeight": "Please enter weight and height",
+  "memoryTitleHint": "e.g. First steps",
+  "memoryNoteHint": "Write down the memory...",
 
   "home": "Home",
   "activities": "Care",
@@ -64,7 +108,7 @@
 
   "sleepStartedAt": "SLEEP STARTED AT",
   "wokeUpAt": "WOKE UP AT",
-  "tapToSet": "Tap to set",
+  "tapToSet": "Set time",
   "totalSleep": "Total sleep: {duration}",
   "@totalSleep": {
     "placeholders": {
@@ -382,5 +426,14 @@
   "medicationNameRequired": "Please enter a name",
   "dosage": "Dosage",
   "schedule": "Schedule",
-  "notes": "Notes"
+  "notes": "Notes",
+
+  "language": "Language",
+  "systemDefault": "System",
+  "turkish": "Türkçe",
+  "english": "English",
+  "russian": "Русский",
+  "ukrainian": "Українська",
+  "spanish": "Español",
+  "languageUpdated": "Language updated"
 }

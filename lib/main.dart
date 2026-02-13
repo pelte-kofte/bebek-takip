@@ -12,6 +12,7 @@ import 'models/veri_yonetici.dart';
 import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
+import 'services/locale_service.dart';
 
 class AppNavigator {
   static final key = GlobalKey<NavigatorState>();
@@ -55,11 +56,13 @@ class BabyTrackerApp extends StatefulWidget {
 
 class _BabyTrackerAppState extends State<BabyTrackerApp> {
   ThemeMode _themeMode = ThemeMode.light;
+  String _localeCode = 'system';
 
   @override
   void initState() {
     super.initState();
     _loadTheme();
+    _loadLocale();
   }
 
   void _loadTheme() {
@@ -67,6 +70,11 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
     setState(() {
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     });
+  }
+
+  Future<void> _loadLocale() async {
+    final code = await LocaleService.getSavedLocaleCode();
+    setState(() => _localeCode = code);
   }
 
   void toggleTheme() async {
@@ -80,6 +88,13 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
 
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
+  String get localeCode => _localeCode;
+
+  Future<void> setLocale(String code) async {
+    await LocaleService.setSavedLocaleCode(code);
+    setState(() => _localeCode = code);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -89,13 +104,20 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
       themeMode: _themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      locale: LocaleService.toLocale(_localeCode),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('en'), Locale('tr')],
+      supportedLocales: const [
+        Locale('en'),
+        Locale('tr'),
+        Locale('ru'),
+        Locale('uk'),
+        Locale('es'),
+      ],
       home: const SplashScreen(),
     );
   }

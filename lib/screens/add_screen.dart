@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTimerPicker, CupertinoTimerPickerMode;
 import '../models/veri_yonetici.dart';
-import '../models/dil.dart';
 import '../l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
@@ -100,6 +99,7 @@ class _AddScreenState extends State<AddScreen> {
   Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initialTime) async {
     TimeOfDay selectedTime = initialTime;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     final result = await showModalBottomSheet<TimeOfDay>(
       context: context,
@@ -131,7 +131,7 @@ class _AddScreenState extends State<AddScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      Dil.iptal,
+                      l10n.cancel,
                       style: TextStyle(
                         color: const Color(0xFF866F65),
                         fontSize: 16,
@@ -141,7 +141,7 @@ class _AddScreenState extends State<AddScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context, selectedTime),
                     child: Text(
-                      Dil.tamam,
+                      l10n.ok,
                       style: TextStyle(
                         color: const Color(0xFFFF998A),
                         fontWeight: FontWeight.w600,
@@ -185,6 +185,7 @@ class _AddScreenState extends State<AddScreen> {
   Future<Duration?> _showCupertinoDurationPicker(Duration initialDuration) async {
     Duration selectedDuration = initialDuration;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     final result = await showModalBottomSheet<Duration>(
       context: context,
@@ -214,7 +215,7 @@ class _AddScreenState extends State<AddScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      Dil.iptal,
+                      l10n.cancel,
                       style: TextStyle(
                         color: const Color(0xFF866F65),
                         fontSize: 16,
@@ -224,7 +225,7 @@ class _AddScreenState extends State<AddScreen> {
                   TextButton(
                     onPressed: () => Navigator.pop(context, selectedDuration),
                     child: Text(
-                      Dil.tamam,
+                      l10n.ok,
                       style: TextStyle(
                         color: const Color(0xFFFF998A),
                         fontWeight: FontWeight.w600,
@@ -590,7 +591,7 @@ class _AddScreenState extends State<AddScreen> {
                                               const SizedBox(width: 16),
                                               Expanded(
                                                 child: Text(
-                                                  minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSet,
+                                                  minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSetTime,
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
                                                   style: TextStyle(
@@ -702,7 +703,7 @@ class _AddScreenState extends State<AddScreen> {
                               if (feedingCategory == 'Solid') ...[
                                 // Solid food description
                                 Text(
-                                  'NE VERİLDİ?',
+                                  l10n.whatWasGiven,
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
@@ -817,7 +818,7 @@ class _AddScreenState extends State<AddScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        'ml',
+                                        l10n.mlAbbrev,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -1101,7 +1102,7 @@ class _AddScreenState extends State<AddScreen> {
                                         child: Text(
                                           _sleepEndTime != null
                                               ? '${_sleepEndTime!.hour.toString().padLeft(2, '0')}:${_sleepEndTime!.minute.toString().padLeft(2, '0')}'
-                                              : l10n.tapToSet,
+                                              : l10n.tapToSetTime,
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -1804,18 +1805,19 @@ class _AddScreenState extends State<AddScreen> {
       }
     } else if (selectedActivity == 'diaper') {
       final kayitlar = VeriYonetici.getKakaKayitlari();
+      final l10n = AppLocalizations.of(context)!;
 
       // Convert English type to Turkish for consistency
       String turkceTur;
       switch (_diaperType) {
         case 'wet':
-          turkceTur = Dil.islak;
+          turkceTur = l10n.wet;
           break;
         case 'dirty':
-          turkceTur = Dil.kirli;
+          turkceTur = l10n.dirty;
           break;
         default:
-          turkceTur = Dil.ikisiBirden;
+          turkceTur = l10n.both;
       }
 
       final now = DateTime.now();
@@ -1841,6 +1843,7 @@ class _AddScreenState extends State<AddScreen> {
 
   String _calculateSleepDuration() {
     if (_sleepEndTime == null) return '';
+    final l10n = AppLocalizations.of(context)!;
 
     final now = DateTime.now();
     final startDateTime = DateTime(
@@ -1868,9 +1871,9 @@ class _AddScreenState extends State<AddScreen> {
     final minutes = duration.inMinutes % 60;
 
     if (hours > 0) {
-      return '${hours}h ${minutes}m';
+      return '$hours ${l10n.hourAbbrev} $minutes ${l10n.minAbbrev}';
     } else {
-      return '${minutes}m';
+      return '$minutes ${l10n.minAbbrev}';
     }
   }
 }

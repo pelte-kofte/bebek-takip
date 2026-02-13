@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import '../services/reminder_service.dart';
 import '../services/sleep_notification_service.dart';
+import '../services/locale_service.dart';
 import '../l10n/app_localizations.dart';
 import 'rapor_screen.dart';
 import 'login_entry_screen.dart';
@@ -300,19 +301,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
-                        child: _buildSwitchTile(
-                          icon: isDark ? Icons.dark_mode : Icons.light_mode,
-                          iconBgColor: const Color(0xFFE5E0F7),
-                          iconColor: subtitleColor,
-                          title: Dil.karanlikMod,
-                          subtitle: Dil.karanlikModAciklama,
-                          value:
-                              BabyTrackerApp.of(context)?.isDarkMode ?? false,
-                          onChanged: (value) {
-                            BabyTrackerApp.of(context)?.toggleTheme();
-                          },
-                          textColor: textColor,
-                          subtitleColor: subtitleColor,
+                        child: Column(
+                          children: [
+                            _buildSwitchTile(
+                              icon: isDark ? Icons.dark_mode : Icons.light_mode,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: Dil.karanlikMod,
+                              subtitle: Dil.karanlikModAciklama,
+                              value:
+                                  BabyTrackerApp.of(context)?.isDarkMode ?? false,
+                              onChanged: (value) {
+                                BabyTrackerApp.of(context)?.toggleTheme();
+                              },
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildActionTile(
+                              icon: Icons.language,
+                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconColor: subtitleColor,
+                              title: l10n.language,
+                              subtitle: LocaleService.labelForCode(
+                                l10n,
+                                BabyTrackerApp.of(context)?.localeCode ?? 'system',
+                              ),
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              onTap: () => _showLanguagePicker(
+                                isDark,
+                                cardColor,
+                                textColor,
+                                subtitleColor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -612,8 +639,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   await svc.showSleepNotification(DateTime.now());
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Sleep notification fired'),
+                                      SnackBar(
+                                        content: Text(AppLocalizations.of(context)!.notificationSleepFired),
                                         backgroundColor: Color(0xFFFFB4A2),
                                       ),
                                     );
@@ -639,8 +666,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   await svc.showNursingNotification(DateTime.now(), 'sol');
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Nursing notification fired'),
+                                      SnackBar(
+                                        content: Text(AppLocalizations.of(context)!.notificationNursingFired),
                                         backgroundColor: Color(0xFFE5E0F7),
                                       ),
                                     );
@@ -804,13 +831,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _signOut() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       await FirebaseAuth.instance.signOut();
       setState(() {});
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Signed out successfully'),
+          SnackBar(
+            content: Text(l10n.signedOutSuccessfully),
             backgroundColor: Color(0xFFFFB4A2),
           ),
         );
@@ -819,7 +847,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: ${e.toString()}'),
+            content: Text(l10n.errorWithMessage(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -982,6 +1010,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  void _showLanguagePicker(
+    bool isDark,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final currentCode = BabyTrackerApp.of(context)?.localeCode ?? 'system';
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: subtitleColor.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.language,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ...LocaleService.supportedCodes.map((code) {
+              final isSelected = code == currentCode;
+              return ListTile(
+                leading: Icon(
+                  isSelected
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_off,
+                  color: isSelected
+                      ? const Color(0xFFFFB4A2)
+                      : subtitleColor,
+                ),
+                title: Text(
+                  LocaleService.labelForCode(l10n, code),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: textColor,
+                  ),
+                ),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  await BabyTrackerApp.of(context)?.setLocale(code);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          AppLocalizations.of(context)!.languageUpdated,
+                        ),
+                        backgroundColor: const Color(0xFFFFB4A2),
+                      ),
+                    );
+                  }
+                },
+              );
+            }),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showDeleteDialog(bool isDark, Color textColor, Color subtitleColor) {
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
 
@@ -1037,8 +1145,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               if (!context.mounted) return;
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Tüm veriler silindi!'),
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.allDataDeleted),
                   backgroundColor: Color(0xFFFFB4A2),
                 ),
               );

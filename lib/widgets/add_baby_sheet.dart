@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
     show CupertinoDatePicker, CupertinoDatePickerMode;
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 
 class AddBabySheet extends StatefulWidget {
@@ -116,6 +117,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
 
@@ -162,7 +164,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
                 textCapitalization: TextCapitalization.words,
                 style: TextStyle(color: textColor, fontSize: 16),
                 decoration: InputDecoration(
-                  hintText: 'Bebek adi',
+                  hintText: l10n.babyNameHint,
                   hintStyle: TextStyle(
                     color: textColor.withValues(alpha: 0.4),
                   ),

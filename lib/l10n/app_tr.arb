@@ -30,6 +30,50 @@
   "add": "Ekle",
   "yes": "Evet",
   "no": "Hayır",
+  "share": "Paylaş",
+  "mlAbbrev": "ml",
+  "selectTime": "Saat seç",
+  "tapToSetTime": "Saat seç",
+  "notificationSleepFired": "Uyku bildirimi tetiklendi",
+  "notificationNursingFired": "Emzirme bildirimi tetiklendi",
+  "signedOutSuccessfully": "Çıkış yapıldı",
+  "errorWithMessage": "Hata: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "allDataDeleted": "Tüm veriler silindi",
+  "googleSignInFailed": "Google girişi başarısız: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "signInFailed": "Giriş başarısız: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "webPhotoUploadUnsupported": "Web sürümünde fotoğraf yükleme desteklenmiyor",
+  "babyDataDeleted": "{name} verileri silindi",
+  "@babyDataDeleted": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "babyNameHint": "Bebek adı",
+  "babyNotesHint": "Alerjiler, tercihler, notlar...",
+  "vaccineNameHint": "örn: Hepatit B, BCG, Karma Aşı",
+  "vaccineDoseHint": "örn: 1. Doz, DabT-IPA-Hib",
+  "vaccineNameCannotBeEmpty": "Aşı adı boş bırakılamaz",
+  "growthWeightHint": "örn. 7.5",
+  "growthHeightHint": "örn. 68.5",
+  "growthNotesHint": "Doktor kontrolü, aşı günü vb...",
+  "pleaseEnterWeightHeight": "Lütfen kilo ve boy bilgilerini girin",
+  "memoryTitleHint": "örn. İlk adımlar",
+  "memoryNoteHint": "Anıyı buraya yaz...",
 
   "home": "Ana Sayfa",
   "activities": "Bakım",
@@ -64,7 +108,7 @@
 
   "sleepStartedAt": "UYKU BAŞLANGICI",
   "wokeUpAt": "UYANDI",
-  "tapToSet": "Ayarlamak için dokun",
+  "tapToSet": "Saat seç",
   "totalSleep": "Toplam uyku: {duration}",
 
   "type": "Tür",
@@ -262,5 +306,14 @@
   "medicationNameRequired": "Lütfen bir ad girin",
   "dosage": "Doz",
   "schedule": "Kullanım Sıklığı",
-  "notes": "Notlar"
+  "notes": "Notlar",
+
+  "language": "Dil",
+  "systemDefault": "Sistem",
+  "turkish": "Türkçe",
+  "english": "English",
+  "russian": "Русский",
+  "ukrainian": "Українська",
+  "spanish": "Español",
+  "languageUpdated": "Dil güncellendi"
 }

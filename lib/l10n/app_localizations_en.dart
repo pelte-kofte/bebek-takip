@@ -95,6 +95,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get no => 'No';
 
   @override
+  String get share => 'Share';
+
+  @override
+  String get mlAbbrev => 'ml';
+
+  @override
+  String get selectTime => 'Select time';
+
+  @override
+  String get tapToSetTime => 'Set time';
+
+  @override
+  String get notificationSleepFired => 'Sleep notification fired';
+
+  @override
+  String get notificationNursingFired => 'Nursing notification fired';
+
+  @override
+  String get signedOutSuccessfully => 'Signed out successfully';
+
+  @override
+  String errorWithMessage(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get allDataDeleted => 'All data deleted';
+
+  @override
+  String googleSignInFailed(String error) {
+    return 'Google sign-in failed: $error';
+  }
+
+  @override
+  String signInFailed(String error) {
+    return 'Sign in failed: $error';
+  }
+
+  @override
+  String get webPhotoUploadUnsupported =>
+      'Photo upload is not supported on web';
+
+  @override
+  String babyDataDeleted(String name) {
+    return '$name data deleted';
+  }
+
+  @override
+  String get babyNameHint => 'Baby name';
+
+  @override
+  String get babyNotesHint => 'Allergies, preferences, notes...';
+
+  @override
+  String get vaccineNameHint => 'e.g. Hepatitis B, BCG, combo vaccine';
+
+  @override
+  String get vaccineDoseHint => 'e.g. Dose 1, DTaP-IPV-Hib';
+
+  @override
+  String get vaccineNameCannotBeEmpty => 'Vaccine name cannot be empty';
+
+  @override
+  String get growthWeightHint => 'e.g. 7.5';
+
+  @override
+  String get growthHeightHint => 'e.g. 68.5';
+
+  @override
+  String get growthNotesHint => 'Doctor visit, vaccine day, etc.';
+
+  @override
+  String get pleaseEnterWeightHeight => 'Please enter weight and height';
+
+  @override
+  String get memoryTitleHint => 'e.g. First steps';
+
+  @override
+  String get memoryNoteHint => 'Write down the memory...';
+
+  @override
   String get home => 'Home';
 
   @override
@@ -182,7 +263,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wokeUpAt => 'WOKE UP AT';
 
   @override
-  String get tapToSet => 'Tap to set';
+  String get tapToSet => 'Set time';
 
   @override
   String totalSleep(String duration) {
@@ -778,4 +859,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notes => 'Notes';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get systemDefault => 'System';
+
+  @override
+  String get turkish => 'Türkçe';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get russian => 'Русский';
+
+  @override
+  String get ukrainian => 'Українська';
+
+  @override
+  String get spanish => 'Español';
+
+  @override
+  String get languageUpdated => 'Language updated';
 }

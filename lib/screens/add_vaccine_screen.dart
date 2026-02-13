@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import '../l10n/app_localizations.dart';
 import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
@@ -53,10 +54,11 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   void _saveVaccine() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('${Dil.asiAdi} boş bırakılamaz')));
+      ).showSnackBar(SnackBar(content: Text(l10n.vaccineNameCannotBeEmpty)));
       return;
     }
 
@@ -402,7 +404,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             controller: _nameController,
             style: AppTypography.body(context),
             decoration: InputDecoration(
-              hintText: 'örn: Hepatit B, BCG, Karma Aşı',
+              hintText: AppLocalizations.of(context)!.vaccineNameHint,
               hintStyle: AppTypography.bodySmall(context),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),
@@ -788,7 +790,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             style: AppTypography.body(context),
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'örn: 1. Doz, DabT-IPA-Hib',
+              hintText: AppLocalizations.of(context)!.vaccineDoseHint,
               hintStyle: AppTypography.bodySmall(context),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.all(16),

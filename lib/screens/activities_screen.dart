@@ -445,7 +445,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     if (toplamMl > 0)
                       Text(
-                        '${l10n.bottle}: $toplamMl ml',
+                        '${l10n.bottle}: $toplamMl ${l10n.mlAbbrev}',
                         style: const TextStyle(
                           color: Color(0xFF333333),
                           fontSize: 15,
@@ -526,7 +526,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       '${l10n.left} $sol${l10n.minAbbrev} • ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
                 }
               } else {
-                title = '$miktar ml';
+                title = '$miktar ${l10n.mlAbbrev}';
                 subtitle = tur == 'Formül' ? l10n.formula : l10n.bottleBreastMilk;
               }
 
@@ -1221,6 +1221,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       miktar,
                       (m) => setModalState(() => miktar = m),
                       isDark,
+                      l10n,
                     ),
                   ],
                   if (tur == 'Katı Gıda' || kategori == 'Solid') ...[
@@ -1237,7 +1238,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     TextField(
                       controller: solidAciklamaController,
                       decoration: InputDecoration(
-                        hintText: 'Ör: Muz püresi, havuç...',
+                        hintText: l10n.solidFoodHint,
                         hintStyle: TextStyle(
                           color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                           fontStyle: FontStyle.italic,
@@ -1459,7 +1460,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 TextField(
                   controller: notesController,
                   decoration: InputDecoration(
-                    hintText: 'Not ekle (opsiyonel)',
+                    hintText: l10n.addOptionalNote,
                     hintStyle: TextStyle(
                       color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                       fontStyle: FontStyle.italic,
@@ -1725,12 +1726,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
               ],
             ),
-            Text(
-              minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSet,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.pink.shade200 : const Color(0xFFE91E63),
+            Flexible(
+              child: Text(
+                minutes > 0
+                    ? '$minutes ${l10n.minAbbrev}'
+                    : l10n.tapToSetTime,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.pink.shade200 : const Color(0xFFE91E63),
+                ),
               ),
             ),
           ],
@@ -1781,7 +1789,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildMiktarEditor(int miktar, Function(int) onChanged, bool isDark) {
+  Widget _buildMiktarEditor(
+    int miktar,
+    Function(int) onChanged,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -1799,7 +1812,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
           const SizedBox(width: 24),
           Text(
-            '$miktar ml',
+            '$miktar ${l10n.mlAbbrev}',
             style: const TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
+import '../l10n/app_localizations.dart';
 import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
@@ -78,11 +79,12 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
       !kIsWeb && _photoPath != null && File(_photoPath!).existsSync();
 
   Future<void> _pickPhoto() async {
+    final l10n = AppLocalizations.of(context)!;
     if (kIsWeb) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Web sürümünde fotoğraf yükleme desteklenmiyor.'),
+        SnackBar(
+          content: Text(l10n.webPhotoUploadUnsupported),
         ),
       );
       return;
@@ -554,7 +556,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                               color: textColor,
                             ),
                             decoration: InputDecoration(
-                              hintText: 'Alerjiler, tercihler, notlar...',
+                              hintText: AppLocalizations.of(context)!.babyNotesHint,
                               hintStyle: TextStyle(
                                 color: subtitleColor.withValues(alpha: 0.5),
                                 fontSize: 14,
@@ -854,7 +856,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('$babyName verileri silindi'),
+                  content: Text(AppLocalizations.of(context)!.babyDataDeleted(babyName)),
                   backgroundColor: const Color(0xFFFFB4A2),
                 ),
               );

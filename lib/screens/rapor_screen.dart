@@ -1408,14 +1408,14 @@ class _RaporScreenState extends State<RaporScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ ${l10n.pdfSaved}'),
+          content: Text(l10n.pdfSaved),
           backgroundColor: const Color(0xFF4CAF50),
         ),
       );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n.errorWithMessage(e.toString())), backgroundColor: Colors.red),
       );
     }
 
@@ -1467,7 +1467,7 @@ class _RaporScreenState extends State<RaporScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('❌ Hata: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n.errorWithMessage(e.toString())), backgroundColor: Colors.red),
       );
     }
 

@@ -95,6 +95,87 @@ class AppLocalizationsTr extends AppLocalizations {
   String get no => 'Hayır';
 
   @override
+  String get share => 'Paylaş';
+
+  @override
+  String get mlAbbrev => 'ml';
+
+  @override
+  String get selectTime => 'Saat seç';
+
+  @override
+  String get tapToSetTime => 'Saat seç';
+
+  @override
+  String get notificationSleepFired => 'Uyku bildirimi tetiklendi';
+
+  @override
+  String get notificationNursingFired => 'Emzirme bildirimi tetiklendi';
+
+  @override
+  String get signedOutSuccessfully => 'Çıkış yapıldı';
+
+  @override
+  String errorWithMessage(String message) {
+    return 'Hata: $message';
+  }
+
+  @override
+  String get allDataDeleted => 'Tüm veriler silindi';
+
+  @override
+  String googleSignInFailed(String error) {
+    return 'Google girişi başarısız: $error';
+  }
+
+  @override
+  String signInFailed(String error) {
+    return 'Giriş başarısız: $error';
+  }
+
+  @override
+  String get webPhotoUploadUnsupported =>
+      'Web sürümünde fotoğraf yükleme desteklenmiyor';
+
+  @override
+  String babyDataDeleted(String name) {
+    return '$name verileri silindi';
+  }
+
+  @override
+  String get babyNameHint => 'Bebek adı';
+
+  @override
+  String get babyNotesHint => 'Alerjiler, tercihler, notlar...';
+
+  @override
+  String get vaccineNameHint => 'örn: Hepatit B, BCG, Karma Aşı';
+
+  @override
+  String get vaccineDoseHint => 'örn: 1. Doz, DabT-IPA-Hib';
+
+  @override
+  String get vaccineNameCannotBeEmpty => 'Aşı adı boş bırakılamaz';
+
+  @override
+  String get growthWeightHint => 'örn. 7.5';
+
+  @override
+  String get growthHeightHint => 'örn. 68.5';
+
+  @override
+  String get growthNotesHint => 'Doktor kontrolü, aşı günü vb...';
+
+  @override
+  String get pleaseEnterWeightHeight => 'Lütfen kilo ve boy bilgilerini girin';
+
+  @override
+  String get memoryTitleHint => 'örn. İlk adımlar';
+
+  @override
+  String get memoryNoteHint => 'Anıyı buraya yaz...';
+
+  @override
   String get home => 'Ana Sayfa';
 
   @override
@@ -182,7 +263,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wokeUpAt => 'UYANDI';
 
   @override
-  String get tapToSet => 'Ayarlamak için dokun';
+  String get tapToSet => 'Saat seç';
 
   @override
   String totalSleep(String duration) {
@@ -776,4 +857,28 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notes => 'Notlar';
+
+  @override
+  String get language => 'Dil';
+
+  @override
+  String get systemDefault => 'Sistem';
+
+  @override
+  String get turkish => 'Türkçe';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get russian => 'Русский';
+
+  @override
+  String get ukrainian => 'Українська';
+
+  @override
+  String get spanish => 'Español';
+
+  @override
+  String get languageUpdated => 'Dil güncellendi';
 }

@@ -1,0 +1,439 @@
+{
+  "@@locale": "ru",
+
+  "appName": "Nilico",
+  "tagline": "Родительство — просто и незабываемо.",
+  "freeForever": "Бесплатно навсегда",
+  "securePrivate": "Безопасно и конфиденциально",
+  "tapToStart": "Нажмите, чтобы начать",
+
+  "feedingTracker": "Трекер кормлений",
+  "feedingTrackerDesc": "Записывайте грудное вскармливание, бутылочки и прикорм. Замечайте закономерности.",
+  "sleepPatterns": "Режим сна",
+  "sleepPatternsDesc": "Изучайте ритм сна вашего малыша и улучшайте качество сна для всех.",
+  "growthCharts": "Графики роста",
+  "growthChartsDesc": "Наглядно отслеживайте изменения роста и веса с помощью красивых графиков.",
+  "preciousMemories": "Драгоценные воспоминания",
+  "preciousMemoriesDesc": "Сохраняйте важные моменты и забавные истории. Они так быстро растут!",
+  "dailyRhythm": "Дневной ритм",
+  "dailyRhythmDesc": "Мягкий режим дня приносит спокойные дни и тихие ночи.",
+  "skip": "Пропустить",
+  "startYourJourney": "Начните своё путешествие",
+  "continueBtn": "Продолжить",
+
+  "save": "Сохранить",
+  "update": "Обновить",
+  "cancel": "Отмена",
+  "delete": "Удалить",
+  "edit": "Изменить",
+  "ok": "ОК",
+  "add": "Добавить",
+  "yes": "Да",
+  "no": "Нет",
+  "share": "Поделиться",
+  "mlAbbrev": "мл",
+  "selectTime": "Выберите время",
+  "tapToSetTime": "Установить время",
+  "notificationSleepFired": "Уведомление о сне отправлено",
+  "notificationNursingFired": "Уведомление о кормлении отправлено",
+  "signedOutSuccessfully": "Выход выполнен успешно",
+  "errorWithMessage": "Ошибка: {message}",
+  "@errorWithMessage": {
+    "placeholders": {
+      "message": {"type": "String"}
+    }
+  },
+  "allDataDeleted": "Все данные удалены",
+  "googleSignInFailed": "Вход через Google не удался: {error}",
+  "@googleSignInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "signInFailed": "Не удалось войти: {error}",
+  "@signInFailed": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "webPhotoUploadUnsupported": "Загрузка фото не поддерживается в веб-версии",
+  "babyDataDeleted": "Данные {name} удалены",
+  "@babyDataDeleted": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "babyNameHint": "Имя малыша",
+  "babyNotesHint": "Аллергии, предпочтения, заметки...",
+  "vaccineNameHint": "напр. Гепатит B, БЦЖ, комбинированная вакцина",
+  "vaccineDoseHint": "напр. Доза 1, АКДС-ИПВ-ХИБ",
+  "vaccineNameCannotBeEmpty": "Название вакцины не может быть пустым",
+  "growthWeightHint": "напр. 7,5",
+  "growthHeightHint": "напр. 68,5",
+  "growthNotesHint": "Визит к врачу, день вакцинации и т.д.",
+  "pleaseEnterWeightHeight": "Введите вес и рост",
+  "memoryTitleHint": "напр. Первые шаги",
+  "memoryNoteHint": "Запишите воспоминание...",
+
+  "home": "Главная",
+  "activities": "Уход",
+  "vaccines": "Вакцины",
+  "development": "Развитие",
+  "memories": "Воспоминания",
+  "settings": "Настройки",
+
+  "addActivity": "Добавить запись",
+  "whatHappened": "Что произошло?",
+  "nursing": "Грудное вскармливание",
+  "bottle": "Кормление",
+  "sleep": "Сон",
+  "diaper": "Подгузник",
+
+  "side": "Сторона",
+  "left": "Левая",
+  "right": "Правая",
+  "duration": "Длительность",
+  "minAbbrev": "мин",
+  "hourAbbrev": "ч",
+
+  "category": "Категория",
+  "milk": "Молоко",
+  "solid": "Прикорм",
+  "whatWasGiven": "ЧТО ДАВАЛИ?",
+  "solidFoodHint": "Напр.: банановое пюре, морковь...",
+  "amount": "Количество",
+  "milkType": "Тип молока",
+  "breastMilk": "Грудное молоко",
+  "formula": "Смесь",
+
+  "sleepStartedAt": "СОН НАЧАЛСЯ В",
+  "wokeUpAt": "ПРОСНУЛСЯ В",
+  "tapToSet": "Установить время",
+  "totalSleep": "Общий сон: {duration}",
+  "@totalSleep": {
+    "placeholders": {
+      "duration": {"type": "String"}
+    }
+  },
+
+  "type": "Тип",
+  "healthType": "Тип",
+  "healthTime": "Время",
+  "wet": "Мокрый",
+  "dirty": "Грязный",
+  "both": "Оба",
+  "optionalNotes": "Заметки (необязательно)",
+  "diaperNoteHint": "Добавьте заметку о смене подгузника...",
+
+  "pleaseSetDuration": "Укажите длительность",
+  "pleaseSetAmount": "Укажите количество",
+  "pleaseSetWakeUpTime": "Укажите время пробуждения",
+  "sleepDurationMustBeGreater": "Длительность сна должна быть больше 0",
+
+  "today": "Сегодня",
+  "summary": "СВОДКА",
+  "recentActivities": "НЕДАВНИЕ ЗАПИСИ УХОДА",
+  "record": "запись",
+  "records": "записей",
+
+  "breastfeeding": "Грудное вскармливание",
+  "bottleBreastMilk": "Бутылочка (грудное молоко)",
+  "total": "Всего",
+  "diaperChange": "Смена подгузника",
+
+  "firstFeedingTime": "Время первого кормления?",
+  "trackBabyFeeding": "Отслеживайте кормление малыша",
+  "diaperChangeTime": "Время сменить подгузник!",
+  "trackHygiene": "Отслеживайте гигиену здесь",
+  "sweetDreams": "Сладких снов...",
+  "trackSleepPattern": "Отслеживайте режим сна здесь",
+  "selectAnotherDate": "Выберите другую дату",
+
+  "editFeeding": "Изменить кормление",
+  "editDiaper": "Изменить подгузник",
+  "editSleep": "Изменить сон",
+  "start": "Начало",
+  "end": "Конец",
+
+  "attention": "Внимание",
+  "deleteConfirm": "Вы уверены, что хотите удалить эту запись?",
+
+  "myVaccines": "Мои вакцины",
+  "addVaccine": "Добавить вакцину",
+  "applied": "Сделано",
+  "pending": "Ожидается",
+  "upcomingVaccines": "Предстоящие вакцины",
+  "completedVaccines": "Сделанные вакцины",
+  "selectDate": "Выберите дату",
+  "calendar": "Календарь",
+  "turkishVaccineCalendar": "Турецкий календарь вакцинации",
+  "vaccinesAvailable": "{count} вакцин доступно",
+  "@vaccinesAvailable": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "selectAll": "Выбрать все",
+  "clear": "Очистить",
+  "alreadyAdded": "Уже добавлено",
+  "addVaccines": "Добавить {count} вакцин",
+  "@addVaccines": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "selectVaccine": "Выберите вакцину",
+  "vaccinesAdded": "{count} вакцин добавлено",
+  "@vaccinesAdded": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "noVaccineRecords": "Записей о вакцинах пока нет",
+  "loadTurkishCalendar": "Загрузите турецкий календарь или добавьте вручную",
+  "loadTurkishVaccineCalendar": "Загрузить турецкий календарь вакцинации",
+  "loadCalendarTitle": "Загрузить турецкий календарь вакцинации",
+  "loadCalendarDesc": "Будет загружен стандартный турецкий календарь вакцинации. Существующие вакцины не будут удалены.",
+
+  "ageYears": "{years} лет",
+  "@ageYears": {
+    "placeholders": {
+      "years": {"type": "int"}
+    }
+  },
+  "ageYearsMonths": "{years} год {months} мес.",
+  "@ageYearsMonths": {
+    "placeholders": {
+      "years": {"type": "int"},
+      "months": {"type": "int"}
+    }
+  },
+  "ageMonthsDays": "{months} мес. {days} дн.",
+  "@ageMonthsDays": {
+    "placeholders": {
+      "months": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "ageDays": "{days} дн.",
+  "@ageDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "weeklyReport": "Недельный отчёт",
+  "monthlyReport": "Месячный отчёт",
+  "weekly": "Неделя",
+  "monthly": "Месяц",
+  "feeding": "Кормление",
+  "totalBreastfeeding": "Всего грудного вскармливания",
+  "totalDuration": "Общая длительность",
+  "dailyAvg": "Сред. в день",
+  "avgDuration": "Сред. длительность",
+  "leftBreast": "Левая грудь",
+  "rightBreast": "Правая грудь",
+  "solidFood": "Прикорм",
+  "diaperChanges": "Смены подгузников",
+  "longestSleep": "Самый долгий сон",
+  "sleepCount": "Кол-во снов",
+  "growth": "Рост",
+  "height": "Рост",
+  "weight": "Вес",
+  "saveAsPdf": "Сохранить как PDF",
+  "pdfMobileOnly": "Сохранение PDF доступно на мобильном",
+  "sharingMobileOnly": "Поделиться можно на мобильном",
+  "pdfSaved": "PDF успешно сохранён!",
+  "babyTrackerReport": "Отчёт трекера малыша",
+  "generatedWith": "Создано с помощью Baby Tracker App",
+
+  "months": "мес.",
+  "january": "Январь",
+  "february": "Февраль",
+  "march": "Март",
+  "april": "Апрель",
+  "may": "Май",
+  "june": "Июнь",
+  "july": "Июль",
+  "august": "Август",
+  "september": "Сентябрь",
+  "october": "Октябрь",
+  "november": "Ноябрь",
+  "december": "Декабрь",
+
+  "addOptionalNote": "Добавить заметку (необязательно)",
+  "times": "раз",
+
+  "feeding_tab": "КОРМЛЕНИЕ",
+  "diaper_tab": "ПОДГУЗНИК",
+  "sleep_tab": "СОН",
+  "list": "Список",
+  "chart": "График",
+  "noMeasurements": "Измерений пока нет",
+  "addMeasurements": "Добавьте измерения роста и веса",
+  "moreDataNeeded": "Нужно больше данных для графика",
+  "addMoreMeasurements": "Добавьте ещё {count} измерений",
+  "@addMoreMeasurements": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "atLeast2Measurements": "Для графика нужно минимум 2 измерения",
+  "growthTracking": "Отслеживание роста",
+
+  "feedingTimer": "КОРМЛЕНИЕ",
+  "sleepingTimer": "СОН",
+  "stopAndSave": "СТОП И СОХРАНИТЬ",
+  "activeTimer": "АКТИВЕН",
+  "lastFed": "ПОСЛ. КОРМЛЕНИЕ",
+  "lastDiaper": "ПОСЛ. ПОДГУЗНИК",
+  "lastSleep": "ПОСЛ. СОН",
+  "recentActivity": "НЕДАВНИЕ ЗАПИСИ УХОДА",
+  "seeHistory": "ИСТОРИЯ",
+  "noActivitiesLast24h": "Нет активности за последние 24 часа",
+  "bottleFeeding": "Кормление",
+  "trackYourBabyGrowth": "Отслеживайте рост малыша",
+  "addHeightWeightMeasurements": "Добавьте измерения веса и роста",
+  "addFirstMeasurement": "Добавить первое измерение",
+  "lastUpdatedToday": "Обновлено сегодня",
+  "lastUpdated1Day": "Обновлено 1 день назад",
+  "lastUpdatedDays": "Обновлено {days} дн. назад",
+  "@lastUpdatedDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "viewGrowthCharts": "ГРАФИКИ РОСТА",
+  "weightLabel": "ВЕС",
+  "heightLabel": "РОСТ",
+  "mAgo": "{count} мин назад",
+  "@mAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hmAgo": "{hours}ч {minutes}мин назад",
+  "@hmAgo": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "dAgo": "{days}д назад",
+  "@dAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "noRecordsYet": "Записей пока нет",
+  "dailyTip": "СОВЕТ ДНЯ",
+  "allTips": "Все советы",
+  "upcomingVaccine": "ПРЕДСТОЯЩАЯ ВАКЦИНА",
+  "nextVaccineLabel": "Следующая: {name}",
+  "@nextVaccineLabel": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "leftMinRightMin": "Л {left}мин • П {right}мин",
+  "@leftMinRightMin": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "breastfeedingSavedSnack": "✅ Кормление сохранено: Л {left}мин, П {right}мин",
+  "@breastfeedingSavedSnack": {
+    "placeholders": {
+      "left": {"type": "int"},
+      "right": {"type": "int"}
+    }
+  },
+  "sleepSavedSnack": "✅ Сон сохранён: {duration}",
+  "@sleepSavedSnack": {
+    "placeholders": {
+      "duration": {"type": "String"}
+    }
+  },
+  "sleepTooShort": "⚠️ Сон менее 1 минуты, не сохранён",
+  "kgThisMonth": "+{value}кг за месяц",
+  "@kgThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "cmThisMonth": "+{value}см за месяц",
+  "@cmThisMonth": {
+    "placeholders": {
+      "value": {"type": "String"}
+    }
+  },
+  "noSleep": "Нет сна",
+  "justNow": "только что",
+  "minutesAgo": "{count} мин назад",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "hoursAgo": "{count}ч назад",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "daysAgo": "{count}д назад",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "welcomeToNilico": "Добро пожаловать в Nilico",
+  "createYourAccount": "Создайте аккаунт",
+  "loginBenefitText": "Войдите, чтобы подготовиться к будущим функциям резервного копирования и синхронизации. Можно продолжить без входа.",
+  "signInWithApple": "Войти через Apple",
+  "signInWithGoogle": "Войти через Google",
+  "continueWithoutLogin": "Продолжить без входа",
+  "loginOptionalNote": "Вход необязателен. Все функции работают без аккаунта.",
+  "account": "Аккаунт",
+  "signIn": "Войти",
+  "signOut": "Выйти",
+  "signedInAs": "Вы вошли как {email}",
+  "@signedInAs": {
+    "placeholders": {
+      "email": {"type": "String"}
+    }
+  },
+  "guestMode": "Гостевой режим",
+  "signInToProtectData": "Войдите, чтобы защитить данные",
+  "backupSyncComingSoon": "Резервное копирование и синхронизация скоро",
+
+  "privacyPolicy": "Политика конфиденциальности",
+  "privacyPolicySubtitle": "Просмотреть политику конфиденциальности",
+  "termsOfUse": "Условия использования",
+  "termsOfUseSubtitle": "Просмотреть условия использования",
+  "pageCouldNotOpen": "Не удалось открыть страницу",
+
+  "health": "Здоровье",
+  "medications": "Лекарства",
+  "noMedications": "Лекарств и добавок пока нет",
+  "medication": "Лекарство",
+  "supplement": "Добавка",
+  "addMedication": "Добавить лекарство",
+  "editMedication": "Изменить лекарство",
+  "medicationName": "Название",
+  "medicationNameRequired": "Введите название",
+  "dosage": "Дозировка",
+  "schedule": "Расписание",
+  "notes": "Заметки",
+
+  "language": "Язык",
+  "systemDefault": "Система",
+  "turkish": "Türkçe",
+  "english": "English",
+  "russian": "Русский",
+  "ukrainian": "Українська",
+  "spanish": "Español",
+  "languageUpdated": "Язык обновлён"
+}

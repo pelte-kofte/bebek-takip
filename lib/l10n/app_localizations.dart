@@ -6,7 +6,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_ru.dart';
 import 'app_localizations_tr.dart';
+import 'app_localizations_uk.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,7 +98,10 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('es'),
+    Locale('ru'),
     Locale('tr'),
+    Locale('uk'),
   ];
 
   /// No description provided for @appName.
@@ -259,6 +265,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No'**
   String get no;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @mlAbbrev.
+  ///
+  /// In en, this message translates to:
+  /// **'ml'**
+  String get mlAbbrev;
+
+  /// No description provided for @selectTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select time'**
+  String get selectTime;
+
+  /// No description provided for @tapToSetTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Set time'**
+  String get tapToSetTime;
+
+  /// No description provided for @notificationSleepFired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep notification fired'**
+  String get notificationSleepFired;
+
+  /// No description provided for @notificationNursingFired.
+  ///
+  /// In en, this message translates to:
+  /// **'Nursing notification fired'**
+  String get notificationNursingFired;
+
+  /// No description provided for @signedOutSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed out successfully'**
+  String get signedOutSuccessfully;
+
+  /// No description provided for @errorWithMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {message}'**
+  String errorWithMessage(String message);
+
+  /// No description provided for @allDataDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All data deleted'**
+  String get allDataDeleted;
+
+  /// No description provided for @googleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed: {error}'**
+  String googleSignInFailed(String error);
+
+  /// No description provided for @signInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in failed: {error}'**
+  String signInFailed(String error);
+
+  /// No description provided for @webPhotoUploadUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload is not supported on web'**
+  String get webPhotoUploadUnsupported;
+
+  /// No description provided for @babyDataDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} data deleted'**
+  String babyDataDeleted(String name);
+
+  /// No description provided for @babyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby name'**
+  String get babyNameHint;
+
+  /// No description provided for @babyNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies, preferences, notes...'**
+  String get babyNotesHint;
+
+  /// No description provided for @vaccineNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Hepatitis B, BCG, combo vaccine'**
+  String get vaccineNameHint;
+
+  /// No description provided for @vaccineDoseHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Dose 1, DTaP-IPV-Hib'**
+  String get vaccineDoseHint;
+
+  /// No description provided for @vaccineNameCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccine name cannot be empty'**
+  String get vaccineNameCannotBeEmpty;
+
+  /// No description provided for @growthWeightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 7.5'**
+  String get growthWeightHint;
+
+  /// No description provided for @growthHeightHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 68.5'**
+  String get growthHeightHint;
+
+  /// No description provided for @growthNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor visit, vaccine day, etc.'**
+  String get growthNotesHint;
+
+  /// No description provided for @pleaseEnterWeightHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter weight and height'**
+  String get pleaseEnterWeightHeight;
+
+  /// No description provided for @memoryTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. First steps'**
+  String get memoryTitleHint;
+
+  /// No description provided for @memoryNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write down the memory...'**
+  String get memoryNoteHint;
 
   /// No description provided for @home.
   ///
@@ -437,7 +587,7 @@ abstract class AppLocalizations {
   /// No description provided for @tapToSet.
   ///
   /// In en, this message translates to:
-  /// **'Tap to set'**
+  /// **'Set time'**
   String get tapToSet;
 
   /// No description provided for @totalSleep.
@@ -1525,6 +1675,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notes'**
   String get notes;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get systemDefault;
+
+  /// No description provided for @turkish.
+  ///
+  /// In en, this message translates to:
+  /// **'Türkçe'**
+  String get turkish;
+
+  /// No description provided for @english.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// No description provided for @russian.
+  ///
+  /// In en, this message translates to:
+  /// **'Русский'**
+  String get russian;
+
+  /// No description provided for @ukrainian.
+  ///
+  /// In en, this message translates to:
+  /// **'Українська'**
+  String get ukrainian;
+
+  /// No description provided for @spanish.
+  ///
+  /// In en, this message translates to:
+  /// **'Español'**
+  String get spanish;
+
+  /// No description provided for @languageUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Language updated'**
+  String get languageUpdated;
 }
 
 class _AppLocalizationsDelegate
@@ -1538,7 +1736,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'tr'].contains(locale.languageCode);
+      <String>['en', 'es', 'ru', 'tr', 'uk'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1549,8 +1747,14 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'ru':
+      return AppLocalizationsRu();
     case 'tr':
       return AppLocalizationsTr();
+    case 'uk':
+      return AppLocalizationsUk();
   }
 
   throw FlutterError(
