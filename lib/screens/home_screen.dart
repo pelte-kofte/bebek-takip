@@ -166,15 +166,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // EMZİRME FONKSİYONLARI
   void _startSol() async {
-    await _timerYonetici.switchEmzirmeSide('sol');
+    await _timerYonetici.switchEmzirmeSide(VeriYonetici.getActiveBabyId(), 'sol');
   }
 
   void _startSag() async {
-    await _timerYonetici.switchEmzirmeSide('sag');
+    await _timerYonetici.switchEmzirmeSide(VeriYonetici.getActiveBabyId(), 'sag');
   }
 
   void _stopEmzirmeAndSave() async {
-    final data = await _timerYonetici.stopEmzirme();
+    final data = await _timerYonetici.stopEmzirme(VeriYonetici.getActiveBabyId());
 
     if (data == null) {
       setState(() {
@@ -241,11 +241,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // UYKU FONKSİYONLARI
   void _startUyku() async {
-    await _timerYonetici.startUyku();
+    await _timerYonetici.startUyku(VeriYonetici.getActiveBabyId());
   }
 
   void _stopUykuAndSave() async {
-    final data = await _timerYonetici.stopUyku();
+    final data = await _timerYonetici.stopUyku(VeriYonetici.getActiveBabyId());
 
     if (data == null) {
       setState(() {
