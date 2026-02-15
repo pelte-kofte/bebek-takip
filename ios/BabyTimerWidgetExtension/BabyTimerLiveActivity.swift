@@ -20,9 +20,14 @@ struct BabyTimerLiveActivity: Widget {
                 }
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
-                        Text(activityTitle(for: context.attributes.activityType))
+                        Text(context.state.localizedTitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
+                        if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                            Text(subtitle)
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
                         Text(context.state.startDate, style: .timer)
                             .font(.title2)
                             .fontWeight(.semibold)
@@ -30,8 +35,8 @@ struct BabyTimerLiveActivity: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    if let side = context.state.side {
-                        Text(sideLabel(side))
+                    if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                        Text(subtitle)
                             .font(.caption)
                             .fontWeight(.semibold)
                             .padding(.horizontal, 8)
@@ -46,10 +51,16 @@ struct BabyTimerLiveActivity: Widget {
                 activityIcon(for: context.attributes.activityType)
                     .font(.caption)
             } compactTrailing: {
-                Text(context.state.startDate, style: .timer)
-                    .monospacedDigit()
-                    .font(.caption)
-                    .frame(width: 48)
+                if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.caption2)
+                        .lineLimit(1)
+                } else {
+                    Text(context.state.startDate, style: .timer)
+                        .monospacedDigit()
+                        .font(.caption)
+                        .frame(width: 48)
+                }
             } minimal: {
                 activityIcon(for: context.attributes.activityType)
                     .font(.caption)
@@ -70,13 +81,6 @@ struct BabyTimerLiveActivity: Widget {
         }
     }
 
-    private func activityTitle(for type: String) -> String {
-        type == "sleep" ? "Uyku" : "Emzirme"
-    }
-
-    private func sideLabel(_ side: String) -> String {
-        side == "sol" ? "SOL" : "SAĞ"
-    }
 }
 
 // MARK: - Lock Screen View
@@ -110,16 +114,16 @@ struct LockScreenView: View {
 
             // Title + Side
             VStack(alignment: .leading, spacing: 2) {
-                Text(context.attributes.activityType == "sleep" ? "Uyku" : "Emzirme")
+                Text(context.state.localizedTitle)
                     .font(.headline)
                     .foregroundColor(darkText)
 
-                if let side = context.state.side {
+                if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
                     HStack(spacing: 4) {
                         Circle()
                             .fill(peachColor)
                             .frame(width: 6, height: 6)
-                        Text(side == "sol" ? "Sol taraf" : "Sağ taraf")
+                        Text(subtitle)
                             .font(.caption)
                             .foregroundColor(darkText.opacity(0.6))
                     }

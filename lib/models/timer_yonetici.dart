@@ -37,6 +37,57 @@ class TimerYonetici {
   final Map<String, Timer> _emzirmeUpdateTimers = {};
   final Map<String, Timer> _uykuUpdateTimers = {};
 
+  // ── Live Activity localized labels (injected by UI layer) ──
+  String _liveSleepTitle = 'Sleep';
+  String _liveSleepSubtitle = '';
+  String _liveNursingTitle = 'Nursing';
+  String _liveLeftLabel = 'Left';
+  String _liveRightLabel = 'Right';
+  String _liveLeftSubtitle = 'Left side';
+  String _liveRightSubtitle = 'Right side';
+
+  String _nursingSubtitleForSide(String side) {
+    return side == 'sol' ? _liveLeftSubtitle : _liveRightSubtitle;
+  }
+
+  Future<void> setLiveActivityLocalization({
+    required String sleepTitle,
+    String sleepSubtitle = '',
+    required String nursingTitle,
+    required String leftLabel,
+    required String rightLabel,
+    required String leftSubtitle,
+    required String rightSubtitle,
+  }) async {
+    _liveSleepTitle = sleepTitle;
+    _liveSleepSubtitle = sleepSubtitle;
+    _liveNursingTitle = nursingTitle;
+    _liveLeftLabel = leftLabel;
+    _liveRightLabel = rightLabel;
+    _liveLeftSubtitle = leftSubtitle;
+    _liveRightSubtitle = rightSubtitle;
+
+    for (final babyId in _uykuStartByBaby.keys) {
+      await _liveActivityService.updateSleepActivity(
+        babyId: babyId,
+        localizedTitle: _liveSleepTitle,
+        localizedSubtitle: _liveSleepSubtitle,
+      );
+    }
+
+    for (final entry in _emzirmeStartByBaby.entries) {
+      final side = _emzirmeTarafByBaby[entry.key] ?? 'sol';
+      await _liveActivityService.updateNursingSide(
+        babyId: entry.key,
+        side: side,
+        localizedTitle: _liveNursingTitle,
+        localizedSubtitle: _nursingSubtitleForSide(side),
+        localizedLeftLabel: _liveLeftLabel,
+        localizedRightLabel: _liveRightLabel,
+      );
+    }
+  }
+
   // ── Stream accessors ──
   Stream<Duration?> emzirmeStreamFor(String babyId) =>
       _getEmzirmeController(babyId).stream;
@@ -102,8 +153,9 @@ class TimerYonetici {
           try {
             _emzirmeStartByBaby[babyId] = DateTime.parse(emzirmeStr);
 
-            final ilkStr =
-                _prefs?.getString('active_emzirme_ilk_start_$babyId');
+            final ilkStr = _prefs?.getString(
+              'active_emzirme_ilk_start_$babyId',
+            );
             _emzirmeIlkStartByBaby[babyId] = ilkStr != null
                 ? DateTime.parse(ilkStr)
                 : _emzirmeStartByBaby[babyId]!;
@@ -128,8 +180,9 @@ class TimerYonetici {
     // Show notification for the currently selected baby if they have active timers
     final currentBabyId = _prefs?.getString('active_baby_id') ?? '';
     if (_uykuStartByBaby.containsKey(currentBabyId)) {
-      await _notificationService
-          .showSleepNotification(_uykuStartByBaby[currentBabyId]!);
+      await _notificationService.showSleepNotification(
+        _uykuStartByBaby[currentBabyId]!,
+      );
     }
     if (_emzirmeStartByBaby.containsKey(currentBabyId)) {
       await _notificationService.showNursingNotification(
@@ -143,14 +196,21 @@ class TimerYonetici {
       await _liveActivityService.startSleepActivity(
         babyId: entry.key,
         startTime: entry.value,
+        localizedTitle: _liveSleepTitle,
+        localizedSubtitle: _liveSleepSubtitle,
       );
     }
     for (final entry in _emzirmeStartByBaby.entries) {
       final ilkStart = _emzirmeIlkStartByBaby[entry.key] ?? entry.value;
+      final side = _emzirmeTarafByBaby[entry.key] ?? 'sol';
       await _liveActivityService.startNursingActivity(
         babyId: entry.key,
         startTime: ilkStart,
-        side: _emzirmeTarafByBaby[entry.key] ?? 'sol',
+        side: side,
+        localizedTitle: _liveNursingTitle,
+        localizedSubtitle: _nursingSubtitleForSide(side),
+        localizedLeftLabel: _liveLeftLabel,
+        localizedRightLabel: _liveRightLabel,
       );
     }
   }
@@ -182,7 +242,11 @@ class TimerYonetici {
     _uykuStartByBaby.remove(babyId);
     await _prefs?.remove('active_uyku_start_$babyId');
     await _notificationService.cancelSleepNotification();
-    await _liveActivityService.stopSleepActivity(babyId: babyId);
+    await _liveActivityService.stopSleepActivity(
+      babyId: babyId,
+      localizedTitle: _liveSleepTitle,
+      localizedSubtitle: _liveSleepSubtitle,
+    );
 
     _uykuUpdateTimers[babyId]?.cancel();
     _uykuUpdateTimers.remove(babyId);
@@ -238,7 +302,13 @@ class TimerYonetici {
     await _prefs?.remove('active_emzirme_sol_saniye_$babyId');
     await _prefs?.remove('active_emzirme_sag_saniye_$babyId');
     await _notificationService.cancelNursingNotification();
-    await _liveActivityService.stopNursingActivity(babyId: babyId);
+    await _liveActivityService.stopNursingActivity(
+      babyId: babyId,
+      localizedTitle: _liveNursingTitle,
+      localizedSubtitle: _nursingSubtitleForSide(taraf ?? 'sol'),
+      localizedLeftLabel: _liveLeftLabel,
+      localizedRightLabel: _liveRightLabel,
+    );
 
     _emzirmeUpdateTimers[babyId]?.cancel();
     _emzirmeUpdateTimers.remove(babyId);
@@ -294,8 +364,9 @@ class TimerYonetici {
   Future<void> onActiveBabyChanged(String babyId) async {
     // Cancel old notifications, show new baby's if active
     if (_uykuStartByBaby.containsKey(babyId)) {
-      await _notificationService
-          .showSleepNotification(_uykuStartByBaby[babyId]!);
+      await _notificationService.showSleepNotification(
+        _uykuStartByBaby[babyId]!,
+      );
     } else {
       await _notificationService.cancelSleepNotification();
     }
@@ -314,8 +385,11 @@ class TimerYonetici {
   //  EMZİRME (NURSING) — baby-scoped
   // ═══════════════════════════════════════════════════════
 
-  Future<void> startEmzirme(String babyId,
-      {String tur = 'anne', String? taraf}) async {
+  Future<void> startEmzirme(
+    String babyId, {
+    String tur = 'anne',
+    String? taraf,
+  }) async {
     if (babyId.isEmpty) return;
     if (_emzirmeStartByBaby.containsKey(babyId)) return; // Already running
 
@@ -330,9 +404,13 @@ class TimerYonetici {
     _sagToplamByBaby[babyId] = 0;
 
     await _prefs?.setString(
-        'active_emzirme_start_$babyId', now.toIso8601String());
+      'active_emzirme_start_$babyId',
+      now.toIso8601String(),
+    );
     await _prefs?.setString(
-        'active_emzirme_ilk_start_$babyId', now.toIso8601String());
+      'active_emzirme_ilk_start_$babyId',
+      now.toIso8601String(),
+    );
     await _prefs?.setString('active_emzirme_tur_$babyId', tur);
     if (taraf != null) {
       await _prefs?.setString('active_emzirme_taraf_$babyId', taraf);
@@ -346,6 +424,10 @@ class TimerYonetici {
       babyId: babyId,
       startTime: now,
       side: taraf ?? 'sol',
+      localizedTitle: _liveNursingTitle,
+      localizedSubtitle: _nursingSubtitleForSide(taraf ?? 'sol'),
+      localizedLeftLabel: _liveLeftLabel,
+      localizedRightLabel: _liveRightLabel,
     );
   }
 
@@ -354,8 +436,11 @@ class TimerYonetici {
 
     if (!_emzirmeStartByBaby.containsKey(babyId)) {
       // Not running, start new
-      await startEmzirme(babyId,
-          tur: _emzirmeTurByBaby[babyId] ?? 'anne', taraf: newTaraf);
+      await startEmzirme(
+        babyId,
+        tur: _emzirmeTurByBaby[babyId] ?? 'anne',
+        taraf: newTaraf,
+      );
       return;
     }
 
@@ -377,16 +462,29 @@ class TimerYonetici {
     _emzirmeTarafByBaby[babyId] = newTaraf;
 
     await _prefs?.setString(
-        'active_emzirme_start_$babyId', now.toIso8601String());
+      'active_emzirme_start_$babyId',
+      now.toIso8601String(),
+    );
     await _prefs?.setString('active_emzirme_taraf_$babyId', newTaraf);
     await _prefs?.setInt(
-        'active_emzirme_sol_saniye_$babyId', _solToplamByBaby[babyId] ?? 0);
+      'active_emzirme_sol_saniye_$babyId',
+      _solToplamByBaby[babyId] ?? 0,
+    );
     await _prefs?.setInt(
-        'active_emzirme_sag_saniye_$babyId', _sagToplamByBaby[babyId] ?? 0);
+      'active_emzirme_sag_saniye_$babyId',
+      _sagToplamByBaby[babyId] ?? 0,
+    );
 
     _startEmzirmeUpdateTimer(babyId);
     await _notificationService.updateNursingSide(newTaraf);
-    await _liveActivityService.updateNursingSide(babyId: babyId, side: newTaraf);
+    await _liveActivityService.updateNursingSide(
+      babyId: babyId,
+      side: newTaraf,
+      localizedTitle: _liveNursingTitle,
+      localizedSubtitle: _nursingSubtitleForSide(newTaraf),
+      localizedLeftLabel: _liveLeftLabel,
+      localizedRightLabel: _liveRightLabel,
+    );
   }
 
   Future<Map<String, dynamic>?> stopEmzirme(String babyId) async {
@@ -424,6 +522,8 @@ class TimerYonetici {
   }
 
   Future<void> _clearEmzirme(String babyId) async {
+    final lastSide = _emzirmeTarafByBaby[babyId] ?? 'sol';
+
     _emzirmeStartByBaby.remove(babyId);
     _emzirmeIlkStartByBaby.remove(babyId);
     _emzirmeTurByBaby.remove(babyId);
@@ -443,7 +543,13 @@ class TimerYonetici {
     _getEmzirmeController(babyId).add(null);
 
     await _notificationService.cancelNursingNotification();
-    await _liveActivityService.stopNursingActivity(babyId: babyId);
+    await _liveActivityService.stopNursingActivity(
+      babyId: babyId,
+      localizedTitle: _liveNursingTitle,
+      localizedSubtitle: _nursingSubtitleForSide(lastSide),
+      localizedLeftLabel: _liveLeftLabel,
+      localizedRightLabel: _liveRightLabel,
+    );
   }
 
   // ═══════════════════════════════════════════════════════
@@ -457,12 +563,16 @@ class TimerYonetici {
     final now = DateTime.now();
     _uykuStartByBaby[babyId] = now;
 
-    await _prefs?.setString(
-        'active_uyku_start_$babyId', now.toIso8601String());
+    await _prefs?.setString('active_uyku_start_$babyId', now.toIso8601String());
 
     _startUykuUpdateTimer(babyId);
     await _notificationService.showSleepNotification(now);
-    await _liveActivityService.startSleepActivity(babyId: babyId, startTime: now);
+    await _liveActivityService.startSleepActivity(
+      babyId: babyId,
+      startTime: now,
+      localizedTitle: _liveSleepTitle,
+      localizedSubtitle: _liveSleepSubtitle,
+    );
   }
 
   Future<Map<String, dynamic>?> stopUyku(String babyId) async {
@@ -474,11 +584,7 @@ class TimerYonetici {
     final bitis = DateTime.now();
     final sure = bitis.difference(start);
 
-    final data = {
-      'baslangic': start,
-      'bitis': bitis,
-      'sure': sure,
-    };
+    final data = {'baslangic': start, 'bitis': bitis, 'sure': sure};
 
     await _clearUyku(babyId);
     return data;
@@ -494,7 +600,11 @@ class TimerYonetici {
     _getUykuController(babyId).add(null);
 
     await _notificationService.cancelSleepNotification();
-    await _liveActivityService.stopSleepActivity(babyId: babyId);
+    await _liveActivityService.stopSleepActivity(
+      babyId: babyId,
+      localizedTitle: _liveSleepTitle,
+      localizedSubtitle: _liveSleepSubtitle,
+    );
   }
 
   // ═══════════════════════════════════════════════════════
@@ -503,37 +613,33 @@ class TimerYonetici {
 
   void _startEmzirmeUpdateTimer(String babyId) {
     _emzirmeUpdateTimers[babyId]?.cancel();
-    _emzirmeUpdateTimers[babyId] =
-        Timer.periodic(const Duration(seconds: 1), (_) {
+    _emzirmeUpdateTimers[babyId] = Timer.periodic(const Duration(seconds: 1), (
+      _,
+    ) {
       final start = _emzirmeStartByBaby[babyId];
       if (start != null) {
-        _getEmzirmeController(babyId)
-            .add(DateTime.now().difference(start));
+        _getEmzirmeController(babyId).add(DateTime.now().difference(start));
       }
     });
     // Initial emit
     final start = _emzirmeStartByBaby[babyId];
     if (start != null) {
-      _getEmzirmeController(babyId)
-          .add(DateTime.now().difference(start));
+      _getEmzirmeController(babyId).add(DateTime.now().difference(start));
     }
   }
 
   void _startUykuUpdateTimer(String babyId) {
     _uykuUpdateTimers[babyId]?.cancel();
-    _uykuUpdateTimers[babyId] =
-        Timer.periodic(const Duration(seconds: 1), (_) {
+    _uykuUpdateTimers[babyId] = Timer.periodic(const Duration(seconds: 1), (_) {
       final start = _uykuStartByBaby[babyId];
       if (start != null) {
-        _getUykuController(babyId)
-            .add(DateTime.now().difference(start));
+        _getUykuController(babyId).add(DateTime.now().difference(start));
       }
     });
     // Initial emit
     final start = _uykuStartByBaby[babyId];
     if (start != null) {
-      _getUykuController(babyId)
-          .add(DateTime.now().difference(start));
+      _getUykuController(babyId).add(DateTime.now().difference(start));
     }
   }
 
@@ -544,8 +650,7 @@ class TimerYonetici {
   bool isEmzirmeActiveFor(String babyId) =>
       _emzirmeStartByBaby.containsKey(babyId);
 
-  bool isUykuActiveFor(String babyId) =>
-      _uykuStartByBaby.containsKey(babyId);
+  bool isUykuActiveFor(String babyId) => _uykuStartByBaby.containsKey(babyId);
 
   Duration? emzirmeElapsedFor(String babyId) {
     final start = _emzirmeStartByBaby[babyId];
@@ -559,11 +664,9 @@ class TimerYonetici {
     return DateTime.now().difference(start);
   }
 
-  DateTime? emzirmeBaslangicFor(String babyId) =>
-      _emzirmeStartByBaby[babyId];
+  DateTime? emzirmeBaslangicFor(String babyId) => _emzirmeStartByBaby[babyId];
 
-  DateTime? uykuBaslangicFor(String babyId) =>
-      _uykuStartByBaby[babyId];
+  DateTime? uykuBaslangicFor(String babyId) => _uykuStartByBaby[babyId];
 
   String? emzirmeTurFor(String babyId) => _emzirmeTurByBaby[babyId];
 
@@ -591,8 +694,7 @@ class TimerYonetici {
   //  BACKWARD-COMPAT GETTERS (use active baby)
   // ═══════════════════════════════════════════════════════
 
-  String get _currentBabyId =>
-      _prefs?.getString('active_baby_id') ?? '';
+  String get _currentBabyId => _prefs?.getString('active_baby_id') ?? '';
 
   bool get isEmzirmeActive => isEmzirmeActiveFor(_currentBabyId);
   bool get isUykuActive => isUykuActiveFor(_currentBabyId);

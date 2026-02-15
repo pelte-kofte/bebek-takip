@@ -15,22 +15,48 @@ class LiveActivityService {
   Future<void> startSleepActivity({
     required String babyId,
     required DateTime startTime,
+    required String localizedTitle,
+    String? localizedSubtitle,
   }) async {
     if (!_isSupported) return;
     try {
       await _channel.invokeMethod('startSleepLiveActivity', {
         'babyId': babyId,
         'startEpochSeconds': startTime.millisecondsSinceEpoch ~/ 1000,
+        'localizedTitle': localizedTitle,
+        'localizedSubtitle': localizedSubtitle ?? '',
       });
     } on PlatformException catch (_) {
     } on MissingPluginException catch (_) {}
   }
 
-  Future<void> stopSleepActivity({required String babyId}) async {
+  Future<void> updateSleepActivity({
+    required String babyId,
+    required String localizedTitle,
+    String? localizedSubtitle,
+  }) async {
+    if (!_isSupported) return;
+    try {
+      await _channel.invokeMethod('updateSleepLiveActivity', {
+        'babyId': babyId,
+        'localizedTitle': localizedTitle,
+        'localizedSubtitle': localizedSubtitle ?? '',
+      });
+    } on PlatformException catch (_) {
+    } on MissingPluginException catch (_) {}
+  }
+
+  Future<void> stopSleepActivity({
+    required String babyId,
+    String? localizedTitle,
+    String? localizedSubtitle,
+  }) async {
     if (!_isSupported) return;
     try {
       await _channel.invokeMethod('stopSleepLiveActivity', {
         'babyId': babyId,
+        'localizedTitle': localizedTitle ?? '',
+        'localizedSubtitle': localizedSubtitle ?? '',
       });
     } on PlatformException catch (_) {
     } on MissingPluginException catch (_) {}
@@ -40,6 +66,10 @@ class LiveActivityService {
     required String babyId,
     required DateTime startTime,
     required String side,
+    required String localizedTitle,
+    String? localizedSubtitle,
+    String? localizedLeftLabel,
+    String? localizedRightLabel,
   }) async {
     if (!_isSupported) return;
     try {
@@ -47,6 +77,10 @@ class LiveActivityService {
         'babyId': babyId,
         'startEpochSeconds': startTime.millisecondsSinceEpoch ~/ 1000,
         'side': side,
+        'localizedTitle': localizedTitle,
+        'localizedSubtitle': localizedSubtitle ?? '',
+        'localizedLeftLabel': localizedLeftLabel ?? '',
+        'localizedRightLabel': localizedRightLabel ?? '',
       });
     } on PlatformException catch (_) {
     } on MissingPluginException catch (_) {}
@@ -55,22 +89,40 @@ class LiveActivityService {
   Future<void> updateNursingSide({
     required String babyId,
     required String side,
+    required String localizedTitle,
+    String? localizedSubtitle,
+    String? localizedLeftLabel,
+    String? localizedRightLabel,
   }) async {
     if (!_isSupported) return;
     try {
       await _channel.invokeMethod('updateNursingSide', {
         'babyId': babyId,
         'side': side,
+        'localizedTitle': localizedTitle,
+        'localizedSubtitle': localizedSubtitle ?? '',
+        'localizedLeftLabel': localizedLeftLabel ?? '',
+        'localizedRightLabel': localizedRightLabel ?? '',
       });
     } on PlatformException catch (_) {
     } on MissingPluginException catch (_) {}
   }
 
-  Future<void> stopNursingActivity({required String babyId}) async {
+  Future<void> stopNursingActivity({
+    required String babyId,
+    String? localizedTitle,
+    String? localizedSubtitle,
+    String? localizedLeftLabel,
+    String? localizedRightLabel,
+  }) async {
     if (!_isSupported) return;
     try {
       await _channel.invokeMethod('stopNursingLiveActivity', {
         'babyId': babyId,
+        'localizedTitle': localizedTitle ?? '',
+        'localizedSubtitle': localizedSubtitle ?? '',
+        'localizedLeftLabel': localizedLeftLabel ?? '',
+        'localizedRightLabel': localizedRightLabel ?? '',
       });
     } on PlatformException catch (_) {
     } on MissingPluginException catch (_) {}

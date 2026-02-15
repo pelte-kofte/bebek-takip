@@ -75,6 +75,21 @@ class _HomeScreenState extends State<HomeScreen> {
     _setupTimerListeners();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    _timerYonetici.setLiveActivityLocalization(
+      sleepTitle: l10n.sleep,
+      sleepSubtitle: '',
+      nursingTitle: l10n.nursing,
+      leftLabel: l10n.left,
+      rightLabel: l10n.right,
+      leftSubtitle: l10n.leftBreast,
+      rightSubtitle: l10n.rightBreast,
+    );
+  }
+
   void _initializeTimerValues() {
     // Initialize timer values from TimerYonetici's current state
     // This prevents showing "00:00" flash before first stream update
@@ -166,15 +181,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // EMZİRME FONKSİYONLARI
   void _startSol() async {
-    await _timerYonetici.switchEmzirmeSide(VeriYonetici.getActiveBabyId(), 'sol');
+    await _timerYonetici.switchEmzirmeSide(
+      VeriYonetici.getActiveBabyId(),
+      'sol',
+    );
   }
 
   void _startSag() async {
-    await _timerYonetici.switchEmzirmeSide(VeriYonetici.getActiveBabyId(), 'sag');
+    await _timerYonetici.switchEmzirmeSide(
+      VeriYonetici.getActiveBabyId(),
+      'sag',
+    );
   }
 
   void _stopEmzirmeAndSave() async {
-    final data = await _timerYonetici.stopEmzirme(VeriYonetici.getActiveBabyId());
+    final data = await _timerYonetici.stopEmzirme(
+      VeriYonetici.getActiveBabyId(),
+    );
 
     if (data == null) {
       setState(() {
@@ -326,7 +349,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
-    final hasValidPhoto = !kIsWeb &&
+    final hasValidPhoto =
+        !kIsWeb &&
         _babyPhotoPath != null &&
         _babyPhotoPath!.isNotEmpty &&
         File(_babyPhotoPath!).existsSync();

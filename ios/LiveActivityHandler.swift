@@ -34,6 +34,8 @@ class LiveActivityHandler {
         switch call.method {
         case "startSleepLiveActivity":
             self.handleStartSleep(call: call, result: result)
+        case "updateSleepLiveActivity":
+            self.handleUpdateSleep(call: call, result: result)
         case "stopSleepLiveActivity":
             self.handleStopSleep(call: call, result: result)
         case "startNursingLiveActivity":
@@ -58,15 +60,50 @@ class LiveActivityHandler {
             return
         }
 
+        let localizedTitle = (args["localizedTitle"] as? String) ?? "Sleep"
+        let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+
         let data: [String: Any] = [
             "babyId": babyId,
             "activityType": "sleep",
             "startEpochSeconds": startEpochSeconds,
+            "localizedTitle": localizedTitle,
+            "localizedSubtitle": localizedSubtitle,
             "isActive": true
         ]
 
         writeToAppGroup(key: "liveactivity_sleep_\(babyId)", data: data)
-        startSleepActivity(babyId: babyId, startEpochSeconds: startEpochSeconds, result: result)
+        startSleepActivity(
+            babyId: babyId,
+            startEpochSeconds: startEpochSeconds,
+            localizedTitle: localizedTitle,
+            localizedSubtitle: localizedSubtitle,
+            result: result
+        )
+    }
+
+    private func handleUpdateSleep(call: FlutterMethodCall, result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: Any],
+              let babyId = args["babyId"] as? String else {
+            result(FlutterError(code: "BAD_ARGS", message: "Missing arguments", details: nil))
+            return
+        }
+
+        let localizedTitle = (args["localizedTitle"] as? String) ?? "Sleep"
+        let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+        let key = "liveactivity_sleep_\(babyId)"
+        if var existingData = readFromAppGroup(key: key) {
+            existingData["localizedTitle"] = localizedTitle
+            existingData["localizedSubtitle"] = localizedSubtitle
+            writeToAppGroup(key: key, data: existingData)
+        }
+
+        updateSleepActivity(
+            babyId: babyId,
+            localizedTitle: localizedTitle,
+            localizedSubtitle: localizedSubtitle,
+            result: result
+        )
     }
 
     private func handleStopSleep(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -91,11 +128,16 @@ class LiveActivityHandler {
             return
         }
 
+        let localizedTitle = (args["localizedTitle"] as? String) ?? "Nursing"
+        let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+
         let data: [String: Any] = [
             "babyId": babyId,
             "activityType": "nursing",
             "startEpochSeconds": startEpochSeconds,
             "side": side,
+            "localizedTitle": localizedTitle,
+            "localizedSubtitle": localizedSubtitle,
             "isActive": true
         ]
 
@@ -104,6 +146,8 @@ class LiveActivityHandler {
             babyId: babyId,
             startEpochSeconds: startEpochSeconds,
             side: side,
+            localizedTitle: localizedTitle,
+            localizedSubtitle: localizedSubtitle,
             result: result
         )
     }
@@ -118,12 +162,23 @@ class LiveActivityHandler {
 
         // Read existing data, update side
         let key = "liveactivity_nursing_\(babyId)"
+        let localizedTitle = (args["localizedTitle"] as? String) ?? "Nursing"
+        let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+
         if var existingData = readFromAppGroup(key: key) {
             existingData["side"] = side
+            existingData["localizedTitle"] = localizedTitle
+            existingData["localizedSubtitle"] = localizedSubtitle
             writeToAppGroup(key: key, data: existingData)
         }
 
-        updateNursingSideActivity(babyId: babyId, side: side, result: result)
+        updateNursingSideActivity(
+            babyId: babyId,
+            side: side,
+            localizedTitle: localizedTitle,
+            localizedSubtitle: localizedSubtitle,
+            result: result
+        )
     }
 
     private func handleStopNursing(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -139,7 +194,13 @@ class LiveActivityHandler {
 
     // MARK: - ActivityKit Integration
 
-    private func startSleepActivity(babyId: String, startEpochSeconds: Int, result: @escaping FlutterResult) {
+    private func startSleepActivity(
+        babyId: String,
+        startEpochSeconds: Int,
+        localizedTitle: String,
+        localizedSubtitle: String,
+        result: @escaping FlutterResult
+    ) {
 #if canImport(ActivityKit)
         guard #available(iOS 16.1, *) else {
             result(nil)
@@ -157,7 +218,9 @@ class LiveActivityHandler {
                 let attributes = BabyTimerAttributes(babyId: babyId, activityType: "sleep")
                 let state = BabyTimerAttributes.ContentState(
                     startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
-                    side: nil
+                    side: nil,
+                    localizedTitle: localizedTitle,
+                    localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
 
                 if #available(iOS 16.2, *) {
@@ -176,10 +239,47 @@ class LiveActivityHandler {
 #endif
     }
 
+    private func updateSleepActivity(
+        babyId: String,
+        localizedTitle: String,
+        localizedSubtitle: String,
+        result: @escaping FlutterResult
+    ) {
+#if canImport(ActivityKit)
+        guard #available(iOS 16.1, *) else {
+            result(nil)
+            return
+        }
+
+        Task {
+            let activities = matchingActivities(babyId: babyId, type: "sleep")
+            for activity in activities {
+                let updatedState = BabyTimerAttributes.ContentState(
+                    startDate: activity.contentState.startDate,
+                    side: activity.contentState.side,
+                    localizedTitle: localizedTitle,
+                    localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
+                )
+                if #available(iOS 16.2, *) {
+                    let content = ActivityContent(state: updatedState, staleDate: nil)
+                    await activity.update(content)
+                } else {
+                    await activity.update(using: updatedState)
+                }
+            }
+            result(nil)
+        }
+#else
+        result(nil)
+#endif
+    }
+
     private func startNursingActivity(
         babyId: String,
         startEpochSeconds: Int,
         side: String,
+        localizedTitle: String,
+        localizedSubtitle: String,
         result: @escaping FlutterResult
     ) {
 #if canImport(ActivityKit)
@@ -199,7 +299,9 @@ class LiveActivityHandler {
                 let attributes = BabyTimerAttributes(babyId: babyId, activityType: "nursing")
                 let state = BabyTimerAttributes.ContentState(
                     startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
-                    side: side
+                    side: side,
+                    localizedTitle: localizedTitle,
+                    localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
 
                 if #available(iOS 16.2, *) {
@@ -218,7 +320,13 @@ class LiveActivityHandler {
 #endif
     }
 
-    private func updateNursingSideActivity(babyId: String, side: String, result: @escaping FlutterResult) {
+    private func updateNursingSideActivity(
+        babyId: String,
+        side: String,
+        localizedTitle: String,
+        localizedSubtitle: String,
+        result: @escaping FlutterResult
+    ) {
 #if canImport(ActivityKit)
         guard #available(iOS 16.1, *) else {
             result(nil)
@@ -230,7 +338,9 @@ class LiveActivityHandler {
             for activity in activities {
                 let updatedState = BabyTimerAttributes.ContentState(
                     startDate: activity.contentState.startDate,
-                    side: side
+                    side: side,
+                    localizedTitle: localizedTitle,
+                    localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
                 if #available(iOS 16.2, *) {
                     let content = ActivityContent(state: updatedState, staleDate: nil)
