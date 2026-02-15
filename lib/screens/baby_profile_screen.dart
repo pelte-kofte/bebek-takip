@@ -311,31 +311,17 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                             height: 120,
                                             fit: BoxFit.cover,
                                           )
-                                        : Image.asset(
-                                            'assets/icons/illustration/baby_face.png',
-                                            width: 120,
-                                            height: 120,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    Container(
-                                                      color: isDark
-                                                          ? AppColors.bgDarkCard
-                                                          : const Color(
-                                                              0xFFEBE8FF,
-                                                            ),
-                                                      child: Icon(
-                                                        Icons.child_care,
-                                                        color: isDark
-                                                            ? const Color(
-                                                                0xFFFFB4A2,
-                                                              )
-                                                            : const Color(
-                                                                0xFFFF998A,
-                                                              ),
-                                                        size: 48,
-                                                      ),
-                                                    ),
+                                        : Container(
+                                            color: isDark
+                                                ? AppColors.bgDarkCard
+                                                : const Color(0xFFEBE8FF),
+                                            child: Icon(
+                                              Icons.child_care,
+                                              color: isDark
+                                                  ? const Color(0xFFFFB4A2)
+                                                  : const Color(0xFFFF998A),
+                                              size: 48,
+                                            ),
                                           ),
                                   ),
                                 ),
