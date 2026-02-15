@@ -1,12 +1,10 @@
 {
   "@@locale": "ru",
-
   "appName": "Nilico",
   "tagline": "Родительство — просто и незабываемо.",
   "freeForever": "Бесплатно навсегда",
   "securePrivate": "Безопасно и конфиденциально",
   "tapToStart": "Нажмите, чтобы начать",
-
   "feedingTracker": "Трекер кормлений",
   "feedingTrackerDesc": "Записывайте грудное вскармливание, бутылочки и прикорм. Замечайте закономерности.",
   "sleepPatterns": "Режим сна",
@@ -20,7 +18,6 @@
   "skip": "Пропустить",
   "startYourJourney": "Начните своё путешествие",
   "continueBtn": "Продолжить",
-
   "save": "Сохранить",
   "update": "Обновить",
   "cancel": "Отмена",
@@ -40,27 +37,35 @@
   "errorWithMessage": "Ошибка: {message}",
   "@errorWithMessage": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "allDataDeleted": "Все данные удалены",
   "googleSignInFailed": "Вход через Google не удался: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "signInFailed": "Не удалось войти: {error}",
   "@signInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "webPhotoUploadUnsupported": "Загрузка фото не поддерживается в веб-версии",
   "babyDataDeleted": "Данные {name} удалены",
   "@babyDataDeleted": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "babyNameHint": "Имя малыша",
@@ -74,28 +79,24 @@
   "pleaseEnterWeightHeight": "Введите вес и рост",
   "memoryTitleHint": "напр. Первые шаги",
   "memoryNoteHint": "Запишите воспоминание...",
-
   "home": "Главная",
   "activities": "Уход",
   "vaccines": "Вакцины",
   "development": "Развитие",
   "memories": "Воспоминания",
   "settings": "Настройки",
-
   "addActivity": "Добавить запись",
   "whatHappened": "Что произошло?",
   "nursing": "Грудное вскармливание",
   "bottle": "Кормление",
   "sleep": "Сон",
   "diaper": "Подгузник",
-
   "side": "Сторона",
   "left": "Левая",
   "right": "Правая",
   "duration": "Длительность",
   "minAbbrev": "мин",
   "hourAbbrev": "ч",
-
   "category": "Категория",
   "milk": "Молоко",
   "solid": "Прикорм",
@@ -105,17 +106,17 @@
   "milkType": "Тип молока",
   "breastMilk": "Грудное молоко",
   "formula": "Смесь",
-
   "sleepStartedAt": "СОН НАЧАЛСЯ В",
   "wokeUpAt": "ПРОСНУЛСЯ В",
   "tapToSet": "Установить время",
   "totalSleep": "Общий сон: {duration}",
   "@totalSleep": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
-
   "type": "Тип",
   "healthType": "Тип",
   "healthTime": "Время",
@@ -124,23 +125,19 @@
   "both": "Оба",
   "optionalNotes": "Заметки (необязательно)",
   "diaperNoteHint": "Добавьте заметку о смене подгузника...",
-
   "pleaseSetDuration": "Укажите длительность",
   "pleaseSetAmount": "Укажите количество",
   "pleaseSetWakeUpTime": "Укажите время пробуждения",
   "sleepDurationMustBeGreater": "Длительность сна должна быть больше 0",
-
   "today": "Сегодня",
   "summary": "СВОДКА",
   "recentActivities": "НЕДАВНИЕ ЗАПИСИ УХОДА",
   "record": "запись",
   "records": "записей",
-
   "breastfeeding": "Грудное вскармливание",
   "bottleBreastMilk": "Бутылочка (грудное молоко)",
   "total": "Всего",
   "diaperChange": "Смена подгузника",
-
   "firstFeedingTime": "Время первого кормления?",
   "trackBabyFeeding": "Отслеживайте кормление малыша",
   "diaperChangeTime": "Время сменить подгузник!",
@@ -148,16 +145,13 @@
   "sweetDreams": "Сладких снов...",
   "trackSleepPattern": "Отслеживайте режим сна здесь",
   "selectAnotherDate": "Выберите другую дату",
-
   "editFeeding": "Изменить кормление",
   "editDiaper": "Изменить подгузник",
   "editSleep": "Изменить сон",
   "start": "Начало",
   "end": "Конец",
-
   "attention": "Внимание",
   "deleteConfirm": "Вы уверены, что хотите удалить эту запись?",
-
   "myVaccines": "Мои вакцины",
   "addVaccine": "Добавить вакцину",
   "applied": "Сделано",
@@ -170,7 +164,9 @@
   "vaccinesAvailable": "{count} вакцин доступно",
   "@vaccinesAvailable": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Выбрать все",
@@ -179,14 +175,18 @@
   "addVaccines": "Добавить {count} вакцин",
   "@addVaccines": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectVaccine": "Выберите вакцину",
   "vaccinesAdded": "{count} вакцин добавлено",
   "@vaccinesAdded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noVaccineRecords": "Записей о вакцинах пока нет",
@@ -194,34 +194,44 @@
   "loadTurkishVaccineCalendar": "Загрузить турецкий календарь вакцинации",
   "loadCalendarTitle": "Загрузить турецкий календарь вакцинации",
   "loadCalendarDesc": "Будет загружен стандартный турецкий календарь вакцинации. Существующие вакцины не будут удалены.",
-
   "ageYears": "{years} лет",
   "@ageYears": {
     "placeholders": {
-      "years": {"type": "int"}
+      "years": {
+        "type": "int"
+      }
     }
   },
   "ageYearsMonths": "{years} год {months} мес.",
   "@ageYearsMonths": {
     "placeholders": {
-      "years": {"type": "int"},
-      "months": {"type": "int"}
+      "years": {
+        "type": "int"
+      },
+      "months": {
+        "type": "int"
+      }
     }
   },
   "ageMonthsDays": "{months} мес. {days} дн.",
   "@ageMonthsDays": {
     "placeholders": {
-      "months": {"type": "int"},
-      "days": {"type": "int"}
+      "months": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
     }
   },
   "ageDays": "{days} дн.",
   "@ageDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
-
   "weeklyReport": "Недельный отчёт",
   "monthlyReport": "Месячный отчёт",
   "weekly": "Неделя",
@@ -246,7 +256,6 @@
   "pdfSaved": "PDF успешно сохранён!",
   "babyTrackerReport": "Отчёт трекера малыша",
   "generatedWith": "Создано с помощью Baby Tracker App",
-
   "months": "мес.",
   "january": "Январь",
   "february": "Февраль",
@@ -260,10 +269,8 @@
   "october": "Октябрь",
   "november": "Ноябрь",
   "december": "Декабрь",
-
   "addOptionalNote": "Добавить заметку (необязательно)",
   "times": "раз",
-
   "feeding_tab": "КОРМЛЕНИЕ",
   "diaper_tab": "ПОДГУЗНИК",
   "sleep_tab": "СОН",
@@ -275,12 +282,13 @@
   "addMoreMeasurements": "Добавьте ещё {count} измерений",
   "@addMoreMeasurements": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "atLeast2Measurements": "Для графика нужно минимум 2 измерения",
   "growthTracking": "Отслеживание роста",
-
   "feedingTimer": "КОРМЛЕНИЕ",
   "sleepingTimer": "СОН",
   "stopAndSave": "СТОП И СОХРАНИТЬ",
@@ -300,7 +308,9 @@
   "lastUpdatedDays": "Обновлено {days} дн. назад",
   "@lastUpdatedDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "viewGrowthCharts": "ГРАФИКИ РОСТА",
@@ -309,20 +319,28 @@
   "mAgo": "{count} мин назад",
   "@mAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hmAgo": "{hours}ч {minutes}мин назад",
   "@hmAgo": {
     "placeholders": {
-      "hours": {"type": "int"},
-      "minutes": {"type": "int"}
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "dAgo": "{days}д назад",
   "@dAgo": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "noRecordsYet": "Записей пока нет",
@@ -332,40 +350,56 @@
   "nextVaccineLabel": "Следующая: {name}",
   "@nextVaccineLabel": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "leftMinRightMin": "Л {left}мин • П {right}мин",
   "@leftMinRightMin": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "breastfeedingSavedSnack": "✅ Кормление сохранено: Л {left}мин, П {right}мин",
   "@breastfeedingSavedSnack": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "sleepSavedSnack": "✅ Сон сохранён: {duration}",
   "@sleepSavedSnack": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "sleepTooShort": "⚠️ Сон менее 1 минуты, не сохранён",
   "kgThisMonth": "+{value}кг за месяц",
   "@kgThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "cmThisMonth": "+{value}см за месяц",
   "@cmThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "noSleep": "Нет сна",
@@ -373,22 +407,27 @@
   "minutesAgo": "{count} мин назад",
   "@minutesAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hoursAgo": "{count}ч назад",
   "@hoursAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "daysAgo": "{count}д назад",
   "@daysAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "welcomeToNilico": "Добро пожаловать в Nilico",
   "createYourAccount": "Создайте аккаунт",
   "loginBenefitText": "Войдите, чтобы подготовиться к будущим функциям резервного копирования и синхронизации. Можно продолжить без входа.",
@@ -402,19 +441,19 @@
   "signedInAs": "Вы вошли как {email}",
   "@signedInAs": {
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "guestMode": "Гостевой режим",
   "signInToProtectData": "Войдите, чтобы защитить данные",
   "backupSyncComingSoon": "Резервное копирование и синхронизация скоро",
-
   "privacyPolicy": "Политика конфиденциальности",
   "privacyPolicySubtitle": "Просмотреть политику конфиденциальности",
   "termsOfUse": "Условия использования",
   "termsOfUseSubtitle": "Просмотреть условия использования",
   "pageCouldNotOpen": "Не удалось открыть страницу",
-
   "health": "Здоровье",
   "medications": "Лекарства",
   "noMedications": "Лекарств и добавок пока нет",
@@ -427,7 +466,6 @@
   "dosage": "Дозировка",
   "schedule": "Расписание",
   "notes": "Заметки",
-
   "language": "Язык",
   "systemDefault": "Система",
   "turkish": "Türkçe",
@@ -435,5 +473,65 @@
   "russian": "Русский",
   "ukrainian": "Українська",
   "spanish": "Español",
-  "languageUpdated": "Язык обновлён"
+  "languageUpdated": "Язык обновлён",
+  "tip_siyah_mekonyum_title": "Первый стул",
+  "tip_siyah_mekonyum_desc": "В первые 2-4 дня это нормально, независимо от того, получает малыш грудное молоко или смесь. Повода для тревоги нет.",
+  "tip_eye_tracking_title": "Зрительное слежение",
+  "tip_eye_tracking_desc": "Пока малыш чётко видит только на расстоянии около 25-30 см. Поднесите лицо ближе и медленно двигайтесь, чтобы он следил глазами.",
+  "tip_neck_support_title": "Поддержка шеи",
+  "tip_neck_support_desc": "Всегда поддерживайте голову и шею малыша, когда берёте его на руки. Мышцы шеи ещё очень слабые.",
+  "tip_reflex_stepping_title": "Шаговый рефлекс",
+  "tip_reflex_stepping_desc": "Держите малыша вертикально и дайте стопам коснуться ровной поверхности. Вы можете заметить шаговые движения.",
+  "tip_sound_interest_title": "Интерес к звукам",
+  "tip_sound_interest_desc": "Малыш очень чувствителен к звукам. Попробуйте привлечь его внимание мягкой погремушкой или спокойной музыкальной игрушкой.",
+  "tip_parent_interaction_title": "Контакт с родителями",
+  "tip_parent_interaction_desc": "Смотрите в глаза и говорите мягким голосом. Малыш узнаёт ваш голос и чувствует себя в безопасности.",
+  "tip_color_worlds_title": "Мир цветов",
+  "tip_color_worlds_desc": "Новорождённые лучше всего видят чёрно-белые контрасты. Попробуйте показывать карточки с такими узорами.",
+  "tip_mini_athlete_title": "Маленький спортсмен",
+  "tip_mini_athlete_desc": "Время на животике укрепляет мышцы шеи и спины. Пробуйте несколько минут каждый день.",
+  "tip_sound_hunter_title": "Охотник за звуками",
+  "tip_sound_hunter_desc": "Тихо щёлкните пальцами рядом с ушком малыша. Он может попытаться повернуть голову к звуку.",
+  "tip_touch_explore_title": "Тактильное исследование",
+  "tip_touch_explore_desc": "Дайте малышу почувствовать разные текстуры руками и стопами: мягкие, шероховатые и прохладные поверхности.",
+  "tip_tip_agu_conversation_1_2_title": "Разговоры с лепетом",
+  "tip_tip_agu_conversation_1_2_desc": "Когда малыш издаёт звуки, внимательно слушайте. Мягко отвечайте, когда он закончит. Такие мини-диалоги развивают общение.",
+  "tip_tip_tummy_time_strength_1_2_title": "Сильные плечики (время на животике)",
+  "tip_tip_tummy_time_strength_1_2_desc": "Кладите малыша на животик на короткое время. Поощряйте поднимать голову яркой игрушкой перед ним.",
+  "tip_tip_baby_massage_1_2_title": "Успокаивающий массаж",
+  "tip_tip_baby_massage_1_2_desc": "После купания делайте мягкий массаж, начиная со стоп. Это развивает ощущение тела и помогает малышу расслабиться.",
+  "tip_tip_gesture_speech_1_2_title": "Речь с жестами",
+  "tip_tip_gesture_speech_1_2_desc": "Используйте жесты во время разговора. Помашите рукой для идём и потрите ладони для всё. Это поддерживает зрительную память.",
+  "tip_tip_open_hands_1_2_title": "Свободные пальчики",
+  "tip_tip_open_hands_1_2_desc": "Кулачки раскрываются всё чаще. Предлагайте мягкие игрушки, чтобы тренировать захват и отпускание.",
+  "tip_tip_side_by_side_bonding_1_2_title": "Близость рядом",
+  "tip_tip_side_by_side_bonding_1_2_desc": "Лягте рядом с малышом. Улыбайтесь и говорите ласково, пока он пытается повернуться к вам.",
+  "tip_tip_sound_hunter_title": "Охотник за звуками",
+  "tip_tip_sound_hunter_desc": "Тихо потрясите погремушкой там, где малыш её не видит. Поворот на звук развивает слух и концентрацию.",
+  "tip_tip_sound_hunter_level2_1_2_title": "Охотник за звуками (уровень 2)",
+  "tip_tip_sound_hunter_level2_1_2_desc": "Издавайте разные звуки слева и справа. Поиск источника укрепляет внимание.",
+  "tip_tip_texture_discovery_1_2_title": "Трогать и открывать",
+  "tip_tip_texture_discovery_1_2_desc": "Предлагайте предметы с разной фактурой. Каждое новое ощущение — это новое открытие для малыша.",
+  "tip_tip_outdoor_explorer_4_5_title": "Исследователь на улице",
+  "tip_tip_outdoor_explorer_4_5_desc": "Показывайте деревья и животных на прогулке. Давайте малышу трогать и изучать, пока он слышит ваш голос.",
+  "tip_tip_reaching_exercise_1_2_title": "Тренировка дотягивания",
+  "tip_tip_reaching_exercise_1_2_desc": "Кладите игрушки в зоне досягаемости. Даже попытки дотянуться помогают укреплять мышцы.",
+  "tip_tip_supported_bounce_1_2_title": "Пружиним с поддержкой",
+  "tip_tip_supported_bounce_1_2_desc": "Держите малыша вертикально у себя на коленях и мягко пружиньте с поддержкой. Это помогает укреплять ножки и исследовать новое.",
+  "tip_tip_visual_tracking_1_2_title": "Зрительное слежение",
+  "tip_tip_visual_tracking_1_2_desc": "Медленно двигайте яркую звучащую игрушку в поле зрения малыша. Это отличное упражнение для зрительного слежения.",
+  "tip_tip_face_play_1_2_title": "Игра с мимикой",
+  "tip_tip_face_play_1_2_desc": "Подойдите ближе, установите зрительный контакт и используйте весёлую мимику. Ваш голос и лицо — любимые игрушки малыша.",
+  "tip_tip_emotion_labeling_1_2_title": "Называем эмоции",
+  "tip_tip_emotion_labeling_1_2_desc": "Когда малыш плачет, спокойно называйте его чувство и поддерживайте. Ощущение, что его понимают, укрепляет эмоциональную безопасность.",
+  "tip_tip_first_meal_title": "Первая проба",
+  "tip_tip_first_meal_desc": "Начинайте прикорм по рекомендации педиатра. Кормление с ложки может быть приятным, но важно следить за признаками аллергии.",
+  "tip_tip_hand_to_hand_transfer_4_5_title": "Активные ручки",
+  "tip_tip_hand_to_hand_transfer_4_5_desc": "Примерно в 4-5 месяцев малыши пытаются перекладывать предметы из одной руки в другую. Предлагайте удобные для захвата предметы и наблюдайте.",
+  "tip_tip_supported_sitting_4_5_title": "Сидение с поддержкой",
+  "tip_tip_supported_sitting_4_5_desc": "Тренируйте сидение с опорой на подушки. Положите игрушку перед малышом, чтобы мотивировать удержание равновесия и опору корпусом.",
+  "tip_tip_feet_discovery_4_5_title": "Знакомство со стопами",
+  "tip_tip_feet_discovery_4_5_desc": "Лёжа на спине, малыш может хватать стопы и тянуть их ко рту. Позвольте стопам изучать разные поверхности.",
+  "tip_tip_independent_play_4_5_title": "Самостоятельная игра",
+  "tip_tip_independent_play_4_5_desc": "Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша."
 }

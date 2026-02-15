@@ -1,12 +1,10 @@
 {
   "@@locale": "es",
-
   "appName": "Nilico",
   "tagline": "Crianza simple e inolvidable.",
   "freeForever": "Gratis para siempre",
   "securePrivate": "Seguro y privado",
   "tapToStart": "Toca para empezar",
-
   "feedingTracker": "Registro de alimentación",
   "feedingTrackerDesc": "Registra lactancia, biberones y sólidos fácilmente. Detecta patrones de forma natural.",
   "sleepPatterns": "Patrones de sueño",
@@ -20,7 +18,6 @@
   "skip": "Omitir",
   "startYourJourney": "Comienza tu aventura",
   "continueBtn": "Continuar",
-
   "save": "Guardar",
   "update": "Actualizar",
   "cancel": "Cancelar",
@@ -40,27 +37,35 @@
   "errorWithMessage": "Error: {message}",
   "@errorWithMessage": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "allDataDeleted": "Todos los datos eliminados",
   "googleSignInFailed": "Error al iniciar sesión con Google: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "signInFailed": "Error al iniciar sesión: {error}",
   "@signInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "webPhotoUploadUnsupported": "La carga de fotos no está disponible en la web",
   "babyDataDeleted": "Datos de {name} eliminados",
   "@babyDataDeleted": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "babyNameHint": "Nombre del bebé",
@@ -74,28 +79,24 @@
   "pleaseEnterWeightHeight": "Introduce peso y altura",
   "memoryTitleHint": "ej. Primeros pasos",
   "memoryNoteHint": "Escribe el recuerdo...",
-
   "home": "Inicio",
   "activities": "Cuidados",
   "vaccines": "Vacunas",
   "development": "Desarrollo",
   "memories": "Recuerdos",
   "settings": "Ajustes",
-
   "addActivity": "Añadir actividad",
   "whatHappened": "¿Qué pasó?",
   "nursing": "Lactancia",
   "bottle": "Biberón",
   "sleep": "Sueño",
   "diaper": "Pañal",
-
   "side": "Lado",
   "left": "Izquierdo",
   "right": "Derecho",
   "duration": "Duración",
   "minAbbrev": "min",
   "hourAbbrev": "h",
-
   "category": "Categoría",
   "milk": "Leche",
   "solid": "Sólido",
@@ -105,17 +106,17 @@
   "milkType": "Tipo de leche",
   "breastMilk": "Leche materna",
   "formula": "Fórmula",
-
   "sleepStartedAt": "SUEÑO EMPEZÓ A LAS",
   "wokeUpAt": "SE DESPERTÓ A LAS",
   "tapToSet": "Establecer hora",
   "totalSleep": "Sueño total: {duration}",
   "@totalSleep": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
-
   "type": "Tipo",
   "healthType": "Tipo",
   "healthTime": "Hora",
@@ -124,23 +125,19 @@
   "both": "Ambos",
   "optionalNotes": "Notas opcionales",
   "diaperNoteHint": "Añade una nota sobre el cambio de pañal...",
-
   "pleaseSetDuration": "Establece una duración",
   "pleaseSetAmount": "Establece una cantidad",
   "pleaseSetWakeUpTime": "Establece la hora de despertar",
   "sleepDurationMustBeGreater": "La duración del sueño debe ser mayor que 0",
-
   "today": "Hoy",
   "summary": "RESUMEN",
   "recentActivities": "REGISTROS DE CUIDADOS RECIENTES",
   "record": "registro",
   "records": "registros",
-
   "breastfeeding": "Lactancia",
   "bottleBreastMilk": "Biberón (leche materna)",
   "total": "Total",
   "diaperChange": "Cambio de pañal",
-
   "firstFeedingTime": "¿Hora de la primera toma?",
   "trackBabyFeeding": "Registra la alimentación de tu bebé",
   "diaperChangeTime": "¡Hora de cambiar el pañal!",
@@ -148,16 +145,13 @@
   "sweetDreams": "Dulces sueños...",
   "trackSleepPattern": "Registra el patrón de sueño aquí",
   "selectAnotherDate": "Seleccionar otra fecha",
-
   "editFeeding": "Editar alimentación",
   "editDiaper": "Editar pañal",
   "editSleep": "Editar sueño",
   "start": "Inicio",
   "end": "Fin",
-
   "attention": "Atención",
   "deleteConfirm": "¿Estás seguro de que quieres eliminar este registro?",
-
   "myVaccines": "Mis vacunas",
   "addVaccine": "Añadir vacuna",
   "applied": "Aplicada",
@@ -170,7 +164,9 @@
   "vaccinesAvailable": "{count} vacunas disponibles",
   "@vaccinesAvailable": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Seleccionar todo",
@@ -179,14 +175,18 @@
   "addVaccines": "Añadir {count} vacunas",
   "@addVaccines": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectVaccine": "Seleccionar vacuna",
   "vaccinesAdded": "{count} vacunas añadidas",
   "@vaccinesAdded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noVaccineRecords": "No hay registros de vacunas aún",
@@ -194,34 +194,44 @@
   "loadTurkishVaccineCalendar": "Cargar calendario de vacunación turco",
   "loadCalendarTitle": "Cargar calendario de vacunación turco",
   "loadCalendarDesc": "Se cargará el calendario de vacunación turco estándar. Las vacunas existentes no se eliminarán.",
-
   "ageYears": "{years} años",
   "@ageYears": {
     "placeholders": {
-      "years": {"type": "int"}
+      "years": {
+        "type": "int"
+      }
     }
   },
   "ageYearsMonths": "{years} año {months} meses",
   "@ageYearsMonths": {
     "placeholders": {
-      "years": {"type": "int"},
-      "months": {"type": "int"}
+      "years": {
+        "type": "int"
+      },
+      "months": {
+        "type": "int"
+      }
     }
   },
   "ageMonthsDays": "{months} meses {days} días",
   "@ageMonthsDays": {
     "placeholders": {
-      "months": {"type": "int"},
-      "days": {"type": "int"}
+      "months": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
     }
   },
   "ageDays": "{days} días",
   "@ageDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
-
   "weeklyReport": "Informe semanal",
   "monthlyReport": "Informe mensual",
   "weekly": "Semanal",
@@ -246,7 +256,6 @@
   "pdfSaved": "¡PDF guardado correctamente!",
   "babyTrackerReport": "Informe del seguimiento del bebé",
   "generatedWith": "Generado con Baby Tracker App",
-
   "months": "meses",
   "january": "Enero",
   "february": "Febrero",
@@ -260,10 +269,8 @@
   "october": "Octubre",
   "november": "Noviembre",
   "december": "Diciembre",
-
   "addOptionalNote": "Añadir nota (opcional)",
   "times": "veces",
-
   "feeding_tab": "ALIMENTACIÓN",
   "diaper_tab": "PAÑAL",
   "sleep_tab": "SUEÑO",
@@ -275,12 +282,13 @@
   "addMoreMeasurements": "Añade {count} mediciones más",
   "@addMoreMeasurements": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "atLeast2Measurements": "Se necesitan al menos 2 mediciones para el gráfico",
   "growthTracking": "Seguimiento de crecimiento",
-
   "feedingTimer": "LACTANCIA",
   "sleepingTimer": "DURMIENDO",
   "stopAndSave": "PARAR Y GUARDAR",
@@ -300,7 +308,9 @@
   "lastUpdatedDays": "Actualizado hace {days} días",
   "@lastUpdatedDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "viewGrowthCharts": "VER GRÁFICOS DE CRECIMIENTO",
@@ -309,20 +319,28 @@
   "mAgo": "hace {count}min",
   "@mAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hmAgo": "hace {hours}h {minutes}min",
   "@hmAgo": {
     "placeholders": {
-      "hours": {"type": "int"},
-      "minutes": {"type": "int"}
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "dAgo": "hace {days}d",
   "@dAgo": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "noRecordsYet": "No hay registros aún",
@@ -332,40 +350,56 @@
   "nextVaccineLabel": "Siguiente: {name}",
   "@nextVaccineLabel": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "leftMinRightMin": "I {left}min • D {right}min",
   "@leftMinRightMin": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "breastfeedingSavedSnack": "✅ Lactancia guardada: I {left}min, D {right}min",
   "@breastfeedingSavedSnack": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "sleepSavedSnack": "✅ Sueño guardado: {duration}",
   "@sleepSavedSnack": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "sleepTooShort": "⚠️ Sueño menor a 1 minuto, no guardado",
   "kgThisMonth": "+{value}kg este mes",
   "@kgThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "cmThisMonth": "+{value}cm este mes",
   "@cmThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "noSleep": "Sin sueño",
@@ -373,22 +407,27 @@
   "minutesAgo": "hace {count} min",
   "@minutesAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hoursAgo": "hace {count}h",
   "@hoursAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "daysAgo": "hace {count}d",
   "@daysAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "welcomeToNilico": "Bienvenido a Nilico",
   "createYourAccount": "Crea tu cuenta",
   "loginBenefitText": "Inicia sesión para prepararte para las funciones de copia de seguridad y sincronización que llegarán pronto. También puedes continuar sin iniciar sesión.",
@@ -402,19 +441,19 @@
   "signedInAs": "Conectado como {email}",
   "@signedInAs": {
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "guestMode": "Modo invitado",
   "signInToProtectData": "Inicia sesión para proteger tus datos",
   "backupSyncComingSoon": "Copia de seguridad y sincronización pronto",
-
   "privacyPolicy": "Política de privacidad",
   "privacyPolicySubtitle": "Ver política de privacidad",
   "termsOfUse": "Términos de uso",
   "termsOfUseSubtitle": "Ver términos y condiciones",
   "pageCouldNotOpen": "No se pudo abrir la página",
-
   "health": "Salud",
   "medications": "Medicamentos",
   "noMedications": "No hay medicamentos ni suplementos aún",
@@ -427,7 +466,6 @@
   "dosage": "Dosis",
   "schedule": "Horario",
   "notes": "Notas",
-
   "language": "Idioma",
   "systemDefault": "Sistema",
   "turkish": "Türkçe",
@@ -435,5 +473,65 @@
   "russian": "Русский",
   "ukrainian": "Українська",
   "spanish": "Español",
-  "languageUpdated": "Idioma actualizado"
+  "languageUpdated": "Idioma actualizado",
+  "tip_siyah_mekonyum_title": "Primera caca",
+  "tip_siyah_mekonyum_desc": "Durante los primeros 2-4 días, esto es normal tanto si tu bebé toma leche materna como fórmula. No hay motivo de preocupación.",
+  "tip_eye_tracking_title": "Seguimiento visual",
+  "tip_eye_tracking_desc": "Por ahora, tu bebé solo ve con claridad a unos 25-30 cm. Acerca tu rostro y muévete despacio para que intente seguirte con la mirada.",
+  "tip_neck_support_title": "Soporte del cuello",
+  "tip_neck_support_desc": "Sostén siempre la cabeza y el cuello de tu bebé al cargarlo. Los músculos del cuello todavía son muy débiles.",
+  "tip_reflex_stepping_title": "Reflejo de pasos",
+  "tip_reflex_stepping_desc": "Sostén a tu bebé en posición vertical y deja que sus pies toquen una superficie plana. Es posible que veas el reflejo de dar pasos.",
+  "tip_sound_interest_title": "Interés por los sonidos",
+  "tip_sound_interest_desc": "Tu bebé es muy sensible a los sonidos. Prueba captar su atención con un sonajero suave o una cajita de música.",
+  "tip_parent_interaction_title": "Interacción con los padres",
+  "tip_parent_interaction_desc": "Haz contacto visual y habla con voz suave. Tu bebé reconoce tu voz y se siente seguro con ella.",
+  "tip_color_worlds_title": "Mundo de colores",
+  "tip_color_worlds_desc": "Los recién nacidos ven mejor los contrastes en blanco y negro. Puedes mostrarle tarjetas con ese tipo de patrones.",
+  "tip_mini_athlete_title": "Pequeño atleta",
+  "tip_mini_athlete_desc": "El tiempo boca abajo fortalece los músculos del cuello y la espalda. Inténtalo unos minutos cada día.",
+  "tip_sound_hunter_title": "Cazador de sonidos",
+  "tip_sound_hunter_desc": "Haz un chasquido suave cerca de la oreja de tu bebé. Puede intentar girar la cabeza hacia el sonido.",
+  "tip_touch_explore_title": "Exploración táctil",
+  "tip_touch_explore_desc": "Permite que tu bebé toque diferentes texturas con manos y pies: superficies suaves, rugosas y frescas.",
+  "tip_tip_agu_conversation_1_2_title": "Charlas de balbuceo",
+  "tip_tip_agu_conversation_1_2_desc": "Cuando tu bebé emita sonidos, escúchalo. Respóndele con suavidad cuando termine. Estas pequeñas charlas construyen la comunicación.",
+  "tip_tip_tummy_time_strength_1_2_title": "Hombros fuertes (tiempo boca abajo)",
+  "tip_tip_tummy_time_strength_1_2_desc": "Coloca a tu bebé boca abajo por periodos cortos. Anímalo a levantar la cabeza con juguetes coloridos delante.",
+  "tip_tip_baby_massage_1_2_title": "Masaje relajante",
+  "tip_tip_baby_massage_1_2_desc": "Después del baño, masajea suavemente empezando por los pies. Favorece la conciencia corporal y ayuda a tu bebé a relajarse.",
+  "tip_tip_gesture_speech_1_2_title": "Hablar con gestos",
+  "tip_tip_gesture_speech_1_2_desc": "Usa gestos mientras hablas. Saluda con la mano para nos vamos y frota las manos para terminamos. Esto fortalece la memoria visual.",
+  "tip_tip_open_hands_1_2_title": "Dedos libres",
+  "tip_tip_open_hands_1_2_desc": "Sus manos se abren cada vez más. Ofrécele juguetes suaves para practicar agarrar y soltar.",
+  "tip_tip_side_by_side_bonding_1_2_title": "Vínculo lado a lado",
+  "tip_tip_side_by_side_bonding_1_2_desc": "Acuéstate junto a tu bebé. Sonríe y háblale con cariño mientras intenta girarse hacia ti.",
+  "tip_tip_sound_hunter_title": "Cazador de sonidos",
+  "tip_tip_sound_hunter_desc": "Agita un sonajero suavemente en un punto que tu bebé no vea. Girar hacia el sonido favorece la audición y la atención.",
+  "tip_tip_sound_hunter_level2_1_2_title": "Cazador de sonidos (nivel 2)",
+  "tip_tip_sound_hunter_level2_1_2_desc": "Haz sonidos diferentes a su izquierda y derecha. Buscar el origen fortalece su capacidad de atención.",
+  "tip_tip_texture_discovery_1_2_title": "Tocar y descubrir",
+  "tip_tip_texture_discovery_1_2_desc": "Ofrécele objetos con distintas texturas. Cada nueva sensación es un nuevo descubrimiento para tu bebé.",
+  "tip_tip_outdoor_explorer_4_5_title": "Explorador al aire libre",
+  "tip_tip_outdoor_explorer_4_5_desc": "Muéstrale árboles y animales cuando estén afuera. Déjalo tocar y explorar mientras escucha tu voz.",
+  "tip_tip_reaching_exercise_1_2_title": "Práctica de alcance",
+  "tip_tip_reaching_exercise_1_2_desc": "Coloca juguetes a su alcance. Incluso intentar agarrarlos ayuda a fortalecer sus músculos.",
+  "tip_tip_supported_bounce_1_2_title": "Rebote con apoyo",
+  "tip_tip_supported_bounce_1_2_desc": "Sostén a tu bebé erguido sobre tu regazo y permite un rebote suave con apoyo. Ayuda a fortalecer las piernas y a explorar.",
+  "tip_tip_visual_tracking_1_2_title": "Seguimiento visual",
+  "tip_tip_visual_tracking_1_2_desc": "Mueve lentamente un juguete colorido que haga sonido dentro de su campo visual. Es un gran ejercicio para el seguimiento visual.",
+  "tip_tip_face_play_1_2_title": "Juego de expresiones",
+  "tip_tip_face_play_1_2_desc": "Acércate, haz contacto visual y usa expresiones faciales divertidas. Tu voz y tu rostro son sus juguetes favoritos.",
+  "tip_tip_emotion_labeling_1_2_title": "Nombrar emociones",
+  "tip_tip_emotion_labeling_1_2_desc": "Cuando tu bebé llore, nombra la emoción con calma y reconfórtalo. Sentirse comprendido favorece su seguridad emocional.",
+  "tip_tip_first_meal_title": "Primera degustación",
+  "tip_tip_first_meal_desc": "Inicia los sólidos según la recomendación de tu pediatra. Dar comida con cuchara puede ser divertido, pero observa posibles signos de alergia.",
+  "tip_tip_hand_to_hand_transfer_4_5_title": "Manos activas",
+  "tip_tip_hand_to_hand_transfer_4_5_desc": "Hacia los 4-5 meses, los bebés intentan pasar objetos de una mano a otra. Ofrécele objetos fáciles de agarrar y obsérvalo.",
+  "tip_tip_supported_sitting_4_5_title": "Sentado con apoyo",
+  "tip_tip_supported_sitting_4_5_desc": "Practica sentado con apoyo usando cojines. Coloca un juguete delante para motivar el equilibrio y el apoyo del tronco superior.",
+  "tip_tip_feet_discovery_4_5_title": "Descubriendo los pies",
+  "tip_tip_feet_discovery_4_5_desc": "Tu bebé puede agarrar sus pies y llevarlos a la boca cuando está acostado. Deja que los pies exploren diferentes superficies.",
+  "tip_tip_independent_play_4_5_title": "Juego independiente",
+  "tip_tip_independent_play_4_5_desc": "Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza."
 }
