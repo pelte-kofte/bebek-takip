@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/baby.dart';
 import '../theme/app_theme.dart';
+import '../utils/locale_text_utils.dart';
 import 'add_baby_sheet.dart';
 
 class BabySwitcherSheet extends StatelessWidget {
@@ -12,6 +14,7 @@ class BabySwitcherSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     final babies = VeriYonetici.getBabies();
     final activeBabyId = VeriYonetici.getActiveBabyId();
 
@@ -37,7 +40,7 @@ class BabySwitcherSheet extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
             child: Text(
-              'Bebek Sec',
+              l10n.selectBaby,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -46,12 +49,14 @@ class BabySwitcherSheet extends StatelessWidget {
             ),
           ),
           // Baby list
-          ...babies.map((baby) => _buildBabyTile(
-                context,
-                baby,
-                isActive: baby.id == activeBabyId,
-                isDark: isDark,
-              )),
+          ...babies.map(
+            (baby) => _buildBabyTile(
+              context,
+              baby,
+              isActive: baby.id == activeBabyId,
+              isDark: isDark,
+            ),
+          ),
           const SizedBox(height: 8),
           // Add baby button
           Padding(
@@ -61,9 +66,9 @@ class BabySwitcherSheet extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () => _openAddBabySheet(context),
                 icon: const Icon(Icons.add, color: Color(0xFFFFB4A2)),
-                label: const Text(
-                  '+ Yeni Bebek Ekle',
-                  style: TextStyle(
+                label: Text(
+                  '+ ${l10n.newBabyAdd}',
+                  style: const TextStyle(
                     color: Color(0xFFFFB4A2),
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
@@ -103,14 +108,18 @@ class BabySwitcherSheet extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isActive
-                    ? const Color(0xFFFFB4A2).withValues(alpha: isDark ? 0.25 : 0.2)
+                    ? const Color(
+                        0xFFFFB4A2,
+                      ).withValues(alpha: isDark ? 0.25 : 0.2)
                     : (isDark
-                        ? const Color(0xFFEBE8FF).withValues(alpha: 0.12)
-                        : const Color(0xFFEBE8FF)),
+                          ? const Color(0xFFEBE8FF).withValues(alpha: 0.12)
+                          : const Color(0xFFEBE8FF)),
                 border: Border.all(
                   color: isActive
                       ? const Color(0xFFFFB4A2)
-                      : (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.white),
+                      : (isDark
+                            ? Colors.white.withValues(alpha: 0.1)
+                            : Colors.white),
                   width: 2,
                 ),
               ),
@@ -122,7 +131,9 @@ class BabySwitcherSheet extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: isActive
                         ? const Color(0xFFFFB4A2)
-                        : (isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E)),
+                        : (isDark
+                              ? AppColors.textSecondaryDark
+                              : const Color(0xFF7A749E)),
                   ),
                 ),
               ),
@@ -142,7 +153,7 @@ class BabySwitcherSheet extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _formatAge(baby.birthDate),
+                    formatLocalizedAge(context, baby.birthDate),
                     style: TextStyle(
                       fontSize: 13,
                       color: (isDark ? Colors.white : const Color(0xFF2D1A18))
@@ -154,7 +165,11 @@ class BabySwitcherSheet extends StatelessWidget {
             ),
             // Checkmark
             if (isActive)
-              const Icon(Icons.check_circle, color: Color(0xFFFFB4A2), size: 22),
+              const Icon(
+                Icons.check_circle,
+                color: Color(0xFFFFB4A2),
+                size: 22,
+              ),
           ],
         ),
       ),
@@ -173,20 +188,5 @@ class BabySwitcherSheet extends StatelessWidget {
         },
       ),
     );
-  }
-
-  String _formatAge(DateTime birthDate) {
-    final now = DateTime.now();
-    final diff = now.difference(birthDate);
-    final months = (diff.inDays / 30).floor();
-    if (months >= 12) {
-      final years = months ~/ 12;
-      final rem = months % 12;
-      if (rem > 0) return '$years yil $rem ay';
-      return '$years yil';
-    } else if (months > 0) {
-      return '$months ay';
-    }
-    return '${diff.inDays} gun';
   }
 }

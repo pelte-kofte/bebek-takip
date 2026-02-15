@@ -3,9 +3,9 @@ import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/asi_veri.dart';
 import '../theme/app_theme.dart';
+import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
 import 'add_vaccine_screen.dart';
-import 'package:intl/intl.dart';
 
 class VaccinesScreen extends StatefulWidget {
   final bool embedded;
@@ -46,19 +46,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   /// Extracts month number from 'donem' field
   /// Returns null if cannot parse (e.g., "4-6 Yaş")
   int? _getMonthFromDonem(String donem) {
-    if (donem == 'Doğumda') return 0;
-    // Match patterns like "1. Ay", "2. Ay", "12. Ay", "18. Ay", "24. Ay"
-    final monthMatch = RegExp(r'^(\d+)\.\s*Ay$').firstMatch(donem);
-    if (monthMatch != null) {
-      return int.tryParse(monthMatch.group(1)!);
-    }
-    // Match year patterns like "4-6 Yaş" -> convert to months (48-72)
-    final yearMatch = RegExp(r'^(\d+)(-\d+)?\s*Yaş$').firstMatch(donem);
-    if (yearMatch != null) {
-      final years = int.tryParse(yearMatch.group(1)!);
-      if (years != null) return years * 12;
-    }
-    return null;
+    return parseVaccineMonth(donem);
   }
 
   /// Returns vaccines filtered by selected month
@@ -71,24 +59,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   String _getChildAge() {
-    final birthDate = VeriYonetici.getBirthDate();
-    final now = DateTime.now();
-    final difference = now.difference(birthDate);
-    final months = (difference.inDays / 30).floor();
-    final days = difference.inDays % 30;
-
-    if (months >= 12) {
-      final years = months ~/ 12;
-      final remainingMonths = months % 12;
-      if (remainingMonths > 0) {
-        return '$years Yıl $remainingMonths Aylık';
-      }
-      return '$years Yıllık';
-    } else if (months > 0) {
-      return '$months Ay $days Günlük';
-    } else {
-      return '$days Günlük';
-    }
+    return formatLocalizedAge(context, VeriYonetici.getBirthDate());
   }
 
   String _getBabyName() {
@@ -472,8 +443,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             ),
                             subtitle: Text(
                               isDuplicate
-                                  ? '${vaccine['donem']} • ${l10n.alreadyAdded}'
-                                  : '${vaccine['donem']}${vaccine['notlar']?.isNotEmpty == true ? ' • ${vaccine['notlar']}' : ''}',
+                                  ? '${localizedPeriodLabel(l10n, vaccine['donem'])} • ${l10n.alreadyAdded}'
+                                  : '${localizedPeriodLabel(l10n, vaccine['donem'])}${vaccine['notlar']?.isNotEmpty == true ? ' • ${vaccine['notlar']}' : ''}',
                               style: AppTypography.caption(context).copyWith(
                                 color: isDuplicate
                                     ? (isDark
@@ -625,8 +596,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           final vaccineIndex = index - 1;
                           final vaccine = filteredVaccines[vaccineIndex];
                           final actualIndex = _vaccines.indexOf(vaccine);
-                          final isCompleted =
-                              vaccine['durum'] == 'uygulandi';
+                          final isCompleted = vaccine['durum'] == 'uygulandi';
                           return Padding(
                             key: ValueKey(vaccine['id'] ?? actualIndex),
                             padding: const EdgeInsets.only(bottom: 12),
@@ -643,12 +613,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             ],
           ),
 
-          Positioned(
-            bottom: 32,
-            left: 24,
-            right: 24,
-            child: _buildAddButton(),
-          ),
+          Positioned(bottom: 32, left: 24, right: 24, child: _buildAddButton()),
         ],
       ),
     );
@@ -869,7 +834,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final dateStr = vaccine['tarih'] != null
-        ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
+        ? formatLocalizedDate(context, vaccine['tarih'] as DateTime)
         : '';
 
     return GestureDetector(
@@ -937,8 +902,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                     isCompleted
                         ? '${l10n.applied} - $dateStr'
                         : dateStr.isNotEmpty
-                        ? '${vaccine['donem']} • $dateStr'
-                        : '${vaccine['donem']} • ${l10n.selectDate}',
+                        ? '${localizedPeriodLabel(l10n, vaccine['donem'])} • $dateStr'
+                        : '${localizedPeriodLabel(l10n, vaccine['donem'])} • ${l10n.selectDate}',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -984,7 +949,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final dateStr = vaccine['tarih'] != null
-        ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
+        ? formatLocalizedDate(context, vaccine['tarih'] as DateTime)
         : '';
 
     return GestureDetector(
@@ -1035,8 +1000,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                     isCompleted
                         ? '${l10n.applied} - $dateStr'
                         : dateStr.isNotEmpty
-                        ? '${vaccine['donem']} • $dateStr'
-                        : '${vaccine['donem']} • ${l10n.selectDate}',
+                        ? '${localizedPeriodLabel(l10n, vaccine['donem'])} • $dateStr'
+                        : '${localizedPeriodLabel(l10n, vaccine['donem'])} • ${l10n.selectDate}',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -1081,7 +1046,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final dateStr = vaccine['tarih'] != null
-        ? DateFormat('dd.MM.yyyy').format(vaccine['tarih'] as DateTime)
+        ? formatLocalizedDate(context, vaccine['tarih'] as DateTime)
         : '';
 
     return GestureDetector(
@@ -1131,8 +1096,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                   const SizedBox(height: 4),
                   Text(
                     dateStr.isNotEmpty
-                        ? '${vaccine['donem']} • $dateStr'
-                        : '${vaccine['donem']} • ${l10n.selectDate}',
+                        ? '${localizedPeriodLabel(l10n, vaccine['donem'])} • $dateStr'
+                        : '${localizedPeriodLabel(l10n, vaccine['donem'])} • ${l10n.selectDate}',
                     style: AppTypography.caption(context).copyWith(
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -1156,6 +1121,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   Widget _buildMonthSelector(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     // Month options: All, 0 (Doğumda), 1, 2, 4, 6, 9, 12, 18, 24, 48, 60
     final monthOptions = <int?>[
       null, // All
@@ -1163,15 +1129,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     ];
 
     String getMonthLabel(int? month) {
-      if (month == null) return 'Tümü';
-      if (month == 0) return 'Doğum';
-      if (month < 12) return '$month. Ay';
-      if (month == 12) return '1 Yaş';
-      if (month < 24) return '$month. Ay';
-      if (month == 24) return '2 Yaş';
-      if (month == 48) return '4 Yaş';
-      if (month == 60) return '5 Yaş';
-      return '$month. Ay';
+      if (month == null) return l10n.allLabel;
+      if (month == 0) return l10n.birth;
+      return l10n.monthNumber(month);
     }
 
     return SizedBox(

@@ -1,12 +1,10 @@
 {
   "@@locale": "en",
-
   "appName": "Nilico",
   "tagline": "Parenting made simple & memorable.",
   "freeForever": "Free Forever",
   "securePrivate": "Secure & Private",
   "tapToStart": "Tap to start",
-
   "feedingTracker": "Feeding Tracker",
   "feedingTrackerDesc": "Log nursing, bottles, and solids with ease. Spot patterns naturally.",
   "sleepPatterns": "Sleep Patterns",
@@ -20,7 +18,6 @@
   "skip": "Skip",
   "startYourJourney": "Start Your Journey",
   "continueBtn": "Continue",
-
   "save": "Save",
   "update": "Update",
   "cancel": "Cancel",
@@ -40,27 +37,35 @@
   "errorWithMessage": "Error: {message}",
   "@errorWithMessage": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "allDataDeleted": "All data deleted",
   "googleSignInFailed": "Google sign-in failed: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "signInFailed": "Sign in failed: {error}",
   "@signInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "webPhotoUploadUnsupported": "Photo upload is not supported on web",
   "babyDataDeleted": "{name} data deleted",
   "@babyDataDeleted": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "babyNameHint": "Baby name",
@@ -74,28 +79,24 @@
   "pleaseEnterWeightHeight": "Please enter weight and height",
   "memoryTitleHint": "e.g. First steps",
   "memoryNoteHint": "Write down the memory...",
-
   "home": "Home",
   "activities": "Care",
   "vaccines": "Vaccines",
   "development": "Development",
   "memories": "Memories",
   "settings": "Settings",
-
   "addActivity": "Add Activity",
   "whatHappened": "What happened?",
   "nursing": "Nursing",
   "bottle": "Feeding",
   "sleep": "Sleep",
   "diaper": "Diaper",
-
   "side": "Side",
   "left": "Left",
   "right": "Right",
   "duration": "Duration",
   "minAbbrev": "min",
   "hourAbbrev": "h",
-
   "category": "Category",
   "milk": "Milk",
   "solid": "Solid",
@@ -105,17 +106,17 @@
   "milkType": "Milk Type",
   "breastMilk": "Breast milk",
   "formula": "Formula",
-
   "sleepStartedAt": "SLEEP STARTED AT",
   "wokeUpAt": "WOKE UP AT",
   "tapToSet": "Set time",
   "totalSleep": "Total sleep: {duration}",
   "@totalSleep": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
-
   "type": "Type",
   "healthType": "Type",
   "healthTime": "Time",
@@ -124,23 +125,19 @@
   "both": "Both",
   "optionalNotes": "Optional notes",
   "diaperNoteHint": "Add a note about the diaper change...",
-
   "pleaseSetDuration": "Please set a duration",
   "pleaseSetAmount": "Please set an amount",
   "pleaseSetWakeUpTime": "Please set wake up time",
   "sleepDurationMustBeGreater": "Sleep duration must be greater than 0",
-
   "today": "Today",
   "summary": "SUMMARY",
   "recentActivities": "RECENT CARE RECORDS",
   "record": "record",
   "records": "records",
-
   "breastfeeding": "Nursing",
   "bottleBreastMilk": "Bottle (Breast milk)",
   "total": "Total",
   "diaperChange": "Diaper change",
-
   "firstFeedingTime": "First feeding time?",
   "trackBabyFeeding": "Track your baby's feeding",
   "diaperChangeTime": "Diaper change time!",
@@ -148,16 +145,13 @@
   "sweetDreams": "Sweet dreams...",
   "trackSleepPattern": "Track sleep pattern here",
   "selectAnotherDate": "Select another date",
-
   "editFeeding": "Edit Feeding",
   "editDiaper": "Edit Diaper",
   "editSleep": "Edit Sleep",
   "start": "Start",
   "end": "End",
-
   "attention": "Attention",
   "deleteConfirm": "Are you sure you want to delete this record?",
-
   "myVaccines": "My Vaccines",
   "addVaccine": "Add Vaccine",
   "applied": "Applied",
@@ -170,7 +164,9 @@
   "vaccinesAvailable": "{count} vaccines available",
   "@vaccinesAvailable": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectAll": "Select All",
@@ -179,14 +175,18 @@
   "addVaccines": "Add {count} Vaccines",
   "@addVaccines": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "selectVaccine": "Select Vaccine",
   "vaccinesAdded": "{count} vaccines added",
   "@vaccinesAdded": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "noVaccineRecords": "No vaccine records yet",
@@ -194,34 +194,44 @@
   "loadTurkishVaccineCalendar": "Load Turkish Vaccine Calendar",
   "loadCalendarTitle": "Load Turkish Vaccine Calendar",
   "loadCalendarDesc": "The standard Turkish vaccine calendar will be loaded. Existing vaccines won't be deleted.",
-
-  "ageYears": "{years} Years Old",
+  "ageYears": "{count, plural, =1{# year old} other{# years old}}",
   "@ageYears": {
     "placeholders": {
-      "years": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "ageYearsMonths": "{years} Year {months} Months Old",
   "@ageYearsMonths": {
     "placeholders": {
-      "years": {"type": "int"},
-      "months": {"type": "int"}
+      "years": {
+        "type": "int"
+      },
+      "months": {
+        "type": "int"
+      }
     }
   },
   "ageMonthsDays": "{months} Months {days} Days Old",
   "@ageMonthsDays": {
     "placeholders": {
-      "months": {"type": "int"},
-      "days": {"type": "int"}
+      "months": {
+        "type": "int"
+      },
+      "days": {
+        "type": "int"
+      }
     }
   },
-  "ageDays": "{days} Days Old",
+  "ageDays": "{count, plural, =1{# day old} other{# days old}}",
   "@ageDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "weeklyReport": "Weekly Report",
   "monthlyReport": "Monthly Report",
   "weekly": "Weekly",
@@ -246,7 +256,6 @@
   "pdfSaved": "PDF saved successfully!",
   "babyTrackerReport": "Baby Tracker Report",
   "generatedWith": "Generated with Baby Tracker App",
-
   "months": "months",
   "january": "January",
   "february": "February",
@@ -260,10 +269,8 @@
   "october": "October",
   "november": "November",
   "december": "December",
-
   "addOptionalNote": "Add note (optional)",
   "times": "times",
-
   "feeding_tab": "FEEDING",
   "diaper_tab": "DIAPER",
   "sleep_tab": "SLEEP",
@@ -275,12 +282,13 @@
   "addMoreMeasurements": "Add {count} more measurements",
   "@addMoreMeasurements": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "atLeast2Measurements": "At least 2 measurements needed for chart",
   "growthTracking": "Growth Tracking",
-
   "feedingTimer": "NURSING",
   "sleepingTimer": "SLEEPING",
   "stopAndSave": "STOP & SAVE",
@@ -300,7 +308,9 @@
   "lastUpdatedDays": "Last updated {days} days ago",
   "@lastUpdatedDays": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "viewGrowthCharts": "VIEW GROWTH CHARTS",
@@ -309,20 +319,28 @@
   "mAgo": "{count}m ago",
   "@mAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hmAgo": "{hours}h {minutes}m ago",
   "@hmAgo": {
     "placeholders": {
-      "hours": {"type": "int"},
-      "minutes": {"type": "int"}
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "dAgo": "{days}d ago",
   "@dAgo": {
     "placeholders": {
-      "days": {"type": "int"}
+      "days": {
+        "type": "int"
+      }
     }
   },
   "noRecordsYet": "No records yet",
@@ -332,40 +350,56 @@
   "nextVaccineLabel": "Next: {name}",
   "@nextVaccineLabel": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "leftMinRightMin": "L {left}min • R {right}min",
   "@leftMinRightMin": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "breastfeedingSavedSnack": "✅ Breastfeeding saved: L {left}min, R {right}min",
   "@breastfeedingSavedSnack": {
     "placeholders": {
-      "left": {"type": "int"},
-      "right": {"type": "int"}
+      "left": {
+        "type": "int"
+      },
+      "right": {
+        "type": "int"
+      }
     }
   },
   "sleepSavedSnack": "✅ Sleep saved: {duration}",
   "@sleepSavedSnack": {
     "placeholders": {
-      "duration": {"type": "String"}
+      "duration": {
+        "type": "String"
+      }
     }
   },
   "sleepTooShort": "⚠️ Sleep under 1 minute, not saved",
   "kgThisMonth": "+{value}kg this month",
   "@kgThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "cmThisMonth": "+{value}cm this month",
   "@cmThisMonth": {
     "placeholders": {
-      "value": {"type": "String"}
+      "value": {
+        "type": "String"
+      }
     }
   },
   "noSleep": "No sleep",
@@ -373,22 +407,27 @@
   "minutesAgo": "{count} min ago",
   "@minutesAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "hoursAgo": "{count}h ago",
   "@hoursAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "daysAgo": "{count}d ago",
   "@daysAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "welcomeToNilico": "Welcome to Nilico",
   "createYourAccount": "Create your account",
   "loginBenefitText": "Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.",
@@ -402,19 +441,19 @@
   "signedInAs": "Signed in as {email}",
   "@signedInAs": {
     "placeholders": {
-      "email": {"type": "String"}
+      "email": {
+        "type": "String"
+      }
     }
   },
   "guestMode": "Guest Mode",
   "signInToProtectData": "Sign in to protect your data",
   "backupSyncComingSoon": "Backup & sync coming soon",
-
   "privacyPolicy": "Privacy Policy",
   "privacyPolicySubtitle": "View privacy policy",
   "termsOfUse": "Terms of Use",
   "termsOfUseSubtitle": "View terms and conditions",
   "pageCouldNotOpen": "Could not open page",
-
   "health": "Health",
   "medications": "Medications",
   "noMedications": "No medications/supplements yet",
@@ -427,7 +466,6 @@
   "dosage": "Dosage",
   "schedule": "Schedule",
   "notes": "Notes",
-
   "language": "Language",
   "systemDefault": "System",
   "turkish": "Türkçe",
@@ -435,5 +473,129 @@
   "russian": "Русский",
   "ukrainian": "Українська",
   "spanish": "Español",
-  "languageUpdated": "Language updated"
+  "languageUpdated": "Language updated",
+  "tip_siyah_mekonyum_title": "First Poop",
+  "tip_siyah_mekonyum_desc": "In the first 2-4 days, this is normal whether your baby takes breast milk or formula. No need to worry.",
+  "tip_eye_tracking_title": "Eye Tracking",
+  "tip_eye_tracking_desc": "Your baby can clearly see only about 25-30 cm for now. Move your face slowly and let your baby follow with their eyes.",
+  "tip_neck_support_title": "Neck Support",
+  "tip_neck_support_desc": "Always support your baby's head and neck when holding them. Neck muscles are still very weak.",
+  "tip_reflex_stepping_title": "Stepping Reflex",
+  "tip_reflex_stepping_desc": "Hold your baby upright and let their feet touch a flat surface. You may see stepping reflexes.",
+  "tip_sound_interest_title": "Interest in Sounds",
+  "tip_sound_interest_desc": "Your baby is very sensitive to sounds. Try getting attention with a soft rattle or gentle music box.",
+  "tip_parent_interaction_title": "Parent Interaction",
+  "tip_parent_interaction_desc": "Make eye contact and talk softly. Your baby recognizes your voice and feels secure with it.",
+  "tip_color_worlds_title": "World of Colors",
+  "tip_color_worlds_desc": "Newborns see high-contrast black and white patterns best. Try showing black-and-white cards.",
+  "tip_mini_athlete_title": "Mini Athlete",
+  "tip_mini_athlete_desc": "Tummy time strengthens neck and back muscles. Try a few minutes each day.",
+  "tip_sound_hunter_title": "Sound Hunter",
+  "tip_sound_hunter_desc": "Snap softly near your baby's ear. They may try turning toward the sound.",
+  "tip_touch_explore_title": "Touch Exploration",
+  "tip_touch_explore_desc": "Let your baby feel different textures on hands and feet: soft, rough, and cool surfaces.",
+  "tip_tip_agu_conversation_1_2_title": "Baby Talk Chats",
+  "tip_tip_agu_conversation_1_2_desc": "When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.",
+  "tip_tip_tummy_time_strength_1_2_title": "Strong Shoulders (Tummy Time)",
+  "tip_tip_tummy_time_strength_1_2_desc": "Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.",
+  "tip_tip_baby_massage_1_2_title": "Soothing Massage",
+  "tip_tip_baby_massage_1_2_desc": "After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.",
+  "tip_tip_gesture_speech_1_2_title": "Gesture-Based Talking",
+  "tip_tip_gesture_speech_1_2_desc": "Use gestures while talking. Wave for \"we're going\" and rub hands for \"all done\". This supports visual memory.",
+  "tip_tip_open_hands_1_2_title": "Free Fingers",
+  "tip_tip_open_hands_1_2_desc": "Hands are opening more now. Offer soft toys to practice grasping and releasing.",
+  "tip_tip_side_by_side_bonding_1_2_title": "Side-by-Side Bonding",
+  "tip_tip_side_by_side_bonding_1_2_desc": "Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.",
+  "tip_tip_sound_hunter_title": "Sound Hunter",
+  "tip_tip_sound_hunter_desc": "Shake a rattle softly where your baby cannot see it. Turning toward sound builds hearing and focus.",
+  "tip_tip_sound_hunter_level2_1_2_title": "Sound Hunter (Level 2)",
+  "tip_tip_sound_hunter_level2_1_2_desc": "Make different sounds from left and right. Finding the source strengthens attention skills.",
+  "tip_tip_texture_discovery_1_2_title": "Touch and Discover",
+  "tip_tip_texture_discovery_1_2_desc": "Offer objects with different textures. Each new feeling is a new discovery for your baby.",
+  "tip_tip_outdoor_explorer_4_5_title": "Outdoor Explorer",
+  "tip_tip_outdoor_explorer_4_5_desc": "Show trees and animals outside. Let your baby touch and explore while hearing your voice.",
+  "tip_tip_reaching_exercise_1_2_title": "Reaching Practice",
+  "tip_tip_reaching_exercise_1_2_desc": "Place toys within reach. Even attempts to grab them help strengthen muscles.",
+  "tip_tip_supported_bounce_1_2_title": "Supported Bouncing",
+  "tip_tip_supported_bounce_1_2_desc": "Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.",
+  "tip_tip_visual_tracking_1_2_title": "Visual Tracking",
+  "tip_tip_visual_tracking_1_2_desc": "Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.",
+  "tip_tip_face_play_1_2_title": "Face Play",
+  "tip_tip_face_play_1_2_desc": "Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby's favorite toys.",
+  "tip_tip_emotion_labeling_1_2_title": "Emotion Naming",
+  "tip_tip_emotion_labeling_1_2_desc": "When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.",
+  "tip_tip_first_meal_title": "First Tasting",
+  "tip_tip_first_meal_desc": "Start solids based on your doctor's advice. Spoon feeding can be fun, but stay alert for allergy signs.",
+  "tip_tip_hand_to_hand_transfer_4_5_title": "Active Hands",
+  "tip_tip_hand_to_hand_transfer_4_5_desc": "Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.",
+  "tip_tip_supported_sitting_4_5_title": "Supported Sitting",
+  "tip_tip_supported_sitting_4_5_desc": "Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.",
+  "tip_tip_feet_discovery_4_5_title": "Discovering Feet",
+  "tip_tip_feet_discovery_4_5_desc": "Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.",
+  "tip_tip_independent_play_4_5_title": "Independent Play",
+  "tip_tip_independent_play_4_5_desc": "Place a few textured toys nearby and step back a little. Independent play supports confidence.",
+  "ageMonths": "{count, plural, =1{# month old} other{# months old}}",
+  "@ageMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "appPreferences": "App preferences",
+  "appearance": "Appearance",
+  "darkMode": "Dark mode",
+  "darkModeSubtitle": "Comfortable low-light theme",
+  "notifications": "Notifications",
+  "feedingReminder": "Feeding Reminder",
+  "diaperReminder": "Diaper Reminder",
+  "off": "Off",
+  "reminderTime": "Reminder time",
+  "dataManagement": "Data management",
+  "createReport": "Create report",
+  "weeklyMonthlyStats": "Weekly/Monthly insights",
+  "deleteAllDataTitle": "Delete all data",
+  "deleteAllDataSubtitle": "Permanently delete all records",
+  "about": "About",
+  "version": "Version",
+  "developer": "Developer",
+  "deleteAllDataWarning": "This action permanently deletes all records. This cannot be undone.",
+  "debug": "Debug",
+  "testSleepNotification": "Test Sleep Notification",
+  "fireSleepNotificationNow": "Fire sleep notification now",
+  "testNursingNotification": "Test Nursing Notification",
+  "fireNursingNotificationNow": "Fire nursing notification now",
+  "user": "User",
+  "selectBaby": "Select Baby",
+  "newBabyAdd": "Add New Baby",
+  "babyProfileTitle": "Baby Profile",
+  "babyInformation": "Baby Information",
+  "addPhoto": "Add photo",
+  "changePhoto": "Change photo",
+  "removePhoto": "Remove photo",
+  "birthDateLabel": "Birth Date",
+  "notesOptional": "Notes (optional)",
+  "growthRecords": "Growth Records",
+  "deleteThisBabyData": "Delete this baby's data",
+  "otherBabiesUnaffected": "Other babies are not affected",
+  "onlyThisBabyPrefix": "Only ",
+  "allRecordsWillBeDeleted": " baby's records will be deleted.",
+  "deleteActionIrreversible": "Other babies are not affected. This action cannot be undone.",
+  "birth": "Birth",
+  "monthNumber": "{month}. Month",
+  "@monthNumber": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "selectMonth": "Select month",
+  "otherMonth": "Other month",
+  "period": "Period",
+  "status": "Status",
+  "scheduledDate": "Scheduled Date",
+  "editVaccine": "Edit Vaccine",
+  "vaccineName": "Vaccine Name",
+  "allLabel": "All"
 }

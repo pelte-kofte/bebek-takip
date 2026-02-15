@@ -1368,7 +1368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tip.title,
+                        tip.title(context),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -1377,7 +1377,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        tip.description,
+                        tip.description(context),
                         style: TextStyle(
                           fontSize: 13,
                           color: subtitleColor,

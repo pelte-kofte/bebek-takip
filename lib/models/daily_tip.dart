@@ -1,116 +1,246 @@
+import 'package:flutter/material.dart';
+
+import '../l10n/app_localizations.dart';
+
 class DailyTip {
   final String id;
-  final String title;
-  final String description;
+  final String titleKey;
+  final String descriptionKey;
   final String illustrationPath;
   final int minMonth;
   final int maxMonth;
 
   const DailyTip({
     required this.id,
-    required this.title,
-    required this.description,
+    required this.titleKey,
+    required this.descriptionKey,
     required this.illustrationPath,
     required this.minMonth,
     required this.maxMonth,
   });
 
+  String title(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return _localizedValue(l10n, titleKey);
+  }
+
+  String description(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return _localizedValue(l10n, descriptionKey);
+  }
+
+  static String _localizedValue(AppLocalizations l10n, String key) {
+    switch (key) {
+      case 'tip_siyah_mekonyum_title':
+        return l10n.tip_siyah_mekonyum_title;
+      case 'tip_siyah_mekonyum_desc':
+        return l10n.tip_siyah_mekonyum_desc;
+      case 'tip_eye_tracking_title':
+        return l10n.tip_eye_tracking_title;
+      case 'tip_eye_tracking_desc':
+        return l10n.tip_eye_tracking_desc;
+      case 'tip_neck_support_title':
+        return l10n.tip_neck_support_title;
+      case 'tip_neck_support_desc':
+        return l10n.tip_neck_support_desc;
+      case 'tip_reflex_stepping_title':
+        return l10n.tip_reflex_stepping_title;
+      case 'tip_reflex_stepping_desc':
+        return l10n.tip_reflex_stepping_desc;
+      case 'tip_sound_interest_title':
+        return l10n.tip_sound_interest_title;
+      case 'tip_sound_interest_desc':
+        return l10n.tip_sound_interest_desc;
+      case 'tip_parent_interaction_title':
+        return l10n.tip_parent_interaction_title;
+      case 'tip_parent_interaction_desc':
+        return l10n.tip_parent_interaction_desc;
+      case 'tip_color_worlds_title':
+        return l10n.tip_color_worlds_title;
+      case 'tip_color_worlds_desc':
+        return l10n.tip_color_worlds_desc;
+      case 'tip_mini_athlete_title':
+        return l10n.tip_mini_athlete_title;
+      case 'tip_mini_athlete_desc':
+        return l10n.tip_mini_athlete_desc;
+      case 'tip_sound_hunter_title':
+        return l10n.tip_sound_hunter_title;
+      case 'tip_sound_hunter_desc':
+        return l10n.tip_sound_hunter_desc;
+      case 'tip_touch_explore_title':
+        return l10n.tip_touch_explore_title;
+      case 'tip_touch_explore_desc':
+        return l10n.tip_touch_explore_desc;
+      case 'tip_tip_agu_conversation_1_2_title':
+        return l10n.tip_tip_agu_conversation_1_2_title;
+      case 'tip_tip_agu_conversation_1_2_desc':
+        return l10n.tip_tip_agu_conversation_1_2_desc;
+      case 'tip_tip_tummy_time_strength_1_2_title':
+        return l10n.tip_tip_tummy_time_strength_1_2_title;
+      case 'tip_tip_tummy_time_strength_1_2_desc':
+        return l10n.tip_tip_tummy_time_strength_1_2_desc;
+      case 'tip_tip_baby_massage_1_2_title':
+        return l10n.tip_tip_baby_massage_1_2_title;
+      case 'tip_tip_baby_massage_1_2_desc':
+        return l10n.tip_tip_baby_massage_1_2_desc;
+      case 'tip_tip_gesture_speech_1_2_title':
+        return l10n.tip_tip_gesture_speech_1_2_title;
+      case 'tip_tip_gesture_speech_1_2_desc':
+        return l10n.tip_tip_gesture_speech_1_2_desc;
+      case 'tip_tip_open_hands_1_2_title':
+        return l10n.tip_tip_open_hands_1_2_title;
+      case 'tip_tip_open_hands_1_2_desc':
+        return l10n.tip_tip_open_hands_1_2_desc;
+      case 'tip_tip_side_by_side_bonding_1_2_title':
+        return l10n.tip_tip_side_by_side_bonding_1_2_title;
+      case 'tip_tip_side_by_side_bonding_1_2_desc':
+        return l10n.tip_tip_side_by_side_bonding_1_2_desc;
+      case 'tip_tip_sound_hunter_title':
+        return l10n.tip_tip_sound_hunter_title;
+      case 'tip_tip_sound_hunter_desc':
+        return l10n.tip_tip_sound_hunter_desc;
+      case 'tip_tip_sound_hunter_level2_1_2_title':
+        return l10n.tip_tip_sound_hunter_level2_1_2_title;
+      case 'tip_tip_sound_hunter_level2_1_2_desc':
+        return l10n.tip_tip_sound_hunter_level2_1_2_desc;
+      case 'tip_tip_texture_discovery_1_2_title':
+        return l10n.tip_tip_texture_discovery_1_2_title;
+      case 'tip_tip_texture_discovery_1_2_desc':
+        return l10n.tip_tip_texture_discovery_1_2_desc;
+      case 'tip_tip_outdoor_explorer_4_5_title':
+        return l10n.tip_tip_outdoor_explorer_4_5_title;
+      case 'tip_tip_outdoor_explorer_4_5_desc':
+        return l10n.tip_tip_outdoor_explorer_4_5_desc;
+      case 'tip_tip_reaching_exercise_1_2_title':
+        return l10n.tip_tip_reaching_exercise_1_2_title;
+      case 'tip_tip_reaching_exercise_1_2_desc':
+        return l10n.tip_tip_reaching_exercise_1_2_desc;
+      case 'tip_tip_supported_bounce_1_2_title':
+        return l10n.tip_tip_supported_bounce_1_2_title;
+      case 'tip_tip_supported_bounce_1_2_desc':
+        return l10n.tip_tip_supported_bounce_1_2_desc;
+      case 'tip_tip_visual_tracking_1_2_title':
+        return l10n.tip_tip_visual_tracking_1_2_title;
+      case 'tip_tip_visual_tracking_1_2_desc':
+        return l10n.tip_tip_visual_tracking_1_2_desc;
+      case 'tip_tip_face_play_1_2_title':
+        return l10n.tip_tip_face_play_1_2_title;
+      case 'tip_tip_face_play_1_2_desc':
+        return l10n.tip_tip_face_play_1_2_desc;
+      case 'tip_tip_emotion_labeling_1_2_title':
+        return l10n.tip_tip_emotion_labeling_1_2_title;
+      case 'tip_tip_emotion_labeling_1_2_desc':
+        return l10n.tip_tip_emotion_labeling_1_2_desc;
+      case 'tip_tip_first_meal_title':
+        return l10n.tip_tip_first_meal_title;
+      case 'tip_tip_first_meal_desc':
+        return l10n.tip_tip_first_meal_desc;
+      case 'tip_tip_hand_to_hand_transfer_4_5_title':
+        return l10n.tip_tip_hand_to_hand_transfer_4_5_title;
+      case 'tip_tip_hand_to_hand_transfer_4_5_desc':
+        return l10n.tip_tip_hand_to_hand_transfer_4_5_desc;
+      case 'tip_tip_supported_sitting_4_5_title':
+        return l10n.tip_tip_supported_sitting_4_5_title;
+      case 'tip_tip_supported_sitting_4_5_desc':
+        return l10n.tip_tip_supported_sitting_4_5_desc;
+      case 'tip_tip_feet_discovery_4_5_title':
+        return l10n.tip_tip_feet_discovery_4_5_title;
+      case 'tip_tip_feet_discovery_4_5_desc':
+        return l10n.tip_tip_feet_discovery_4_5_desc;
+      case 'tip_tip_independent_play_4_5_title':
+        return l10n.tip_tip_independent_play_4_5_title;
+      case 'tip_tip_independent_play_4_5_desc':
+        return l10n.tip_tip_independent_play_4_5_desc;
+      default:
+        return key;
+    }
+  }
+
   static const List<DailyTip> tips = [
     DailyTip(
       id: 'siyah_mekonyum',
-      title: 'İlk Kaka',
-      description:
-          'Bebeğin ister anne sütü ister formül mama alsın, yaşamının ilk 2–4 gününde bu durumla karşılaşmak çok normaldir. Endişelenmene gerek yok.',
+      titleKey: 'tip_siyah_mekonyum_title',
+      descriptionKey: 'tip_siyah_mekonyum_desc',
       illustrationPath: 'assets/illustrations/tips/tip_mekonyum.png',
       minMonth: 0,
       maxMonth: 1,
     ),
     DailyTip(
       id: 'eye_tracking',
-      title: 'Göz Takibi',
-      description:
-          'Bebeğin şu an sadece 25–30 cm uzağı net görebilir. Yüzünü ona yaklaştır ve gözlerinle yavaşça hareket et. Seni gözleriyle takip etmeye çalışması, görsel gelişimi için ilk egzersizidir.',
+      titleKey: 'tip_eye_tracking_title',
+      descriptionKey: 'tip_eye_tracking_desc',
       illustrationPath: 'assets/illustrations/tips/tip_eye_tracking.png',
       minMonth: 3,
       maxMonth: 6,
     ),
     DailyTip(
       id: 'neck_support',
-      title: 'Boyun Desteği',
-      description:
-          'Bebeğini kucağına aldığında başını ve boynunu mutlaka destekle. Boyun kasları henüz çok zayıf.',
+      titleKey: 'tip_neck_support_title',
+      descriptionKey: 'tip_neck_support_desc',
       illustrationPath: 'assets/illustrations/tips/tip_neck_support.png',
       minMonth: 3,
       maxMonth: 6,
     ),
     DailyTip(
       id: 'reflex_stepping',
-      title: 'Yürüme Refleksi',
-      description:
-          'Bebeğini dik tutup ayaklarını düz bir yüzeye değdir. Adım atma refleksini göreceksin!',
+      titleKey: 'tip_reflex_stepping_title',
+      descriptionKey: 'tip_reflex_stepping_desc',
       illustrationPath: 'assets/illustrations/tips/tip_reflex_stepping.png',
       minMonth: 3,
       maxMonth: 6,
     ),
     DailyTip(
       id: 'sound_interest',
-      title: 'Ses İlgisi',
-      description:
-          'Bebeğin seslere karşı çok duyarlı. Yumuşak bir çıngırak veya müzik kutusuyla dikkatini çekmeyi dene.',
+      titleKey: 'tip_sound_interest_title',
+      descriptionKey: 'tip_sound_interest_desc',
       illustrationPath: 'assets/illustrations/tips/tip_sound_interest.png',
       minMonth: 0,
       maxMonth: 2,
     ),
     DailyTip(
       id: 'parent_interaction',
-      title: 'Ebeveyn Etkileşimi',
-      description:
-          'Bebeğinle göz teması kur ve yavaşça konuş. Senin sesini tanıyor ve güven hissediyor.',
+      titleKey: 'tip_parent_interaction_title',
+      descriptionKey: 'tip_parent_interaction_desc',
       illustrationPath: 'assets/illustrations/tips/tip_parent_interaction.png',
       minMonth: 0,
       maxMonth: 2,
     ),
     DailyTip(
       id: 'color_worlds',
-      title: 'Renk Dünyası',
-      description:
-          'Yenidoğanlar siyah-beyaz kontrastları en iyi görür. Siyah-beyaz desenli kartlar göstermeyi dene.',
+      titleKey: 'tip_color_worlds_title',
+      descriptionKey: 'tip_color_worlds_desc',
       illustrationPath: 'assets/illustrations/tips/tip_color_worlds.png',
       minMonth: 0,
       maxMonth: 2,
     ),
     DailyTip(
       id: 'mini_athlete',
-      title: 'Mini Atlet',
-      description:
-          'Karın üstü (tummy time) egzersizi boyun ve sırt kaslarını güçlendirir. Günde birkaç dakika dene.',
+      titleKey: 'tip_mini_athlete_title',
+      descriptionKey: 'tip_mini_athlete_desc',
       illustrationPath: 'assets/illustrations/tips/tip_mini_athlete.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'sound_hunter',
-      title: 'Ses Avcısı',
-      description:
-          'Bebeğin kulağının yanında yavaşça parmak şıklat. Başını sese doğru çevirmeye çalışacaktır.',
+      titleKey: 'tip_sound_hunter_title',
+      descriptionKey: 'tip_sound_hunter_desc',
       illustrationPath: 'assets/illustrations/tips/tip_sound_hunter.png',
       minMonth: 0,
       maxMonth: 2,
     ),
     DailyTip(
       id: 'touch_explore',
-      title: 'Dokunma Keşfi',
-      description:
-          'Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.',
+      titleKey: 'tip_touch_explore_title',
+      descriptionKey: 'tip_touch_explore_desc',
       illustrationPath: 'assets/illustrations/tips/tip_touch_explore.png',
       minMonth: 0,
       maxMonth: 3,
     ),
     DailyTip(
       id: 'tip_agu_conversation_1_2',
-      title: 'Agu Sohbetleri',
-      description:
-          'Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.',
+      titleKey: 'tip_tip_agu_conversation_1_2_title',
+      descriptionKey: 'tip_tip_agu_conversation_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_agu_conversation_1_2.png',
       minMonth: 1,
@@ -118,9 +248,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_tummy_time_strength_1_2',
-      title: 'Güçlü Omuzlar (Tummy Time)',
-      description:
-          'Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.',
+      titleKey: 'tip_tip_tummy_time_strength_1_2_title',
+      descriptionKey: 'tip_tip_tummy_time_strength_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_tummy_time_strength_1_2.png',
       minMonth: 1,
@@ -128,36 +257,32 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_baby_massage_1_2',
-      title: 'Huzur Masajı',
-      description:
-          'Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.',
+      titleKey: 'tip_tip_baby_massage_1_2_title',
+      descriptionKey: 'tip_tip_baby_massage_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_baby_massage_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'tip_gesture_speech_1_2',
-      title: 'İşaretli Konuşma',
-      description:
-          'Konuşurken hareketlerini kullan. "Gidiyoruz" derken el salla, "Bitti" derken ellerini sürt. Görsel hafızası güçlenir',
+      titleKey: 'tip_tip_gesture_speech_1_2_title',
+      descriptionKey: 'tip_tip_gesture_speech_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_gesture_speech_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'tip_open_hands_1_2',
-      title: 'Özgür Parmaklar',
-      description:
-          'Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.',
+      titleKey: 'tip_tip_open_hands_1_2_title',
+      descriptionKey: 'tip_tip_open_hands_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_open_hands_1_2.png',
       minMonth: 2,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'tip_side_by_side_bonding_1_2',
-      title: 'Yan Yana Keyif',
-      description:
-          'Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.',
+      titleKey: 'tip_tip_side_by_side_bonding_1_2_title',
+      descriptionKey: 'tip_tip_side_by_side_bonding_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_side_by_side_bonding_1_2.png',
       minMonth: 1,
@@ -165,18 +290,16 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_sound_hunter',
-      title: 'Ses Avcısı',
-      description:
-          'Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.',
+      titleKey: 'tip_tip_sound_hunter_title',
+      descriptionKey: 'tip_tip_sound_hunter_desc',
       illustrationPath: 'assets/illustrations/tips/tip_sound_hunter.png',
       minMonth: 2,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'tip_sound_hunter_level2_1_2',
-      title: 'Ses Avcısı (Seviye 2)',
-      description:
-          'Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.',
+      titleKey: 'tip_tip_sound_hunter_level2_1_2_title',
+      descriptionKey: 'tip_tip_sound_hunter_level2_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_sound_hunter_level2_1_2.png',
       minMonth: 2,
@@ -184,9 +307,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_texture_discovery_1_2',
-      title: 'Dokun ve Keşfet',
-      description:
-          'Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.',
+      titleKey: 'tip_tip_texture_discovery_1_2_title',
+      descriptionKey: 'tip_tip_texture_discovery_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_texture_discovery_1_2.png',
       minMonth: 2,
@@ -194,9 +316,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_outdoor_explorer_4_5',
-      title: 'Dış Dünya Kaşifi',
-      description:
-          'Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.',
+      titleKey: 'tip_tip_outdoor_explorer_4_5_title',
+      descriptionKey: 'tip_tip_outdoor_explorer_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_outdoor_explorer_4_5.png',
       minMonth: 4,
@@ -204,9 +325,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_reaching_exercise_1_2',
-      title: 'Uzanma Antrenmanı',
-      description:
-          'Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.',
+      titleKey: 'tip_tip_reaching_exercise_1_2_title',
+      descriptionKey: 'tip_tip_reaching_exercise_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_reaching_exercise_1_2.png',
       minMonth: 2,
@@ -214,9 +334,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_supported_bounce_1_2',
-      title: 'Diz Üstü Yaylanma',
-      description:
-          'Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu "zıplama" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.',
+      titleKey: 'tip_tip_supported_bounce_1_2_title',
+      descriptionKey: 'tip_tip_supported_bounce_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_supported_bounce_1_2.png',
       minMonth: 2,
@@ -224,27 +343,24 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_visual_tracking_1_2',
-      title: 'Görsel Takip',
-      description:
-          'Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.',
+      titleKey: 'tip_tip_visual_tracking_1_2_title',
+      descriptionKey: 'tip_tip_visual_tracking_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_visual_tracking_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
       id: 'tip_face_play_1_2',
-      title: 'Mimik Dansı',
-      description:
-          'Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.',
+      titleKey: 'tip_tip_face_play_1_2_title',
+      descriptionKey: 'tip_tip_face_play_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_face_play_1_2.png',
       minMonth: 1,
       maxMonth: 3,
     ),
     DailyTip(
       id: 'tip_emotion_labeling_1_2',
-      title: 'Duygu',
-      description:
-          'Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. "Karnın acıktı, seni anlıyorum, şimdi halledeceğiz" diyerek anlaşıldığını hissettir.',
+      titleKey: 'tip_tip_emotion_labeling_1_2_title',
+      descriptionKey: 'tip_tip_emotion_labeling_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_emotion_labeling_1_2.png',
       minMonth: 1,
@@ -252,18 +368,16 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_first_meal',
-      title: 'İlk Tadım',
-      description:
-          'Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun',
+      titleKey: 'tip_tip_first_meal_title',
+      descriptionKey: 'tip_tip_first_meal_desc',
       illustrationPath: 'assets/illustrations/tips/tip_first_meal.png',
       minMonth: 5,
       maxMonth: 8,
     ),
     DailyTip(
       id: 'tip_hand_to_hand_transfer_4_5',
-      title: 'Aktif Eller',
-      description:
-          '4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.',
+      titleKey: 'tip_tip_hand_to_hand_transfer_4_5_title',
+      descriptionKey: 'tip_tip_hand_to_hand_transfer_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_hand_to_hand_transfer_4_5.png',
       minMonth: 4,
@@ -271,9 +385,8 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_supported_sitting_4_5',
-      title: 'Destekli Oturma',
-      description:
-          'Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.',
+      titleKey: 'tip_tip_supported_sitting_4_5_title',
+      descriptionKey: 'tip_tip_supported_sitting_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_supported_sitting_4_5.png',
       minMonth: 4,
@@ -281,18 +394,16 @@ class DailyTip {
     ),
     DailyTip(
       id: 'tip_feet_discovery_4_5',
-      title: 'Ayaklarla Tanışma',
-      description:
-          'Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu "vücut keşfi" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.',
+      titleKey: 'tip_tip_feet_discovery_4_5_title',
+      descriptionKey: 'tip_tip_feet_discovery_4_5_desc',
       illustrationPath: 'assets/illustrations/tips/tip_feet_discovery_4_5.png',
       minMonth: 4,
       maxMonth: 7,
     ),
     DailyTip(
       id: 'tip_independent_play_4_5',
-      title: 'Kendi Başına Oyun',
-      description:
-          'Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.',
+      titleKey: 'tip_tip_independent_play_4_5_title',
+      descriptionKey: 'tip_tip_independent_play_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_independent_play_4_5.png',
       minMonth: 4,

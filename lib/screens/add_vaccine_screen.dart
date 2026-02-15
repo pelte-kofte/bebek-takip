@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import '../l10n/app_localizations.dart';
-import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
+import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
-import 'package:intl/intl.dart';
 
 class AddVaccineScreen extends StatefulWidget {
   final Map<String, dynamic>? vaccine;
@@ -91,16 +90,19 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'Doğumda';
   }
 
+  String _monthLabel(AppLocalizations l10n, int month) {
+    if (month == 0) return l10n.birth;
+    return l10n.monthNumber(month);
+  }
+
   void _showCustomMonthPicker() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     int selectedMonth = 0;
 
     // Try to parse current custom period if any (e.g., "3. Ay" -> 3)
     if (_isCustomPeriod) {
-      final match = RegExp(r'^(\d+)\.\s*Ay$').firstMatch(_selectedPeriod);
-      if (match != null) {
-        selectedMonth = int.tryParse(match.group(1)!) ?? 0;
-      }
+      selectedMonth = parseVaccineMonth(_selectedPeriod) ?? 0;
     }
 
     showModalBottomSheet(
@@ -115,7 +117,10 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -131,7 +136,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
-                        Dil.iptal,
+                        l10n.cancel,
                         style: TextStyle(
                           color: isDark
                               ? AppColors.textSecondaryDark
@@ -139,10 +144,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                         ),
                       ),
                     ),
-                    Text(
-                      'Ay Seçin',
-                      style: AppTypography.h3(context),
-                    ),
+                    Text(l10n.selectMonth, style: AppTypography.h3(context)),
                     TextButton(
                       onPressed: () {
                         setState(() {
@@ -153,7 +155,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        Dil.tamam,
+                        l10n.ok,
                         style: TextStyle(
                           color: const Color(0xFFFFB4A2),
                           fontWeight: FontWeight.w600,
@@ -173,7 +175,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     selectedMonth = index;
                   },
                   children: List.generate(61, (index) {
-                    final label = index == 0 ? 'Doğumda' : '$index. Ay';
+                    final label = _monthLabel(l10n, index);
                     return Center(
                       child: Text(
                         label,
@@ -197,6 +199,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
 
   void _selectDate() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     DateTime tempDate = _selectedDate ?? DateTime.now();
     final lastDate = _selectedStatus == 'bekleniyor'
         ? DateTime.now().add(const Duration(days: 365 * 5))
@@ -214,7 +217,10 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
@@ -230,7 +236,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
-                        Dil.iptal,
+                        l10n.cancel,
                         style: TextStyle(
                           color: isDark
                               ? AppColors.textSecondaryDark
@@ -246,7 +252,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                         Navigator.pop(context);
                       },
                       child: Text(
-                        Dil.tamam,
+                        l10n.ok,
                         style: TextStyle(
                           color: const Color(0xFFFFB4A2),
                           fontWeight: FontWeight.w600,
@@ -259,7 +265,9 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
               Expanded(
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
-                  initialDateTime: tempDate.isAfter(lastDate) ? lastDate : tempDate,
+                  initialDateTime: tempDate.isAfter(lastDate)
+                      ? lastDate
+                      : tempDate,
                   minimumDate: DateTime(2020),
                   maximumDate: lastDate,
                   onDateTimeChanged: (date) {
@@ -327,6 +335,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildHeader(bool isDark, bool isEdit) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
       child: Row(
@@ -360,7 +369,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           ),
           const SizedBox(width: 16),
           Text(
-            isEdit ? Dil.asiDuzenle : Dil.asiEkle,
+            isEdit ? l10n.editVaccine : l10n.addVaccine,
             style: AppTypography.h1(context),
           ),
         ],
@@ -369,13 +378,14 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildNameField(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            Dil.asiAdi,
+            l10n.vaccineName,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -416,6 +426,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildPeriodSelector(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     // Build the list of chips to display
     final List<Widget> chips = [];
 
@@ -430,10 +441,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 10,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: isSelected
                   ? const Color(0xFFFFB4A2)
@@ -456,7 +464,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
               ],
             ),
             child: Text(
-              period,
+              localizedPeriodLabel(l10n, period),
               style: AppTypography.label(context).copyWith(
                 color: isSelected
                     ? Colors.white
@@ -477,10 +485,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         GestureDetector(
           onTap: _showCustomMonthPicker,
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 10,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFFFFB4A2),
               borderRadius: BorderRadius.circular(20),
@@ -494,26 +499,22 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
               ],
             ),
             child: Text(
-              _selectedPeriod,
-              style: AppTypography.label(context).copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
+              localizedPeriodLabel(l10n, _selectedPeriod),
+              style: AppTypography.label(
+                context,
+              ).copyWith(color: Colors.white, fontWeight: FontWeight.w600),
             ),
           ),
         ),
       );
     }
 
-    // Add "+ Diğer Ay" button
+    // Add custom month button
     chips.add(
       GestureDetector(
         onTap: _showCustomMonthPicker,
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
             color: isDark
                 ? AppColors.bgDarkCard.withValues(alpha: 0.9)
@@ -527,14 +528,10 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.add,
-                size: 16,
-                color: const Color(0xFFFFB4A2),
-              ),
+              Icon(Icons.add, size: 16, color: const Color(0xFFFFB4A2)),
               const SizedBox(width: 4),
               Text(
-                'Diğer Ay',
+                l10n.otherMonth,
                 style: AppTypography.label(context).copyWith(
                   color: const Color(0xFFFFB4A2),
                   fontWeight: FontWeight.w600,
@@ -552,7 +549,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            Dil.donem,
+            l10n.period,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -562,23 +559,20 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             ),
           ),
         ),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: chips,
-        ),
+        Wrap(spacing: 8, runSpacing: 8, children: chips),
       ],
     );
   }
 
   Widget _buildStatusSelector(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            'Durum',
+            l10n.status,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -622,7 +616,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      Dil.bekleniyor,
+                      l10n.pending,
                       style: AppTypography.body(context).copyWith(
                         color: _selectedStatus == 'bekleniyor'
                             ? const Color(0xFF5D3FD3)
@@ -670,7 +664,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                   ),
                   child: Center(
                     child: Text(
-                      Dil.uygulandi,
+                      l10n.applied,
                       style: AppTypography.body(context).copyWith(
                         color: _selectedStatus == 'uygulandi'
                             ? Colors.white
@@ -691,9 +685,10 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildDateSelector(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final dateLabel = _selectedStatus == 'bekleniyor'
-        ? 'Planlanan Tarih'
-        : Dil.tarihSec;
+        ? l10n.scheduledDate
+        : l10n.selectDate;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -741,8 +736,8 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                 const SizedBox(width: 12),
                 Text(
                   _selectedDate != null
-                      ? DateFormat('dd.MM.yyyy').format(_selectedDate!)
-                      : 'Tarih seçin',
+                      ? formatLocalizedDate(context, _selectedDate!)
+                      : l10n.selectDate,
                   style: AppTypography.body(context),
                 ),
               ],
@@ -754,13 +749,14 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildNotesField(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 12),
           child: Text(
-            '${Dil.not} (${Dil.opsiyonel})',
+            l10n.optionalNotes,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -802,6 +798,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   Widget _buildSaveButton() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(28),
@@ -825,7 +822,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           elevation: 0,
         ),
         child: Text(
-          widget.vaccine != null ? Dil.guncelle : Dil.kaydet,
+          widget.vaccine != null ? l10n.update : l10n.save,
           style: AppTypography.button().copyWith(fontSize: 18),
         ),
       ),

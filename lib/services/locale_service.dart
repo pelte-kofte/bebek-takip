@@ -5,11 +5,20 @@ import '../l10n/app_localizations.dart';
 class LocaleService {
   static const _key = 'app_locale';
 
-  static const supportedCodes = ['system', 'tr', 'en', 'ru', 'uk', 'es'];
+  static const supportedCodes = ['tr', 'en', 'ru', 'uk', 'es'];
 
   static Future<String> getSavedLocaleCode() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_key) ?? 'system';
+    final saved = prefs.getString(_key);
+    if (saved != null && supportedCodes.contains(saved)) {
+      return saved;
+    }
+
+    final deviceCode =
+        WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+    final resolved = supportedCodes.contains(deviceCode) ? deviceCode : 'en';
+    await prefs.setString(_key, resolved);
+    return resolved;
   }
 
   static Future<void> setSavedLocaleCode(String code) async {
@@ -17,15 +26,12 @@ class LocaleService {
     await prefs.setString(_key, code);
   }
 
-  static Locale? toLocale(String code) {
-    if (code == 'system') return null;
+  static Locale toLocale(String code) {
     return Locale(code);
   }
 
   static String labelForCode(AppLocalizations l10n, String code) {
     switch (code) {
-      case 'system':
-        return l10n.systemDefault;
       case 'tr':
         return l10n.turkish;
       case 'en':

@@ -181,7 +181,7 @@ class TipsArchiveScreen extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        tip.title,
+                                        tip.title(context),
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
@@ -220,7 +220,7 @@ class TipsArchiveScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  tip.description,
+                                  tip.description(context),
                                   style: TextStyle(
                                     fontSize: 13,
                                     color: subtitleColor,

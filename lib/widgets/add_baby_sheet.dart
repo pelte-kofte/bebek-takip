@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart'
     show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
+import '../utils/locale_text_utils.dart';
 
 class AddBabySheet extends StatefulWidget {
   final VoidCallback onBabyAdded;
@@ -30,10 +31,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
 
     setState(() => _saving = true);
 
-    final newId = await VeriYonetici.addBaby(
-      name: name,
-      birthDate: _birthDate,
-    );
+    final newId = await VeriYonetici.addBaby(name: name, birthDate: _birthDate);
     await VeriYonetici.setActiveBaby(newId);
 
     if (!mounted) return;
@@ -43,6 +41,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
 
   void _pickDate() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -66,15 +65,17 @@ class _AddBabySheetState extends State<AddBabySheet> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(ctx),
                       child: Text(
-                        'Iptal',
+                        l10n.cancel,
                         style: TextStyle(
                           color: isDark
                               ? Colors.white.withValues(alpha: 0.6)
@@ -88,8 +89,8 @@ class _AddBabySheetState extends State<AddBabySheet> {
                         setState(() => _birthDate = selected);
                         Navigator.pop(ctx);
                       },
-                      child: const Text(
-                        'Tamam',
+                      child: Text(
+                        l10n.ok,
                         style: TextStyle(
                           color: Color(0xFFFF998A),
                           fontWeight: FontWeight.w600,
@@ -128,8 +129,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-          borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -148,7 +148,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
               child: Text(
-                'Yeni Bebek Ekle',
+                l10n.newBabyAdd,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -165,9 +165,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
                 style: TextStyle(color: textColor, fontSize: 16),
                 decoration: InputDecoration(
                   hintText: l10n.babyNameHint,
-                  hintStyle: TextStyle(
-                    color: textColor.withValues(alpha: 0.4),
-                  ),
+                  hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4)),
                   filled: true,
                   fillColor: isDark
                       ? Colors.white.withValues(alpha: 0.08)
@@ -210,11 +208,8 @@ class _AddBabySheetState extends State<AddBabySheet> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        '${_birthDate.day.toString().padLeft(2, '0')}.${_birthDate.month.toString().padLeft(2, '0')}.${_birthDate.year}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: textColor,
-                        ),
+                        formatLocalizedDate(context, _birthDate),
+                        style: TextStyle(fontSize: 16, color: textColor),
                       ),
                     ],
                   ),
@@ -242,12 +237,13 @@ class _AddBabySheetState extends State<AddBabySheet> {
                           height: 22,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
-                      : const Text(
-                          'Kaydet',
+                      : Text(
+                          l10n.save,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

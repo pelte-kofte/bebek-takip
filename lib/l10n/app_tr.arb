@@ -1,12 +1,10 @@
 {
   "@@locale": "tr",
-
   "appName": "Nilico",
   "tagline": "Ebeveynlik artik daha kolay ve unutulmaz.",
   "freeForever": "Tamamen Ücretsiz",
   "securePrivate": "Güvenli ve Gizli",
   "tapToStart": "Başlamak için dokun",
-
   "feedingTracker": "Beslenme Takibi",
   "feedingTrackerDesc": "Emzirme, biberon ve ek gıdaları kolayca kaydedin. Doğal kalıpları keşfet.",
   "sleepPatterns": "Uyku Düzeni",
@@ -20,7 +18,6 @@
   "skip": "Atla",
   "startYourJourney": "Yolculuğuna Başla",
   "continueBtn": "Devam",
-
   "save": "Kaydet",
   "update": "Güncelle",
   "cancel": "İptal",
@@ -40,27 +37,35 @@
   "errorWithMessage": "Hata: {message}",
   "@errorWithMessage": {
     "placeholders": {
-      "message": {"type": "String"}
+      "message": {
+        "type": "String"
+      }
     }
   },
   "allDataDeleted": "Tüm veriler silindi",
   "googleSignInFailed": "Google girişi başarısız: {error}",
   "@googleSignInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "signInFailed": "Giriş başarısız: {error}",
   "@signInFailed": {
     "placeholders": {
-      "error": {"type": "String"}
+      "error": {
+        "type": "String"
+      }
     }
   },
   "webPhotoUploadUnsupported": "Web sürümünde fotoğraf yükleme desteklenmiyor",
   "babyDataDeleted": "{name} verileri silindi",
   "@babyDataDeleted": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "babyNameHint": "Bebek adı",
@@ -74,28 +79,24 @@
   "pleaseEnterWeightHeight": "Lütfen kilo ve boy bilgilerini girin",
   "memoryTitleHint": "örn. İlk adımlar",
   "memoryNoteHint": "Anıyı buraya yaz...",
-
   "home": "Ana Sayfa",
   "activities": "Bakım",
   "vaccines": "Aşılar",
   "development": "Gelişim",
   "memories": "Anılar",
   "settings": "Ayarlar",
-
   "addActivity": "Aktivite Ekle",
   "whatHappened": "Ne oldu?",
   "nursing": "Emzirme",
   "bottle": "Beslenme",
   "sleep": "Uyku",
   "diaper": "Bez",
-
   "side": "Taraf",
   "left": "Sol",
   "right": "Sağ",
   "duration": "Süre",
   "minAbbrev": "dk",
   "hourAbbrev": "sa",
-
   "category": "Kategori",
   "milk": "Süt",
   "solid": "Ek gıda",
@@ -105,12 +106,10 @@
   "milkType": "Süt Türü",
   "breastMilk": "Anne sütü",
   "formula": "Mama",
-
   "sleepStartedAt": "UYKU BAŞLANGICI",
   "wokeUpAt": "UYANDI",
   "tapToSet": "Saat seç",
   "totalSleep": "Toplam uyku: {duration}",
-
   "type": "Tür",
   "healthType": "Tür",
   "healthTime": "Saat",
@@ -119,23 +118,19 @@
   "both": "İkisi birden",
   "optionalNotes": "Not (Opsiyonel)",
   "diaperNoteHint": "Bez değişimi hakkında not ekleyin...",
-
   "pleaseSetDuration": "Lütfen süre ayarlayın",
   "pleaseSetAmount": "Lütfen miktar ayarlayın",
   "pleaseSetWakeUpTime": "Lütfen uyanma zamanını ayarlayın",
   "sleepDurationMustBeGreater": "Uyku suresi 0'dan buyuk olmalı",
-
   "today": "Bugün",
   "summary": "ÖZET",
   "recentActivities": "SON BAKIM VERİLERİ",
   "record": "kayıt",
   "records": "kayıt",
-
   "breastfeeding": "Emzirme",
   "bottleBreastMilk": "Biberon (Anne sütü)",
   "total": "Toplam",
   "diaperChange": "Bez Değişimi",
-
   "firstFeedingTime": "İlk mama zamanı geldi mi?",
   "trackBabyFeeding": "Bebeğinizin beslenmesini takip edin",
   "diaperChangeTime": "Bez degiştirme zamanı!",
@@ -143,16 +138,13 @@
   "sweetDreams": "Tatlı ruyalar...",
   "trackSleepPattern": "Uyku düzenini buradan izleyin",
   "selectAnotherDate": "Başka tarih seç",
-
   "editFeeding": "Beslenme Düzenle",
   "editDiaper": "Bez Düzenle",
   "editSleep": "Uyku Düzenle",
   "start": "Başlangıç",
   "end": "Bitiş",
-
   "attention": "Dikkat",
   "deleteConfirm": "Bu kaydı silmek istediğinize emin misiniz?",
-
   "myVaccines": "Aşılarim",
   "addVaccine": "Aşı Ekle",
   "applied": "Uygulandı",
@@ -174,12 +166,10 @@
   "loadTurkishVaccineCalendar": "Türkiye Aşı Takvimini Yükle",
   "loadCalendarTitle": "Turkiye Aşı Takvimini Yükle",
   "loadCalendarDesc": "Türkiye'nin standart aşı takvimi yüklenecek. Mevcut aşılar silinmeyecek.",
-
-  "ageYears": "{years} Yaşında",
+  "ageYears": "{count, plural, =1{# Yaşında} other{# Yaşında}}",
   "ageYearsMonths": "{years} Yil {months} Aylık",
   "ageMonthsDays": "{months} Ay {days} Günlük",
-  "ageDays": "{days} Günlük",
-
+  "ageDays": "{count, plural, =1{# Günlük} other{# Günlük}}",
   "weeklyReport": "Haftalık Rapor",
   "monthlyReport": "Aylık Rapor",
   "weekly": "Haftalık",
@@ -204,7 +194,6 @@
   "pdfSaved": "PDF başarıyla kaydedildi!",
   "babyTrackerReport": "Nilico Raporu",
   "generatedWith": "Nilico ile oluşturuldu",
-
   "months": "ay",
   "january": "Ocak",
   "february": "Şubat",
@@ -218,10 +207,8 @@
   "october": "Ekim",
   "november": "Kasım",
   "december": "Aralık",
-
   "addOptionalNote": "Not ekle (opsiyonel)",
   "times": "kez",
-
   "feeding_tab": "MAMA",
   "diaper_tab": "BEZ",
   "sleep_tab": "UYKU",
@@ -233,7 +220,6 @@
   "addMoreMeasurements": "{count} ölçüm daha ekleyin",
   "atLeast2Measurements": "Grafik için en az 2 ölçüm gerekli",
   "growthTracking": "Büyüme Takibi",
-
   "feedingTimer": "EMZİRME",
   "sleepingTimer": "UYKU",
   "stopAndSave": "DURDUR & KAYDET",
@@ -273,7 +259,6 @@
   "minutesAgo": "{count} dk önce",
   "hoursAgo": "{count} sa önce",
   "daysAgo": "{count} gün önce",
-
   "welcomeToNilico": "Nilico'ya Hoş Geldiniz",
   "createYourAccount": "Hesabını oluştur",
   "loginBenefitText": "Verilerini güvende tutmak ve yakında gelecek yedekleme özellikleri için giriş yapabilirsin. İstersen giriş yapmadan da devam edebilirsin.",
@@ -288,13 +273,11 @@
   "guestMode": "Misafir Modu",
   "signInToProtectData": "Verilerini korumak için giriş yap",
   "backupSyncComingSoon": "Yedekleme ve senkronizasyon yakında",
-
   "privacyPolicy": "Gizlilik Politikası",
   "privacyPolicySubtitle": "Gizlilik politikasını görüntüle",
   "termsOfUse": "Kullanım Şartları",
   "termsOfUseSubtitle": "Kullanım koşullarını görüntüle",
   "pageCouldNotOpen": "Sayfa açılamadı",
-
   "health": "Sağlık",
   "medications": "İlaçlar",
   "noMedications": "Henüz ilaç/takviye eklenmedi",
@@ -307,7 +290,6 @@
   "dosage": "Doz",
   "schedule": "Kullanım Sıklığı",
   "notes": "Notlar",
-
   "language": "Dil",
   "systemDefault": "Sistem",
   "turkish": "Türkçe",
@@ -315,5 +297,143 @@
   "russian": "Русский",
   "ukrainian": "Українська",
   "spanish": "Español",
-  "languageUpdated": "Dil güncellendi"
+  "languageUpdated": "Dil güncellendi",
+  "tip_siyah_mekonyum_title": "İlk Kaka",
+  "tip_siyah_mekonyum_desc": "Bebeğin ister anne sütü ister formül mama alsın, yaşamının ilk 2–4 gününde bu durumla karşılaşmak çok normaldir. Endişelenmene gerek yok.",
+  "tip_eye_tracking_title": "Göz Takibi",
+  "tip_eye_tracking_desc": "Bebeğin şu an sadece 25–30 cm uzağı net görebilir. Yüzünü ona yaklaştır ve gözlerinle yavaşça hareket et. Seni gözleriyle takip etmeye çalışması, görsel gelişimi için ilk egzersizidir.",
+  "tip_neck_support_title": "Boyun Desteği",
+  "tip_neck_support_desc": "Bebeğini kucağına aldığında başını ve boynunu mutlaka destekle. Boyun kasları henüz çok zayıf.",
+  "tip_reflex_stepping_title": "Yürüme Refleksi",
+  "tip_reflex_stepping_desc": "Bebeğini dik tutup ayaklarını düz bir yüzeye değdir. Adım atma refleksini göreceksin!",
+  "tip_sound_interest_title": "Ses İlgisi",
+  "tip_sound_interest_desc": "Bebeğin seslere karşı çok duyarlı. Yumuşak bir çıngırak veya müzik kutusuyla dikkatini çekmeyi dene.",
+  "tip_parent_interaction_title": "Ebeveyn Etkileşimi",
+  "tip_parent_interaction_desc": "Bebeğinle göz teması kur ve yavaşça konuş. Senin sesini tanıyor ve güven hissediyor.",
+  "tip_color_worlds_title": "Renk Dünyası",
+  "tip_color_worlds_desc": "Yenidoğanlar siyah-beyaz kontrastları en iyi görür. Siyah-beyaz desenli kartlar göstermeyi dene.",
+  "tip_mini_athlete_title": "Mini Atlet",
+  "tip_mini_athlete_desc": "Karın üstü (tummy time) egzersizi boyun ve sırt kaslarını güçlendirir. Günde birkaç dakika dene.",
+  "tip_sound_hunter_title": "Ses Avcısı",
+  "tip_sound_hunter_desc": "Bebeğin kulağının yanında yavaşça parmak şıklat. Başını sese doğru çevirmeye çalışacaktır.",
+  "tip_touch_explore_title": "Dokunma Keşfi",
+  "tip_touch_explore_desc": "Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.",
+  "tip_tip_agu_conversation_1_2_title": "Agu Sohbetleri",
+  "tip_tip_agu_conversation_1_2_desc": "Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.",
+  "tip_tip_tummy_time_strength_1_2_title": "Güçlü Omuzlar (Tummy Time)",
+  "tip_tip_tummy_time_strength_1_2_desc": "Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.",
+  "tip_tip_baby_massage_1_2_title": "Huzur Masajı",
+  "tip_tip_baby_massage_1_2_desc": "Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.",
+  "tip_tip_gesture_speech_1_2_title": "İşaretli Konuşma",
+  "tip_tip_gesture_speech_1_2_desc": "Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir",
+  "tip_tip_open_hands_1_2_title": "Özgür Parmaklar",
+  "tip_tip_open_hands_1_2_desc": "Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.",
+  "tip_tip_side_by_side_bonding_1_2_title": "Yan Yana Keyif",
+  "tip_tip_side_by_side_bonding_1_2_desc": "Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.",
+  "tip_tip_sound_hunter_title": "Ses Avcısı",
+  "tip_tip_sound_hunter_desc": "Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.",
+  "tip_tip_sound_hunter_level2_1_2_title": "Ses Avcısı (Seviye 2)",
+  "tip_tip_sound_hunter_level2_1_2_desc": "Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.",
+  "tip_tip_texture_discovery_1_2_title": "Dokun ve Keşfet",
+  "tip_tip_texture_discovery_1_2_desc": "Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.",
+  "tip_tip_outdoor_explorer_4_5_title": "Dış Dünya Kaşifi",
+  "tip_tip_outdoor_explorer_4_5_desc": "Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.",
+  "tip_tip_reaching_exercise_1_2_title": "Uzanma Antrenmanı",
+  "tip_tip_reaching_exercise_1_2_desc": "Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.",
+  "tip_tip_supported_bounce_1_2_title": "Diz Üstü Yaylanma",
+  "tip_tip_supported_bounce_1_2_desc": "Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.",
+  "tip_tip_visual_tracking_1_2_title": "Görsel Takip",
+  "tip_tip_visual_tracking_1_2_desc": "Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.",
+  "tip_tip_face_play_1_2_title": "Mimik Dansı",
+  "tip_tip_face_play_1_2_desc": "Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.",
+  "tip_tip_emotion_labeling_1_2_title": "Duygu",
+  "tip_tip_emotion_labeling_1_2_desc": "Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.",
+  "tip_tip_first_meal_title": "İlk Tadım",
+  "tip_tip_first_meal_desc": "Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun",
+  "tip_tip_hand_to_hand_transfer_4_5_title": "Aktif Eller",
+  "tip_tip_hand_to_hand_transfer_4_5_desc": "4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.",
+  "tip_tip_supported_sitting_4_5_title": "Destekli Oturma",
+  "tip_tip_supported_sitting_4_5_desc": "Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.",
+  "tip_tip_feet_discovery_4_5_title": "Ayaklarla Tanışma",
+  "tip_tip_feet_discovery_4_5_desc": "Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.",
+  "tip_tip_independent_play_4_5_title": "Kendi Başına Oyun",
+  "tip_tip_independent_play_4_5_desc": "Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.",
+  "@ageYears": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ageMonths": "{count, plural, =1{# Aylık} other{# Aylık}}",
+  "@ageMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@ageDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "appPreferences": "Uygulama tercihleri",
+  "appearance": "Görünüm",
+  "darkMode": "Karanlık Mod",
+  "darkModeSubtitle": "Göz yormayan koyu tema",
+  "notifications": "Bildirimler",
+  "feedingReminder": "Beslenme Hatırlatıcı",
+  "diaperReminder": "Bez Hatırlatıcı",
+  "off": "Kapalı",
+  "reminderTime": "Hatırlatma Saati",
+  "dataManagement": "Veri Yönetimi",
+  "createReport": "Rapor Oluştur",
+  "weeklyMonthlyStats": "Haftalık/Aylık istatistikler",
+  "deleteAllDataTitle": "Tüm Verileri Sil",
+  "deleteAllDataSubtitle": "Tüm kayıtları kalıcı olarak sil",
+  "about": "Hakkında",
+  "version": "Versiyon",
+  "developer": "Geliştirici",
+  "deleteAllDataWarning": "Bu işlem tüm kayıtları kalıcı olarak siler. Geri alınamaz.",
+  "debug": "DEBUG",
+  "testSleepNotification": "Uyku Bildirimi Testi",
+  "fireSleepNotificationNow": "Uyku bildirimini şimdi tetikle",
+  "testNursingNotification": "Emzirme Bildirimi Testi",
+  "fireNursingNotificationNow": "Emzirme bildirimini şimdi tetikle",
+  "user": "Kullanıcı",
+  "selectBaby": "Bebek Seç",
+  "newBabyAdd": "Yeni Bebek Ekle",
+  "babyProfileTitle": "Bebek Profili",
+  "babyInformation": "Bebek Bilgileri",
+  "addPhoto": "Fotoğraf ekle",
+  "changePhoto": "Fotoğrafı Değiştir",
+  "removePhoto": "Fotoğrafı Kaldır",
+  "birthDateLabel": "Doğum Tarihi",
+  "notesOptional": "Notlar (isteğe bağlı)",
+  "growthRecords": "Büyüme Kayıtları",
+  "deleteThisBabyData": "Bu bebeğin verilerini sil",
+  "otherBabiesUnaffected": "Diğer bebekler etkilenmez",
+  "onlyThisBabyPrefix": "Sadece ",
+  "allRecordsWillBeDeleted": " bebeğinin tüm kayıtları silinecek.",
+  "deleteActionIrreversible": "Diğer bebekler etkilenmez. Bu işlem geri alınamaz.",
+  "birth": "Doğum",
+  "monthNumber": "{month}. Ay",
+  "@monthNumber": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "selectMonth": "Ay Seçin",
+  "otherMonth": "Diğer Ay",
+  "period": "Dönem",
+  "status": "Durum",
+  "scheduledDate": "Planlanan Tarih",
+  "editVaccine": "Aşı Düzenle",
+  "vaccineName": "Aşı Adı",
+  "allLabel": "Tümü"
 }

@@ -56,7 +56,7 @@ class BabyTrackerApp extends StatefulWidget {
 
 class _BabyTrackerAppState extends State<BabyTrackerApp> {
   ThemeMode _themeMode = ThemeMode.light;
-  String _localeCode = 'system';
+  String _localeCode = 'en';
 
   @override
   void initState() {

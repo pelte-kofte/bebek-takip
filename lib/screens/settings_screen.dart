@@ -1,11 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
-import '../models/dil.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import '../services/reminder_service.dart';
@@ -80,16 +79,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _openInAppUrl(String url) async {
     final uri = Uri.parse(url);
 
-    final LaunchMode mode =
-        kIsWeb ? LaunchMode.externalApplication : LaunchMode.platformDefault;
+    final LaunchMode mode = kIsWeb
+        ? LaunchMode.externalApplication
+        : LaunchMode.platformDefault;
 
     final launched = await launchUrl(uri, mode: mode);
 
     if (!launched && mounted) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pageCouldNotOpen)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pageCouldNotOpen)));
     }
   }
 
@@ -145,7 +145,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: EdgeInsets.zero,
                     onPressed: () => Navigator.pop(context),
                     child: Text(
-                      Dil.iptal,
+                      AppLocalizations.of(context)!.cancel,
                       style: TextStyle(
                         color: isDark
                             ? AppColors.textSecondaryDark
@@ -170,8 +170,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onSelected(tempTime);
                       Navigator.pop(context);
                     },
-                    child: const Text(
-                      'Tamam',
+                    child: Text(
+                      AppLocalizations.of(context)!.ok,
                       style: TextStyle(
                         color: Color(0xFFFF998A),
                         fontWeight: FontWeight.w600,
@@ -262,7 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          Dil.ayarlar,
+                          l10n.settings,
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -272,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Uygulama tercihleri',
+                          l10n.appPreferences,
                           style: TextStyle(
                             fontSize: 14,
                             color: subtitleColor,
@@ -297,7 +297,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 24),
 
                       // GÃ–RÃœNÃœM Section
-                      _buildSectionHeader(Dil.gorunum, subtitleColor),
+                      _buildSectionHeader(l10n.appearance, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
@@ -307,10 +307,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: isDark ? Icons.dark_mode : Icons.light_mode,
                               iconBgColor: const Color(0xFFE5E0F7),
                               iconColor: subtitleColor,
-                              title: Dil.karanlikMod,
-                              subtitle: Dil.karanlikModAciklama,
+                              title: l10n.darkMode,
+                              subtitle: l10n.darkModeSubtitle,
                               value:
-                                  BabyTrackerApp.of(context)?.isDarkMode ?? false,
+                                  BabyTrackerApp.of(context)?.isDarkMode ??
+                                  false,
                               onChanged: (value) {
                                 BabyTrackerApp.of(context)?.toggleTheme();
                               },
@@ -328,7 +329,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               title: l10n.language,
                               subtitle: LocaleService.labelForCode(
                                 l10n,
-                                BabyTrackerApp.of(context)?.localeCode ?? 'system',
+                                BabyTrackerApp.of(context)?.localeCode ?? 'en',
                               ),
                               textColor: textColor,
                               subtitleColor: subtitleColor,
@@ -345,7 +346,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 24),
 
                       // BÄ°LDÄ°RÄ°MLER Section
-                      _buildSectionHeader(Dil.bildirimler, subtitleColor),
+                      _buildSectionHeader(l10n.notifications, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
@@ -355,10 +356,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: Icons.restaurant,
                               iconBgColor: const Color(0xFFFFE5E0),
                               iconColor: const Color(0xFFFFB4A2),
-                              title: Dil.mamaHatirlatici,
+                              title: l10n.feedingReminder,
                               subtitle: _feedingReminderEnabled
-                                  ? 'Saat ${_formatTime(_feedingReminderTime)}'
-                                  : 'Kapalı',
+                                  ? '${l10n.selectTime}: ${_formatTime(_feedingReminderTime)}'
+                                  : l10n.off,
                               value: _feedingReminderEnabled,
                               onChanged: _toggleFeedingReminder,
                               textColor: textColor,
@@ -368,7 +369,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () => _showTimePicker(
-                                  title: 'Hatırlatma Saati',
+                                  title: l10n.reminderTime,
                                   currentValue: _feedingReminderTime,
                                   onSelected: (value) async {
                                     setState(
@@ -437,10 +438,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: Icons.baby_changing_station,
                               iconBgColor: const Color(0xFFE5E0F7),
                               iconColor: subtitleColor,
-                              title: Dil.bezHatirlatici,
+                              title: l10n.diaperReminder,
                               subtitle: _diaperReminderEnabled
-                                  ? 'Saat ${_formatTime(_diaperReminderTime)}'
-                                  : 'Kapalı',
+                                  ? '${l10n.selectTime}: ${_formatTime(_diaperReminderTime)}'
+                                  : l10n.off,
                               value: _diaperReminderEnabled,
                               onChanged: _toggleDiaperReminder,
                               textColor: textColor,
@@ -450,7 +451,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               const SizedBox(height: 8),
                               GestureDetector(
                                 onTap: () => _showTimePicker(
-                                  title: 'Hatırlatma Saati',
+                                  title: l10n.reminderTime,
                                   currentValue: _diaperReminderTime,
                                   onSelected: (value) async {
                                     setState(() => _diaperReminderTime = value);
@@ -515,7 +516,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 24),
 
                       // VERÄ° YÃ–NETÄ°MÄ° Section
-                      _buildSectionHeader(Dil.veriYonetimi, subtitleColor),
+                      _buildSectionHeader(l10n.dataManagement, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
@@ -525,8 +526,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: Icons.analytics_outlined,
                               iconBgColor: const Color(0xFFE5E0F7),
                               iconColor: subtitleColor,
-                              title: 'Rapor Oluştur',
-                              subtitle: 'Haftalık/Aylık istatistikler',
+                              title: l10n.createReport,
+                              subtitle: l10n.weeklyMonthlyStats,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () {
@@ -546,8 +547,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: Icons.delete_outline,
                               iconBgColor: const Color(0xFFFFE5E0),
                               iconColor: Colors.red.shade400,
-                              title: Dil.tumVerileriSil,
-                              subtitle: 'Tüm kayıtları kalıcı olarak sil',
+                              title: l10n.deleteAllDataTitle,
+                              subtitle: l10n.deleteAllDataSubtitle,
                               textColor: Colors.red.shade400,
                               subtitleColor: subtitleColor,
                               onTap: () => _showDeleteDialog(
@@ -562,14 +563,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 24),
 
                       // HAKKINDA Section
-                      _buildSectionHeader(Dil.hakkinda, subtitleColor),
+                      _buildSectionHeader(l10n.about, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
                           children: [
                             _buildInfoTile(
-                              Dil.versiyon,
+                              l10n.version,
                               '1.0.0',
                               textColor,
                               subtitleColor,
@@ -579,7 +580,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               height: 24,
                             ),
                             _buildInfoTile(
-                              Dil.gelistirici,
+                              l10n.developer,
                               'Nilico',
                               textColor,
                               subtitleColor,
@@ -618,7 +619,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       // DEBUG section (only in debug builds)
                       if (kDebugMode) ...[
                         const SizedBox(height: 24),
-                        _buildSectionHeader('DEBUG', subtitleColor),
+                        _buildSectionHeader(l10n.debug, subtitleColor),
                         const SizedBox(height: 12),
                         _buildCard(
                           cardColor: cardColor,
@@ -628,19 +629,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 icon: Icons.notifications_active,
                                 iconBgColor: const Color(0xFFFFE5E0),
                                 iconColor: Colors.orange,
-                                title: 'Test Sleep Notification',
-                                subtitle: 'Fire sleep notification now',
+                                title: l10n.testSleepNotification,
+                                subtitle: l10n.fireSleepNotificationNow,
                                 textColor: textColor,
                                 subtitleColor: subtitleColor,
                                 onTap: () async {
                                   final svc = SleepNotificationService();
                                   await svc.initialize();
                                   await svc.requestPermissions();
-                                  await svc.showSleepNotification(DateTime.now());
+                                  await svc.showSleepNotification(
+                                    DateTime.now(),
+                                  );
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(AppLocalizations.of(context)!.notificationSleepFired),
+                                        content: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.notificationSleepFired,
+                                        ),
                                         backgroundColor: Color(0xFFFFB4A2),
                                       ),
                                     );
@@ -655,19 +662,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 icon: Icons.notifications_active,
                                 iconBgColor: const Color(0xFFE5E0F7),
                                 iconColor: Colors.purple,
-                                title: 'Test Nursing Notification',
-                                subtitle: 'Fire nursing notification now',
+                                title: l10n.testNursingNotification,
+                                subtitle: l10n.fireNursingNotificationNow,
                                 textColor: textColor,
                                 subtitleColor: subtitleColor,
                                 onTap: () async {
                                   final svc = SleepNotificationService();
                                   await svc.initialize();
                                   await svc.requestPermissions();
-                                  await svc.showNursingNotification(DateTime.now(), 'sol');
+                                  await svc.showNursingNotification(
+                                    DateTime.now(),
+                                    'sol',
+                                  );
                                   if (mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(AppLocalizations.of(context)!.notificationNursingFired),
+                                        content: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.notificationNursingFired,
+                                        ),
                                         backgroundColor: Color(0xFFE5E0F7),
                                       ),
                                     );
@@ -749,7 +763,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           isLoggedIn
                               ? l10n.signedInAs(
-                                  user.email ?? user.displayName ?? 'User',
+                                  user.email ?? user.displayName ?? l10n.user,
                                 )
                               : l10n.guestMode,
                           style: TextStyle(fontSize: 13, color: subtitleColor),
@@ -757,7 +771,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 2),
                         Text(
                           isLoggedIn
-                              ? (user.email ?? user.displayName ?? 'User')
+                              ? (user.email ?? user.displayName ?? l10n.user)
                               : l10n.signInToProtectData,
                           style: TextStyle(
                             fontSize: 16,
@@ -1017,7 +1031,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color subtitleColor,
   ) {
     final l10n = AppLocalizations.of(context)!;
-    final currentCode = BabyTrackerApp.of(context)?.localeCode ?? 'system';
+    final currentCode = BabyTrackerApp.of(context)?.localeCode ?? 'en';
 
     showModalBottomSheet(
       context: context,
@@ -1055,15 +1069,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   isSelected
                       ? Icons.radio_button_checked
                       : Icons.radio_button_off,
-                  color: isSelected
-                      ? const Color(0xFFFFB4A2)
-                      : subtitleColor,
+                  color: isSelected ? const Color(0xFFFFB4A2) : subtitleColor,
                 ),
                 title: Text(
                   LocaleService.labelForCode(l10n, code),
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                     color: textColor,
                   ),
                 ),
@@ -1115,7 +1129,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              Dil.dikkat,
+              AppLocalizations.of(context)!.attention,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -1125,14 +1139,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
         content: Text(
-          Dil.silmeUyarisi,
+          AppLocalizations.of(context)!.deleteAllDataWarning,
           style: TextStyle(fontSize: 15, color: subtitleColor),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              Dil.iptal,
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(
                 color: subtitleColor,
                 fontWeight: FontWeight.w600,
@@ -1158,7 +1172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
-                Dil.sil,
+                AppLocalizations.of(context)!.delete,
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,

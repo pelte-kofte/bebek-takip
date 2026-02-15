@@ -59,3 +59,5 @@ ios/vendor/
 ios/build/
 build/
 DerivedData/
+
+lib/l10n/app_localizations*.dart

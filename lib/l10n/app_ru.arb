@@ -194,10 +194,10 @@
   "loadTurkishVaccineCalendar": "Загрузить турецкий календарь вакцинации",
   "loadCalendarTitle": "Загрузить турецкий календарь вакцинации",
   "loadCalendarDesc": "Будет загружен стандартный турецкий календарь вакцинации. Существующие вакцины не будут удалены.",
-  "ageYears": "{years} лет",
+  "ageYears": "{count, plural, one{# год} few{# года} many{# лет} other{# года}}",
   "@ageYears": {
     "placeholders": {
-      "years": {
+      "count": {
         "type": "int"
       }
     }
@@ -224,10 +224,10 @@
       }
     }
   },
-  "ageDays": "{days} дн.",
+  "ageDays": "{count, plural, one{# день} few{# дня} many{# дней} other{# дня}}",
   "@ageDays": {
     "placeholders": {
-      "days": {
+      "count": {
         "type": "int"
       }
     }
@@ -533,5 +533,69 @@
   "tip_tip_feet_discovery_4_5_title": "Знакомство со стопами",
   "tip_tip_feet_discovery_4_5_desc": "Лёжа на спине, малыш может хватать стопы и тянуть их ко рту. Позвольте стопам изучать разные поверхности.",
   "tip_tip_independent_play_4_5_title": "Самостоятельная игра",
-  "tip_tip_independent_play_4_5_desc": "Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша."
+  "tip_tip_independent_play_4_5_desc": "Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша.",
+  "ageMonths": "{count, plural, one{# месяц} few{# месяца} many{# месяцев} other{# месяца}}",
+  "@ageMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "appPreferences": "Настройки приложения",
+  "appearance": "Внешний вид",
+  "darkMode": "Тёмный режим",
+  "darkModeSubtitle": "Комфортная тёмная тема для глаз",
+  "notifications": "Уведомления",
+  "feedingReminder": "Напоминание о кормлении",
+  "diaperReminder": "Напоминание о подгузнике",
+  "off": "Выкл",
+  "reminderTime": "Время напоминания",
+  "dataManagement": "Управление данными",
+  "createReport": "Создать отчёт",
+  "weeklyMonthlyStats": "Недельная/месячная статистика",
+  "deleteAllDataTitle": "Удалить все данные",
+  "deleteAllDataSubtitle": "Удалить все записи безвозвратно",
+  "about": "О приложении",
+  "version": "Версия",
+  "developer": "Разработчик",
+  "deleteAllDataWarning": "Это действие безвозвратно удалит все записи. Отменить нельзя.",
+  "debug": "DEBUG",
+  "testSleepNotification": "Тест уведомления о сне",
+  "fireSleepNotificationNow": "Отправить уведомление о сне сейчас",
+  "testNursingNotification": "Тест уведомления о кормлении",
+  "fireNursingNotificationNow": "Отправить уведомление о кормлении сейчас",
+  "user": "Пользователь",
+  "selectBaby": "Выбрать малыша",
+  "newBabyAdd": "Добавить нового малыша",
+  "babyProfileTitle": "Профиль малыша",
+  "babyInformation": "Информация о малыше",
+  "addPhoto": "Добавить фото",
+  "changePhoto": "Изменить фото",
+  "removePhoto": "Удалить фото",
+  "birthDateLabel": "Дата рождения",
+  "notesOptional": "Заметки (необязательно)",
+  "growthRecords": "Записи роста",
+  "deleteThisBabyData": "Удалить данные этого малыша",
+  "otherBabiesUnaffected": "Другие дети не будут затронуты",
+  "onlyThisBabyPrefix": "Будут удалены только все записи малыша ",
+  "allRecordsWillBeDeleted": ".",
+  "deleteActionIrreversible": "Другие дети не будут затронуты. Это действие нельзя отменить.",
+  "birth": "Рождение",
+  "monthNumber": "{month}. мес.",
+  "@monthNumber": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "selectMonth": "Выберите месяц",
+  "otherMonth": "Другой месяц",
+  "period": "Период",
+  "status": "Статус",
+  "scheduledDate": "Запланированная дата",
+  "editVaccine": "Изменить вакцину",
+  "vaccineName": "Название вакцины",
+  "allLabel": "Все"
 }

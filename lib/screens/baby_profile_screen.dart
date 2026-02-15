@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import '../l10n/app_localizations.dart';
-import '../models/dil.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
+import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
 import 'growth_screen.dart';
 import 'vaccines_screen.dart';
@@ -55,26 +55,6 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     super.dispose();
   }
 
-  String _calculateAge() {
-    final now = DateTime.now();
-    final difference = now.difference(_birthDate);
-    final totalMonths = (difference.inDays / 30.44).floor();
-    final days = difference.inDays % 30;
-
-    if (totalMonths >= 12) {
-      final years = totalMonths ~/ 12;
-      final remainingMonths = totalMonths % 12;
-      if (remainingMonths > 0) {
-        return '$years ${Dil.yil}  ·  $remainingMonths ${Dil.ay}';
-      }
-      return '$years ${Dil.yil}';
-    } else if (totalMonths > 0) {
-      return '$totalMonths ${Dil.ay}  ·  $days ${Dil.gun}';
-    } else {
-      return '$days ${Dil.gun}';
-    }
-  }
-
   bool get _hasPhoto =>
       !kIsWeb && _photoPath != null && File(_photoPath!).existsSync();
 
@@ -82,11 +62,9 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     if (kIsWeb) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.webPhotoUploadUnsupported),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.webPhotoUploadUnsupported)));
       return;
     }
     final XFile? image = await _imagePicker.pickImage(
@@ -101,9 +79,14 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   }
 
   void _showPhotoOptions(bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
     final cardColor = isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF5);
-    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : const Color(0xFF2D1A18);
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF7A749E);
 
     showModalBottomSheet(
       context: context,
@@ -135,10 +118,14 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                       : const Color(0xFFE5E0F7),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.photo_library_outlined, color: subtitleColor, size: 20),
+                child: Icon(
+                  Icons.photo_library_outlined,
+                  color: subtitleColor,
+                  size: 20,
+                ),
               ),
               title: Text(
-                'Fotoğrafı Değiştir',
+                l10n.changePhoto,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -159,10 +146,14 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                     color: const Color(0xFFFFE5E0),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.delete_outline, color: Colors.red.shade300, size: 20),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red.shade300,
+                    size: 20,
+                  ),
                 ),
                 title: Text(
-                  'Fotoğrafı Kaldır',
+                  l10n.removePhoto,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -185,8 +176,13 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
-    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : const Color(0xFF2D1A18);
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF7A749E);
+    final l10n = AppLocalizations.of(context)!;
 
     return DecorativeBackground(
       preset: BackgroundPreset.profile,
@@ -194,546 +190,575 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Column(
-          children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: isDark
-                            ? null
-                            : [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                      ),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: textColor,
-                        size: 20,
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: isDark
+                              ? null
+                              : [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                        ),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: textColor,
+                          size: 20,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        Dil.bebekProfili,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                          letterSpacing: -0.5,
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.babyProfileTitle,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        Dil.bebekBilgileri,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: subtitleColor,
-                          letterSpacing: 0.2,
+                        const SizedBox(height: 2),
+                        Text(
+                          l10n.babyInformation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: subtitleColor,
+                            letterSpacing: 0.2,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Baby Avatar
-                    GestureDetector(
-                      onTap: () {
-                        if (_hasPhoto) {
-                          _showPhotoOptions(isDark);
-                        } else {
-                          _pickPhoto();
-                        }
-                      },
-                      child: Column(
-                        children: [
-                          Stack(
-                            children: [
-                              Container(
-                                width: 120,
-                                height: 120,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: isDark
-                                      ? AppColors.bgDarkCard
-                                      : const Color(0xFFEBE8FF),
-                                  border: Border.all(
-                                    color: _hasPhoto
-                                        ? const Color(0xFFFFB4A2).withValues(alpha: 0.4)
-                                        : (isDark ? Colors.white24 : Colors.white),
-                                    width: _hasPhoto ? 3 : 4,
-                                  ),
-                                  boxShadow: isDark
-                                      ? null
-                                      : [
-                                          BoxShadow(
-                                            color: _hasPhoto
-                                                ? const Color(0xFFFFB4A2).withValues(alpha: 0.25)
-                                                : Colors.black.withValues(alpha: 0.06),
-                                            blurRadius: _hasPhoto ? 24 : 16,
-                                            offset: const Offset(0, 8),
-                                          ),
-                                        ],
-                                ),
-                                child: ClipOval(
-                                  child: _hasPhoto
-                                      ? Image.file(
-                                          File(_photoPath!),
-                                          width: 120,
-                                          height: 120,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.asset(
-                                          'assets/icons/illustration/baby_face.png',
-                                          width: 120,
-                                          height: 120,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              Container(
-                                                color: isDark
-                                                    ? AppColors.bgDarkCard
-                                                    : const Color(0xFFEBE8FF),
-                                                child: Icon(
-                                                  Icons.child_care,
-                                                  color: isDark
-                                                      ? const Color(0xFFFFB4A2)
-                                                      : const Color(0xFFFF998A),
-                                                  size: 48,
-                                                ),
-                                              ),
-                                        ),
-                                ),
-                              ),
-                              // Camera badge
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Container(
-                                  width: 36,
-                                  height: 36,
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Baby Avatar
+                      GestureDetector(
+                        onTap: () {
+                          if (_hasPhoto) {
+                            _showPhotoOptions(isDark);
+                          } else {
+                            _pickPhoto();
+                          }
+                        },
+                        child: Column(
+                          children: [
+                            Stack(
+                              children: [
+                                Container(
+                                  width: 120,
+                                  height: 120,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFFB4A2),
                                     shape: BoxShape.circle,
+                                    color: isDark
+                                        ? AppColors.bgDarkCard
+                                        : const Color(0xFFEBE8FF),
                                     border: Border.all(
-                                      color: isDark
-                                          ? AppColors.bgDark
-                                          : Colors.white,
-                                      width: 3,
+                                      color: _hasPhoto
+                                          ? const Color(
+                                              0xFFFFB4A2,
+                                            ).withValues(alpha: 0.4)
+                                          : (isDark
+                                                ? Colors.white24
+                                                : Colors.white),
+                                      width: _hasPhoto ? 3 : 4,
                                     ),
                                     boxShadow: isDark
                                         ? null
                                         : [
                                             BoxShadow(
-                                              color: Colors.black.withValues(alpha: 0.1),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 2),
+                                              color: _hasPhoto
+                                                  ? const Color(
+                                                      0xFFFFB4A2,
+                                                    ).withValues(alpha: 0.25)
+                                                  : Colors.black.withValues(
+                                                      alpha: 0.06,
+                                                    ),
+                                              blurRadius: _hasPhoto ? 24 : 16,
+                                              offset: const Offset(0, 8),
                                             ),
                                           ],
                                   ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                    size: 18,
+                                  child: ClipOval(
+                                    child: _hasPhoto
+                                        ? Image.file(
+                                            File(_photoPath!),
+                                            width: 120,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            'assets/icons/illustration/baby_face.png',
+                                            width: 120,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    Container(
+                                                      color: isDark
+                                                          ? AppColors.bgDarkCard
+                                                          : const Color(
+                                                              0xFFEBE8FF,
+                                                            ),
+                                                      child: Icon(
+                                                        Icons.child_care,
+                                                        color: isDark
+                                                            ? const Color(
+                                                                0xFFFFB4A2,
+                                                              )
+                                                            : const Color(
+                                                                0xFFFF998A,
+                                                              ),
+                                                        size: 48,
+                                                      ),
+                                                    ),
+                                          ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          if (!_hasPhoto) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              'Fotoğraf ekle',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: subtitleColor.withValues(alpha: 0.7),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Age display
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFFE5E0F7).withValues(alpha: 0.15)
-                            : const Color(0xFFE5E0F7),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        _calculateAge(),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: subtitleColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Baby Name Card
-                    _buildCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Dil.bebekAdi.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: subtitleColor,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _nameController,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: textColor,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: Dil.bebekAdi,
-                              hintStyle: TextStyle(
-                                color: subtitleColor.withValues(alpha: 0.5),
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.only(right: 12),
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
-                                        : const Color(0xFFE5E0F7),
-                                    borderRadius: BorderRadius.circular(12),
+                                // Camera badge
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFFFB4A2),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isDark
+                                            ? AppColors.bgDark
+                                            : Colors.white,
+                                        width: 3,
+                                      ),
+                                      boxShadow: isDark
+                                          ? null
+                                          : [
+                                              BoxShadow(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.1,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                    ),
+                                    child: const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                      size: 18,
+                                    ),
                                   ),
-                                  child: Icon(
-                                    Icons.person_outline,
-                                    color: subtitleColor,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                              prefixIconConstraints: const BoxConstraints(
-                                minWidth: 52,
-                                minHeight: 40,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Birth Date Card
-                    _buildCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Dil.dogumTarihi.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: subtitleColor,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          GestureDetector(
-                            onTap: () async {
-                              final picked = await showDatePicker(
-                                context: context,
-                                initialDate: _birthDate,
-                                firstDate: DateTime(2020),
-                                lastDate: DateTime.now(),
-                              );
-                              if (picked != null) {
-                                setState(() => _birthDate = picked);
-                              }
-                            },
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    color: isDark
-                                        ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
-                                        : const Color(0xFFE5E0F7),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Icon(
-                                    Icons.calendar_today,
-                                    color: subtitleColor,
-                                    size: 20,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  '${_birthDate.day} ${Dil.aylar[_birthDate.month - 1]} ${_birthDate.year}',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: textColor,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Icon(
-                                  Icons.chevron_right,
-                                  color: subtitleColor,
-                                  size: 24,
                                 ),
                               ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Notes Card
-                    _buildCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${Dil.notlar} (${Dil.istegeBagli})'.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: subtitleColor,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _notesController,
-                            maxLines: 3,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: textColor,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: AppLocalizations.of(context)!.babyNotesHint,
-                              hintStyle: TextStyle(
-                                color: subtitleColor.withValues(alpha: 0.5),
-                                fontSize: 14,
+                            if (!_hasPhoto) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                l10n.addPhoto,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: subtitleColor.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ],
+                            ],
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 12),
 
-                    // Action Cards
-                    _buildActionCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      icon: Icons.show_chart,
-                      label: Dil.buyumeKayitlari,
-                      subtitleColor: subtitleColor,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const GrowthScreen(),
+                      // Age display
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFFE5E0F7).withValues(alpha: 0.15)
+                              : const Color(0xFFE5E0F7),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          formatLocalizedAge(context, _birthDate),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: subtitleColor,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildActionCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      icon: Icons.vaccines_outlined,
-                      label: Dil.asilar,
-                      subtitleColor: subtitleColor,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const VaccinesScreen(),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 32),
 
-                    // Save Button
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: _isDirty ? 1.0 : 0.45,
-                      child: GestureDetector(
-                        onTap: _isDirty ? _saveProfile : null,
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFB4A2),
-                            borderRadius: BorderRadius.circular(100),
-                            boxShadow: _isDirty && !isDark
-                                ? [
-                                    BoxShadow(
-                                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                                      blurRadius: 16,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ]
-                                : null,
-                          ),
-                          child: Text(
-                            Dil.kaydet,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Danger Zone separator
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 1,
-                            color: subtitleColor.withValues(alpha: 0.12),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'VERİ YÖNETİMİ',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: subtitleColor.withValues(alpha: 0.5),
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 1,
-                            color: subtitleColor.withValues(alpha: 0.12),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    _buildCard(
-                      isDark: isDark,
-                      cardColor: cardColor,
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => _showResetDialog(isDark, cardColor, textColor, subtitleColor),
-                        child: Row(
+                      // Baby Name Card
+                      _buildCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 44,
-                              height: 44,
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? Colors.red.shade400.withValues(alpha: 0.15)
-                                    : const Color(0xFFFFE5E0),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.delete_outline,
-                                color: isDark
-                                    ? Colors.red.shade300
-                                    : Colors.red.shade400,
-                                size: 22,
+                            Text(
+                              l10n.babyNameHint.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: subtitleColor,
+                                letterSpacing: 1.0,
                               ),
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Bu bebeğin verilerini sil',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _nameController,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: textColor,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: l10n.babyNameHint,
+                                hintStyle: TextStyle(
+                                  color: subtitleColor.withValues(alpha: 0.5),
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                                prefixIcon: Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
                                       color: isDark
-                                          ? Colors.red.shade300
-                                          : Colors.red.shade400,
+                                          ? const Color(
+                                              0xFFE5E0F7,
+                                            ).withValues(alpha: 0.12)
+                                          : const Color(0xFFE5E0F7),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.person_outline,
+                                      color: subtitleColor,
+                                      size: 20,
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Diğer bebekler etkilenmez',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: subtitleColor,
+                                ),
+                                prefixIconConstraints: const BoxConstraints(
+                                  minWidth: 52,
+                                  minHeight: 40,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Birth Date Card
+                      _buildCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.birthDateLabel.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: subtitleColor,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            GestureDetector(
+                              onTap: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: _birthDate,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime.now(),
+                                );
+                                if (picked != null) {
+                                  setState(() => _birthDate = picked);
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? const Color(
+                                              0xFFE5E0F7,
+                                            ).withValues(alpha: 0.12)
+                                          : const Color(0xFFE5E0F7),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
+                                    child: Icon(
+                                      Icons.calendar_today,
+                                      color: subtitleColor,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    formatLocalizedDate(context, _birthDate),
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: textColor,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    color: subtitleColor,
+                                    size: 24,
                                   ),
                                 ],
                               ),
                             ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: subtitleColor,
-                              size: 24,
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Notes Card
+                      _buildCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.notesOptional.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: subtitleColor,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            TextField(
+                              controller: _notesController,
+                              maxLines: 3,
+                              style: TextStyle(fontSize: 14, color: textColor),
+                              decoration: InputDecoration(
+                                hintText: AppLocalizations.of(
+                                  context,
+                                )!.babyNotesHint,
+                                hintStyle: TextStyle(
+                                  color: subtitleColor.withValues(alpha: 0.5),
+                                  fontSize: 14,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.zero,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+
+                      // Action Cards
+                      _buildActionCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        icon: Icons.show_chart,
+                        label: l10n.growthRecords,
+                        subtitleColor: subtitleColor,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const GrowthScreen(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildActionCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        icon: Icons.vaccines_outlined,
+                        label: l10n.vaccines,
+                        subtitleColor: subtitleColor,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const VaccinesScreen(),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Save Button
+                      AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: _isDirty ? 1.0 : 0.45,
+                        child: GestureDetector(
+                          onTap: _isDirty ? _saveProfile : null,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFB4A2),
+                              borderRadius: BorderRadius.circular(100),
+                              boxShadow: _isDirty && !isDark
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFFFB4A2,
+                                        ).withValues(alpha: 0.3),
+                                        blurRadius: 16,
+                                        offset: const Offset(0, 8),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Text(
+                              l10n.save,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Danger Zone separator
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: subtitleColor.withValues(alpha: 0.12),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              l10n.dataManagement.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: subtitleColor.withValues(alpha: 0.5),
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 1,
+                              color: subtitleColor.withValues(alpha: 0.12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      _buildCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _showResetDialog(
+                            isDark,
+                            cardColor,
+                            textColor,
+                            subtitleColor,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.red.shade400.withValues(
+                                          alpha: 0.15,
+                                        )
+                                      : const Color(0xFFFFE5E0),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Icons.delete_outline,
+                                  color: isDark
+                                      ? Colors.red.shade300
+                                      : Colors.red.shade400,
+                                  size: 22,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      l10n.deleteThisBabyData,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.red.shade300
+                                            : Colors.red.shade400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      l10n.otherBabiesUnaffected,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: subtitleColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: subtitleColor,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -772,11 +797,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                color: subtitleColor,
-                size: 22,
-              ),
+              Icon(Icons.chevron_right, color: subtitleColor, size: 22),
             ],
           ),
         ),
@@ -784,15 +805,18 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     );
   }
 
-  void _showResetDialog(bool isDark, Color cardColor, Color textColor, Color subtitleColor) {
+  void _showResetDialog(
+    bool isDark,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
     final babyName = _nameController.text.trim();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: cardColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
             Container(
@@ -812,7 +836,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              Dil.dikkat,
+              AppLocalizations.of(context)!.attention,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -825,16 +849,18 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
           text: TextSpan(
             style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
             children: [
-              const TextSpan(text: 'Sadece '),
+              TextSpan(text: AppLocalizations.of(context)!.onlyThisBabyPrefix),
               TextSpan(
                 text: babyName,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
               ),
-              const TextSpan(text: ' bebeğinin tüm kayıtları silinecek.\n\n'),
-              const TextSpan(text: 'Diğer bebekler etkilenmez. Bu işlem geri alınamaz.'),
+              TextSpan(
+                text:
+                    '${AppLocalizations.of(context)!.allRecordsWillBeDeleted}\n\n',
+              ),
+              TextSpan(
+                text: AppLocalizations.of(context)!.deleteActionIrreversible,
+              ),
             ],
           ),
         ),
@@ -842,11 +868,8 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
           TextButton(
             onPressed: () => Navigator.pop(ctx),
             child: Text(
-              Dil.iptal,
-              style: TextStyle(
-                color: subtitleColor,
-                fontSize: 15,
-              ),
+              AppLocalizations.of(context)!.cancel,
+              style: TextStyle(color: subtitleColor, fontSize: 15),
             ),
           ),
           GestureDetector(
@@ -856,7 +879,9 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
               Navigator.pop(ctx);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(AppLocalizations.of(context)!.babyDataDeleted(babyName)),
+                  content: Text(
+                    AppLocalizations.of(context)!.babyDataDeleted(babyName),
+                  ),
                   backgroundColor: const Color(0xFFFFB4A2),
                 ),
               );
@@ -868,7 +893,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                 borderRadius: BorderRadius.circular(100),
               ),
               child: Text(
-                Dil.sil,
+                AppLocalizations.of(context)!.delete,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 15,
@@ -924,7 +949,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(Dil.kaydedildi),
+        content: Text(AppLocalizations.of(context)!.update),
         backgroundColor: const Color(0xFFFFB4A2),
       ),
     );

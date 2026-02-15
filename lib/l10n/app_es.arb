@@ -194,10 +194,10 @@
   "loadTurkishVaccineCalendar": "Cargar calendario de vacunación turco",
   "loadCalendarTitle": "Cargar calendario de vacunación turco",
   "loadCalendarDesc": "Se cargará el calendario de vacunación turco estándar. Las vacunas existentes no se eliminarán.",
-  "ageYears": "{years} años",
+  "ageYears": "{count, plural, =1{# año} other{# años}}",
   "@ageYears": {
     "placeholders": {
-      "years": {
+      "count": {
         "type": "int"
       }
     }
@@ -224,10 +224,10 @@
       }
     }
   },
-  "ageDays": "{days} días",
+  "ageDays": "{count, plural, =1{# día} other{# días}}",
   "@ageDays": {
     "placeholders": {
-      "days": {
+      "count": {
         "type": "int"
       }
     }
@@ -533,5 +533,69 @@
   "tip_tip_feet_discovery_4_5_title": "Descubriendo los pies",
   "tip_tip_feet_discovery_4_5_desc": "Tu bebé puede agarrar sus pies y llevarlos a la boca cuando está acostado. Deja que los pies exploren diferentes superficies.",
   "tip_tip_independent_play_4_5_title": "Juego independiente",
-  "tip_tip_independent_play_4_5_desc": "Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza."
+  "tip_tip_independent_play_4_5_desc": "Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza.",
+  "ageMonths": "{count, plural, =1{# mes} other{# meses}}",
+  "@ageMonths": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "appPreferences": "Preferencias de la app",
+  "appearance": "Apariencia",
+  "darkMode": "Modo oscuro",
+  "darkModeSubtitle": "Tema oscuro cómodo para la vista",
+  "notifications": "Notificaciones",
+  "feedingReminder": "Recordatorio de alimentación",
+  "diaperReminder": "Recordatorio de pañal",
+  "off": "Desactivado",
+  "reminderTime": "Hora del recordatorio",
+  "dataManagement": "Gestión de datos",
+  "createReport": "Crear informe",
+  "weeklyMonthlyStats": "Estadísticas semanales/mensuales",
+  "deleteAllDataTitle": "Eliminar todos los datos",
+  "deleteAllDataSubtitle": "Eliminar permanentemente todos los registros",
+  "about": "Acerca de",
+  "version": "Versión",
+  "developer": "Desarrollador",
+  "deleteAllDataWarning": "Esta acción elimina todos los registros de forma permanente. No se puede deshacer.",
+  "debug": "DEBUG",
+  "testSleepNotification": "Probar notificación de sueño",
+  "fireSleepNotificationNow": "Lanzar notificación de sueño ahora",
+  "testNursingNotification": "Probar notificación de lactancia",
+  "fireNursingNotificationNow": "Lanzar notificación de lactancia ahora",
+  "user": "Usuario",
+  "selectBaby": "Seleccionar bebé",
+  "newBabyAdd": "Agregar nuevo bebé",
+  "babyProfileTitle": "Perfil del bebé",
+  "babyInformation": "Información del bebé",
+  "addPhoto": "Agregar foto",
+  "changePhoto": "Cambiar foto",
+  "removePhoto": "Quitar foto",
+  "birthDateLabel": "Fecha de nacimiento",
+  "notesOptional": "Notas (opcional)",
+  "growthRecords": "Registros de crecimiento",
+  "deleteThisBabyData": "Eliminar los datos de este bebé",
+  "otherBabiesUnaffected": "Los demás bebés no se verán afectados",
+  "onlyThisBabyPrefix": "Solo se eliminarán todos los registros de ",
+  "allRecordsWillBeDeleted": ".",
+  "deleteActionIrreversible": "Los demás bebés no se verán afectados. Esta acción no se puede deshacer.",
+  "birth": "Nacimiento",
+  "monthNumber": "Mes {month}",
+  "@monthNumber": {
+    "placeholders": {
+      "month": {
+        "type": "int"
+      }
+    }
+  },
+  "selectMonth": "Seleccionar mes",
+  "otherMonth": "Otro mes",
+  "period": "Período",
+  "status": "Estado",
+  "scheduledDate": "Fecha programada",
+  "editVaccine": "Editar vacuna",
+  "vaccineName": "Nombre de la vacuna",
+  "allLabel": "Todos"
 }
