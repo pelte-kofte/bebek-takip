@@ -1,6 +1,9 @@
 import Flutter
 import UIKit
 import Foundation
+#if canImport(ActivityKit)
+import ActivityKit
+#endif
 
 class LiveActivityHandler {
 
@@ -63,7 +66,7 @@ class LiveActivityHandler {
         ]
 
         writeToAppGroup(key: "liveactivity_sleep_\(babyId)", data: data)
-        result(nil)
+        startSleepActivity(babyId: babyId, startEpochSeconds: startEpochSeconds, result: result)
     }
 
     private func handleStopSleep(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -74,7 +77,7 @@ class LiveActivityHandler {
         }
 
         removeFromAppGroup(key: "liveactivity_sleep_\(babyId)")
-        result(nil)
+        stopActivity(babyId: babyId, type: "sleep", result: result)
     }
 
     // MARK: - Nursing Handlers
@@ -97,7 +100,12 @@ class LiveActivityHandler {
         ]
 
         writeToAppGroup(key: "liveactivity_nursing_\(babyId)", data: data)
-        result(nil)
+        startNursingActivity(
+            babyId: babyId,
+            startEpochSeconds: startEpochSeconds,
+            side: side,
+            result: result
+        )
     }
 
     private func handleUpdateNursingSide(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -115,7 +123,7 @@ class LiveActivityHandler {
             writeToAppGroup(key: key, data: existingData)
         }
 
-        result(nil)
+        updateNursingSideActivity(babyId: babyId, side: side, result: result)
     }
 
     private func handleStopNursing(call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -126,8 +134,159 @@ class LiveActivityHandler {
         }
 
         removeFromAppGroup(key: "liveactivity_nursing_\(babyId)")
-        result(nil)
+        stopActivity(babyId: babyId, type: "nursing", result: result)
     }
+
+    // MARK: - ActivityKit Integration
+
+    private func startSleepActivity(babyId: String, startEpochSeconds: Int, result: @escaping FlutterResult) {
+#if canImport(ActivityKit)
+        guard #available(iOS 16.1, *) else {
+            result(nil)
+            return
+        }
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            result(FlutterError(code: "LIVE_ACTIVITY_DISABLED", message: "Live Activities are disabled", details: nil))
+            return
+        }
+
+        Task {
+            do {
+                try await endActivities(babyId: babyId, type: "sleep")
+
+                let attributes = BabyTimerAttributes(babyId: babyId, activityType: "sleep")
+                let state = BabyTimerAttributes.ContentState(
+                    startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
+                    side: nil
+                )
+
+                if #available(iOS 16.2, *) {
+                    let content = ActivityContent(state: state, staleDate: nil)
+                    _ = try Activity.request(attributes: attributes, content: content, pushType: nil)
+                } else {
+                    _ = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
+                }
+                result(nil)
+            } catch {
+                result(FlutterError(code: "LIVE_ACTIVITY_START_FAILED", message: error.localizedDescription, details: nil))
+            }
+        }
+#else
+        result(nil)
+#endif
+    }
+
+    private func startNursingActivity(
+        babyId: String,
+        startEpochSeconds: Int,
+        side: String,
+        result: @escaping FlutterResult
+    ) {
+#if canImport(ActivityKit)
+        guard #available(iOS 16.1, *) else {
+            result(nil)
+            return
+        }
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+            result(FlutterError(code: "LIVE_ACTIVITY_DISABLED", message: "Live Activities are disabled", details: nil))
+            return
+        }
+
+        Task {
+            do {
+                try await endActivities(babyId: babyId, type: "nursing")
+
+                let attributes = BabyTimerAttributes(babyId: babyId, activityType: "nursing")
+                let state = BabyTimerAttributes.ContentState(
+                    startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
+                    side: side
+                )
+
+                if #available(iOS 16.2, *) {
+                    let content = ActivityContent(state: state, staleDate: nil)
+                    _ = try Activity.request(attributes: attributes, content: content, pushType: nil)
+                } else {
+                    _ = try Activity.request(attributes: attributes, contentState: state, pushType: nil)
+                }
+                result(nil)
+            } catch {
+                result(FlutterError(code: "LIVE_ACTIVITY_START_FAILED", message: error.localizedDescription, details: nil))
+            }
+        }
+#else
+        result(nil)
+#endif
+    }
+
+    private func updateNursingSideActivity(babyId: String, side: String, result: @escaping FlutterResult) {
+#if canImport(ActivityKit)
+        guard #available(iOS 16.1, *) else {
+            result(nil)
+            return
+        }
+
+        Task {
+            let activities = matchingActivities(babyId: babyId, type: "nursing")
+            for activity in activities {
+                let updatedState = BabyTimerAttributes.ContentState(
+                    startDate: activity.contentState.startDate,
+                    side: side
+                )
+                if #available(iOS 16.2, *) {
+                    let content = ActivityContent(state: updatedState, staleDate: nil)
+                    await activity.update(content)
+                } else {
+                    await activity.update(using: updatedState)
+                }
+            }
+            result(nil)
+        }
+#else
+        result(nil)
+#endif
+    }
+
+    private func stopActivity(babyId: String, type: String, result: @escaping FlutterResult) {
+#if canImport(ActivityKit)
+        guard #available(iOS 16.1, *) else {
+            result(nil)
+            return
+        }
+
+        Task {
+            do {
+                try await endActivities(babyId: babyId, type: type)
+                result(nil)
+            } catch {
+                result(FlutterError(code: "LIVE_ACTIVITY_STOP_FAILED", message: error.localizedDescription, details: nil))
+            }
+        }
+#else
+        result(nil)
+#endif
+    }
+
+#if canImport(ActivityKit)
+    @available(iOS 16.1, *)
+    private func matchingActivities(babyId: String, type: String) -> [Activity<BabyTimerAttributes>] {
+        Activity<BabyTimerAttributes>.activities.filter {
+            $0.attributes.babyId == babyId && $0.attributes.activityType == type
+        }
+    }
+
+    @available(iOS 16.1, *)
+    private func endActivities(babyId: String, type: String) async throws {
+        let activities = matchingActivities(babyId: babyId, type: type)
+        for activity in activities {
+            if #available(iOS 16.2, *) {
+                let content = ActivityContent(state: activity.contentState, staleDate: nil)
+                await activity.end(content, dismissalPolicy: .immediate)
+            } else {
+                await activity.end(using: activity.contentState, dismissalPolicy: .immediate)
+            }
+        }
+    }
+#endif
 
     // MARK: - App Group Storage
 
