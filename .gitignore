@@ -45,3 +45,17 @@ app.*.map.json
 /android/app/release
 nul
 nul/*
+
+
+# local tooling
+.claude/settings.local.json
+.vscode/settings.json
+
+# iOS ruby/bundler
+ios/.bundle/
+ios/vendor/
+
+# builds
+ios/build/
+build/
+DerivedData/

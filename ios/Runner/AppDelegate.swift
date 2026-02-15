@@ -8,11 +8,7 @@ import UIKit
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-
-    // Register Live Activity MethodChannel
-    if let controller = window?.rootViewController as? FlutterViewController {
-        LiveActivityHandler.shared.register(with: controller)
-    }
+    LiveActivityHandler.shared.register(with: self)
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
