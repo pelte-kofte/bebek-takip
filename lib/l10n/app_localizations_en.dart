@@ -448,8 +448,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'The standard Turkish vaccine calendar will be loaded. Existing vaccines won\'t be deleted.';
 
   @override
-  String ageYears(int years) {
-    return '$years Years Old';
+  String ageYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# years old',
+      one: '# year old',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -463,8 +469,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String ageDays(int days) {
-    return '$days Days Old';
+  String ageDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# days old',
+      one: '# day old',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -883,4 +895,476 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageUpdated => 'Language updated';
+
+  @override
+  String get tip_siyah_mekonyum_title => 'First Poop';
+
+  @override
+  String get tip_siyah_mekonyum_desc =>
+      'In the first 2-4 days, this is normal whether your baby takes breast milk or formula. No need to worry.';
+
+  @override
+  String get tip_eye_tracking_title => 'Eye Tracking';
+
+  @override
+  String get tip_eye_tracking_desc =>
+      'Your baby can clearly see only about 25-30 cm for now. Move your face slowly and let your baby follow with their eyes.';
+
+  @override
+  String get tip_neck_support_title => 'Neck Support';
+
+  @override
+  String get tip_neck_support_desc =>
+      'Always support your baby\'s head and neck when holding them. Neck muscles are still very weak.';
+
+  @override
+  String get tip_reflex_stepping_title => 'Stepping Reflex';
+
+  @override
+  String get tip_reflex_stepping_desc =>
+      'Hold your baby upright and let their feet touch a flat surface. You may see stepping reflexes.';
+
+  @override
+  String get tip_sound_interest_title => 'Interest in Sounds';
+
+  @override
+  String get tip_sound_interest_desc =>
+      'Your baby is very sensitive to sounds. Try getting attention with a soft rattle or gentle music box.';
+
+  @override
+  String get tip_parent_interaction_title => 'Parent Interaction';
+
+  @override
+  String get tip_parent_interaction_desc =>
+      'Make eye contact and talk softly. Your baby recognizes your voice and feels secure with it.';
+
+  @override
+  String get tip_color_worlds_title => 'World of Colors';
+
+  @override
+  String get tip_color_worlds_desc =>
+      'Newborns see high-contrast black and white patterns best. Try showing black-and-white cards.';
+
+  @override
+  String get tip_mini_athlete_title => 'Mini Athlete';
+
+  @override
+  String get tip_mini_athlete_desc =>
+      'Tummy time strengthens neck and back muscles. Try a few minutes each day.';
+
+  @override
+  String get tip_sound_hunter_title => 'Sound Hunter';
+
+  @override
+  String get tip_sound_hunter_desc =>
+      'Snap softly near your baby\'s ear. They may try turning toward the sound.';
+
+  @override
+  String get tip_touch_explore_title => 'Touch Exploration';
+
+  @override
+  String get tip_touch_explore_desc =>
+      'Let your baby feel different textures on hands and feet: soft, rough, and cool surfaces.';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_title => 'Baby Talk Chats';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_desc =>
+      'When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_title =>
+      'Strong Shoulders (Tummy Time)';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_desc =>
+      'Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.';
+
+  @override
+  String get tip_tip_baby_massage_1_2_title => 'Soothing Massage';
+
+  @override
+  String get tip_tip_baby_massage_1_2_desc =>
+      'After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_title => 'Gesture-Based Talking';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_desc =>
+      'Use gestures while talking. Wave for \"we\'re going\" and rub hands for \"all done\". This supports visual memory.';
+
+  @override
+  String get tip_tip_open_hands_1_2_title => 'Free Fingers';
+
+  @override
+  String get tip_tip_open_hands_1_2_desc =>
+      'Hands are opening more now. Offer soft toys to practice grasping and releasing.';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_title => 'Side-by-Side Bonding';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_desc =>
+      'Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.';
+
+  @override
+  String get tip_tip_sound_hunter_title => 'Sound Hunter';
+
+  @override
+  String get tip_tip_sound_hunter_desc =>
+      'Shake a rattle softly where your baby cannot see it. Turning toward sound builds hearing and focus.';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_title => 'Sound Hunter (Level 2)';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_desc =>
+      'Make different sounds from left and right. Finding the source strengthens attention skills.';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_title => 'Touch and Discover';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_desc =>
+      'Offer objects with different textures. Each new feeling is a new discovery for your baby.';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_title => 'Outdoor Explorer';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_desc =>
+      'Show trees and animals outside. Let your baby touch and explore while hearing your voice.';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_title => 'Reaching Practice';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_desc =>
+      'Place toys within reach. Even attempts to grab them help strengthen muscles.';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_title => 'Supported Bouncing';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_desc =>
+      'Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_title => 'Visual Tracking';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_desc =>
+      'Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.';
+
+  @override
+  String get tip_tip_face_play_1_2_title => 'Face Play';
+
+  @override
+  String get tip_tip_face_play_1_2_desc =>
+      'Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby\'s favorite toys.';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_title => 'Emotion Naming';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_desc =>
+      'When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.';
+
+  @override
+  String get tip_tip_first_meal_title => 'First Tasting';
+
+  @override
+  String get tip_tip_first_meal_desc =>
+      'Start solids based on your doctor\'s advice. Spoon feeding can be fun, but stay alert for allergy signs.';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Active Hands';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
+      'Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_title => 'Supported Sitting';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_desc =>
+      'Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_title => 'Discovering Feet';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_desc =>
+      'Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.';
+
+  @override
+  String get tip_tip_independent_play_4_5_title => 'Independent Play';
+
+  @override
+  String get tip_tip_independent_play_4_5_desc =>
+      'Place a few textured toys nearby and step back a little. Independent play supports confidence.';
+
+  @override
+  String ageMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# months old',
+      one: '# month old',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appPreferences => 'App preferences';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get darkMode => 'Dark mode';
+
+  @override
+  String get darkModeSubtitle => 'Comfortable low-light theme';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get feedingReminder => 'Feeding Reminder';
+
+  @override
+  String get diaperReminder => 'Diaper Reminder';
+
+  @override
+  String get off => 'Off';
+
+  @override
+  String get reminderTime => 'Reminder time';
+
+  @override
+  String get dataManagement => 'Data management';
+
+  @override
+  String get createReport => 'Create report';
+
+  @override
+  String get weeklyMonthlyStats => 'Weekly/Monthly insights';
+
+  @override
+  String get deleteAllDataTitle => 'Delete all data';
+
+  @override
+  String get deleteAllDataSubtitle => 'Permanently delete all records';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get developer => 'Developer';
+
+  @override
+  String get deleteAllDataWarning =>
+      'This action permanently deletes all records. This cannot be undone.';
+
+  @override
+  String get debug => 'Debug';
+
+  @override
+  String get testSleepNotification => 'Test Sleep Notification';
+
+  @override
+  String get fireSleepNotificationNow => 'Fire sleep notification now';
+
+  @override
+  String get testNursingNotification => 'Test Nursing Notification';
+
+  @override
+  String get fireNursingNotificationNow => 'Fire nursing notification now';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get selectBaby => 'Select Baby';
+
+  @override
+  String get newBabyAdd => 'Add New Baby';
+
+  @override
+  String get babyProfileTitle => 'Baby Profile';
+
+  @override
+  String get babyInformation => 'Baby Information';
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get changePhoto => 'Change photo';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get birthDateLabel => 'Birth Date';
+
+  @override
+  String get notesOptional => 'Notes (optional)';
+
+  @override
+  String get growthRecords => 'Growth Records';
+
+  @override
+  String get deleteThisBabyData => 'Delete this baby\'s data';
+
+  @override
+  String get otherBabiesUnaffected => 'Other babies are not affected';
+
+  @override
+  String get onlyThisBabyPrefix => 'Only ';
+
+  @override
+  String get allRecordsWillBeDeleted => ' baby\'s records will be deleted.';
+
+  @override
+  String get deleteActionIrreversible =>
+      'Other babies are not affected. This action cannot be undone.';
+
+  @override
+  String get birth => 'Birth';
+
+  @override
+  String monthNumber(int month) {
+    return '$month. Month';
+  }
+
+  @override
+  String get selectMonth => 'Select month';
+
+  @override
+  String get otherMonth => 'Other month';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get scheduledDate => 'Scheduled Date';
+
+  @override
+  String get editVaccine => 'Edit Vaccine';
+
+  @override
+  String get vaccineName => 'Vaccine Name';
+
+  @override
+  String get allLabel => 'All';
+
+  @override
+  String get routineFilter => 'Routine';
+
+  @override
+  String get asNeededFilter => 'As-needed';
+
+  @override
+  String get vaccineProtocolsFilter => 'Vaccine protocols';
+
+  @override
+  String get everyDay => 'Every day';
+
+  @override
+  String get asNeeded => 'As needed';
+
+  @override
+  String get vaccineProtocolLabel => 'Vaccine protocol';
+
+  @override
+  String linkedToVaccine(String vaccine) {
+    return 'linked to $vaccine';
+  }
+
+  @override
+  String get noVaccineLink => 'No linked vaccine';
+
+  @override
+  String doseCountLabel(int count) {
+    return 'Doses logged: $count';
+  }
+
+  @override
+  String get logGivenNow => 'Log given now';
+
+  @override
+  String get medicationDoseLogged => 'Dose logged';
+
+  @override
+  String get scheduleType => 'Schedule type';
+
+  @override
+  String get dailySchedule => 'Daily';
+
+  @override
+  String get prnSchedule => 'As-needed';
+
+  @override
+  String get dailyTimeRequired => 'Add at least one daily time';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String medicationReminderTitle(String name) {
+    return '$name reminder';
+  }
+
+  @override
+  String get medicationReminderBody => 'Time to give this medication';
+
+  @override
+  String medicationReminderBodyWithDose(String dose) {
+    return 'Dose: $dose';
+  }
+
+  @override
+  String get addVaccineProtocol => 'Add vaccine protocol';
+
+  @override
+  String get createNew => 'Create new';
+
+  @override
+  String get chooseExistingMedication => 'Choose existing medication';
+
+  @override
+  String get feverReducerHint => 'Fever reducer';
+
+  @override
+  String beforeHours(int hours) {
+    return 'Before: ${hours}h';
+  }
+
+  @override
+  String afterHours(int hours) {
+    return 'After: ${hours}h';
+  }
+
+  @override
+  String get vaccineProtocolAdded => 'Vaccine protocol added';
 }

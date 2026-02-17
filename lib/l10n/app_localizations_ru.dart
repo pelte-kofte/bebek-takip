@@ -450,8 +450,16 @@ class AppLocalizationsRu extends AppLocalizations {
       'Будет загружен стандартный турецкий календарь вакцинации. Существующие вакцины не будут удалены.';
 
   @override
-  String ageYears(int years) {
-    return '$years лет';
+  String ageYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# года',
+      many: '# лет',
+      few: '# года',
+      one: '# год',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -465,8 +473,16 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String ageDays(int days) {
-    return '$days дн.';
+  String ageDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# дня',
+      many: '# дней',
+      few: '# дня',
+      one: '# день',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -885,4 +901,480 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get languageUpdated => 'Язык обновлён';
+
+  @override
+  String get tip_siyah_mekonyum_title => 'Первый стул';
+
+  @override
+  String get tip_siyah_mekonyum_desc =>
+      'В первые 2-4 дня это нормально, независимо от того, получает малыш грудное молоко или смесь. Повода для тревоги нет.';
+
+  @override
+  String get tip_eye_tracking_title => 'Зрительное слежение';
+
+  @override
+  String get tip_eye_tracking_desc =>
+      'Пока малыш чётко видит только на расстоянии около 25-30 см. Поднесите лицо ближе и медленно двигайтесь, чтобы он следил глазами.';
+
+  @override
+  String get tip_neck_support_title => 'Поддержка шеи';
+
+  @override
+  String get tip_neck_support_desc =>
+      'Всегда поддерживайте голову и шею малыша, когда берёте его на руки. Мышцы шеи ещё очень слабые.';
+
+  @override
+  String get tip_reflex_stepping_title => 'Шаговый рефлекс';
+
+  @override
+  String get tip_reflex_stepping_desc =>
+      'Держите малыша вертикально и дайте стопам коснуться ровной поверхности. Вы можете заметить шаговые движения.';
+
+  @override
+  String get tip_sound_interest_title => 'Интерес к звукам';
+
+  @override
+  String get tip_sound_interest_desc =>
+      'Малыш очень чувствителен к звукам. Попробуйте привлечь его внимание мягкой погремушкой или спокойной музыкальной игрушкой.';
+
+  @override
+  String get tip_parent_interaction_title => 'Контакт с родителями';
+
+  @override
+  String get tip_parent_interaction_desc =>
+      'Смотрите в глаза и говорите мягким голосом. Малыш узнаёт ваш голос и чувствует себя в безопасности.';
+
+  @override
+  String get tip_color_worlds_title => 'Мир цветов';
+
+  @override
+  String get tip_color_worlds_desc =>
+      'Новорождённые лучше всего видят чёрно-белые контрасты. Попробуйте показывать карточки с такими узорами.';
+
+  @override
+  String get tip_mini_athlete_title => 'Маленький спортсмен';
+
+  @override
+  String get tip_mini_athlete_desc =>
+      'Время на животике укрепляет мышцы шеи и спины. Пробуйте несколько минут каждый день.';
+
+  @override
+  String get tip_sound_hunter_title => 'Охотник за звуками';
+
+  @override
+  String get tip_sound_hunter_desc =>
+      'Тихо щёлкните пальцами рядом с ушком малыша. Он может попытаться повернуть голову к звуку.';
+
+  @override
+  String get tip_touch_explore_title => 'Тактильное исследование';
+
+  @override
+  String get tip_touch_explore_desc =>
+      'Дайте малышу почувствовать разные текстуры руками и стопами: мягкие, шероховатые и прохладные поверхности.';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_title => 'Разговоры с лепетом';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_desc =>
+      'Когда малыш издаёт звуки, внимательно слушайте. Мягко отвечайте, когда он закончит. Такие мини-диалоги развивают общение.';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_title =>
+      'Сильные плечики (время на животике)';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_desc =>
+      'Кладите малыша на животик на короткое время. Поощряйте поднимать голову яркой игрушкой перед ним.';
+
+  @override
+  String get tip_tip_baby_massage_1_2_title => 'Успокаивающий массаж';
+
+  @override
+  String get tip_tip_baby_massage_1_2_desc =>
+      'После купания делайте мягкий массаж, начиная со стоп. Это развивает ощущение тела и помогает малышу расслабиться.';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_title => 'Речь с жестами';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_desc =>
+      'Используйте жесты во время разговора. Помашите рукой для идём и потрите ладони для всё. Это поддерживает зрительную память.';
+
+  @override
+  String get tip_tip_open_hands_1_2_title => 'Свободные пальчики';
+
+  @override
+  String get tip_tip_open_hands_1_2_desc =>
+      'Кулачки раскрываются всё чаще. Предлагайте мягкие игрушки, чтобы тренировать захват и отпускание.';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_title => 'Близость рядом';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_desc =>
+      'Лягте рядом с малышом. Улыбайтесь и говорите ласково, пока он пытается повернуться к вам.';
+
+  @override
+  String get tip_tip_sound_hunter_title => 'Охотник за звуками';
+
+  @override
+  String get tip_tip_sound_hunter_desc =>
+      'Тихо потрясите погремушкой там, где малыш её не видит. Поворот на звук развивает слух и концентрацию.';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_title =>
+      'Охотник за звуками (уровень 2)';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_desc =>
+      'Издавайте разные звуки слева и справа. Поиск источника укрепляет внимание.';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_title => 'Трогать и открывать';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_desc =>
+      'Предлагайте предметы с разной фактурой. Каждое новое ощущение — это новое открытие для малыша.';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_title => 'Исследователь на улице';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_desc =>
+      'Показывайте деревья и животных на прогулке. Давайте малышу трогать и изучать, пока он слышит ваш голос.';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_title => 'Тренировка дотягивания';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_desc =>
+      'Кладите игрушки в зоне досягаемости. Даже попытки дотянуться помогают укреплять мышцы.';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_title => 'Пружиним с поддержкой';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_desc =>
+      'Держите малыша вертикально у себя на коленях и мягко пружиньте с поддержкой. Это помогает укреплять ножки и исследовать новое.';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_title => 'Зрительное слежение';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_desc =>
+      'Медленно двигайте яркую звучащую игрушку в поле зрения малыша. Это отличное упражнение для зрительного слежения.';
+
+  @override
+  String get tip_tip_face_play_1_2_title => 'Игра с мимикой';
+
+  @override
+  String get tip_tip_face_play_1_2_desc =>
+      'Подойдите ближе, установите зрительный контакт и используйте весёлую мимику. Ваш голос и лицо — любимые игрушки малыша.';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_title => 'Называем эмоции';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_desc =>
+      'Когда малыш плачет, спокойно называйте его чувство и поддерживайте. Ощущение, что его понимают, укрепляет эмоциональную безопасность.';
+
+  @override
+  String get tip_tip_first_meal_title => 'Первая проба';
+
+  @override
+  String get tip_tip_first_meal_desc =>
+      'Начинайте прикорм по рекомендации педиатра. Кормление с ложки может быть приятным, но важно следить за признаками аллергии.';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Активные ручки';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
+      'Примерно в 4-5 месяцев малыши пытаются перекладывать предметы из одной руки в другую. Предлагайте удобные для захвата предметы и наблюдайте.';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_title => 'Сидение с поддержкой';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_desc =>
+      'Тренируйте сидение с опорой на подушки. Положите игрушку перед малышом, чтобы мотивировать удержание равновесия и опору корпусом.';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_title => 'Знакомство со стопами';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_desc =>
+      'Лёжа на спине, малыш может хватать стопы и тянуть их ко рту. Позвольте стопам изучать разные поверхности.';
+
+  @override
+  String get tip_tip_independent_play_4_5_title => 'Самостоятельная игра';
+
+  @override
+  String get tip_tip_independent_play_4_5_desc =>
+      'Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша.';
+
+  @override
+  String ageMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# месяца',
+      many: '# месяцев',
+      few: '# месяца',
+      one: '# месяц',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appPreferences => 'Настройки приложения';
+
+  @override
+  String get appearance => 'Внешний вид';
+
+  @override
+  String get darkMode => 'Тёмный режим';
+
+  @override
+  String get darkModeSubtitle => 'Комфортная тёмная тема для глаз';
+
+  @override
+  String get notifications => 'Уведомления';
+
+  @override
+  String get feedingReminder => 'Напоминание о кормлении';
+
+  @override
+  String get diaperReminder => 'Напоминание о подгузнике';
+
+  @override
+  String get off => 'Выкл';
+
+  @override
+  String get reminderTime => 'Время напоминания';
+
+  @override
+  String get dataManagement => 'Управление данными';
+
+  @override
+  String get createReport => 'Создать отчёт';
+
+  @override
+  String get weeklyMonthlyStats => 'Недельная/месячная статистика';
+
+  @override
+  String get deleteAllDataTitle => 'Удалить все данные';
+
+  @override
+  String get deleteAllDataSubtitle => 'Удалить все записи безвозвратно';
+
+  @override
+  String get about => 'О приложении';
+
+  @override
+  String get version => 'Версия';
+
+  @override
+  String get developer => 'Разработчик';
+
+  @override
+  String get deleteAllDataWarning =>
+      'Это действие безвозвратно удалит все записи. Отменить нельзя.';
+
+  @override
+  String get debug => 'DEBUG';
+
+  @override
+  String get testSleepNotification => 'Тест уведомления о сне';
+
+  @override
+  String get fireSleepNotificationNow => 'Отправить уведомление о сне сейчас';
+
+  @override
+  String get testNursingNotification => 'Тест уведомления о кормлении';
+
+  @override
+  String get fireNursingNotificationNow =>
+      'Отправить уведомление о кормлении сейчас';
+
+  @override
+  String get user => 'Пользователь';
+
+  @override
+  String get selectBaby => 'Выбрать малыша';
+
+  @override
+  String get newBabyAdd => 'Добавить нового малыша';
+
+  @override
+  String get babyProfileTitle => 'Профиль малыша';
+
+  @override
+  String get babyInformation => 'Информация о малыше';
+
+  @override
+  String get addPhoto => 'Добавить фото';
+
+  @override
+  String get changePhoto => 'Изменить фото';
+
+  @override
+  String get removePhoto => 'Удалить фото';
+
+  @override
+  String get birthDateLabel => 'Дата рождения';
+
+  @override
+  String get notesOptional => 'Заметки (необязательно)';
+
+  @override
+  String get growthRecords => 'Записи роста';
+
+  @override
+  String get deleteThisBabyData => 'Удалить данные этого малыша';
+
+  @override
+  String get otherBabiesUnaffected => 'Другие дети не будут затронуты';
+
+  @override
+  String get onlyThisBabyPrefix => 'Будут удалены только все записи малыша ';
+
+  @override
+  String get allRecordsWillBeDeleted => '.';
+
+  @override
+  String get deleteActionIrreversible =>
+      'Другие дети не будут затронуты. Это действие нельзя отменить.';
+
+  @override
+  String get birth => 'Рождение';
+
+  @override
+  String monthNumber(int month) {
+    return '$month. мес.';
+  }
+
+  @override
+  String get selectMonth => 'Выберите месяц';
+
+  @override
+  String get otherMonth => 'Другой месяц';
+
+  @override
+  String get period => 'Период';
+
+  @override
+  String get status => 'Статус';
+
+  @override
+  String get scheduledDate => 'Запланированная дата';
+
+  @override
+  String get editVaccine => 'Изменить вакцину';
+
+  @override
+  String get vaccineName => 'Название вакцины';
+
+  @override
+  String get allLabel => 'Все';
+
+  @override
+  String get routineFilter => 'Routine';
+
+  @override
+  String get asNeededFilter => 'As-needed';
+
+  @override
+  String get vaccineProtocolsFilter => 'Vaccine protocols';
+
+  @override
+  String get everyDay => 'Every day';
+
+  @override
+  String get asNeeded => 'As needed';
+
+  @override
+  String get vaccineProtocolLabel => 'Vaccine protocol';
+
+  @override
+  String linkedToVaccine(String vaccine) {
+    return 'linked to $vaccine';
+  }
+
+  @override
+  String get noVaccineLink => 'No linked vaccine';
+
+  @override
+  String doseCountLabel(int count) {
+    return 'Doses logged: $count';
+  }
+
+  @override
+  String get logGivenNow => 'Log given now';
+
+  @override
+  String get medicationDoseLogged => 'Dose logged';
+
+  @override
+  String get scheduleType => 'Schedule type';
+
+  @override
+  String get dailySchedule => 'Daily';
+
+  @override
+  String get prnSchedule => 'As-needed';
+
+  @override
+  String get dailyTimeRequired => 'Add at least one daily time';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String medicationReminderTitle(String name) {
+    return '$name reminder';
+  }
+
+  @override
+  String get medicationReminderBody => 'Time to give this medication';
+
+  @override
+  String medicationReminderBodyWithDose(String dose) {
+    return 'Dose: $dose';
+  }
+
+  @override
+  String get addVaccineProtocol => 'Add vaccine protocol';
+
+  @override
+  String get createNew => 'Create new';
+
+  @override
+  String get chooseExistingMedication => 'Choose existing medication';
+
+  @override
+  String get feverReducerHint => 'Fever reducer';
+
+  @override
+  String beforeHours(int hours) {
+    return 'Before: ${hours}h';
+  }
+
+  @override
+  String afterHours(int hours) {
+    return 'After: ${hours}h';
+  }
+
+  @override
+  String get vaccineProtocolAdded => 'Vaccine protocol added';
 }

@@ -23,7 +23,7 @@ struct BabyTimerLiveActivity: Widget {
                         Text(context.state.localizedTitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                        if let subtitle = subtitleText(for: context), !subtitle.isEmpty {
                             Text(subtitle)
                                 .font(.caption2)
                                 .foregroundColor(.secondary)
@@ -35,7 +35,7 @@ struct BabyTimerLiveActivity: Widget {
                     }
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                    if let subtitle = subtitleText(for: context), !subtitle.isEmpty {
                         Text(subtitle)
                             .font(.caption)
                             .fontWeight(.semibold)
@@ -51,7 +51,7 @@ struct BabyTimerLiveActivity: Widget {
                 activityIcon(for: context.attributes.activityType)
                     .font(.caption)
             } compactTrailing: {
-                if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                if let subtitle = subtitleText(for: context), !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.caption2)
                         .lineLimit(1)
@@ -69,6 +69,25 @@ struct BabyTimerLiveActivity: Widget {
     }
 
     // MARK: - Helpers
+
+    private func subtitleText(for context: ActivityViewContext<BabyTimerAttributes>) -> String? {
+        let babyName = context.state.babyName
+        let sideLabel = context.state.localizedSubtitle ?? ""
+        let hasBabyName = !babyName.isEmpty
+        let hasSideLabel = !sideLabel.isEmpty
+
+        if context.attributes.activityType == "nursing" {
+            if hasBabyName && hasSideLabel {
+                return "\(babyName) • \(sideLabel)"
+            }
+            return hasBabyName ? babyName : (hasSideLabel ? sideLabel : nil)
+        }
+
+        if hasBabyName {
+            return babyName
+        }
+        return hasSideLabel ? sideLabel : nil
+    }
 
     @ViewBuilder
     private func activityIcon(for type: String) -> some View {
@@ -118,7 +137,7 @@ struct LockScreenView: View {
                     .font(.headline)
                     .foregroundColor(darkText)
 
-                if let subtitle = context.state.localizedSubtitle, !subtitle.isEmpty {
+                if let subtitle = subtitleText, !subtitle.isEmpty {
                     HStack(spacing: 4) {
                         Circle()
                             .fill(peachColor)
@@ -151,5 +170,24 @@ struct LockScreenView: View {
         } else {
             return peachColor.opacity(0.2)
         }
+    }
+
+    private var subtitleText: String? {
+        let babyName = context.state.babyName
+        let sideLabel = context.state.localizedSubtitle ?? ""
+        let hasBabyName = !babyName.isEmpty
+        let hasSideLabel = !sideLabel.isEmpty
+
+        if context.attributes.activityType == "nursing" {
+            if hasBabyName && hasSideLabel {
+                return "\(babyName) • \(sideLabel)"
+            }
+            return hasBabyName ? babyName : (hasSideLabel ? sideLabel : nil)
+        }
+
+        if hasBabyName {
+            return babyName
+        }
+        return hasSideLabel ? sideLabel : nil
     }
 }

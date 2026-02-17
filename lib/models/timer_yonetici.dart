@@ -50,6 +50,14 @@ class TimerYonetici {
     return side == 'sol' ? _liveLeftSubtitle : _liveRightSubtitle;
   }
 
+  String _babyNameFor(String babyId) {
+    final fallbackName = VeriYonetici.getBabyName();
+    for (final baby in VeriYonetici.getBabies()) {
+      if (baby.id == babyId) return baby.name;
+    }
+    return fallbackName;
+  }
+
   Future<void> setLiveActivityLocalization({
     required String sleepTitle,
     String sleepSubtitle = '',
@@ -70,6 +78,7 @@ class TimerYonetici {
     for (final babyId in _uykuStartByBaby.keys) {
       await _liveActivityService.updateSleepActivity(
         babyId: babyId,
+        babyName: _babyNameFor(babyId),
         localizedTitle: _liveSleepTitle,
         localizedSubtitle: _liveSleepSubtitle,
       );
@@ -79,6 +88,7 @@ class TimerYonetici {
       final side = _emzirmeTarafByBaby[entry.key] ?? 'sol';
       await _liveActivityService.updateNursingSide(
         babyId: entry.key,
+        babyName: _babyNameFor(entry.key),
         side: side,
         localizedTitle: _liveNursingTitle,
         localizedSubtitle: _nursingSubtitleForSide(side),
@@ -195,6 +205,7 @@ class TimerYonetici {
     for (final entry in _uykuStartByBaby.entries) {
       await _liveActivityService.startSleepActivity(
         babyId: entry.key,
+        babyName: _babyNameFor(entry.key),
         startTime: entry.value,
         localizedTitle: _liveSleepTitle,
         localizedSubtitle: _liveSleepSubtitle,
@@ -205,6 +216,7 @@ class TimerYonetici {
       final side = _emzirmeTarafByBaby[entry.key] ?? 'sol';
       await _liveActivityService.startNursingActivity(
         babyId: entry.key,
+        babyName: _babyNameFor(entry.key),
         startTime: ilkStart,
         side: side,
         localizedTitle: _liveNursingTitle,
@@ -422,6 +434,7 @@ class TimerYonetici {
     await _notificationService.showNursingNotification(now, taraf);
     await _liveActivityService.startNursingActivity(
       babyId: babyId,
+      babyName: _babyNameFor(babyId),
       startTime: now,
       side: taraf ?? 'sol',
       localizedTitle: _liveNursingTitle,
@@ -479,6 +492,7 @@ class TimerYonetici {
     await _notificationService.updateNursingSide(newTaraf);
     await _liveActivityService.updateNursingSide(
       babyId: babyId,
+      babyName: _babyNameFor(babyId),
       side: newTaraf,
       localizedTitle: _liveNursingTitle,
       localizedSubtitle: _nursingSubtitleForSide(newTaraf),
@@ -569,6 +583,7 @@ class TimerYonetici {
     await _notificationService.showSleepNotification(now);
     await _liveActivityService.startSleepActivity(
       babyId: babyId,
+      babyName: _babyNameFor(babyId),
       startTime: now,
       localizedTitle: _liveSleepTitle,
       localizedSubtitle: _liveSleepSubtitle,

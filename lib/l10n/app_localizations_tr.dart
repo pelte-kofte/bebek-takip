@@ -447,8 +447,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Türkiye\'nin standart aşı takvimi yüklenecek. Mevcut aşılar silinmeyecek.';
 
   @override
-  String ageYears(int years) {
-    return '$years Yaşında';
+  String ageYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# Yaşında',
+      one: '# Yaşında',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -462,8 +468,14 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String ageDays(int days) {
-    return '$days Günlük';
+  String ageDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# Günlük',
+      one: '# Günlük',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -881,4 +893,476 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get languageUpdated => 'Dil güncellendi';
+
+  @override
+  String get tip_siyah_mekonyum_title => 'İlk Kaka';
+
+  @override
+  String get tip_siyah_mekonyum_desc =>
+      'Bebeğin ister anne sütü ister formül mama alsın, yaşamının ilk 2–4 gününde bu durumla karşılaşmak çok normaldir. Endişelenmene gerek yok.';
+
+  @override
+  String get tip_eye_tracking_title => 'Göz Takibi';
+
+  @override
+  String get tip_eye_tracking_desc =>
+      'Bebeğin şu an sadece 25–30 cm uzağı net görebilir. Yüzünü ona yaklaştır ve gözlerinle yavaşça hareket et. Seni gözleriyle takip etmeye çalışması, görsel gelişimi için ilk egzersizidir.';
+
+  @override
+  String get tip_neck_support_title => 'Boyun Desteği';
+
+  @override
+  String get tip_neck_support_desc =>
+      'Bebeğini kucağına aldığında başını ve boynunu mutlaka destekle. Boyun kasları henüz çok zayıf.';
+
+  @override
+  String get tip_reflex_stepping_title => 'Yürüme Refleksi';
+
+  @override
+  String get tip_reflex_stepping_desc =>
+      'Bebeğini dik tutup ayaklarını düz bir yüzeye değdir. Adım atma refleksini göreceksin!';
+
+  @override
+  String get tip_sound_interest_title => 'Ses İlgisi';
+
+  @override
+  String get tip_sound_interest_desc =>
+      'Bebeğin seslere karşı çok duyarlı. Yumuşak bir çıngırak veya müzik kutusuyla dikkatini çekmeyi dene.';
+
+  @override
+  String get tip_parent_interaction_title => 'Ebeveyn Etkileşimi';
+
+  @override
+  String get tip_parent_interaction_desc =>
+      'Bebeğinle göz teması kur ve yavaşça konuş. Senin sesini tanıyor ve güven hissediyor.';
+
+  @override
+  String get tip_color_worlds_title => 'Renk Dünyası';
+
+  @override
+  String get tip_color_worlds_desc =>
+      'Yenidoğanlar siyah-beyaz kontrastları en iyi görür. Siyah-beyaz desenli kartlar göstermeyi dene.';
+
+  @override
+  String get tip_mini_athlete_title => 'Mini Atlet';
+
+  @override
+  String get tip_mini_athlete_desc =>
+      'Karın üstü (tummy time) egzersizi boyun ve sırt kaslarını güçlendirir. Günde birkaç dakika dene.';
+
+  @override
+  String get tip_sound_hunter_title => 'Ses Avcısı';
+
+  @override
+  String get tip_sound_hunter_desc =>
+      'Bebeğin kulağının yanında yavaşça parmak şıklat. Başını sese doğru çevirmeye çalışacaktır.';
+
+  @override
+  String get tip_touch_explore_title => 'Dokunma Keşfi';
+
+  @override
+  String get tip_touch_explore_desc =>
+      'Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_title => 'Agu Sohbetleri';
+
+  @override
+  String get tip_tip_agu_conversation_1_2_desc =>
+      'Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_title =>
+      'Güçlü Omuzlar (Tummy Time)';
+
+  @override
+  String get tip_tip_tummy_time_strength_1_2_desc =>
+      'Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.';
+
+  @override
+  String get tip_tip_baby_massage_1_2_title => 'Huzur Masajı';
+
+  @override
+  String get tip_tip_baby_massage_1_2_desc =>
+      'Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_title => 'İşaretli Konuşma';
+
+  @override
+  String get tip_tip_gesture_speech_1_2_desc =>
+      'Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir';
+
+  @override
+  String get tip_tip_open_hands_1_2_title => 'Özgür Parmaklar';
+
+  @override
+  String get tip_tip_open_hands_1_2_desc =>
+      'Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_title => 'Yan Yana Keyif';
+
+  @override
+  String get tip_tip_side_by_side_bonding_1_2_desc =>
+      'Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.';
+
+  @override
+  String get tip_tip_sound_hunter_title => 'Ses Avcısı';
+
+  @override
+  String get tip_tip_sound_hunter_desc =>
+      'Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_title => 'Ses Avcısı (Seviye 2)';
+
+  @override
+  String get tip_tip_sound_hunter_level2_1_2_desc =>
+      'Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_title => 'Dokun ve Keşfet';
+
+  @override
+  String get tip_tip_texture_discovery_1_2_desc =>
+      'Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_title => 'Dış Dünya Kaşifi';
+
+  @override
+  String get tip_tip_outdoor_explorer_4_5_desc =>
+      'Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_title => 'Uzanma Antrenmanı';
+
+  @override
+  String get tip_tip_reaching_exercise_1_2_desc =>
+      'Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_title => 'Diz Üstü Yaylanma';
+
+  @override
+  String get tip_tip_supported_bounce_1_2_desc =>
+      'Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_title => 'Görsel Takip';
+
+  @override
+  String get tip_tip_visual_tracking_1_2_desc =>
+      'Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.';
+
+  @override
+  String get tip_tip_face_play_1_2_title => 'Mimik Dansı';
+
+  @override
+  String get tip_tip_face_play_1_2_desc =>
+      'Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_title => 'Duygu';
+
+  @override
+  String get tip_tip_emotion_labeling_1_2_desc =>
+      'Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.';
+
+  @override
+  String get tip_tip_first_meal_title => 'İlk Tadım';
+
+  @override
+  String get tip_tip_first_meal_desc =>
+      'Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Aktif Eller';
+
+  @override
+  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
+      '4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_title => 'Destekli Oturma';
+
+  @override
+  String get tip_tip_supported_sitting_4_5_desc =>
+      'Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_title => 'Ayaklarla Tanışma';
+
+  @override
+  String get tip_tip_feet_discovery_4_5_desc =>
+      'Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.';
+
+  @override
+  String get tip_tip_independent_play_4_5_title => 'Kendi Başına Oyun';
+
+  @override
+  String get tip_tip_independent_play_4_5_desc =>
+      'Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.';
+
+  @override
+  String ageMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# Aylık',
+      one: '# Aylık',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appPreferences => 'Uygulama tercihleri';
+
+  @override
+  String get appearance => 'Görünüm';
+
+  @override
+  String get darkMode => 'Karanlık Mod';
+
+  @override
+  String get darkModeSubtitle => 'Göz yormayan koyu tema';
+
+  @override
+  String get notifications => 'Bildirimler';
+
+  @override
+  String get feedingReminder => 'Beslenme Hatırlatıcı';
+
+  @override
+  String get diaperReminder => 'Bez Hatırlatıcı';
+
+  @override
+  String get off => 'Kapalı';
+
+  @override
+  String get reminderTime => 'Hatırlatma Saati';
+
+  @override
+  String get dataManagement => 'Veri Yönetimi';
+
+  @override
+  String get createReport => 'Rapor Oluştur';
+
+  @override
+  String get weeklyMonthlyStats => 'Haftalık/Aylık istatistikler';
+
+  @override
+  String get deleteAllDataTitle => 'Tüm Verileri Sil';
+
+  @override
+  String get deleteAllDataSubtitle => 'Tüm kayıtları kalıcı olarak sil';
+
+  @override
+  String get about => 'Hakkında';
+
+  @override
+  String get version => 'Versiyon';
+
+  @override
+  String get developer => 'Geliştirici';
+
+  @override
+  String get deleteAllDataWarning =>
+      'Bu işlem tüm kayıtları kalıcı olarak siler. Geri alınamaz.';
+
+  @override
+  String get debug => 'DEBUG';
+
+  @override
+  String get testSleepNotification => 'Uyku Bildirimi Testi';
+
+  @override
+  String get fireSleepNotificationNow => 'Uyku bildirimini şimdi tetikle';
+
+  @override
+  String get testNursingNotification => 'Emzirme Bildirimi Testi';
+
+  @override
+  String get fireNursingNotificationNow => 'Emzirme bildirimini şimdi tetikle';
+
+  @override
+  String get user => 'Kullanıcı';
+
+  @override
+  String get selectBaby => 'Bebek Seç';
+
+  @override
+  String get newBabyAdd => 'Yeni Bebek Ekle';
+
+  @override
+  String get babyProfileTitle => 'Bebek Profili';
+
+  @override
+  String get babyInformation => 'Bebek Bilgileri';
+
+  @override
+  String get addPhoto => 'Fotoğraf ekle';
+
+  @override
+  String get changePhoto => 'Fotoğrafı Değiştir';
+
+  @override
+  String get removePhoto => 'Fotoğrafı Kaldır';
+
+  @override
+  String get birthDateLabel => 'Doğum Tarihi';
+
+  @override
+  String get notesOptional => 'Notlar (isteğe bağlı)';
+
+  @override
+  String get growthRecords => 'Büyüme Kayıtları';
+
+  @override
+  String get deleteThisBabyData => 'Bu bebeğin verilerini sil';
+
+  @override
+  String get otherBabiesUnaffected => 'Diğer bebekler etkilenmez';
+
+  @override
+  String get onlyThisBabyPrefix => 'Sadece ';
+
+  @override
+  String get allRecordsWillBeDeleted => ' bebeğinin tüm kayıtları silinecek.';
+
+  @override
+  String get deleteActionIrreversible =>
+      'Diğer bebekler etkilenmez. Bu işlem geri alınamaz.';
+
+  @override
+  String get birth => 'Doğum';
+
+  @override
+  String monthNumber(int month) {
+    return '$month. Ay';
+  }
+
+  @override
+  String get selectMonth => 'Ay Seçin';
+
+  @override
+  String get otherMonth => 'Diğer Ay';
+
+  @override
+  String get period => 'Dönem';
+
+  @override
+  String get status => 'Durum';
+
+  @override
+  String get scheduledDate => 'Planlanan Tarih';
+
+  @override
+  String get editVaccine => 'Aşı Düzenle';
+
+  @override
+  String get vaccineName => 'Aşı Adı';
+
+  @override
+  String get allLabel => 'Tümü';
+
+  @override
+  String get routineFilter => 'Routine';
+
+  @override
+  String get asNeededFilter => 'As-needed';
+
+  @override
+  String get vaccineProtocolsFilter => 'Vaccine protocols';
+
+  @override
+  String get everyDay => 'Every day';
+
+  @override
+  String get asNeeded => 'As needed';
+
+  @override
+  String get vaccineProtocolLabel => 'Vaccine protocol';
+
+  @override
+  String linkedToVaccine(String vaccine) {
+    return 'linked to $vaccine';
+  }
+
+  @override
+  String get noVaccineLink => 'No linked vaccine';
+
+  @override
+  String doseCountLabel(int count) {
+    return 'Doses logged: $count';
+  }
+
+  @override
+  String get logGivenNow => 'Log given now';
+
+  @override
+  String get medicationDoseLogged => 'Dose logged';
+
+  @override
+  String get scheduleType => 'Schedule type';
+
+  @override
+  String get dailySchedule => 'Daily';
+
+  @override
+  String get prnSchedule => 'As-needed';
+
+  @override
+  String get dailyTimeRequired => 'Add at least one daily time';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get inactive => 'Inactive';
+
+  @override
+  String medicationReminderTitle(String name) {
+    return '$name reminder';
+  }
+
+  @override
+  String get medicationReminderBody => 'Time to give this medication';
+
+  @override
+  String medicationReminderBodyWithDose(String dose) {
+    return 'Dose: $dose';
+  }
+
+  @override
+  String get addVaccineProtocol => 'Add vaccine protocol';
+
+  @override
+  String get createNew => 'Create new';
+
+  @override
+  String get chooseExistingMedication => 'Choose existing medication';
+
+  @override
+  String get feverReducerHint => 'Fever reducer';
+
+  @override
+  String beforeHours(int hours) {
+    return 'Before: ${hours}h';
+  }
+
+  @override
+  String afterHours(int hours) {
+    return 'After: ${hours}h';
+  }
+
+  @override
+  String get vaccineProtocolAdded => 'Vaccine protocol added';
 }

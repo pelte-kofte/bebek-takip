@@ -597,5 +597,76 @@
   "scheduledDate": "Запланированная дата",
   "editVaccine": "Изменить вакцину",
   "vaccineName": "Название вакцины",
-  "allLabel": "Все"
+  "allLabel": "Все",
+  "routineFilter": "Routine",
+  "asNeededFilter": "As-needed",
+  "vaccineProtocolsFilter": "Vaccine protocols",
+  "everyDay": "Every day",
+  "asNeeded": "As needed",
+  "vaccineProtocolLabel": "Vaccine protocol",
+  "linkedToVaccine": "linked to {vaccine}",
+  "@linkedToVaccine": {
+    "placeholders": {
+      "vaccine": {
+        "type": "String"
+      }
+    }
+  },
+  "noVaccineLink": "No linked vaccine",
+  "doseCountLabel": "Doses logged: {count}",
+  "@doseCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "logGivenNow": "Log given now",
+  "medicationDoseLogged": "Dose logged",
+  "scheduleType": "Schedule type",
+  "dailySchedule": "Daily",
+  "prnSchedule": "As-needed",
+  "dailyTimeRequired": "Add at least one daily time",
+  "activate": "Activate",
+  "deactivate": "Deactivate",
+  "active": "Active",
+  "inactive": "Inactive",
+  "medicationReminderTitle": "{name} reminder",
+  "@medicationReminderTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "medicationReminderBody": "Time to give this medication",
+  "medicationReminderBodyWithDose": "Dose: {dose}",
+  "@medicationReminderBodyWithDose": {
+    "placeholders": {
+      "dose": {
+        "type": "String"
+      }
+    }
+  },
+  "addVaccineProtocol": "Add vaccine protocol",
+  "createNew": "Create new",
+  "chooseExistingMedication": "Choose existing medication",
+  "feverReducerHint": "Fever reducer",
+  "beforeHours": "Before: {hours}h",
+  "@beforeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "afterHours": "After: {hours}h",
+  "@afterHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "vaccineProtocolAdded": "Vaccine protocol added"
 }

@@ -14,6 +14,7 @@ class LiveActivityService {
 
   Future<void> startSleepActivity({
     required String babyId,
+    required String babyName,
     required DateTime startTime,
     required String localizedTitle,
     String? localizedSubtitle,
@@ -22,6 +23,7 @@ class LiveActivityService {
     try {
       await _channel.invokeMethod('startSleepLiveActivity', {
         'babyId': babyId,
+        'babyName': babyName,
         'startEpochSeconds': startTime.millisecondsSinceEpoch ~/ 1000,
         'localizedTitle': localizedTitle,
         'localizedSubtitle': localizedSubtitle ?? '',
@@ -32,6 +34,7 @@ class LiveActivityService {
 
   Future<void> updateSleepActivity({
     required String babyId,
+    required String babyName,
     required String localizedTitle,
     String? localizedSubtitle,
   }) async {
@@ -39,6 +42,7 @@ class LiveActivityService {
     try {
       await _channel.invokeMethod('updateSleepLiveActivity', {
         'babyId': babyId,
+        'babyName': babyName,
         'localizedTitle': localizedTitle,
         'localizedSubtitle': localizedSubtitle ?? '',
       });
@@ -64,6 +68,7 @@ class LiveActivityService {
 
   Future<void> startNursingActivity({
     required String babyId,
+    required String babyName,
     required DateTime startTime,
     required String side,
     required String localizedTitle,
@@ -75,6 +80,7 @@ class LiveActivityService {
     try {
       await _channel.invokeMethod('startNursingLiveActivity', {
         'babyId': babyId,
+        'babyName': babyName,
         'startEpochSeconds': startTime.millisecondsSinceEpoch ~/ 1000,
         'side': side,
         'localizedTitle': localizedTitle,
@@ -88,6 +94,7 @@ class LiveActivityService {
 
   Future<void> updateNursingSide({
     required String babyId,
+    required String babyName,
     required String side,
     required String localizedTitle,
     String? localizedSubtitle,
@@ -98,6 +105,7 @@ class LiveActivityService {
     try {
       await _channel.invokeMethod('updateNursingSide', {
         'babyId': babyId,
+        'babyName': babyName,
         'side': side,
         'localizedTitle': localizedTitle,
         'localizedSubtitle': localizedSubtitle ?? '',

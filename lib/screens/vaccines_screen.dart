@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/asi_veri.dart';
+import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
@@ -107,6 +108,208 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     }
   }
 
+  List<Map<String, dynamic>> _protocolsForVaccine(String vaccineId) {
+    return VeriYonetici.getIlacKayitlari()
+        .where(
+          (m) =>
+              m['scheduleType'] == 'vaccine_protocol' &&
+              m['vaccineId'] == vaccineId,
+        )
+        .toList();
+  }
+
+  Future<void> _scheduleProtocolReminders(Map<String, dynamic> med) async {
+    final service = ReminderService();
+    await service.initialize();
+    await service.requestPermissions();
+
+    final vaccineId = med['vaccineId'] as String?;
+    if (vaccineId == null) return;
+    final vaccine = VeriYonetici.getAsiKayitlari()
+        .where((v) => v['id'] == vaccineId)
+        .firstOrNull;
+    final vaccineTime = vaccine?['tarih'] as DateTime?;
+    if (vaccineTime == null) return;
+
+    final offsets = (med['protocolOffsets'] as List?) ?? const [];
+    for (int i = 0; i < offsets.length; i++) {
+      final offset = Map<String, dynamic>.from(offsets[i] as Map);
+      final kind = (offset['kind'] as String?) == 'before' ? 'before' : 'after';
+      final minutes = (offset['minutes'] as num?)?.toInt() ?? 0;
+      final seed = 'protocol_${med['id']}_${vaccineId}_${kind}_${minutes}_$i'
+          .hashCode
+          .abs();
+      final reminderId =
+          ReminderService.medicationReminderBaseId + (seed % 60000);
+      final scheduledAt = kind == 'before'
+          ? vaccineTime.subtract(Duration(minutes: minutes))
+          : vaccineTime.add(Duration(minutes: minutes));
+      await service.scheduleMedicationReminderAt(
+        id: reminderId,
+        title: med['name']?.toString() ?? '',
+        body: med['dosage']?.toString().trim().isNotEmpty == true
+            ? med['dosage'] as String
+            : '',
+        scheduledAt: scheduledAt,
+      );
+    }
+  }
+
+  Future<void> _addVaccineProtocol(Map<String, dynamic> vaccine) async {
+    final l10n = AppLocalizations.of(context)!;
+    final medications = VeriYonetici.getIlacKayitlari();
+    final candidates = medications
+        .where((m) => m['type'] == 'medication' || m['type'] == 'supplement')
+        .toList();
+    String source = 'new';
+    String? selectedMedicationId = candidates.isNotEmpty
+        ? candidates.first['id'] as String
+        : null;
+    final nameController = TextEditingController();
+    int beforeHours = 2;
+    int afterHours = 4;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              title: Text(l10n.addVaccineProtocol),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<String>(
+                      value: source,
+                      items: [
+                        DropdownMenuItem(
+                          value: 'new',
+                          child: Text(l10n.createNew),
+                        ),
+                        DropdownMenuItem(
+                          value: 'existing',
+                          child: Text(l10n.chooseExistingMedication),
+                        ),
+                      ],
+                      onChanged: (v) =>
+                          setModalState(() => source = v ?? 'new'),
+                    ),
+                    const SizedBox(height: 12),
+                    if (source == 'new')
+                      TextField(
+                        controller: nameController,
+                        decoration: InputDecoration(
+                          labelText: l10n.medicationName,
+                          hintText: l10n.feverReducerHint,
+                        ),
+                      ),
+                    if (source == 'existing')
+                      DropdownButtonFormField<String>(
+                        value: selectedMedicationId,
+                        items: candidates
+                            .map(
+                              (m) => DropdownMenuItem<String>(
+                                value: m['id'] as String,
+                                child: Text(m['name'] as String? ?? ''),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (v) =>
+                            setModalState(() => selectedMedicationId = v),
+                      ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int>(
+                      value: beforeHours,
+                      items: List.generate(13, (i) => i)
+                          .map(
+                            (h) => DropdownMenuItem<int>(
+                              value: h,
+                              child: Text(l10n.beforeHours(h)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) =>
+                          setModalState(() => beforeHours = v ?? 0),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int>(
+                      value: afterHours,
+                      items: List.generate(25, (i) => i)
+                          .map(
+                            (h) => DropdownMenuItem<int>(
+                              value: h,
+                              child: Text(l10n.afterHours(h)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (v) =>
+                          setModalState(() => afterHours = v ?? 0),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(l10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(l10n.save),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (saved != true) return;
+
+    Map<String, dynamic>? baseMedication;
+    if (source == 'existing' && selectedMedicationId != null) {
+      baseMedication = medications
+          .where((m) => m['id'] == selectedMedicationId)
+          .firstOrNull;
+    }
+    final fallbackName = baseMedication?['name']?.toString().trim() ?? '';
+    final enteredName = nameController.text.trim();
+    final medName = enteredName.isNotEmpty
+        ? enteredName
+        : (fallbackName.isNotEmpty ? fallbackName : l10n.feverReducerHint);
+
+    final protocolMedication = {
+      'id': 'ilac_${DateTime.now().millisecondsSinceEpoch}',
+      'babyId': VeriYonetici.getActiveBabyId(),
+      'name': medName,
+      'type': baseMedication?['type'] ?? 'medication',
+      'dosage': baseMedication?['dosage'],
+      'scheduleType': 'vaccine_protocol',
+      'scheduleText': l10n.vaccineProtocolLabel,
+      'vaccineId': vaccine['id'],
+      'protocolOffsets': [
+        {'kind': 'before', 'minutes': beforeHours * 60},
+        {'kind': 'after', 'minutes': afterHours * 60},
+      ],
+      'repeatEveryHours': null,
+      'maxDoses': null,
+      'notes': baseMedication?['notes'],
+      'isActive': true,
+      'createdAt': DateTime.now(),
+    };
+
+    medications.add(protocolMedication);
+    await VeriYonetici.saveIlacKayitlari(medications);
+    await _scheduleProtocolReminders(protocolMedication);
+    if (mounted) {
+      setState(() {});
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.vaccineProtocolAdded)));
+    }
+  }
+
   void _showVaccineOptions(Map<String, dynamic> vaccine, int index) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
@@ -137,6 +340,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   _editVaccine(vaccine, index);
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.medication_liquid_outlined,
+                  color: AppColors.primary,
+                ),
+                title: Text(l10n.addVaccineProtocol),
+                onTap: () {
+                  Navigator.pop(context);
+                  _addVaccineProtocol(vaccine);
                 },
               ),
               ListTile(
@@ -762,6 +976,35 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
+  Widget _buildProtocolSummary(Map<String, dynamic> vaccine, bool isDark) {
+    final l10n = AppLocalizations.of(context)!;
+    final protocols = _protocolsForVaccine(vaccine['id'] as String);
+    if (protocols.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: protocols.map((p) {
+          final doseCount = VeriYonetici.getIlacDozKayitlari(
+            medicationId: p['id'] as String,
+            vaccineId: vaccine['id'] as String,
+          ).length;
+          return Text(
+            '• ${p['name']} — ${l10n.doseCountLabel(doseCount)}',
+            style: AppTypography.caption(context).copyWith(
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : const Color(0xFF866F65),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _buildVaccinesByPeriod(String period, String title, bool isDark) {
     final vaccines = _getVaccinesByPeriod(period);
     if (vaccines.isEmpty) return const SizedBox.shrink();
@@ -910,6 +1153,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           : const Color(0xFF866F65),
                     ),
                   ),
+                  _buildProtocolSummary(vaccine, isDark),
                 ],
               ),
             ),
@@ -1008,6 +1252,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           : const Color(0xFF866F65),
                     ),
                   ),
+                  _buildProtocolSummary(vaccine, isDark),
                 ],
               ),
             ),
@@ -1104,6 +1349,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           : const Color(0xFF866F65),
                     ),
                   ),
+                  _buildProtocolSummary(vaccine, isDark),
                 ],
               ),
             ),

@@ -17,6 +17,7 @@ class ReminderService {
 
   static const int feedingReminderId = 2001;
   static const int diaperReminderId = 2002;
+  static const int medicationReminderBaseId = 30000;
 
   static const String _feedingTitleKey = 'feeding_reminder_title';
   static const String _feedingBodyKey = 'feeding_reminder_body';
@@ -54,7 +55,8 @@ class ReminderService {
       // Request Android notification permissions (Android 13+)
       final androidPlugin = _notifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+            AndroidFlutterLocalNotificationsPlugin
+          >();
       if (androidPlugin != null) {
         final granted = await androidPlugin.requestNotificationsPermission();
         if (granted != true) {
@@ -66,7 +68,8 @@ class ReminderService {
       // Request iOS permissions
       final iosPlugin = _notifications
           .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin>();
+            IOSFlutterLocalNotificationsPlugin
+          >();
       if (iosPlugin != null) {
         final granted = await iosPlugin.requestPermissions(
           alert: true,
@@ -95,7 +98,9 @@ class ReminderService {
     if (!_initialized) await initialize();
 
     await cancelFeedingReminder();
-    final scheduledTime = lastFeedingTime.add(Duration(minutes: intervalMinutes));
+    final scheduledTime = lastFeedingTime.add(
+      Duration(minutes: intervalMinutes),
+    );
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     final content = await _readFeedingReminderContent();
@@ -107,7 +112,8 @@ class ReminderService {
       scheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       androidChannelId: 'feeding_reminder_channel',
       androidChannelName: 'Beslenme Hat\u0131rlat\u0131c\u0131',
-      androidChannelDescription: 'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
+      androidChannelDescription:
+          'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
     );
   }
 
@@ -119,7 +125,9 @@ class ReminderService {
     if (!_initialized) await initialize();
 
     await cancelDiaperReminder();
-    final scheduledTime = lastDiaperTime.add(Duration(minutes: intervalMinutes));
+    final scheduledTime = lastDiaperTime.add(
+      Duration(minutes: intervalMinutes),
+    );
     if (scheduledTime.isBefore(DateTime.now())) return;
 
     final content = await _readDiaperReminderContent();
@@ -152,7 +160,8 @@ class ReminderService {
       scheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       androidChannelId: 'feeding_reminder_channel',
       androidChannelName: 'Beslenme Hat\u0131rlat\u0131c\u0131',
-      androidChannelDescription: 'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
+      androidChannelDescription:
+          'Beslenme hat\u0131rlat\u0131c\u0131 bildirimleri',
     );
   }
 
@@ -219,8 +228,9 @@ class ReminderService {
       presentBanner: true,
       presentList: true,
       interruptionLevel: InterruptionLevel.timeSensitive,
-      categoryIdentifier:
-          isFeeding ? 'FEEDING_REMINDER_CATEGORY' : 'DIAPER_REMINDER_CATEGORY',
+      categoryIdentifier: isFeeding
+          ? 'FEEDING_REMINDER_CATEGORY'
+          : 'DIAPER_REMINDER_CATEGORY',
     );
 
     final details = NotificationDetails(
@@ -244,14 +254,22 @@ class ReminderService {
   Future<void> _ensureReminderStringsUtf8() async {
     final prefs = await SharedPreferences.getInstance();
 
-    final feedingTitle =
-        _sanitizeReminderText(prefs.getString(_feedingTitleKey), _defaultFeedingTitle);
-    final feedingBody =
-        _sanitizeReminderText(prefs.getString(_feedingBodyKey), _defaultFeedingBody);
-    final diaperTitle =
-        _sanitizeReminderText(prefs.getString(_diaperTitleKey), _defaultDiaperTitle);
-    final diaperBody =
-        _sanitizeReminderText(prefs.getString(_diaperBodyKey), _defaultDiaperBody);
+    final feedingTitle = _sanitizeReminderText(
+      prefs.getString(_feedingTitleKey),
+      _defaultFeedingTitle,
+    );
+    final feedingBody = _sanitizeReminderText(
+      prefs.getString(_feedingBodyKey),
+      _defaultFeedingBody,
+    );
+    final diaperTitle = _sanitizeReminderText(
+      prefs.getString(_diaperTitleKey),
+      _defaultDiaperTitle,
+    );
+    final diaperBody = _sanitizeReminderText(
+      prefs.getString(_diaperBodyKey),
+      _defaultDiaperBody,
+    );
 
     // Persist normalized strings to keep storage clean and consistent.
     await prefs.setString(_feedingTitleKey, feedingTitle);
@@ -263,17 +281,28 @@ class ReminderService {
   Future<_ReminderContent> _readFeedingReminderContent() async {
     final prefs = await SharedPreferences.getInstance();
     return _ReminderContent(
-      title:
-          _sanitizeReminderText(prefs.getString(_feedingTitleKey), _defaultFeedingTitle),
-      body: _sanitizeReminderText(prefs.getString(_feedingBodyKey), _defaultFeedingBody),
+      title: _sanitizeReminderText(
+        prefs.getString(_feedingTitleKey),
+        _defaultFeedingTitle,
+      ),
+      body: _sanitizeReminderText(
+        prefs.getString(_feedingBodyKey),
+        _defaultFeedingBody,
+      ),
     );
   }
 
   Future<_ReminderContent> _readDiaperReminderContent() async {
     final prefs = await SharedPreferences.getInstance();
     return _ReminderContent(
-      title: _sanitizeReminderText(prefs.getString(_diaperTitleKey), _defaultDiaperTitle),
-      body: _sanitizeReminderText(prefs.getString(_diaperBodyKey), _defaultDiaperBody),
+      title: _sanitizeReminderText(
+        prefs.getString(_diaperTitleKey),
+        _defaultDiaperTitle,
+      ),
+      body: _sanitizeReminderText(
+        prefs.getString(_diaperBodyKey),
+        _defaultDiaperBody,
+      ),
     );
   }
 
@@ -298,14 +327,110 @@ class ReminderService {
     await cancelFeedingReminder();
     await cancelDiaperReminder();
   }
+
+  Future<void> scheduleMedicationReminderDaily({
+    required int id,
+    required String title,
+    required String body,
+    required int hour,
+    required int minute,
+  }) async {
+    if (!_initialized) await initialize();
+
+    await _notifications.cancel(id);
+
+    final androidDetails = AndroidNotificationDetails(
+      'medication_reminder_channel',
+      'Medication Reminders',
+      channelDescription: 'Medication reminder notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      autoCancel: true,
+      icon: '@mipmap/ic_launcher',
+    );
+    final iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      presentBanner: true,
+      presentList: true,
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final now = DateTime.now();
+    var first = DateTime(now.year, now.month, now.day, hour, minute);
+    if (first.isBefore(now)) first = first.add(const Duration(days: 1));
+
+    await _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(first, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  Future<void> scheduleMedicationReminderAt({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledAt,
+  }) async {
+    if (!_initialized) await initialize();
+
+    await _notifications.cancel(id);
+    if (scheduledAt.isBefore(DateTime.now())) return;
+
+    final androidDetails = AndroidNotificationDetails(
+      'medication_reminder_channel',
+      'Medication Reminders',
+      channelDescription: 'Medication reminder notifications',
+      importance: Importance.high,
+      priority: Priority.high,
+      autoCancel: true,
+      icon: '@mipmap/ic_launcher',
+    );
+    final iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      presentBanner: true,
+      presentList: true,
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await _notifications.zonedSchedule(
+      id,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledAt, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  Future<void> cancelMedicationReminder(int id) async {
+    await _notifications.cancel(id);
+  }
 }
 
 class _ReminderContent {
   final String title;
   final String body;
 
-  const _ReminderContent({
-    required this.title,
-    required this.body,
-  });
+  const _ReminderContent({required this.title, required this.body});
 }

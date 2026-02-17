@@ -62,11 +62,13 @@ class LiveActivityHandler {
 
         let localizedTitle = (args["localizedTitle"] as? String) ?? "Sleep"
         let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+        let babyName = (args["babyName"] as? String) ?? ""
 
         let data: [String: Any] = [
             "babyId": babyId,
             "activityType": "sleep",
             "startEpochSeconds": startEpochSeconds,
+            "babyName": babyName,
             "localizedTitle": localizedTitle,
             "localizedSubtitle": localizedSubtitle,
             "isActive": true
@@ -76,6 +78,7 @@ class LiveActivityHandler {
         startSleepActivity(
             babyId: babyId,
             startEpochSeconds: startEpochSeconds,
+            babyName: babyName,
             localizedTitle: localizedTitle,
             localizedSubtitle: localizedSubtitle,
             result: result
@@ -91,8 +94,10 @@ class LiveActivityHandler {
 
         let localizedTitle = (args["localizedTitle"] as? String) ?? "Sleep"
         let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+        let babyName = (args["babyName"] as? String) ?? ""
         let key = "liveactivity_sleep_\(babyId)"
         if var existingData = readFromAppGroup(key: key) {
+            existingData["babyName"] = babyName
             existingData["localizedTitle"] = localizedTitle
             existingData["localizedSubtitle"] = localizedSubtitle
             writeToAppGroup(key: key, data: existingData)
@@ -100,6 +105,7 @@ class LiveActivityHandler {
 
         updateSleepActivity(
             babyId: babyId,
+            babyName: babyName,
             localizedTitle: localizedTitle,
             localizedSubtitle: localizedSubtitle,
             result: result
@@ -130,12 +136,14 @@ class LiveActivityHandler {
 
         let localizedTitle = (args["localizedTitle"] as? String) ?? "Nursing"
         let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+        let babyName = (args["babyName"] as? String) ?? ""
 
         let data: [String: Any] = [
             "babyId": babyId,
             "activityType": "nursing",
             "startEpochSeconds": startEpochSeconds,
             "side": side,
+            "babyName": babyName,
             "localizedTitle": localizedTitle,
             "localizedSubtitle": localizedSubtitle,
             "isActive": true
@@ -146,6 +154,7 @@ class LiveActivityHandler {
             babyId: babyId,
             startEpochSeconds: startEpochSeconds,
             side: side,
+            babyName: babyName,
             localizedTitle: localizedTitle,
             localizedSubtitle: localizedSubtitle,
             result: result
@@ -164,9 +173,11 @@ class LiveActivityHandler {
         let key = "liveactivity_nursing_\(babyId)"
         let localizedTitle = (args["localizedTitle"] as? String) ?? "Nursing"
         let localizedSubtitle = (args["localizedSubtitle"] as? String) ?? ""
+        let babyName = (args["babyName"] as? String) ?? ""
 
         if var existingData = readFromAppGroup(key: key) {
             existingData["side"] = side
+            existingData["babyName"] = babyName
             existingData["localizedTitle"] = localizedTitle
             existingData["localizedSubtitle"] = localizedSubtitle
             writeToAppGroup(key: key, data: existingData)
@@ -175,6 +186,7 @@ class LiveActivityHandler {
         updateNursingSideActivity(
             babyId: babyId,
             side: side,
+            babyName: babyName,
             localizedTitle: localizedTitle,
             localizedSubtitle: localizedSubtitle,
             result: result
@@ -197,6 +209,7 @@ class LiveActivityHandler {
     private func startSleepActivity(
         babyId: String,
         startEpochSeconds: Int,
+        babyName: String,
         localizedTitle: String,
         localizedSubtitle: String,
         result: @escaping FlutterResult
@@ -219,6 +232,7 @@ class LiveActivityHandler {
                 let state = BabyTimerAttributes.ContentState(
                     startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
                     side: nil,
+                    babyName: babyName,
                     localizedTitle: localizedTitle,
                     localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
@@ -241,6 +255,7 @@ class LiveActivityHandler {
 
     private func updateSleepActivity(
         babyId: String,
+        babyName: String,
         localizedTitle: String,
         localizedSubtitle: String,
         result: @escaping FlutterResult
@@ -257,6 +272,7 @@ class LiveActivityHandler {
                 let updatedState = BabyTimerAttributes.ContentState(
                     startDate: activity.contentState.startDate,
                     side: activity.contentState.side,
+                    babyName: babyName,
                     localizedTitle: localizedTitle,
                     localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
@@ -278,6 +294,7 @@ class LiveActivityHandler {
         babyId: String,
         startEpochSeconds: Int,
         side: String,
+        babyName: String,
         localizedTitle: String,
         localizedSubtitle: String,
         result: @escaping FlutterResult
@@ -300,6 +317,7 @@ class LiveActivityHandler {
                 let state = BabyTimerAttributes.ContentState(
                     startDate: Date(timeIntervalSince1970: TimeInterval(startEpochSeconds)),
                     side: side,
+                    babyName: babyName,
                     localizedTitle: localizedTitle,
                     localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )
@@ -323,6 +341,7 @@ class LiveActivityHandler {
     private func updateNursingSideActivity(
         babyId: String,
         side: String,
+        babyName: String,
         localizedTitle: String,
         localizedSubtitle: String,
         result: @escaping FlutterResult
@@ -339,6 +358,7 @@ class LiveActivityHandler {
                 let updatedState = BabyTimerAttributes.ContentState(
                     startDate: activity.contentState.startDate,
                     side: side,
+                    babyName: babyName,
                     localizedTitle: localizedTitle,
                     localizedSubtitle: localizedSubtitle.isEmpty ? nil : localizedSubtitle
                 )

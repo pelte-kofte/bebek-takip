@@ -17,6 +17,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _milestones = [];
   static List<Map<String, dynamic>> _asiKayitlari = [];
   static List<Map<String, dynamic>> _ilacKayitlari = [];
+  static List<Map<String, dynamic>> _ilacDozKayitlari = [];
   static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
@@ -63,7 +64,9 @@ class VeriYonetici {
       final birthDateStr = _prefs!.getString('birth_date');
       final defaultBirthDate = birthDateStr != null
           ? DateTime.parse(birthDateStr)
-          : DateTime.now().subtract(const Duration(days: 30)); // 1 month old default
+          : DateTime.now().subtract(
+              const Duration(days: 30),
+            ); // 1 month old default
 
       final defaultBaby = Baby(
         id: Baby.generateId(),
@@ -91,6 +94,7 @@ class VeriYonetici {
     _milestones = _loadMilestones();
     _asiKayitlari = _loadAsiKayitlari();
     _ilacKayitlari = _loadIlacKayitlari();
+    _ilacDozKayitlari = _loadIlacDozKayitlari();
 
     // Settings
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
@@ -98,9 +102,12 @@ class VeriYonetici {
     _loginEntryShown = _prefs!.getBool('login_entry_shown') ?? false;
 
     // Reminder settings
-    _feedingReminderEnabled = _prefs!.getBool('feeding_reminder_enabled') ?? false;
-    _feedingReminderInterval = _prefs!.getInt('feeding_reminder_interval') ?? 180;
-    _diaperReminderEnabled = _prefs!.getBool('diaper_reminder_enabled') ?? false;
+    _feedingReminderEnabled =
+        _prefs!.getBool('feeding_reminder_enabled') ?? false;
+    _feedingReminderInterval =
+        _prefs!.getInt('feeding_reminder_interval') ?? 180;
+    _diaperReminderEnabled =
+        _prefs!.getBool('diaper_reminder_enabled') ?? false;
     _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
     _feedingReminderHour = _prefs!.getInt('feeding_reminder_time_h') ?? 14;
     _feedingReminderMinute = _prefs!.getInt('feeding_reminder_time_m') ?? 0;
@@ -125,7 +132,9 @@ class VeriYonetici {
     }
 
     // CRITICAL: Final validation - ensure we ALWAYS have a valid active baby
-    if (_babies.isEmpty || _activeBabyId.isEmpty || !_babies.any((b) => b.id == _activeBabyId)) {
+    if (_babies.isEmpty ||
+        _activeBabyId.isEmpty ||
+        !_babies.any((b) => b.id == _activeBabyId)) {
       // This should never happen, but if it does, create emergency default baby
       final emergencyBaby = Baby(
         id: Baby.generateId(),
@@ -310,6 +319,7 @@ class VeriYonetici {
     _milestones.removeWhere((r) => r['babyId'] == babyId);
     _asiKayitlari.removeWhere((r) => r['babyId'] == babyId);
     _ilacKayitlari.removeWhere((r) => r['babyId'] == babyId);
+    _ilacDozKayitlari.removeWhere((r) => r['babyId'] == babyId);
 
     if (_activeBabyId == babyId) {
       await setActiveBaby(_babies.first.id);
@@ -371,9 +381,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getMamaKayitlari() {
-    return _mamaKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _mamaKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveMamaKayitlari(
@@ -425,9 +433,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getKakaKayitlari() {
-    return _kakaKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _kakaKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveKakaKayitlari(
@@ -475,9 +481,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getUykuKayitlari() {
-    return _uykuKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _uykuKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveUykuKayitlari(
@@ -527,9 +531,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAnilar() {
-    return _anilar
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _anilar.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveAnilar(List<Map<String, dynamic>> anilar) async {
@@ -591,8 +593,7 @@ class VeriYonetici {
     }
 
     _boyKiloKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _boyKiloKayitlari
-        .addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _boyKiloKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
 
     final data = _boyKiloKayitlari
         .map(
@@ -634,9 +635,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getMilestones() {
-    return _milestones
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _milestones.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveMilestones(
@@ -691,9 +690,7 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAsiKayitlari() {
-    return _asiKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _asiKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static ValueNotifier<int> get vaccineNotifier => _vaccineVersion;
@@ -743,6 +740,12 @@ class VeriYonetici {
               'type': e['type'] ?? 'medication',
               'dosage': e['dosage'],
               'scheduleText': e['scheduleText'],
+              'scheduleType': _resolveMedicationScheduleType(e),
+              'dailyTimes': _resolveMedicationDailyTimes(e),
+              'vaccineId': e['vaccineId'],
+              'protocolOffsets': _resolveMedicationProtocolOffsets(e),
+              'repeatEveryHours': e['repeatEveryHours'],
+              'maxDoses': e['maxDoses'],
               'notes': e['notes'],
               'isActive': e['isActive'] ?? true,
               'createdAt': DateTime.parse(e['createdAt']),
@@ -754,10 +757,60 @@ class VeriYonetici {
     }
   }
 
+  static String _resolveMedicationScheduleType(dynamic raw) {
+    if (raw is! Map) return 'prn';
+    final scheduleType = raw['scheduleType'] as String?;
+    if (scheduleType == 'daily' ||
+        scheduleType == 'prn' ||
+        scheduleType == 'vaccine_protocol') {
+      return scheduleType!;
+    }
+    final scheduleText = (raw['scheduleText'] as String?)?.trim() ?? '';
+    return scheduleText.isNotEmpty ? 'daily' : 'prn';
+  }
+
+  static List<String>? _resolveMedicationDailyTimes(dynamic raw) {
+    if (raw is! Map) return null;
+    final scheduleType = _resolveMedicationScheduleType(raw);
+    if (scheduleType != 'daily') return null;
+
+    final existing = raw['dailyTimes'];
+    if (existing is List) {
+      final parsed = existing
+          .map((e) => e?.toString() ?? '')
+          .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+          .toList();
+      if (parsed.isNotEmpty) return parsed;
+    }
+
+    final scheduleText = (raw['scheduleText'] as String?) ?? '';
+    final matches = RegExp(
+      r'\b([01]\d|2[0-3]):([0-5]\d)\b',
+    ).allMatches(scheduleText).map((m) => m.group(0)!).toList();
+    if (matches.isNotEmpty) return matches;
+    return ['09:00'];
+  }
+
+  static List<Map<String, dynamic>>? _resolveMedicationProtocolOffsets(
+    dynamic raw,
+  ) {
+    if (raw is! Map) return null;
+    final scheduleType = _resolveMedicationScheduleType(raw);
+    if (scheduleType != 'vaccine_protocol') return null;
+
+    final offsets = raw['protocolOffsets'];
+    if (offsets is! List) return null;
+
+    return offsets.map((entry) {
+      final map = Map<String, dynamic>.from(entry as Map);
+      final kind = (map['kind'] as String?) == 'before' ? 'before' : 'after';
+      final minutes = (map['minutes'] as num?)?.toInt() ?? 0;
+      return {'kind': kind, 'minutes': minutes};
+    }).toList();
+  }
+
   static List<Map<String, dynamic>> getIlacKayitlari() {
-    return _ilacKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
-        .toList();
+    return _ilacKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
   }
 
   static Future<void> saveIlacKayitlari(
@@ -779,6 +832,12 @@ class VeriYonetici {
             'type': e['type'],
             'dosage': e['dosage'],
             'scheduleText': e['scheduleText'],
+            'scheduleType': e['scheduleType'] ?? 'prn',
+            'dailyTimes': e['dailyTimes'],
+            'vaccineId': e['vaccineId'],
+            'protocolOffsets': e['protocolOffsets'],
+            'repeatEveryHours': e['repeatEveryHours'],
+            'maxDoses': e['maxDoses'],
             'notes': e['notes'],
             'isActive': e['isActive'] ?? true,
             'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
@@ -786,6 +845,79 @@ class VeriYonetici {
         )
         .toList();
     await _prefs!.setString('ilac_kayitlari', jsonEncode(data));
+  }
+
+  static List<Map<String, dynamic>> _loadIlacDozKayitlari() {
+    try {
+      final data = _prefs!.getString('ilac_doz_kayitlari');
+      if (data == null || data.isEmpty) return [];
+      final list = jsonDecode(data) as List;
+      return list
+          .map(
+            (e) => Map<String, dynamic>.from({
+              'id': e['id'],
+              'babyId': e['babyId'] ?? _activeBabyId,
+              'medicationId': e['medicationId'],
+              'vaccineId': e['vaccineId'],
+              'givenAt': DateTime.parse(e['givenAt']),
+              'note': e['note'],
+            }),
+          )
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static List<Map<String, dynamic>> getIlacDozKayitlari({
+    String? medicationId,
+    String? vaccineId,
+  }) {
+    return _ilacDozKayitlari.where((r) {
+      if (r['babyId'] != _activeBabyId) return false;
+      if (medicationId != null && r['medicationId'] != medicationId) {
+        return false;
+      }
+      if (vaccineId != null && r['vaccineId'] != vaccineId) return false;
+      return true;
+    }).toList();
+  }
+
+  static Future<void> addIlacDozKaydi({
+    required String medicationId,
+    String? vaccineId,
+    DateTime? givenAt,
+    String? note,
+  }) async {
+    _ilacDozKayitlari.insert(0, {
+      'id': 'dose_${DateTime.now().millisecondsSinceEpoch}',
+      'babyId': _activeBabyId,
+      'medicationId': medicationId,
+      'vaccineId': vaccineId,
+      'givenAt': givenAt ?? DateTime.now(),
+      'note': note,
+    });
+    await _saveIlacDozKayitlari();
+  }
+
+  static Future<void> _saveIlacDozKayitlari() async {
+    await _prefs!.setString(
+      'ilac_doz_kayitlari',
+      jsonEncode(
+        _ilacDozKayitlari
+            .map(
+              (e) => {
+                'id': e['id'],
+                'babyId': e['babyId'],
+                'medicationId': e['medicationId'],
+                'vaccineId': e['vaccineId'],
+                'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
+                'note': e['note'],
+              },
+            )
+            .toList(),
+      ),
+    );
   }
 
   // ============ TEMA & SETTINGS ============
@@ -925,6 +1057,7 @@ class VeriYonetici {
     _milestones.removeWhere((r) => r['babyId'] == _activeBabyId);
     _asiKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
     _ilacKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _ilacDozKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
 
     await _saveAllCollections();
   }
@@ -936,16 +1069,18 @@ class VeriYonetici {
       'mama_kayitlari',
       jsonEncode(
         _mamaKayitlari
-            .map((e) => {
-                  'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                  'miktar': e['miktar'] ?? 0,
-                  'tur': e['tur'] ?? '',
-                  'solDakika': e['solDakika'] ?? 0,
-                  'sagDakika': e['sagDakika'] ?? 0,
-                  'kategori': e['kategori'] ?? 'Milk',
-                  'solidAciklama': e['solidAciklama'],
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'miktar': e['miktar'] ?? 0,
+                'tur': e['tur'] ?? '',
+                'solDakika': e['solDakika'] ?? 0,
+                'sagDakika': e['sagDakika'] ?? 0,
+                'kategori': e['kategori'] ?? 'Milk',
+                'solidAciklama': e['solidAciklama'],
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -954,11 +1089,13 @@ class VeriYonetici {
       'kaka_kayitlari',
       jsonEncode(
         _kakaKayitlari
-            .map((e) => {
-                  'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                  'tur': e['tur'],
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'tur': e['tur'],
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -967,12 +1104,14 @@ class VeriYonetici {
       'uyku_kayitlari',
       jsonEncode(
         _uykuKayitlari
-            .map((e) => {
-                  'baslangic': (e['baslangic'] as DateTime).toIso8601String(),
-                  'bitis': (e['bitis'] as DateTime).toIso8601String(),
-                  'sure': (e['sure'] as Duration).inMinutes,
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'baslangic': (e['baslangic'] as DateTime).toIso8601String(),
+                'bitis': (e['bitis'] as DateTime).toIso8601String(),
+                'sure': (e['sure'] as Duration).inMinutes,
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -981,13 +1120,15 @@ class VeriYonetici {
       'anilar',
       jsonEncode(
         _anilar
-            .map((e) => {
-                  'baslik': e['baslik'],
-                  'not': e['not'],
-                  'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                  'emoji': e['emoji'],
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'baslik': e['baslik'],
+                'not': e['not'],
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'emoji': e['emoji'],
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -996,13 +1137,15 @@ class VeriYonetici {
       'boykilo_kayitlari',
       jsonEncode(
         _boyKiloKayitlari
-            .map((e) => {
-                  'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                  'boy': e['boy'],
-                  'kilo': e['kilo'],
-                  'basCevresi': e['basCevresi'],
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'boy': e['boy'],
+                'kilo': e['kilo'],
+                'basCevresi': e['basCevresi'],
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -1011,15 +1154,17 @@ class VeriYonetici {
       'milestones',
       jsonEncode(
         _milestones
-            .map((e) => {
-                  'id': e['id'],
-                  'title': e['title'],
-                  'date': (e['date'] as DateTime).toIso8601String(),
-                  'note': e['note'],
-                  'photoPath': e['photoPath'],
-                  'photoStyle': e['photoStyle'] ?? 'softIllustration',
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'id': e['id'],
+                'title': e['title'],
+                'date': (e['date'] as DateTime).toIso8601String(),
+                'note': e['note'],
+                'photoPath': e['photoPath'],
+                'photoStyle': e['photoStyle'] ?? 'softIllustration',
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -1028,17 +1173,19 @@ class VeriYonetici {
       'asi_kayitlari',
       jsonEncode(
         _asiKayitlari
-            .map((e) => {
-                  'id': e['id'],
-                  'ad': e['ad'],
-                  'donem': e['donem'],
-                  'tarih': e['tarih'] != null
-                      ? (e['tarih'] as DateTime).toIso8601String()
-                      : null,
-                  'durum': e['durum'] ?? 'bekleniyor',
-                  'notlar': e['notlar'] ?? '',
-                  'babyId': e['babyId'],
-                })
+            .map(
+              (e) => {
+                'id': e['id'],
+                'ad': e['ad'],
+                'donem': e['donem'],
+                'tarih': e['tarih'] != null
+                    ? (e['tarih'] as DateTime).toIso8601String()
+                    : null,
+                'durum': e['durum'] ?? 'bekleniyor',
+                'notlar': e['notlar'] ?? '',
+                'babyId': e['babyId'],
+              },
+            )
             .toList(),
       ),
     );
@@ -1047,17 +1194,43 @@ class VeriYonetici {
       'ilac_kayitlari',
       jsonEncode(
         _ilacKayitlari
-            .map((e) => {
-                  'id': e['id'],
-                  'babyId': e['babyId'],
-                  'name': e['name'],
-                  'type': e['type'],
-                  'dosage': e['dosage'],
-                  'scheduleText': e['scheduleText'],
-                  'notes': e['notes'],
-                  'isActive': e['isActive'] ?? true,
-                  'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
-                })
+            .map(
+              (e) => {
+                'id': e['id'],
+                'babyId': e['babyId'],
+                'name': e['name'],
+                'type': e['type'],
+                'dosage': e['dosage'],
+                'scheduleText': e['scheduleText'],
+                'scheduleType': e['scheduleType'] ?? 'prn',
+                'dailyTimes': e['dailyTimes'],
+                'vaccineId': e['vaccineId'],
+                'protocolOffsets': e['protocolOffsets'],
+                'repeatEveryHours': e['repeatEveryHours'],
+                'maxDoses': e['maxDoses'],
+                'notes': e['notes'],
+                'isActive': e['isActive'] ?? true,
+                'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
+              },
+            )
+            .toList(),
+      ),
+    );
+
+    await _prefs!.setString(
+      'ilac_doz_kayitlari',
+      jsonEncode(
+        _ilacDozKayitlari
+            .map(
+              (e) => {
+                'id': e['id'],
+                'babyId': e['babyId'],
+                'medicationId': e['medicationId'],
+                'vaccineId': e['vaccineId'],
+                'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
+                'note': e['note'],
+              },
+            )
             .toList(),
       ),
     );

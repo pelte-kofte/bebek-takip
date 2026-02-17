@@ -11,6 +11,7 @@ struct BabyTimerAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         var startDate: Date
         var side: String?  // "sol" or "sag"; nil for sleep activities
+        var babyName: String
         var localizedTitle: String
         var localizedSubtitle: String?
     }
