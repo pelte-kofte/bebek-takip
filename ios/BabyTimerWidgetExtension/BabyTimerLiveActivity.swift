@@ -92,11 +92,13 @@ struct BabyTimerLiveActivity: Widget {
     @ViewBuilder
     private func activityIcon(for type: String) -> some View {
         if type == "sleep" {
-            Image(systemName: "moon.zzz.fill")
-                .foregroundColor(Color(red: 0.478, green: 0.455, blue: 0.620)) // Lavender-ish
+            Image("la_sleep", bundle: .main)
+                .resizable()
+                .scaledToFit()
         } else {
-            Image(systemName: "drop.fill")
-                .foregroundColor(Color(red: 1.0, green: 0.600, blue: 0.541)) // Peach
+            Image("la_nursing", bundle: .main)
+                .resizable()
+                .scaledToFit()
         }
     }
 
@@ -121,13 +123,15 @@ struct LockScreenView: View {
                     .frame(width: 50, height: 50)
 
                 if context.attributes.activityType == "sleep" {
-                    Image(systemName: "moon.zzz.fill")
-                        .font(.title2)
-                        .foregroundColor(Color(red: 0.478, green: 0.455, blue: 0.620))
+                    Image("la_sleep", bundle: .main)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
                 } else {
-                    Image(systemName: "drop.fill")
-                        .font(.title2)
-                        .foregroundColor(peachColor)
+                    Image("la_nursing", bundle: .main)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 26, height: 26)
                 }
             }
 
