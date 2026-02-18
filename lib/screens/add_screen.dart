@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTimerPicker, CupertinoTimerPickerMode;
+import 'package:flutter/services.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
@@ -334,35 +335,6 @@ class _AddScreenState extends State<AddScreen> {
                             size: 20,
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Builder(
-                        builder: (context) {
-                          final l10n = AppLocalizations.of(context)!;
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                l10n.addActivity,
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2D1A18),
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                l10n.whatHappened,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF7A749E),
-                                  letterSpacing: 0.2,
-                                ),
-                              ),
-                            ],
-                          );
-                        },
                       ),
                     ],
                   ),
@@ -1730,6 +1702,7 @@ class _AddScreenState extends State<AddScreen> {
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
       await _scheduleFeedingReminderIfEnabled();
+      HapticFeedback.lightImpact();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
@@ -1761,6 +1734,7 @@ class _AddScreenState extends State<AddScreen> {
 
       await VeriYonetici.saveMamaKayitlari(kayitlar);
       await _scheduleFeedingReminderIfEnabled();
+      HapticFeedback.lightImpact();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
@@ -1799,41 +1773,32 @@ class _AddScreenState extends State<AddScreen> {
       });
 
       await VeriYonetici.saveUykuKayitlari(kayitlar);
+      HapticFeedback.lightImpact();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);
       }
     } else if (selectedActivity == 'diaper') {
       final kayitlar = VeriYonetici.getKakaKayitlari();
-      final l10n = AppLocalizations.of(context)!;
-
-      // Convert English type to Turkish for consistency
-      String turkceTur;
-      switch (_diaperType) {
-        case 'wet':
-          turkceTur = l10n.wet;
-          break;
-        case 'dirty':
-          turkceTur = l10n.dirty;
-          break;
-        default:
-          turkceTur = l10n.both;
-      }
 
       final now = DateTime.now();
       final diaperDateTime = DateTime(
         now.year, now.month, now.day,
         _diaperTime.hour, _diaperTime.minute,
       );
+      final diaperType = VeriYonetici.normalizeDiaperType(_diaperType);
 
       kayitlar.insert(0, {
         'tarih': diaperDateTime,
-        'tur': turkceTur,
+        'tur': diaperType,
+        'diaperType': diaperType,
+        'eventType': VeriYonetici.diaperEventType,
         'notlar': _diaperNotesController.text,
       });
 
       await VeriYonetici.saveKakaKayitlari(kayitlar);
       await _scheduleDiaperReminderIfEnabled();
+      HapticFeedback.lightImpact();
       widget.onSaved?.call();
       if (mounted) {
         Navigator.pop(context);

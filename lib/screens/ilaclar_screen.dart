@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../services/reminder_service.dart';
@@ -51,6 +52,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
   }
 
   Future<void> _addMedication() async {
+    HapticFeedback.lightImpact();
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(builder: (context) => const _MedicationFormScreen()),
@@ -708,6 +710,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     }
 
     await VeriYonetici.saveIlacKayitlari(medications);
+    HapticFeedback.lightImpact();
     if (mounted) Navigator.pop(context, true);
   }
 

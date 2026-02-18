@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTimerPicker, CupertinoTimerPickerMode;
+import 'package:flutter/foundation.dart' show kDebugMode;
 import '../models/veri_yonetici.dart';
-import '../models/dil.dart';
 import '../widgets/decorative_background.dart';
 import '../l10n/app_localizations.dart';
 
@@ -99,9 +99,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          if (widget.fromHome) ...[
+                      if (widget.fromHome) ...[
+                        Row(
+                          children: [
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
                               child: Container(
@@ -127,19 +127,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
                           ],
-                          Text(
-                            AppLocalizations.of(context)!.activities,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: textColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
 
                       // Tarih Seçici
                       _buildDateSelector(isDark),
@@ -343,12 +334,24 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     }
   }
 
-  List<Map<String, dynamic>> _filterByDate(
+  List<Map<String, dynamic>> _filterBySelectedDayRange(
     List<Map<String, dynamic>> list,
     String dateKey,
   ) {
+    final startOfDay = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
+    final endOfDay = startOfDay
+        .add(const Duration(days: 1))
+        .subtract(const Duration(microseconds: 1));
+
     return list
-        .where((item) => _isSameDay(item[dateKey] as DateTime, _selectedDate))
+        .where((item) {
+          final date = (item[dateKey] as DateTime).toLocal();
+          return !date.isBefore(startOfDay) && !date.isAfter(endOfDay);
+        })
         .toList();
   }
 
@@ -360,7 +363,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getMamaKayitlari();
-    final kayitlar = _filterByDate(tumKayitlar, 'tarih');
+    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'tarih');
 
     int toplamMl = 0;
     int toplamDakika = 0;
@@ -558,7 +561,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getKakaKayitlari();
-    final kayitlar = _filterByDate(tumKayitlar, 'tarih');
+    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'tarih');
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
@@ -570,9 +573,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       );
     }
 
-    final islak = kayitlar.where((k) => k['tur'] == Dil.islak).length;
-    final kirli = kayitlar.where((k) => k['tur'] == Dil.kirli).length;
-    final ikisi = kayitlar.where((k) => k['tur'] == Dil.ikisiBirden).length;
+    final diaperTypes = kayitlar
+        .map((k) => VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']))
+        .toList();
+    final islak = diaperTypes.where((t) => t == 'wet').length;
+    final kirli = diaperTypes.where((t) => t == 'dirty').length;
+    final ikisi = diaperTypes.where((t) => t == 'both').length;
+
+    if (kDebugMode) {
+      debugPrint(
+        '[Bakim/Bez] ${_selectedDate.toLocal()} total=${kayitlar.length} wet=$islak dirty=$kirli both=$ikisi',
+      );
+    }
 
     return Column(
       children: [
@@ -651,18 +663,20 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final kayit = kayitlar[index];
               final tarih = kayit['tarih'] as DateTime;
               final originalIndex = tumKayitlar.indexOf(kayit);
-              final tur = kayit['tur'] ?? '';
+              final tur = VeriYonetici.normalizeDiaperType(
+                kayit['diaperType'] ?? kayit['tur'],
+              );
 
               // Map stored diaper type to icon and localized label
               IconData diaperIcon = Icons.baby_changing_station_outlined;
               String diaperLabel = l10n.both;
-              if (tur == Dil.islak) {
+              if (tur == 'wet') {
                 diaperIcon = Icons.water_drop_outlined;
                 diaperLabel = l10n.wet;
-              } else if (tur == Dil.kirli) {
+              } else if (tur == 'dirty') {
                 diaperIcon = Icons.cloud_outlined;
                 diaperLabel = l10n.dirty;
-              } else if (tur == Dil.ikisiBirden) {
+              } else if (tur == 'both') {
                 diaperIcon = Icons.baby_changing_station_outlined;
                 diaperLabel = l10n.both;
               }
@@ -695,7 +709,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getUykuKayitlari();
-    final kayitlar = _filterByDate(tumKayitlar, 'bitis');
+    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'bitis');
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
@@ -1339,7 +1353,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   void _editKaka(int index, Map<String, dynamic> kayit) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    String tur = kayit['tur'];
+    String tur = VeriYonetici.normalizeDiaperType(
+      kayit['diaperType'] ?? kayit['tur'],
+    );
     final DateTime originalTarih = kayit['tarih'];
     TimeOfDay editedTime = TimeOfDay(
       hour: originalTarih.hour,
@@ -1432,7 +1448,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     _bezEditOptionIcon(
                       Icons.water_drop_outlined,
                       l10n.wet,
-                      Dil.islak,
+                      'wet',
                       Colors.blue,
                       tur,
                       (t) => setModalState(() => tur = t),
@@ -1440,7 +1456,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     _bezEditOptionIcon(
                       Icons.cloud_outlined,
                       l10n.dirty,
-                      Dil.kirli,
+                      'dirty',
                       Colors.brown,
                       tur,
                       (t) => setModalState(() => tur = t),
@@ -1448,7 +1464,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     _bezEditOptionIcon(
                       Icons.baby_changing_station_outlined,
                       l10n.both,
-                      Dil.ikisiBirden,
+                      'both',
                       Colors.purple,
                       tur,
                       (t) => setModalState(() => tur = t),
@@ -1495,9 +1511,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     editedTime.minute,
                   );
                   final kayitlar = VeriYonetici.getKakaKayitlari();
+                  final diaperType = VeriYonetici.normalizeDiaperType(tur);
                   kayitlar[index] = {
                     'tarih': newTarih,
-                    'tur': tur,
+                    'tur': diaperType,
+                    'diaperType': diaperType,
+                    'eventType': VeriYonetici.diaperEventType,
                     if (notesController.text.isNotEmpty) 'notlar': notesController.text,
                   };
                   // Re-sort by time descending after editing

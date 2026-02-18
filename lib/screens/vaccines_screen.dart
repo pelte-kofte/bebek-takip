@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../models/asi_veri.dart';
@@ -1492,6 +1493,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       ),
       child: ElevatedButton(
         onPressed: () async {
+          HapticFeedback.lightImpact();
           final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddVaccineScreen()),

@@ -1228,7 +1228,10 @@ class _HomeScreenState extends State<HomeScreen> {
             icon = Icons.water_drop;
             iconColor = const Color(0xFF7A749E);
             title = l10n.diaperChange;
-            subtitle = data['tur'] ?? '';
+            subtitle = _localizedDiaperType(
+              l10n,
+              data['diaperType'] ?? data['tur'],
+            );
             break;
           case 'uyku':
             icon = Icons.bedtime;
@@ -2291,6 +2294,18 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  String _localizedDiaperType(AppLocalizations l10n, dynamic rawType) {
+    final diaperType = VeriYonetici.normalizeDiaperType(rawType);
+    switch (diaperType) {
+      case 'wet':
+        return l10n.wet;
+      case 'dirty':
+        return l10n.dirty;
+      default:
+        return l10n.both;
+    }
+  }
+
   Widget _buildLastActionCard(
     Widget icon,
     String title,
@@ -2414,16 +2429,22 @@ class _HomeScreenState extends State<HomeScreen> {
         break;
       case 'kaka':
         lineColor = AppColors.accentBlue;
-        final bezTur = item['tur'] ?? '';
-        if (bezTur == Dil.islak) {
+        final diaperType = VeriYonetici.normalizeDiaperType(
+          item['diaperType'] ?? item['tur'],
+        );
+        if (diaperType == 'wet') {
           icon = Ikonlar.diaperWet(size: 24);
-        } else if (bezTur == Dil.kirli) {
+        } else if (diaperType == 'dirty') {
           icon = Ikonlar.diaperDirty(size: 24);
         } else {
           icon = Ikonlar.diaperClean(size: 24);
         }
         title = Dil.bezDegisimi;
-        subtitle = bezTur;
+        subtitle = diaperType == 'wet'
+            ? Dil.islak
+            : diaperType == 'dirty'
+                ? Dil.kirli
+                : Dil.ikisiBirden;
         break;
       case 'uyku':
         lineColor = AppColors.accentLavender;

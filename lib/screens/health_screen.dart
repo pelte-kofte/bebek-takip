@@ -22,17 +22,9 @@ class HealthScreen extends StatelessWidget {
           body: SafeArea(
             child: Column(
               children: [
-                // Title
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(l10n.health, style: AppTypography.h1(context)),
-                  ),
-                ),
                 // TabBar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   child: Container(
                     decoration: BoxDecoration(
                       color: isDark

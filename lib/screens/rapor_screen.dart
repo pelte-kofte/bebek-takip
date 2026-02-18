@@ -6,7 +6,6 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
-import '../models/dil.dart';
 import '../models/ikonlar.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -82,9 +81,27 @@ class _RaporScreenState extends State<RaporScreen> {
     final kakaKayitlari = VeriYonetici.getKakaKayitlari()
         .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
         .toList();
-    int islak = kakaKayitlari.where((k) => k['tur'] == Dil.islak).length;
-    int kirli = kakaKayitlari.where((k) => k['tur'] == Dil.kirli).length;
-    int ikisi = kakaKayitlari.where((k) => k['tur'] == Dil.ikisiBirden).length;
+    int islak = kakaKayitlari
+        .where(
+          (k) =>
+              VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']) ==
+              'wet',
+        )
+        .length;
+    int kirli = kakaKayitlari
+        .where(
+          (k) =>
+              VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']) ==
+              'dirty',
+        )
+        .length;
+    int ikisi = kakaKayitlari
+        .where(
+          (k) =>
+              VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']) ==
+              'both',
+        )
+        .length;
 
     // Uyku kayıtları
     final uykuKayitlari = VeriYonetici.getUykuKayitlari()

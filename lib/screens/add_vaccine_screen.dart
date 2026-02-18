@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
@@ -80,6 +81,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     }
 
     await VeriYonetici.saveAsiKayitlari(vaccines);
+    HapticFeedback.lightImpact();
     if (mounted) {
       Navigator.pop(context, true);
     }
@@ -105,6 +107,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
       selectedMonth = parseVaccineMonth(_selectedPeriod) ?? 0;
     }
 
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
@@ -205,6 +208,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         ? DateTime.now().add(const Duration(days: 365 * 5))
         : DateTime.now();
 
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
       backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,

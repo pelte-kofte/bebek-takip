@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'l10n/app_localizations.dart';
@@ -141,6 +142,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onItemTapped(int index) {
+    HapticFeedback.lightImpact();
     if (index == 2) {
       showModalBottomSheet(
         context: context,

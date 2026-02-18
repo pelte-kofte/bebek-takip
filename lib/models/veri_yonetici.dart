@@ -41,6 +41,40 @@ class VeriYonetici {
   static List<Baby> _babies = [];
   static String _activeBabyId = '';
   static const String _migrationKey = 'multi_baby_migrated';
+  static const String diaperEventType = 'diaper';
+
+  static String _normalizeDiaperToken(dynamic rawValue) {
+    final value = (rawValue ?? '').toString().trim().toLowerCase();
+    return value
+        .replaceAll('ı', 'i')
+        .replaceAll('İ', 'i')
+        .replaceAll('ğ', 'g')
+        .replaceAll('Ğ', 'g')
+        .replaceAll('ş', 's')
+        .replaceAll('Ş', 's')
+        .replaceAll('ü', 'u')
+        .replaceAll('Ü', 'u')
+        .replaceAll('ö', 'o')
+        .replaceAll('Ö', 'o')
+        .replaceAll('ç', 'c')
+        .replaceAll('Ç', 'c');
+  }
+
+  static String normalizeDiaperType(dynamic rawValue) {
+    final value = _normalizeDiaperToken(rawValue);
+    if (value == 'wet' || value == 'islak') return 'wet';
+    if (value == 'dirty' || value == 'kirli') return 'dirty';
+    if (value == 'both' || value == 'ikisi birden') return 'both';
+    return 'both';
+  }
+
+  static String normalizeDiaperEventType(dynamic rawValue) {
+    final value = _normalizeDiaperToken(rawValue);
+    if (value == 'diaper' || value == 'bez degisimi') {
+      return diaperEventType;
+    }
+    return diaperEventType;
+  }
 
   // Initialize - must be called before using any other methods
   static Future<void> init() async {
@@ -422,7 +456,12 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
-              'tur': e['tur'],
+              'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+              'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+              'eventType': normalizeDiaperEventType(
+                e['eventType'] ?? e['kategori'] ?? e['category'],
+              ),
+              'notlar': e['notlar'] ?? '',
               'babyId': e['babyId'] ?? _activeBabyId,
             }),
           )
@@ -441,6 +480,10 @@ class VeriYonetici {
   ) async {
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
+      final normalizedType = normalizeDiaperType(r['diaperType'] ?? r['tur']);
+      r['tur'] = normalizedType;
+      r['diaperType'] = normalizedType;
+      r['eventType'] = diaperEventType;
     }
 
     _kakaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -450,7 +493,12 @@ class VeriYonetici {
         .map(
           (e) => {
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
-            'tur': e['tur'],
+            'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+            'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+            'eventType': normalizeDiaperEventType(
+              e['eventType'] ?? e['kategori'] ?? e['category'],
+            ),
+            'notlar': e['notlar'] ?? '',
             'babyId': e['babyId'],
           },
         )
@@ -1092,7 +1140,12 @@ class VeriYonetici {
             .map(
               (e) => {
                 'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                'tur': e['tur'],
+                'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+                'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+                'eventType': normalizeDiaperEventType(
+                  e['eventType'] ?? e['kategori'] ?? e['category'],
+                ),
+                'notlar': e['notlar'] ?? '',
                 'babyId': e['babyId'],
               },
             )

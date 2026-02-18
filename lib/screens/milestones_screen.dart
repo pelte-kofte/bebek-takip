@@ -177,25 +177,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    AppLocalizations.of(context)!.memories,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFFB4A2),
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 12),
               // Content
               Expanded(
                 child: _milestones.isEmpty
