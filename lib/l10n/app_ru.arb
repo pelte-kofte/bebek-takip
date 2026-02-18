@@ -194,7 +194,7 @@
   "loadTurkishVaccineCalendar": "Загрузить турецкий календарь вакцинации",
   "loadCalendarTitle": "Загрузить турецкий календарь вакцинации",
   "loadCalendarDesc": "Будет загружен стандартный турецкий календарь вакцинации. Существующие вакцины не будут удалены.",
-  "ageYears": "{count, plural, one{# год} few{# года} many{# лет} other{# года}}",
+  "ageYears": "{count, plural, one{{count} год} few{{count} года} many{{count} лет} other{{count} года}}",
   "@ageYears": {
     "placeholders": {
       "count": {
@@ -202,7 +202,7 @@
       }
     }
   },
-  "ageYearsMonths": "{years} год {months} мес.",
+  "ageYearsMonths": "{years, plural, one{{years} год} few{{years} года} many{{years} лет} other{{years} года}} {months, plural, one{{months} месяц} few{{months} месяца} many{{months} месяцев} other{{months} месяца}}",
   "@ageYearsMonths": {
     "placeholders": {
       "years": {
@@ -213,7 +213,7 @@
       }
     }
   },
-  "ageMonthsDays": "{months} мес. {days} дн.",
+  "ageMonthsDays": "{months, plural, one{{months} месяц} few{{months} месяца} many{{months} месяцев} other{{months} месяца}} {days, plural, one{{days} день} few{{days} дня} many{{days} дней} other{{days} дня}}",
   "@ageMonthsDays": {
     "placeholders": {
       "months": {
@@ -224,7 +224,7 @@
       }
     }
   },
-  "ageDays": "{count, plural, one{# день} few{# дня} many{# дней} other{# дня}}",
+  "ageDays": "{count, plural, one{{count} день} few{{count} дня} many{{count} дней} other{{count} дня}}",
   "@ageDays": {
     "placeholders": {
       "count": {
@@ -534,7 +534,7 @@
   "tip_tip_feet_discovery_4_5_desc": "Лёжа на спине, малыш может хватать стопы и тянуть их ко рту. Позвольте стопам изучать разные поверхности.",
   "tip_tip_independent_play_4_5_title": "Самостоятельная игра",
   "tip_tip_independent_play_4_5_desc": "Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша.",
-  "ageMonths": "{count, plural, one{# месяц} few{# месяца} many{# месяцев} other{# месяца}}",
+  "ageMonths": "{count, plural, one{{count} месяц} few{{count} месяца} many{{count} месяцев} other{{count} месяца}}",
   "@ageMonths": {
     "placeholders": {
       "count": {
@@ -598,12 +598,12 @@
   "editVaccine": "Изменить вакцину",
   "vaccineName": "Название вакцины",
   "allLabel": "Все",
-  "routineFilter": "Routine",
-  "asNeededFilter": "As-needed",
-  "vaccineProtocolsFilter": "Vaccine protocols",
+  "routineFilter": "Регулярно",
+  "asNeededFilter": "По необходимости",
+  "vaccineProtocolsFilter": "Протоколы вакцинации",
   "everyDay": "Every day",
-  "asNeeded": "As needed",
-  "vaccineProtocolLabel": "Vaccine protocol",
+  "asNeeded": "По необходимости",
+  "vaccineProtocolLabel": "Протокол вакцинации",
   "linkedToVaccine": "linked to {vaccine}",
   "@linkedToVaccine": {
     "placeholders": {
@@ -613,7 +613,7 @@
     }
   },
   "noVaccineLink": "No linked vaccine",
-  "doseCountLabel": "Doses logged: {count}",
+  "doseCountLabel": "Зарегистрировано доз: {count}",
   "@doseCountLabel": {
     "placeholders": {
       "count": {
@@ -621,11 +621,11 @@
       }
     }
   },
-  "logGivenNow": "Log given now",
+  "logGivenNow": "Отметить как дано",
   "medicationDoseLogged": "Dose logged",
-  "scheduleType": "Schedule type",
-  "dailySchedule": "Daily",
-  "prnSchedule": "As-needed",
+  "scheduleType": "Тип схемы",
+  "dailySchedule": "Ежедневно",
+  "prnSchedule": "По необходимости",
   "dailyTimeRequired": "Add at least one daily time",
   "activate": "Activate",
   "deactivate": "Deactivate",
@@ -650,7 +650,7 @@
   },
   "addVaccineProtocol": "Add vaccine protocol",
   "createNew": "Create new",
-  "chooseExistingMedication": "Choose existing medication",
+  "chooseExistingMedication": "Выбрать существующее лекарство",
   "feverReducerHint": "Fever reducer",
   "beforeHours": "Before: {hours}h",
   "@beforeHours": {

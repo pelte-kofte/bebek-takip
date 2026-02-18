@@ -376,7 +376,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get deleteConfirm => 'Bu kaydı silmek istediğinize emin misiniz?';
 
   @override
-  String get myVaccines => 'Aşılarim';
+  String get myVaccines => 'Aşılarım';
 
   @override
   String get addVaccine => 'Aşı Ekle';
@@ -430,7 +430,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get noVaccineRecords => 'Henüz aşı kaydi yok';
+  String get noVaccineRecords => 'Henüz aşı kaydı yok';
 
   @override
   String get loadTurkishCalendar =>
@@ -451,15 +451,14 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# Yaşında',
-      one: '# Yaşında',
+      other: '$count Yaş',
     );
     return '$_temp0';
   }
 
   @override
   String ageYearsMonths(int years, int months) {
-    return '$years Yil $months Aylık';
+    return '$years Yaş $months Ay';
   }
 
   @override
@@ -472,8 +471,7 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# Günlük',
-      one: '# Günlük',
+      other: '$count Günlük',
     );
     return '$_temp0';
   }
@@ -1110,8 +1108,7 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# Aylık',
-      one: '# Aylık',
+      other: '$count Aylık',
     );
     return '$_temp0';
   }
@@ -1268,22 +1265,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get allLabel => 'Tümü';
 
   @override
-  String get routineFilter => 'Routine';
+  String get routineFilter => 'Rutin';
 
   @override
-  String get asNeededFilter => 'As-needed';
+  String get asNeededFilter => 'Gerektikçe';
 
   @override
-  String get vaccineProtocolsFilter => 'Vaccine protocols';
+  String get vaccineProtocolsFilter => 'Aşı protokolleri';
 
   @override
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'As needed';
+  String get asNeeded => 'Gerektikçe';
 
   @override
-  String get vaccineProtocolLabel => 'Vaccine protocol';
+  String get vaccineProtocolLabel => 'Aşı protokolü';
 
   @override
   String linkedToVaccine(String vaccine) {
@@ -1295,23 +1292,23 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String doseCountLabel(int count) {
-    return 'Doses logged: $count';
+    return 'Kaydedilen doz: $count';
   }
 
   @override
-  String get logGivenNow => 'Log given now';
+  String get logGivenNow => 'Verildi olarak kaydet';
 
   @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override
-  String get scheduleType => 'Schedule type';
+  String get scheduleType => 'Kullanım türü';
 
   @override
-  String get dailySchedule => 'Daily';
+  String get dailySchedule => 'Günlük';
 
   @override
-  String get prnSchedule => 'As-needed';
+  String get prnSchedule => 'Gerektikçe';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';
@@ -1348,7 +1345,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createNew => 'Create new';
 
   @override
-  String get chooseExistingMedication => 'Choose existing medication';
+  String get chooseExistingMedication => 'Mevcut ilacı seç';
 
   @override
   String get feverReducerHint => 'Fever reducer';

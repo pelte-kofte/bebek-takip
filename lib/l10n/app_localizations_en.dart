@@ -452,20 +452,44 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# years old',
-      one: '# year old',
+      other: '$count years old',
+      one: '$count year old',
     );
     return '$_temp0';
   }
 
   @override
   String ageYearsMonths(int years, int months) {
-    return '$years Year $months Months Old';
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years years',
+      one: '$years year',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months months old',
+      one: '$months month old',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
   String ageMonthsDays(int months, int days) {
-    return '$months Months $days Days Old';
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months months',
+      one: '$months month',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days old',
+      one: '$days day old',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
@@ -473,8 +497,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# days old',
-      one: '# day old',
+      other: '$count days old',
+      one: '$count day old',
     );
     return '$_temp0';
   }
@@ -1112,8 +1136,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# months old',
-      one: '# month old',
+      other: '$count months old',
+      one: '$count month old',
     );
     return '$_temp0';
   }

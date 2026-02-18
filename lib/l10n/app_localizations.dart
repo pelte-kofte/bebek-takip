@@ -935,25 +935,25 @@ abstract class AppLocalizations {
   /// No description provided for @ageYears.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{# year old} other{# years old}}'**
+  /// **'{count, plural, one{{count} year old} other{{count} years old}}'**
   String ageYears(int count);
 
   /// No description provided for @ageYearsMonths.
   ///
   /// In en, this message translates to:
-  /// **'{years} Year {months} Months Old'**
+  /// **'{years, plural, one{{years} year} other{{years} years}} {months, plural, one{{months} month old} other{{months} months old}}'**
   String ageYearsMonths(int years, int months);
 
   /// No description provided for @ageMonthsDays.
   ///
   /// In en, this message translates to:
-  /// **'{months} Months {days} Days Old'**
+  /// **'{months, plural, one{{months} month} other{{months} months}} {days, plural, one{{days} day old} other{{days} days old}}'**
   String ageMonthsDays(int months, int days);
 
   /// No description provided for @ageDays.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{# day old} other{# days old}}'**
+  /// **'{count, plural, one{{count} day old} other{{count} days old}}'**
   String ageDays(int count);
 
   /// No description provided for @weeklyReport.
@@ -2087,7 +2087,7 @@ abstract class AppLocalizations {
   /// No description provided for @ageMonths.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{# month old} other{# months old}}'**
+  /// **'{count, plural, one{{count} month old} other{{count} months old}}'**
   String ageMonths(int count);
 
   /// No description provided for @appPreferences.

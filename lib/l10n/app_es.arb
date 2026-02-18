@@ -194,7 +194,7 @@
   "loadTurkishVaccineCalendar": "Cargar calendario de vacunación turco",
   "loadCalendarTitle": "Cargar calendario de vacunación turco",
   "loadCalendarDesc": "Se cargará el calendario de vacunación turco estándar. Las vacunas existentes no se eliminarán.",
-  "ageYears": "{count, plural, =1{# año} other{# años}}",
+  "ageYears": "{count, plural, one{{count} año} other{{count} años}}",
   "@ageYears": {
     "placeholders": {
       "count": {
@@ -202,7 +202,7 @@
       }
     }
   },
-  "ageYearsMonths": "{years} año {months} meses",
+  "ageYearsMonths": "{years, plural, one{{years} año} other{{years} años}} {months, plural, one{{months} mes} other{{months} meses}}",
   "@ageYearsMonths": {
     "placeholders": {
       "years": {
@@ -213,7 +213,7 @@
       }
     }
   },
-  "ageMonthsDays": "{months} meses {days} días",
+  "ageMonthsDays": "{months, plural, one{{months} mes} other{{months} meses}} {days, plural, one{{days} día} other{{days} días}}",
   "@ageMonthsDays": {
     "placeholders": {
       "months": {
@@ -224,7 +224,7 @@
       }
     }
   },
-  "ageDays": "{count, plural, =1{# día} other{# días}}",
+  "ageDays": "{count, plural, one{{count} día} other{{count} días}}",
   "@ageDays": {
     "placeholders": {
       "count": {
@@ -534,7 +534,7 @@
   "tip_tip_feet_discovery_4_5_desc": "Tu bebé puede agarrar sus pies y llevarlos a la boca cuando está acostado. Deja que los pies exploren diferentes superficies.",
   "tip_tip_independent_play_4_5_title": "Juego independiente",
   "tip_tip_independent_play_4_5_desc": "Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza.",
-  "ageMonths": "{count, plural, =1{# mes} other{# meses}}",
+  "ageMonths": "{count, plural, one{{count} mes} other{{count} meses}}",
   "@ageMonths": {
     "placeholders": {
       "count": {
@@ -598,12 +598,12 @@
   "editVaccine": "Editar vacuna",
   "vaccineName": "Nombre de la vacuna",
   "allLabel": "Todos",
-  "routineFilter": "Routine",
-  "asNeededFilter": "As-needed",
-  "vaccineProtocolsFilter": "Vaccine protocols",
+  "routineFilter": "Rutina",
+  "asNeededFilter": "Según necesidad",
+  "vaccineProtocolsFilter": "Protocolos de vacunas",
   "everyDay": "Every day",
-  "asNeeded": "As needed",
-  "vaccineProtocolLabel": "Vaccine protocol",
+  "asNeeded": "Según necesidad",
+  "vaccineProtocolLabel": "Protocolo de vacuna",
   "linkedToVaccine": "linked to {vaccine}",
   "@linkedToVaccine": {
     "placeholders": {
@@ -613,7 +613,7 @@
     }
   },
   "noVaccineLink": "No linked vaccine",
-  "doseCountLabel": "Doses logged: {count}",
+  "doseCountLabel": "Dosis registradas: {count}",
   "@doseCountLabel": {
     "placeholders": {
       "count": {
@@ -621,11 +621,11 @@
       }
     }
   },
-  "logGivenNow": "Log given now",
+  "logGivenNow": "Registrar ahora",
   "medicationDoseLogged": "Dose logged",
-  "scheduleType": "Schedule type",
-  "dailySchedule": "Daily",
-  "prnSchedule": "As-needed",
+  "scheduleType": "Tipo de pauta",
+  "dailySchedule": "Diario",
+  "prnSchedule": "Según necesidad",
   "dailyTimeRequired": "Add at least one daily time",
   "activate": "Activate",
   "deactivate": "Deactivate",
@@ -650,7 +650,7 @@
   },
   "addVaccineProtocol": "Add vaccine protocol",
   "createNew": "Create new",
-  "chooseExistingMedication": "Choose existing medication",
+  "chooseExistingMedication": "Elegir medicamento existente",
   "feverReducerHint": "Fever reducer",
   "beforeHours": "Before: {hours}h",
   "@beforeHours": {

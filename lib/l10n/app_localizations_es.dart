@@ -455,20 +455,44 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# años',
-      one: '# año',
+      other: '$count años',
+      one: '$count año',
     );
     return '$_temp0';
   }
 
   @override
   String ageYearsMonths(int years, int months) {
-    return '$years año $months meses';
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years años',
+      one: '$years año',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months meses',
+      one: '$months mes',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
   String ageMonthsDays(int months, int days) {
-    return '$months meses $days días';
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months meses',
+      one: '$months mes',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días',
+      one: '$days día',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
@@ -476,8 +500,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# días',
-      one: '# día',
+      other: '$count días',
+      one: '$count día',
     );
     return '$_temp0';
   }
@@ -1117,8 +1141,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# meses',
-      one: '# mes',
+      other: '$count meses',
+      one: '$count mes',
     );
     return '$_temp0';
   }
@@ -1277,22 +1301,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get allLabel => 'Todos';
 
   @override
-  String get routineFilter => 'Routine';
+  String get routineFilter => 'Rutina';
 
   @override
-  String get asNeededFilter => 'As-needed';
+  String get asNeededFilter => 'Según necesidad';
 
   @override
-  String get vaccineProtocolsFilter => 'Vaccine protocols';
+  String get vaccineProtocolsFilter => 'Protocolos de vacunas';
 
   @override
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'As needed';
+  String get asNeeded => 'Según necesidad';
 
   @override
-  String get vaccineProtocolLabel => 'Vaccine protocol';
+  String get vaccineProtocolLabel => 'Protocolo de vacuna';
 
   @override
   String linkedToVaccine(String vaccine) {
@@ -1304,23 +1328,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String doseCountLabel(int count) {
-    return 'Doses logged: $count';
+    return 'Dosis registradas: $count';
   }
 
   @override
-  String get logGivenNow => 'Log given now';
+  String get logGivenNow => 'Registrar ahora';
 
   @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override
-  String get scheduleType => 'Schedule type';
+  String get scheduleType => 'Tipo de pauta';
 
   @override
-  String get dailySchedule => 'Daily';
+  String get dailySchedule => 'Diario';
 
   @override
-  String get prnSchedule => 'As-needed';
+  String get prnSchedule => 'Según necesidad';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';
@@ -1357,7 +1381,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get createNew => 'Create new';
 
   @override
-  String get chooseExistingMedication => 'Choose existing medication';
+  String get chooseExistingMedication => 'Elegir medicamento existente';
 
   @override
   String get feverReducerHint => 'Fever reducer';

@@ -452,22 +452,54 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# року',
-      many: '# років',
-      few: '# роки',
-      one: '# рік',
+      other: '$count року',
+      many: '$count років',
+      few: '$count роки',
+      one: '$count рік',
     );
     return '$_temp0';
   }
 
   @override
   String ageYearsMonths(int years, int months) {
-    return '$years рік $months міс.';
+    String _temp0 = intl.Intl.pluralLogic(
+      years,
+      locale: localeName,
+      other: '$years року',
+      many: '$years років',
+      few: '$years роки',
+      one: '$years рік',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months місяця',
+      many: '$months місяців',
+      few: '$months місяці',
+      one: '$months місяць',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
   String ageMonthsDays(int months, int days) {
-    return '$months міс. $days дн.';
+    String _temp0 = intl.Intl.pluralLogic(
+      months,
+      locale: localeName,
+      other: '$months місяця',
+      many: '$months місяців',
+      few: '$months місяці',
+      one: '$months місяць',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days дня',
+      many: '$days днів',
+      few: '$days дні',
+      one: '$days день',
+    );
+    return '$_temp0 $_temp1';
   }
 
   @override
@@ -475,10 +507,10 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# дня',
-      many: '# днів',
-      few: '# дні',
-      one: '# день',
+      other: '$count дня',
+      many: '$count днів',
+      few: '$count дні',
+      one: '$count день',
     );
     return '$_temp0';
   }
@@ -1119,10 +1151,10 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '# місяця',
-      many: '# місяців',
-      few: '# місяці',
-      one: '# місяць',
+      other: '$count місяця',
+      many: '$count місяців',
+      few: '$count місяці',
+      one: '$count місяць',
     );
     return '$_temp0';
   }
@@ -1280,22 +1312,22 @@ class AppLocalizationsUk extends AppLocalizations {
   String get allLabel => 'Усі';
 
   @override
-  String get routineFilter => 'Routine';
+  String get routineFilter => 'Регулярно';
 
   @override
-  String get asNeededFilter => 'As-needed';
+  String get asNeededFilter => 'За потреби';
 
   @override
-  String get vaccineProtocolsFilter => 'Vaccine protocols';
+  String get vaccineProtocolsFilter => 'Протоколи вакцинації';
 
   @override
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'As needed';
+  String get asNeeded => 'За потреби';
 
   @override
-  String get vaccineProtocolLabel => 'Vaccine protocol';
+  String get vaccineProtocolLabel => 'Протокол вакцинації';
 
   @override
   String linkedToVaccine(String vaccine) {
@@ -1307,23 +1339,23 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String doseCountLabel(int count) {
-    return 'Doses logged: $count';
+    return 'Зареєстровано доз: $count';
   }
 
   @override
-  String get logGivenNow => 'Log given now';
+  String get logGivenNow => 'Позначити як дано';
 
   @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override
-  String get scheduleType => 'Schedule type';
+  String get scheduleType => 'Тип схеми';
 
   @override
-  String get dailySchedule => 'Daily';
+  String get dailySchedule => 'Щодня';
 
   @override
-  String get prnSchedule => 'As-needed';
+  String get prnSchedule => 'За потреби';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';
@@ -1360,7 +1392,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get createNew => 'Create new';
 
   @override
-  String get chooseExistingMedication => 'Choose existing medication';
+  String get chooseExistingMedication => 'Вибрати наявний препарат';
 
   @override
   String get feverReducerHint => 'Fever reducer';

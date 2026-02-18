@@ -1015,7 +1015,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 16),
           child: Text(
-            title.toUpperCase(),
+            title,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark
@@ -1048,7 +1048,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 16),
           child: Text(
-            l10n.upcomingVaccines.toUpperCase(),
+            l10n.upcomingVaccines,
             style: AppTypography.label(context).copyWith(
               color: isDark
                   ? AppColors.textSecondaryDark

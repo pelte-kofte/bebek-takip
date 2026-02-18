@@ -194,7 +194,7 @@
   "loadTurkishVaccineCalendar": "Load Turkish Vaccine Calendar",
   "loadCalendarTitle": "Load Turkish Vaccine Calendar",
   "loadCalendarDesc": "The standard Turkish vaccine calendar will be loaded. Existing vaccines won't be deleted.",
-  "ageYears": "{count, plural, =1{# year old} other{# years old}}",
+  "ageYears": "{count, plural, one{{count} year old} other{{count} years old}}",
   "@ageYears": {
     "placeholders": {
       "count": {
@@ -202,7 +202,7 @@
       }
     }
   },
-  "ageYearsMonths": "{years} Year {months} Months Old",
+  "ageYearsMonths": "{years, plural, one{{years} year} other{{years} years}} {months, plural, one{{months} month old} other{{months} months old}}",
   "@ageYearsMonths": {
     "placeholders": {
       "years": {
@@ -213,7 +213,7 @@
       }
     }
   },
-  "ageMonthsDays": "{months} Months {days} Days Old",
+  "ageMonthsDays": "{months, plural, one{{months} month} other{{months} months}} {days, plural, one{{days} day old} other{{days} days old}}",
   "@ageMonthsDays": {
     "placeholders": {
       "months": {
@@ -224,7 +224,7 @@
       }
     }
   },
-  "ageDays": "{count, plural, =1{# day old} other{# days old}}",
+  "ageDays": "{count, plural, one{{count} day old} other{{count} days old}}",
   "@ageDays": {
     "placeholders": {
       "count": {
@@ -534,7 +534,7 @@
   "tip_tip_feet_discovery_4_5_desc": "Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.",
   "tip_tip_independent_play_4_5_title": "Independent Play",
   "tip_tip_independent_play_4_5_desc": "Place a few textured toys nearby and step back a little. Independent play supports confidence.",
-  "ageMonths": "{count, plural, =1{# month old} other{# months old}}",
+  "ageMonths": "{count, plural, one{{count} month old} other{{count} months old}}",
   "@ageMonths": {
     "placeholders": {
       "count": {

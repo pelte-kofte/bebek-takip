@@ -145,7 +145,7 @@
   "end": "Bitiş",
   "attention": "Dikkat",
   "deleteConfirm": "Bu kaydı silmek istediğinize emin misiniz?",
-  "myVaccines": "Aşılarim",
+  "myVaccines": "Aşılarım",
   "addVaccine": "Aşı Ekle",
   "applied": "Uygulandı",
   "pending": "Bekleniyor",
@@ -161,15 +161,15 @@
   "addVaccines": "{count} Aşı Ekle",
   "selectVaccine": "Aşı Secin",
   "vaccinesAdded": "{count} Aşı eklendi",
-  "noVaccineRecords": "Henüz aşı kaydi yok",
+  "noVaccineRecords": "Henüz aşı kaydı yok",
   "loadTurkishCalendar": "Türkiye aşı takvimini yükleyin veya manuel olarak ekleyin",
   "loadTurkishVaccineCalendar": "Türkiye Aşı Takvimini Yükle",
   "loadCalendarTitle": "Turkiye Aşı Takvimini Yükle",
   "loadCalendarDesc": "Türkiye'nin standart aşı takvimi yüklenecek. Mevcut aşılar silinmeyecek.",
-  "ageYears": "{count, plural, =1{# Yaşında} other{# Yaşında}}",
-  "ageYearsMonths": "{years} Yil {months} Aylık",
+  "ageYears": "{count, plural, other{{count} Yaş}}",
+  "ageYearsMonths": "{years} Yaş {months} Ay",
   "ageMonthsDays": "{months} Ay {days} Günlük",
-  "ageDays": "{count, plural, =1{# Günlük} other{# Günlük}}",
+  "ageDays": "{count, plural, other{{count} Günlük}}",
   "weeklyReport": "Haftalık Rapor",
   "monthlyReport": "Aylık Rapor",
   "weekly": "Haftalık",
@@ -365,7 +365,7 @@
       }
     }
   },
-  "ageMonths": "{count, plural, =1{# Aylık} other{# Aylık}}",
+  "ageMonths": "{count, plural, other{{count} Aylık}}",
   "@ageMonths": {
     "placeholders": {
       "count": {
@@ -436,12 +436,12 @@
   "editVaccine": "Aşı Düzenle",
   "vaccineName": "Aşı Adı",
   "allLabel": "Tümü",
-  "routineFilter": "Routine",
-  "asNeededFilter": "As-needed",
-  "vaccineProtocolsFilter": "Vaccine protocols",
+  "routineFilter": "Rutin",
+  "asNeededFilter": "Gerektikçe",
+  "vaccineProtocolsFilter": "Aşı protokolleri",
   "everyDay": "Every day",
-  "asNeeded": "As needed",
-  "vaccineProtocolLabel": "Vaccine protocol",
+  "asNeeded": "Gerektikçe",
+  "vaccineProtocolLabel": "Aşı protokolü",
   "linkedToVaccine": "linked to {vaccine}",
   "@linkedToVaccine": {
     "placeholders": {
@@ -451,7 +451,7 @@
     }
   },
   "noVaccineLink": "No linked vaccine",
-  "doseCountLabel": "Doses logged: {count}",
+  "doseCountLabel": "Kaydedilen doz: {count}",
   "@doseCountLabel": {
     "placeholders": {
       "count": {
@@ -459,11 +459,11 @@
       }
     }
   },
-  "logGivenNow": "Log given now",
+  "logGivenNow": "Verildi olarak kaydet",
   "medicationDoseLogged": "Dose logged",
-  "scheduleType": "Schedule type",
-  "dailySchedule": "Daily",
-  "prnSchedule": "As-needed",
+  "scheduleType": "Kullanım türü",
+  "dailySchedule": "Günlük",
+  "prnSchedule": "Gerektikçe",
   "dailyTimeRequired": "Add at least one daily time",
   "activate": "Activate",
   "deactivate": "Deactivate",
@@ -488,7 +488,7 @@
   },
   "addVaccineProtocol": "Add vaccine protocol",
   "createNew": "Create new",
-  "chooseExistingMedication": "Choose existing medication",
+  "chooseExistingMedication": "Mevcut ilacı seç",
   "feverReducerHint": "Fever reducer",
   "beforeHours": "Before: {hours}h",
   "@beforeHours": {
