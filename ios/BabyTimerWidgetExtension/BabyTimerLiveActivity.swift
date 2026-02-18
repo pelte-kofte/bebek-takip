@@ -5,6 +5,29 @@ import SwiftUI
 import ActivityKit
 #endif
 
+final class WidgetBundleLocator {}
+
+private func widgetExtensionBundle() -> Bundle {
+    Bundle(for: WidgetBundleLocator.self)
+}
+
+#if DEBUG
+private func debugLogWidgetBundleOnce(_ bundle: Bundle) {
+    struct LogState {
+        static var didLog = false
+    }
+
+    guard !LogState.didLog else { return }
+    LogState.didLog = true
+
+    print("Widget bundle:", bundle.bundlePath)
+    if let resourcePath = bundle.resourcePath,
+       let resources = try? FileManager.default.contentsOfDirectory(atPath: resourcePath) {
+        print("Widget resources:", resources)
+    }
+}
+#endif
+
 @available(iOS 16.1, *)
 struct BabyTimerLiveActivity: Widget {
     var body: some WidgetConfiguration {
@@ -91,15 +114,16 @@ struct BabyTimerLiveActivity: Widget {
 
     @ViewBuilder
     private func activityIcon(for type: String) -> some View {
-        if type == "sleep" {
-            Image("la_sleep", bundle: .main)
-                .resizable()
-                .scaledToFit()
-        } else {
-            Image("la_nursing", bundle: .main)
-                .resizable()
-                .scaledToFit()
-        }
+        let name = (type == "sleep") ? "la_sleep" : "la_nursing"
+        let bundle = widgetExtensionBundle()
+#if DEBUG
+        debugLogWidgetBundleOnce(bundle)
+#endif
+
+        Image(name, bundle: bundle)
+            .resizable()
+            .scaledToFit()
+            .frame(width: 18, height: 18)
     }
 
 }
@@ -122,16 +146,20 @@ struct LockScreenView: View {
                     .fill(iconBackground)
                     .frame(width: 50, height: 50)
 
+                let bundle = widgetExtensionBundle()
+#if DEBUG
+                debugLogWidgetBundleOnce(bundle)
+#endif
                 if context.attributes.activityType == "sleep" {
-                    Image("la_sleep", bundle: .main)
+                    Image("la_sleep", bundle: bundle)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 26, height: 26)
+                        .frame(width: 22, height: 22)
                 } else {
-                    Image("la_nursing", bundle: .main)
+                    Image("la_nursing", bundle: bundle)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 26, height: 26)
+                        .frame(width: 22, height: 22)
                 }
             }
 
