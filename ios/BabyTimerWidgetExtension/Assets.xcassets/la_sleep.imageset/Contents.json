@@ -1,15 +1,17 @@
 {
   "images" : [
     {
+      "filename" : "la_sleep.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "sleeping.png",
+      "filename" : "la_sleep@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "la_sleep@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
