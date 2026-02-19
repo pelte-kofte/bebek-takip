@@ -2,23 +2,48 @@ import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
 
-String formatLocalizedAge(BuildContext context, DateTime birthDate) {
-  final l10n = AppLocalizations.of(context)!;
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final birth = DateTime(birthDate.year, birthDate.month, birthDate.day);
+class AgeParts {
+  final int years;
+  final int months;
+  final int days;
+  final int totalMonths;
+  final int totalDays;
 
-  if (birth.isAfter(today)) {
-    return l10n.ageDays(0);
+  const AgeParts({
+    required this.years,
+    required this.months,
+    required this.days,
+    required this.totalMonths,
+    required this.totalDays,
+  });
+}
+
+DateTime dateOnly(DateTime value) {
+  final local = value.toLocal();
+  return DateTime(local.year, local.month, local.day);
+}
+
+AgeParts calcAge(DateTime birthDate, {DateTime? referenceDate}) {
+  final reference = dateOnly(referenceDate ?? DateTime.now());
+  final birth = dateOnly(birthDate);
+
+  if (birth.isAfter(reference)) {
+    return const AgeParts(
+      years: 0,
+      months: 0,
+      days: 0,
+      totalMonths: 0,
+      totalDays: 0,
+    );
   }
 
-  int years = today.year - birth.year;
-  int months = today.month - birth.month;
-  int days = today.day - birth.day;
+  int years = reference.year - birth.year;
+  int months = reference.month - birth.month;
+  int days = reference.day - birth.day;
 
   if (days < 0) {
     months -= 1;
-    final previousMonth = DateTime(today.year, today.month, 0);
+    final previousMonth = DateTime(reference.year, reference.month, 0);
     days += previousMonth.day;
   }
 
@@ -28,23 +53,44 @@ String formatLocalizedAge(BuildContext context, DateTime birthDate) {
   }
 
   final totalMonths = years * 12 + months;
+  final totalDays = reference.difference(birth).inDays;
 
-  if (years >= 2) {
-    if (months > 0) {
-      return l10n.ageYearsMonths(years, months);
+  return AgeParts(
+    years: years,
+    months: months,
+    days: days,
+    totalMonths: totalMonths,
+    totalDays: totalDays,
+  );
+}
+
+String ageString(
+  BuildContext context,
+  DateTime birthDate, {
+  DateTime? referenceDate,
+}) {
+  final l10n = AppLocalizations.of(context)!;
+  final age = calcAge(birthDate, referenceDate: referenceDate);
+
+  if (age.years >= 2) {
+    if (age.months > 0) {
+      return l10n.ageYearsMonths(age.years, age.months);
     }
-    return l10n.ageYears(years);
+    return l10n.ageYears(age.years);
   }
 
-  if (totalMonths > 0) {
-    if (days > 0) {
-      return l10n.ageMonthsDays(totalMonths, days);
+  if (age.totalMonths > 0) {
+    if (age.days > 0) {
+      return l10n.ageMonthsDays(age.totalMonths, age.days);
     }
-    return l10n.ageMonths(totalMonths);
+    return l10n.ageMonths(age.totalMonths);
   }
 
-  final totalDays = today.difference(birth).inDays;
-  return l10n.ageDays(totalDays);
+  return l10n.ageDays(age.totalDays);
+}
+
+String formatLocalizedAge(BuildContext context, DateTime birthDate) {
+  return ageString(context, birthDate);
 }
 
 String formatLocalizedDate(BuildContext context, DateTime date) {

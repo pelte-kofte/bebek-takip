@@ -22,6 +22,8 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
   final ReminderService _reminderService = ReminderService();
   List<Map<String, dynamic>> _medications = [];
   String _activeFilter = _filterAll;
+  final Set<String> _recentlyTappedMedicationIds = <String>{};
+  final Map<String, DateTime> _doseChipLastTapAt = <String, DateTime>{};
 
   @override
   void initState() {
@@ -142,24 +144,406 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
   }
 
   Future<void> _logGivenNow(Map<String, dynamic> medication) async {
-    await VeriYonetici.addIlacDozKaydi(
+    final medId = medication['id'] as String;
+    if (_recentlyTappedMedicationIds.contains(medId)) return;
+    _recentlyTappedMedicationIds.add(medId);
+    if (mounted) setState(() {});
+    Future.delayed(const Duration(seconds: 1), () {
+      _recentlyTappedMedicationIds.remove(medId);
+      if (mounted) setState(() {});
+    });
+
+    final l10n = AppLocalizations.of(context)!;
+    final doseId = await VeriYonetici.upsertIlacDozKaydi(
       medicationId: medication['id'] as String,
       vaccineId: medication['scheduleType'] == _filterVaccineProtocol
           ? medication['vaccineId'] as String?
           : null,
+      doseIndex: 0,
     );
+    HapticFeedback.selectionClick();
     if (!mounted) return;
-    final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.medicationDoseLogged)));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.savedMessage),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            await VeriYonetici.deleteIlacDozKaydi(doseId);
+            if (mounted) setState(() {});
+          },
+        ),
+      ),
+    );
     setState(() {});
   }
 
   int _doseCount(Map<String, dynamic> med) {
-    return VeriYonetici.getIlacDozKayitlari(
+    return _uniqueDoseLogs(med).length;
+  }
+
+  List<Map<String, dynamic>> _doseLogs(Map<String, dynamic> med) {
+    final logs = VeriYonetici.getIlacDozKayitlari(
       medicationId: med['id'] as String,
-    ).length;
+    ).toList();
+    logs.sort(
+      (a, b) => (b['givenAt'] as DateTime).compareTo(a['givenAt'] as DateTime),
+    );
+    return logs;
+  }
+
+  List<Map<String, dynamic>> _uniqueDoseLogs(Map<String, dynamic> med) {
+    final logs = _doseLogs(med);
+    if (_isProtocolMedication(med)) {
+      final seen = <String>{};
+      final unique = <Map<String, dynamic>>[];
+      for (final log in logs) {
+        final givenAt = log['givenAt'] as DateTime;
+        final day = dateOnly(givenAt);
+        final step = _protocolStepForLog(log) ?? '';
+        final key = '${day.toIso8601String()}::$step';
+        if (seen.contains(key)) continue;
+        seen.add(key);
+        unique.add(log);
+      }
+      return unique;
+    }
+    final dailyTimes = _dailyTimes(med);
+    final seen = <String>{};
+    final unique = <Map<String, dynamic>>[];
+    for (final log in logs) {
+      final givenAt = log['givenAt'] as DateTime;
+      final day = dateOnly(givenAt);
+      final doseIndex = _doseIndexForLog(log, dailyTimes) ?? 0;
+      final key = '${day.toIso8601String()}::$doseIndex';
+      if (seen.contains(key)) continue;
+      seen.add(key);
+      unique.add(log);
+    }
+    return unique;
+  }
+
+  DateTime? _lastGivenAt(Map<String, dynamic> med) {
+    final logs = _uniqueDoseLogs(med);
+    if (logs.isEmpty) return null;
+    return logs.first['givenAt'] as DateTime;
+  }
+
+  bool _isMultiDoseRoutine(Map<String, dynamic> med) {
+    return ((med['scheduleType'] as String?) ?? _filterPrn) == _filterDaily &&
+        _dailyTimes(med).length > 1;
+  }
+
+  bool _isProtocolMedication(Map<String, dynamic> med) {
+    return ((med['scheduleType'] as String?) ?? _filterPrn) ==
+        _filterVaccineProtocol;
+  }
+
+  int? _doseIndexForLog(Map<String, dynamic> log, List<String> dailyTimes) {
+    final rawIndex = log['doseIndex'];
+    if (rawIndex is int && rawIndex >= 0 && rawIndex < dailyTimes.length) {
+      return rawIndex;
+    }
+    if (rawIndex is num) {
+      final idx = rawIndex.toInt();
+      if (idx >= 0 && idx < dailyTimes.length) return idx;
+    }
+    final scheduled = log['scheduledTime']?.toString();
+    if (scheduled != null) {
+      final idx = dailyTimes.indexOf(scheduled);
+      if (idx >= 0) return idx;
+    }
+    return null;
+  }
+
+  String? _protocolStepForLog(Map<String, dynamic> log) {
+    final step = log['protocolStep']?.toString().trim().toLowerCase();
+    if (step == 'before' || step == 'after') return step;
+    return null;
+  }
+
+  Map<int, Map<String, dynamic>> _todayDoseLogsByIndex(
+    Map<String, dynamic> med,
+  ) {
+    final today = dateOnly(DateTime.now());
+    final dailyTimes = _dailyTimes(med);
+    final byIndex = <int, Map<String, dynamic>>{};
+    for (final log in _doseLogs(med)) {
+      final givenAt = log['givenAt'] as DateTime;
+      if (dateOnly(givenAt) != today) continue;
+      final idx = _doseIndexForLog(log, dailyTimes);
+      if (idx == null) continue;
+      byIndex.putIfAbsent(idx, () => log);
+    }
+    return byIndex;
+  }
+
+  Map<String, Map<String, dynamic>> _todayProtocolLogs(
+    Map<String, dynamic> med,
+  ) {
+    final today = dateOnly(DateTime.now());
+    final byStep = <String, Map<String, dynamic>>{};
+    for (final log in _doseLogs(med)) {
+      final givenAt = log['givenAt'] as DateTime;
+      if (dateOnly(givenAt) != today) continue;
+      final step = _protocolStepForLog(log);
+      if (step == null) continue;
+      byStep.putIfAbsent(step, () => log);
+    }
+    return byStep;
+  }
+
+  int _targetDailyDoseCount(Map<String, dynamic> med) {
+    if (_isProtocolMedication(med)) return 2;
+    final times = _dailyTimes(med);
+    if (times.isNotEmpty) return times.length;
+    return 1;
+  }
+
+  String? _last7DaysSummary(Map<String, dynamic> med, AppLocalizations l10n) {
+    if (!_isMultiDoseRoutine(med)) return null;
+    final now = DateTime.now();
+    final target = _targetDailyDoseCount(med);
+    final dailyTimes = _dailyTimes(med);
+    final counts = <DateTime, Set<int>>{};
+    for (final log in _doseLogs(med)) {
+      final givenAt = log['givenAt'] as DateTime;
+      final day = dateOnly(givenAt);
+      final daysBack = dateOnly(now).difference(day).inDays;
+      if (daysBack < 1 || daysBack > 7) continue;
+      final idx = _doseIndexForLog(log, dailyTimes) ?? 0;
+      counts.putIfAbsent(day, () => <int>{}).add(idx);
+    }
+    if (counts.isEmpty) return null;
+
+    final days = counts.keys.toList()..sort((a, b) => b.compareTo(a));
+    final items = <String>[];
+    for (final day in days.take(3)) {
+      final label = day == dateOnly(now).subtract(const Duration(days: 1))
+          ? l10n.yesterday
+          : formatLocalizedDate(context, day);
+      items.add('$label ${counts[day]!.length}/$target');
+    }
+    return items.join(' • ');
+  }
+
+  Future<void> _toggleDoseChip(Map<String, dynamic> med, int doseIndex) async {
+    final medId = med['id'] as String;
+    final key = '$medId:$doseIndex';
+    final now = DateTime.now();
+    final lastTap = _doseChipLastTapAt[key];
+    if (lastTap != null &&
+        now.difference(lastTap) < const Duration(seconds: 1)) {
+      return;
+    }
+    _doseChipLastTapAt[key] = now;
+
+    final dailyTimes = _dailyTimes(med);
+    await VeriYonetici.upsertIlacDozKaydi(
+      medicationId: medId,
+      vaccineId: med['scheduleType'] == _filterVaccineProtocol
+          ? med['vaccineId'] as String?
+          : null,
+      givenAt: DateTime.now(),
+      doseIndex: doseIndex,
+      scheduledTime: doseIndex >= 0 && doseIndex < dailyTimes.length
+          ? dailyTimes[doseIndex]
+          : null,
+    );
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _toggleProtocolStep(
+    Map<String, dynamic> med,
+    String step,
+  ) async {
+    final medId = med['id'] as String;
+    final key = '$medId:protocol:$step';
+    final now = DateTime.now();
+    final lastTap = _doseChipLastTapAt[key];
+    if (lastTap != null &&
+        now.difference(lastTap) < const Duration(seconds: 1)) {
+      return;
+    }
+    _doseChipLastTapAt[key] = now;
+
+    await VeriYonetici.upsertIlacDozKaydi(
+      medicationId: medId,
+      vaccineId: med['scheduleType'] == _filterVaccineProtocol
+          ? med['vaccineId'] as String?
+          : null,
+      givenAt: DateTime.now(),
+      protocolStep: step,
+    );
+    if (mounted) setState(() {});
+  }
+
+  bool _givenToday(Map<String, dynamic> med) {
+    final last = _lastGivenAt(med);
+    if (last == null) return false;
+    return dateOnly(last) == dateOnly(DateTime.now());
+  }
+
+  String _formatLastGiven(DateTime? lastGivenAt, AppLocalizations l10n) {
+    if (lastGivenAt == null) return l10n.notGivenYet;
+    final now = DateTime.now();
+    final today = dateOnly(now);
+    final target = dateOnly(lastGivenAt);
+    final timeText = MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(lastGivenAt));
+
+    if (target == today) {
+      return '${l10n.today} $timeText';
+    }
+    if (target == today.subtract(const Duration(days: 1))) {
+      return '${l10n.yesterday} $timeText';
+    }
+    return '${formatLocalizedDate(context, lastGivenAt)} $timeText';
+  }
+
+  Future<void> _showMedicationHistory(Map<String, dynamic> med) async {
+    final l10n = AppLocalizations.of(context)!;
+    final logs = _uniqueDoseLogs(med).take(30).toList();
+    final dailyTarget = _targetDailyDoseCount(med);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final grouped = <DateTime, List<Map<String, dynamic>>>{};
+    for (final log in logs) {
+      final day = dateOnly(log['givenAt'] as DateTime);
+      grouped.putIfAbsent(day, () => <Map<String, dynamic>>[]).add(log);
+    }
+    final orderedDays = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.35),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(l10n.viewHistory, style: AppTypography.h3(context)),
+              const SizedBox(height: 8),
+              if (logs.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: Text(l10n.noMedicationHistory),
+                )
+              else
+                Flexible(
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: orderedDays.length,
+                    separatorBuilder: (_, _) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final day = orderedDays[index];
+                      final dayLogs = grouped[day]!;
+                      final dayLabel = day == dateOnly(DateTime.now())
+                          ? l10n.today
+                          : (day ==
+                                    dateOnly(
+                                      DateTime.now(),
+                                    ).subtract(const Duration(days: 1))
+                                ? l10n.yesterday
+                                : formatLocalizedDate(context, day));
+                      if (_isProtocolMedication(med)) {
+                        final before = dayLogs
+                            .where((l) => _protocolStepForLog(l) == 'before')
+                            .firstOrNull;
+                        final after = dayLogs
+                            .where((l) => _protocolStepForLog(l) == 'after')
+                            .firstOrNull;
+                        final beforeTime = before == null
+                            ? ''
+                            : MaterialLocalizations.of(context).formatTimeOfDay(
+                                TimeOfDay.fromDateTime(
+                                  before['givenAt'] as DateTime,
+                                ),
+                              );
+                        final afterTime = after == null
+                            ? ''
+                            : MaterialLocalizations.of(context).formatTimeOfDay(
+                                TimeOfDay.fromDateTime(
+                                  after['givenAt'] as DateTime,
+                                ),
+                              );
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(
+                            '$dayLabel önce ${before == null ? '☐' : '✓ $beforeTime'}, sonra ${after == null ? '☐' : '✓ $afterTime'}',
+                            style: AppTypography.caption(
+                              context,
+                            ).copyWith(fontWeight: FontWeight.w600),
+                          ),
+                        );
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$dayLabel ${dayLogs.length}/$dailyTarget',
+                              style: AppTypography.caption(
+                                context,
+                              ).copyWith(fontWeight: FontWeight.w700),
+                            ),
+                            const SizedBox(height: 4),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: [
+                                for (final log in dayLogs)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? AppColors.bgDark.withOpacity(0.25)
+                                          : const Color(0xFFF7EEE9),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      MaterialLocalizations.of(
+                                        context,
+                                      ).formatTimeOfDay(
+                                        TimeOfDay.fromDateTime(
+                                          log['givenAt'] as DateTime,
+                                        ),
+                                      ),
+                                      style: AppTypography.caption(context),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   int _dailyReminderId(String medicationId, int index) {
@@ -392,6 +776,14 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     final isMedication = med['type'] == 'medication';
     final typeBadge = isMedication ? l10n.medication : l10n.supplement;
     final subtitle = _scheduleSubtitle(med, l10n);
+    final lastGivenAt = _lastGivenAt(med);
+    final givenToday = _givenToday(med);
+    final isMultiDoseRoutine = _isMultiDoseRoutine(med);
+    final isProtocolMedication = _isProtocolMedication(med);
+    final todayByIndex = _todayDoseLogsByIndex(med);
+    final todayProtocolLogs = _todayProtocolLogs(med);
+    final last7Summary = _last7DaysSummary(med, l10n);
+    final dailyTimes = _dailyTimes(med);
 
     return GestureDetector(
       onTap: () => _editMedication(med),
@@ -461,12 +853,259 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                               : const Color(0xFF866F65),
                         ),
                       ),
+                      if (!isMultiDoseRoutine && !isProtocolMedication)
+                        Text(
+                          l10n.doseCountLabel(_doseCount(med)),
+                          style: AppTypography.caption(context).copyWith(
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : const Color(0xFF866F65),
+                          ),
+                        ),
+                      if (isMultiDoseRoutine)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (int i = 0; i < dailyTimes.length; i++)
+                                Builder(
+                                  builder: (context) {
+                                    final log = todayByIndex[i];
+                                    final active = log != null;
+                                    final timeText = active
+                                        ? MaterialLocalizations.of(
+                                            context,
+                                          ).formatTimeOfDay(
+                                            TimeOfDay.fromDateTime(
+                                              log['givenAt'] as DateTime,
+                                            ),
+                                          )
+                                        : null;
+                                    return InkWell(
+                                      borderRadius: BorderRadius.circular(999),
+                                      onTap: isActive
+                                          ? () => _toggleDoseChip(med, i)
+                                          : null,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: active
+                                              ? AppColors.primary.withOpacity(
+                                                  0.2,
+                                                )
+                                              : (isDark
+                                                    ? AppColors.bgDark
+                                                          .withOpacity(0.25)
+                                                    : const Color(0xFFF7EEE9)),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                          border: Border.all(
+                                            color: active
+                                                ? AppColors.primary
+                                                : const Color(0xFFFFD8CC),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            if (active)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  right: 6,
+                                                ),
+                                                child: Icon(
+                                                  Icons.check,
+                                                  size: 14,
+                                                  color: AppColors.primary,
+                                                ),
+                                              ),
+                                            Text(
+                                              '${i + 1}. Doz',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: active
+                                                    ? AppColors.primary
+                                                    : (isDark
+                                                          ? AppColors
+                                                                .textPrimaryDark
+                                                          : const Color(
+                                                              0xFF6D4C41,
+                                                            )),
+                                              ),
+                                            ),
+                                            if (active && timeText != null)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                  left: 6,
+                                                ),
+                                                child: Text(
+                                                  timeText,
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: AppColors.primary,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                      if (isProtocolMedication)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Wrap(
+                            spacing: 12,
+                            runSpacing: 8,
+                            children: [
+                              for (final step in const ['before', 'after'])
+                                Builder(
+                                  builder: (context) {
+                                    final log = todayProtocolLogs[step];
+                                    final active = log != null;
+                                    final timeText = active
+                                        ? MaterialLocalizations.of(
+                                            context,
+                                          ).formatTimeOfDay(
+                                            TimeOfDay.fromDateTime(
+                                              log['givenAt'] as DateTime,
+                                            ),
+                                          )
+                                        : null;
+                                    final label = step == 'before'
+                                        ? 'Önce'
+                                        : 'Sonra';
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        InkWell(
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                          onTap: isActive
+                                              ? () => _toggleProtocolStep(
+                                                  med,
+                                                  step,
+                                                )
+                                              : null,
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 8,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: active
+                                                  ? AppColors.primary
+                                                        .withOpacity(0.2)
+                                                  : (isDark
+                                                        ? AppColors.bgDark
+                                                              .withOpacity(0.25)
+                                                        : const Color(
+                                                            0xFFF7EEE9,
+                                                          )),
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                              border: Border.all(
+                                                color: active
+                                                    ? AppColors.primary
+                                                    : const Color(0xFFFFD8CC),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                if (active)
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          right: 6,
+                                                        ),
+                                                    child: Icon(
+                                                      Icons.check,
+                                                      size: 14,
+                                                      color: AppColors.primary,
+                                                    ),
+                                                  ),
+                                                Text(
+                                                  label,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: active
+                                                        ? AppColors.primary
+                                                        : (isDark
+                                                              ? AppColors
+                                                                    .textPrimaryDark
+                                                              : const Color(
+                                                                  0xFF6D4C41,
+                                                                )),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        if (active && timeText != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 4,
+                                              left: 4,
+                                            ),
+                                            child: Text(
+                                              timeText,
+                                              style:
+                                                  AppTypography.caption(
+                                                    context,
+                                                  ).copyWith(
+                                                    color: AppColors.primary,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                          ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                            ],
+                          ),
+                        ),
+                      if (last7Summary != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 6),
+                          child: Text(
+                            last7Summary,
+                            style: AppTypography.caption(context).copyWith(
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : const Color(0xFF866F65),
+                            ),
+                          ),
+                        ),
                       Text(
-                        l10n.doseCountLabel(_doseCount(med)),
+                        l10n.lastGivenLabel(
+                          _formatLastGiven(lastGivenAt, l10n),
+                        ),
                         style: AppTypography.caption(context).copyWith(
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : const Color(0xFF866F65),
+                          color: givenToday
+                              ? AppColors.primary
+                              : (isDark
+                                    ? AppColors.textSecondaryDark
+                                    : const Color(0xFF866F65)),
+                          fontWeight: givenToday
+                              ? FontWeight.w700
+                              : FontWeight.w500,
                         ),
                       ),
                     ],
@@ -484,10 +1123,17 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                       case 'delete':
                         _deleteMedication(med);
                         break;
+                      case 'history':
+                        _showMedicationHistory(med);
+                        break;
                     }
                   },
                   itemBuilder: (context) => [
                     PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                    PopupMenuItem(
+                      value: 'history',
+                      child: Text(l10n.viewHistory),
+                    ),
                     PopupMenuItem(
                       value: 'toggle',
                       child: Text(isActive ? l10n.deactivate : l10n.activate),
@@ -498,14 +1144,19 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
-                onPressed: isActive ? () => _logGivenNow(med) : null,
-                icon: const Icon(Icons.check_circle_outline, size: 18),
-                label: Text(l10n.logGivenNow),
+            if (!isMultiDoseRoutine && !isProtocolMedication)
+              Align(
+                alignment: Alignment.centerRight,
+                child: OutlinedButton.icon(
+                  onPressed:
+                      isActive &&
+                          !_recentlyTappedMedicationIds.contains(med['id'])
+                      ? () => _logGivenNow(med)
+                      : null,
+                  icon: const Icon(Icons.check_circle_outline, size: 18),
+                  label: Text(l10n.logGivenNow),
+                ),
               ),
-            ),
           ],
         ),
       ),

@@ -280,6 +280,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get healthTime => 'Time';
 
   @override
+  String get time => 'Time';
+
+  @override
   String get wet => 'Wet';
 
   @override
@@ -287,6 +290,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get both => 'Both';
+
+  @override
+  String get diaperWet => 'Wet';
+
+  @override
+  String get diaperDirty => 'Dirty';
+
+  @override
+  String get diaperBoth => 'Both';
 
   @override
   String get optionalNotes => 'Optional notes';
@@ -306,6 +318,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sleepDurationMustBeGreater =>
       'Sleep duration must be greater than 0';
+
+  @override
+  String get eventTimeTooOld =>
+      'Selected time must be within the last 48 hours';
 
   @override
   String get today => 'Today';
@@ -363,6 +379,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editSleep => 'Edit Sleep';
+
+  @override
+  String get editTitleFeeding => 'Edit Feeding';
+
+  @override
+  String get editTitleDiaper => 'Edit Diaper';
+
+  @override
+  String get editTitleSleep => 'Edit Sleep';
+
+  @override
+  String get editTitleNursing => 'Edit Nursing';
 
   @override
   String get start => 'Start';
@@ -752,21 +780,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'L ${left}min • R ${right}min';
+    return 'L ${left}min â€¢ R ${right}min';
   }
 
   @override
   String breastfeedingSavedSnack(int left, int right) {
-    return '✅ Breastfeeding saved: L ${left}min, R ${right}min';
+    return 'âœ… Breastfeeding saved: L ${left}min, R ${right}min';
   }
 
   @override
   String sleepSavedSnack(String duration) {
-    return '✅ Sleep saved: $duration';
+    return 'âœ… Sleep saved: $duration';
   }
 
   @override
-  String get sleepTooShort => '⚠️ Sleep under 1 minute, not saved';
+  String get sleepTooShort => 'âš ï¸ Sleep under 1 minute, not saved';
 
   @override
   String kgThisMonth(String value) {
@@ -903,19 +931,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get systemDefault => 'System';
 
   @override
-  String get turkish => 'Türkçe';
+  String get turkish => 'TÃ¼rkÃ§e';
 
   @override
   String get english => 'English';
 
   @override
-  String get russian => 'Русский';
+  String get russian => 'Ğ ÑƒÑÑĞºĞ¸Ğ¹';
 
   @override
-  String get ukrainian => 'Українська';
+  String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
 
   @override
-  String get spanish => 'Español';
+  String get spanish => 'EspaÃ±ol';
 
   @override
   String get languageUpdated => 'Language updated';
@@ -1329,6 +1357,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get medicationDoseLogged => 'Dose logged';
+
+  @override
+  String get savedMessage => 'Saved';
+
+  @override
+  String get alreadySavedRecently => 'Already saved a moment ago';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get notGivenYet => 'Not given yet';
+
+  @override
+  String get viewHistory => 'View history';
+
+  @override
+  String get noMedicationHistory => 'No given history';
+
+  @override
+  String lastGivenLabel(String value) {
+    return 'Last given: $value';
+  }
 
   @override
   String get scheduleType => 'Schedule type';

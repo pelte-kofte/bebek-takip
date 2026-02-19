@@ -614,6 +614,12 @@ abstract class AppLocalizations {
   /// **'Time'**
   String get healthTime;
 
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
   /// No description provided for @wet.
   ///
   /// In en, this message translates to:
@@ -631,6 +637,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Both'**
   String get both;
+
+  /// No description provided for @diaperWet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wet'**
+  String get diaperWet;
+
+  /// No description provided for @diaperDirty.
+  ///
+  /// In en, this message translates to:
+  /// **'Dirty'**
+  String get diaperDirty;
+
+  /// No description provided for @diaperBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get diaperBoth;
 
   /// No description provided for @optionalNotes.
   ///
@@ -667,6 +691,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sleep duration must be greater than 0'**
   String get sleepDurationMustBeGreater;
+
+  /// No description provided for @eventTimeTooOld.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected time must be within the last 48 hours'**
+  String get eventTimeTooOld;
 
   /// No description provided for @today.
   ///
@@ -781,6 +811,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Sleep'**
   String get editSleep;
+
+  /// No description provided for @editTitleFeeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Feeding'**
+  String get editTitleFeeding;
+
+  /// No description provided for @editTitleDiaper.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Diaper'**
+  String get editTitleDiaper;
+
+  /// No description provided for @editTitleSleep.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Sleep'**
+  String get editTitleSleep;
+
+  /// No description provided for @editTitleNursing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Nursing'**
+  String get editTitleNursing;
 
   /// No description provided for @start.
   ///
@@ -1427,25 +1481,25 @@ abstract class AppLocalizations {
   /// No description provided for @leftMinRightMin.
   ///
   /// In en, this message translates to:
-  /// **'L {left}min • R {right}min'**
+  /// **'L {left}min â€¢ R {right}min'**
   String leftMinRightMin(int left, int right);
 
   /// No description provided for @breastfeedingSavedSnack.
   ///
   /// In en, this message translates to:
-  /// **'✅ Breastfeeding saved: L {left}min, R {right}min'**
+  /// **'âœ… Breastfeeding saved: L {left}min, R {right}min'**
   String breastfeedingSavedSnack(int left, int right);
 
   /// No description provided for @sleepSavedSnack.
   ///
   /// In en, this message translates to:
-  /// **'✅ Sleep saved: {duration}'**
+  /// **'âœ… Sleep saved: {duration}'**
   String sleepSavedSnack(String duration);
 
   /// No description provided for @sleepTooShort.
   ///
   /// In en, this message translates to:
-  /// **'⚠️ Sleep under 1 minute, not saved'**
+  /// **'âš ï¸ Sleep under 1 minute, not saved'**
   String get sleepTooShort;
 
   /// No description provided for @kgThisMonth.
@@ -1691,7 +1745,7 @@ abstract class AppLocalizations {
   /// No description provided for @turkish.
   ///
   /// In en, this message translates to:
-  /// **'Türkçe'**
+  /// **'TÃ¼rkÃ§e'**
   String get turkish;
 
   /// No description provided for @english.
@@ -1703,19 +1757,19 @@ abstract class AppLocalizations {
   /// No description provided for @russian.
   ///
   /// In en, this message translates to:
-  /// **'Русский'**
+  /// **'Ğ ÑƒÑÑĞºĞ¸Ğ¹'**
   String get russian;
 
   /// No description provided for @ukrainian.
   ///
   /// In en, this message translates to:
-  /// **'Українська'**
+  /// **'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°'**
   String get ukrainian;
 
   /// No description provided for @spanish.
   ///
   /// In en, this message translates to:
-  /// **'Español'**
+  /// **'EspaÃ±ol'**
   String get spanish;
 
   /// No description provided for @languageUpdated.
@@ -2449,6 +2503,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dose logged'**
   String get medicationDoseLogged;
+
+  /// No description provided for @savedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get savedMessage;
+
+  /// No description provided for @alreadySavedRecently.
+  ///
+  /// In en, this message translates to:
+  /// **'Already saved a moment ago'**
+  String get alreadySavedRecently;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @notGivenYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not given yet'**
+  String get notGivenYet;
+
+  /// No description provided for @viewHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'View history'**
+  String get viewHistory;
+
+  /// No description provided for @noMedicationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No given history'**
+  String get noMedicationHistory;
+
+  /// No description provided for @lastGivenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last given: {value}'**
+  String lastGivenLabel(String value);
 
   /// No description provided for @scheduleType.
   ///

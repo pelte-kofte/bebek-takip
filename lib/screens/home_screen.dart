@@ -20,6 +20,7 @@ import '../widgets/baby_switcher_sheet.dart';
 import 'tips_archive_screen.dart';
 import 'vaccines_screen.dart';
 import '../utils/vaccine_utils.dart';
+import '../utils/locale_text_utils.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -56,15 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _babyPhotoPath;
 
   int get babyAgeInMonths {
-    final now = DateTime.now();
-    int months =
-        (now.year - _birthDate.year) * 12 + now.month - _birthDate.month;
-    // Subtract 1 if we haven't reached the birth day yet this month
-    if (now.day < _birthDate.day) {
-      months -= 1;
-    }
-    // Clamp to >= 0 (handles edge cases like future birth dates)
-    return months < 0 ? 0 : months;
+    return calcAge(_birthDate, referenceDate: DateTime.now()).totalMonths;
   }
 
   @override
@@ -107,30 +100,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadBabyInfo() {
+    final baby = VeriYonetici.getActiveBaby();
     setState(() {
-      _babyName = VeriYonetici.getBabyName();
-      _birthDate = VeriYonetici.getBirthDate();
-      _babyPhotoPath = VeriYonetici.getBabyPhotoPath();
+      _babyName = baby.name;
+      _birthDate = baby.birthDate;
+      _babyPhotoPath = baby.photoPath;
     });
-  }
-
-  String _calculateAge(AppLocalizations l10n) {
-    final now = DateTime.now();
-    final difference = now.difference(_birthDate);
-    final months = (difference.inDays / 30).floor();
-
-    if (months >= 12) {
-      final years = months ~/ 12;
-      final remainingMonths = months % 12;
-      if (remainingMonths > 0) {
-        return l10n.ageYearsMonths(years, remainingMonths);
-      }
-      return l10n.ageYears(years);
-    } else if (months > 0) {
-      return l10n.ageMonthsDays(months, difference.inDays % 30);
-    } else {
-      return l10n.ageDays(difference.inDays);
-    }
   }
 
   void _setupTimerListeners() {
@@ -492,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   Text(
-                                    _calculateAge(l10n),
+                                    ageString(context, _birthDate),
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -2443,8 +2418,8 @@ class _HomeScreenState extends State<HomeScreen> {
         subtitle = diaperType == 'wet'
             ? Dil.islak
             : diaperType == 'dirty'
-                ? Dil.kirli
-                : Dil.ikisiBirden;
+            ? Dil.kirli
+            : Dil.ikisiBirden;
         break;
       case 'uyku':
         lineColor = AppColors.accentLavender;

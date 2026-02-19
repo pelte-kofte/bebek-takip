@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart' show CupertinoDatePicker, CupertinoDatePickerMode, CupertinoTimerPicker, CupertinoTimerPickerMode;
+import 'package:flutter/cupertino.dart'
+    show
+        CupertinoDatePicker,
+        CupertinoDatePickerMode,
+        CupertinoSlidingSegmentedControl,
+        CupertinoTimerPicker,
+        CupertinoTimerPickerMode;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
 import '../l10n/app_localizations.dart';
+import '../utils/event_datetime_utils.dart';
 
 enum ActivityType { mama, bez, uyku }
+
+enum _CareEditType { feeding, nursing, diaper, sleep }
 
 class ActivitiesScreen extends StatefulWidget {
   final ActivityType? initialTab;
@@ -72,9 +81,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   String _formatDateHeader(DateTime date, AppLocalizations l10n) {
     final monthNames = [
-      l10n.january, l10n.february, l10n.march, l10n.april,
-      l10n.may, l10n.june, l10n.july, l10n.august,
-      l10n.september, l10n.october, l10n.november, l10n.december
+      l10n.january,
+      l10n.february,
+      l10n.march,
+      l10n.april,
+      l10n.may,
+      l10n.june,
+      l10n.july,
+      l10n.august,
+      l10n.september,
+      l10n.october,
+      l10n.november,
+      l10n.december,
     ];
     if (_isToday(date)) {
       return '${l10n.today}, ${date.day} ${monthNames[date.month - 1]}';
@@ -92,100 +110,104 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
-            child: Column(
-              children: [
-                // Header (fixed)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-                  child: Column(
-                    children: [
-                      if (widget.fromHome) ...[
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () => Navigator.pop(context),
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: isDark ? const Color(0xFF2A2A3A) : Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: isDark
-                                      ? null
-                                      : [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(alpha: 0.05),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 2),
-                                          ),
-                                        ],
-                                ),
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  color: textColor,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-
-                      // Tarih Seçici
-                      _buildDateSelector(isDark),
-                    ],
-                  ),
-                ),
-
-                // Compact Category Tabs
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                  child: Builder(
-                    builder: (context) {
-                      final l10n = AppLocalizations.of(context)!;
-                      return Row(
+          child: Column(
+            children: [
+              // Header (fixed)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                child: Column(
+                  children: [
+                    if (widget.fromHome) ...[
+                      Row(
                         children: [
-                          Expanded(
-                            child: _buildCompactTab(
-                              Icons.local_drink_outlined,
-                              l10n.feeding_tab,
-                              ActivityType.mama,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildCompactTab(
-                              Icons.baby_changing_station_outlined,
-                              l10n.diaper_tab,
-                              ActivityType.bez,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildCompactTab(
-                              Icons.bedtime_outlined,
-                              l10n.sleep_tab,
-                              ActivityType.uyku,
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                color: isDark
+                                    ? const Color(0xFF2A2A3A)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: isDark
+                                    ? null
+                                    : [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.05,
+                                          ),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                              ),
+                              child: Icon(
+                                Icons.arrow_back,
+                                color: textColor,
+                                size: 20,
+                              ),
                             ),
                           ),
                         ],
-                      );
-                    },
-                  ),
-                ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
 
-                // İçerik (scrollable, Expanded ile kalan alanı doldurur)
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: _buildActiveContent(),
-                  ),
+                    // Tarih SeÃ§ici
+                    _buildDateSelector(isDark),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              // Compact Category Tabs
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                child: Builder(
+                  builder: (context) {
+                    final l10n = AppLocalizations.of(context)!;
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _buildCompactTab(
+                            Icons.local_drink_outlined,
+                            l10n.feeding_tab,
+                            ActivityType.mama,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildCompactTab(
+                            Icons.baby_changing_station_outlined,
+                            l10n.diaper_tab,
+                            ActivityType.bez,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildCompactTab(
+                            Icons.bedtime_outlined,
+                            l10n.sleep_tab,
+                            ActivityType.uyku,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+
+              // Ä°Ã§erik (scrollable, Expanded ile kalan alanÄ± doldurur)
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _buildActiveContent(),
+                ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 
@@ -314,7 +336,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildActiveContent() {
-    // Her widget'a unique key ver ki AnimatedSwitcher farkı anlasın
+    // Her widget'a unique key ver ki AnimatedSwitcher farkÄ± anlasÄ±n
     switch (_activeType) {
       case ActivityType.mama:
         return KeyedSubtree(
@@ -347,12 +369,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         .add(const Duration(days: 1))
         .subtract(const Duration(microseconds: 1));
 
-    return list
-        .where((item) {
-          final date = (item[dateKey] as DateTime).toLocal();
-          return !date.isBefore(startOfDay) && !date.isAfter(endOfDay);
-        })
-        .toList();
+    return list.where((item) {
+      final date = (item[dateKey] as DateTime).toLocal();
+      return !date.isBefore(startOfDay) && !date.isAfter(endOfDay);
+    }).toList();
   }
 
   Widget _buildMamaList() {
@@ -385,7 +405,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - ÖZET
+        // Section Header - Ã–ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -403,7 +423,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Özet kartı
+        // Ã–zet kartÄ±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -443,7 +463,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     if (toplamDakika > 0 && toplamMl > 0)
                       const Text(
-                        '•',
+                        'â€¢',
                         style: TextStyle(color: Color(0xFF888888)),
                       ),
                     if (toplamMl > 0)
@@ -470,7 +490,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTİVİTELER
+        // Section Header - SON AKTÄ°VÄ°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -496,7 +516,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             itemBuilder: (context, index) {
               final kayit = kayitlar[index];
               final tarih = kayit['tarih'] as DateTime;
-              final originalIndex = tumKayitlar.indexOf(kayit);
               final tur = kayit['tur'] as String? ?? '';
               final sol = kayit['solDakika'] ?? 0;
               final sag = kayit['sagDakika'] ?? 0;
@@ -508,16 +527,23 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               String subtitle;
               IconData icon = Icons.local_drink_outlined;
 
-              if (kategori == 'Solid' || tur == 'Katı Gıda') {
+              final normalizedTur = tur.toLowerCase();
+              final isSolid =
+                  kategori == 'Solid' || normalizedTur.contains('kat');
+              final isNursing =
+                  normalizedTur.contains('anne') &&
+                  !normalizedTur.contains('biberon');
+              if (isSolid) {
                 final solidDakika = kayit['solidDakika'] as int? ?? 0;
                 title = l10n.solid;
                 if (solidDakika > 0) {
-                  subtitle = '${l10n.solidFood} • $solidDakika ${l10n.minAbbrev}';
+                  subtitle =
+                      '${l10n.solidFood} â€¢ $solidDakika ${l10n.minAbbrev}';
                 } else {
                   subtitle = l10n.solidFood;
                 }
                 icon = Icons.restaurant_outlined;
-              } else if (tur == 'Anne Sütü') {
+              } else if (isNursing) {
                 title = l10n.breastfeeding;
                 final toplamDakika = sol + sag;
                 if (sag == 0 && sol > 0) {
@@ -526,11 +552,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 } else {
                   // Old format: left/right split
                   subtitle =
-                      '${l10n.left} $sol${l10n.minAbbrev} • ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
+                      '${l10n.left} $sol${l10n.minAbbrev} â€¢ ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
                 }
               } else {
                 title = '$miktar ${l10n.mlAbbrev}';
-                subtitle = tur == 'Formül' ? l10n.formula : l10n.bottleBreastMilk;
+                subtitle = normalizedTur.contains('form')
+                    ? l10n.formula
+                    : l10n.bottleBreastMilk;
               }
 
               return _buildListItem(
@@ -542,9 +570,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
-                onEdit: () => _editMama(originalIndex, kayit),
-                onDelete: () => _deleteMama(originalIndex),
-                notes: (kategori == 'Solid' && solidAciklama != null && solidAciklama.isNotEmpty) ? solidAciklama : null,
+                onEdit: () =>
+                    _openEditForRecord(_resolveMamaEditType(kayit), kayit),
+                onDelete: () => _deleteMama(kayit['id']?.toString() ?? ''),
+                notes:
+                    (kategori == 'Solid' &&
+                        solidAciklama != null &&
+                        solidAciklama.isNotEmpty)
+                    ? solidAciklama
+                    : null,
               );
             },
           ),
@@ -574,7 +608,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     }
 
     final diaperTypes = kayitlar
-        .map((k) => VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']))
+        .map(
+          (k) => VeriYonetici.normalizeDiaperType(k['diaperType'] ?? k['tur']),
+        )
         .toList();
     final islak = diaperTypes.where((t) => t == 'wet').length;
     final kirli = diaperTypes.where((t) => t == 'dirty').length;
@@ -588,7 +624,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - ÖZET
+        // Section Header - Ã–ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -606,7 +642,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Özet kartı
+        // Ã–zet kartÄ±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -636,7 +672,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTİVİTELER
+        // Section Header - SON AKTÄ°VÄ°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -662,7 +698,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             itemBuilder: (context, index) {
               final kayit = kayitlar[index];
               final tarih = kayit['tarih'] as DateTime;
-              final originalIndex = tumKayitlar.indexOf(kayit);
               final tur = VeriYonetici.normalizeDiaperType(
                 kayit['diaperType'] ?? kayit['tur'],
               );
@@ -690,8 +725,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
-                onEdit: () => _editKaka(originalIndex, kayit),
-                onDelete: () => _deleteKaka(originalIndex),
+                onEdit: () => _openEditForRecord(_CareEditType.diaper, kayit),
+                onDelete: () => _deleteKaka(kayit['id']?.toString() ?? ''),
                 notes: kayit['notlar'] as String?,
               );
             },
@@ -730,7 +765,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - ÖZET
+        // Section Header - Ã–ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -748,7 +783,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Özet kartı
+        // Ã–zet kartÄ±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -787,7 +822,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTİVİTELER
+        // Section Header - SON AKTÄ°VÄ°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -815,7 +850,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final baslangic = kayit['baslangic'] as DateTime;
               final bitis = kayit['bitis'] as DateTime;
               final sure = kayit['sure'] as Duration;
-              final originalIndex = tumKayitlar.indexOf(kayit);
 
               return _buildListItem(
                 icon: Icons.bedtime_outlined,
@@ -826,8 +860,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
-                onEdit: () => _editUyku(originalIndex, kayit),
-                onDelete: () => _deleteUyku(originalIndex),
+                onEdit: () => _openEditForRecord(_CareEditType.sleep, kayit),
+                onDelete: () => _deleteUyku(kayit['id']?.toString() ?? ''),
               );
             },
           ),
@@ -1016,11 +1050,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     ],
                   ),
-                  child: Icon(
-                    icon,
-                    size: 32,
-                    color: color,
-                  ),
+                  child: Icon(icon, size: 32, color: color),
                 ),
                 const SizedBox(width: 14),
                 // Title and subtitle
@@ -1079,7 +1109,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFB4A2).withValues(alpha: 0.15),
+                          color: const Color(
+                            0xFFFFB4A2,
+                          ).withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
@@ -1120,539 +1152,574 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   // ============ EDIT & DELETE FUNCTIONS ============
 
-  void _editMama(int index, Map<String, dynamic> kayit) {
+  _CareEditType _resolveMamaEditType(Map<String, dynamic> kayit) {
+    final kategori = (kayit['kategori'] ?? 'Milk').toString().toLowerCase();
+    final tur = (kayit['tur'] ?? '').toString().toLowerCase();
+    final isNursing =
+        kategori != 'solid' && tur.contains('anne') && !tur.contains('biberon');
+    return isNursing ? _CareEditType.nursing : _CareEditType.feeding;
+  }
+
+  void _openEditForRecord(_CareEditType type, Map<String, dynamic> kayit) {
+    switch (type) {
+      case _CareEditType.feeding:
+        _showEditFeedingSheet(kayit);
+        break;
+      case _CareEditType.nursing:
+        _showEditNursingSheet(kayit);
+        break;
+      case _CareEditType.diaper:
+        _showEditDiaperSheet(kayit);
+        break;
+      case _CareEditType.sleep:
+        _showEditSleepSheet(kayit);
+        break;
+    }
+  }
+
+  Future<DateTime?> _pickNormalizedDateTime(DateTime initial) async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final earliest = now.subtract(const Duration(hours: 48));
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initial.isAfter(now) ? now : initial,
+      firstDate: DateTime(
+        earliest.year,
+        earliest.month,
+        earliest.day,
+      ).subtract(const Duration(days: 2)),
+      lastDate: DateTime(now.year, now.month, now.day),
+      helpText: l10n.selectDate,
+    );
+    if (pickedDate == null) return null;
+
+    final pickedTime = await _showCupertinoTimePicker(
+      context,
+      TimeOfDay(hour: initial.hour, minute: initial.minute),
+    );
+    if (pickedTime == null) return null;
+
+    final candidate = normalizePickedDateTime(
+      now: now,
+      pickedDate: pickedDate,
+      pickedTime: pickedTime,
+    );
+    if (!isWithinRollingWindow(now: now, candidate: candidate)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.eventTimeTooOld)));
+      }
+      return null;
+    }
+    return candidate;
+  }
+
+  Widget _buildSheetScaffold({
+    required String title,
+    required Widget child,
+    required VoidCallback onSave,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    String kategori = kayit['kategori'] as String? ?? 'Milk';
-    String tur = kayit['tur'] as String? ?? 'Anne Sütü';
-
-    // Normalize type for proper button selection and UI display
-    if (kategori == 'Solid' || tur == 'Katı Gıda') {
-      tur = 'Katı Gıda';
-    } else if (tur == 'Anne Sütü (Biberon)') {
-      tur = 'Biberon Anne Sütü';
-    }
-
-    int solDakika = kayit['solDakika'] ?? 0;
-    int sagDakika = kayit['sagDakika'] ?? 0;
-    int totalDakika = solDakika + sagDakika;
-    int miktar = kayit['miktar'] ?? 100;
-    final solidAciklamaController = TextEditingController(text: kayit['solidAciklama'] as String? ?? '');
-    int solidDakika = kayit['solidDakika'] ?? 0;
-    DateTime tarih = kayit['tarih'];
-    TimeOfDay saat = TimeOfDay(hour: tarih.hour, minute: tarih.minute);
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) {
-          return Container(
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 8,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
+              color: Colors.grey.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Flexible(child: SingleChildScrollView(child: child)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(l10n.cancel),
+                ),
               ),
-            ),
-            padding: EdgeInsets.only(
-              left: 24,
-              right: 24,
-              top: 24,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.edit_outlined,
-                        color: Color(0xFFE91E63),
-                        size: 24,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.editFeeding,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFE91E63),
-                        ),
-                      ),
-                    ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  onPressed: onSave,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF4A90E2),
                   ),
-                  const SizedBox(height: 24),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildTurButtonIcon(
-                        Icons.child_care_outlined,
-                        l10n.breastfeeding,
-                        'Anne Sütü',
-                        tur,
-                        (t) => setModalState(() => tur = t),
-                      ),
-                      _buildTurButtonIcon(
-                        Icons.local_drink_outlined,
-                        l10n.formula,
-                        'Formül',
-                        tur,
-                        (t) => setModalState(() => tur = t),
-                      ),
-                      _buildTurButtonIcon(
-                        Icons.local_drink_outlined,
-                        l10n.bottleBreastMilk,
-                        'Biberon Anne Sütü',
-                        tur,
-                        (t) => setModalState(() => tur = t),
-                      ),
-                      _buildTurButtonIcon(
-                        Icons.restaurant_outlined,
-                        l10n.solid,
-                        'Katı Gıda',
-                        tur,
-                        (t) => setModalState(() => tur = t),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  if (tur == 'Anne Sütü') ...[
-                    _buildDurationEditor(
-                      totalDakika,
-                      (d) => setModalState(() => totalDakika = d),
-                      isDark,
-                      l10n,
-                      ctx,
-                    ),
-                  ],
-                  if (tur == 'Formül' || tur == 'Biberon Anne Sütü') ...[
-                    _buildMiktarEditor(
-                      miktar,
-                      (m) => setModalState(() => miktar = m),
-                      isDark,
-                      l10n,
-                    ),
-                  ],
-                  if (tur == 'Katı Gıda' || kategori == 'Solid') ...[
-                    // Duration for solid food
-                    _buildDurationEditor(
-                      solidDakika,
-                      (d) => setModalState(() => solidDakika = d),
-                      isDark,
-                      l10n,
-                      ctx,
-                    ),
-                    const SizedBox(height: 16),
-                    // Description field
-                    TextField(
-                      controller: solidAciklamaController,
-                      decoration: InputDecoration(
-                        hintText: l10n.solidFoodHint,
-                        hintStyle: TextStyle(
-                          color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
-                          fontStyle: FontStyle.italic,
-                        ),
-                        prefixIcon: Icon(
-                          Icons.note_outlined,
-                          color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                          size: 20,
-                        ),
-                        filled: true,
-                        fillColor: isDark ? Colors.grey.shade800.withValues(alpha: 0.5) : Colors.grey.shade100,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-                      ),
-                      maxLines: 2,
-                      textCapitalization: TextCapitalization.sentences,
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  _buildTimeSelector(
-                    saat,
-                    (s) => setModalState(() => saat = s),
-                    ctx,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSaveButton(() async {
-                    final yeniTarih = DateTime(
-                      tarih.year,
-                      tarih.month,
-                      tarih.day,
-                      saat.hour,
-                      saat.minute,
-                    );
-                    final kayitlar = VeriYonetici.getMamaKayitlari();
-                    if (tur == 'Anne Sütü') {
-                      kayitlar[index] = {
-                        'tarih': yeniTarih,
-                        'tur': 'Anne Sütü',
-                        'solDakika': totalDakika,
-                        'sagDakika': 0,
-                        'miktar': 0,
-                        'kategori': 'Milk',
-                      };
-                    } else if (tur == 'Katı Gıda' || kategori == 'Solid') {
-                      // Save solid food with description and duration
-                      kayitlar[index] = {
-                        'tarih': yeniTarih,
-                        'tur': 'Katı Gıda',
-                        'solDakika': 0,
-                        'sagDakika': 0,
-                        'miktar': 0,
-                        'kategori': 'Solid',
-                        'solidAciklama': solidAciklamaController.text.isNotEmpty ? solidAciklamaController.text : null,
-                        'solidDakika': solidDakika,
-                      };
-                    } else {
-                      // Formula or bottle breast milk
-                      kayitlar[index] = {
-                        'tarih': yeniTarih,
-                        'tur': tur,
-                        'miktar': miktar,
-                        'solDakika': 0,
-                        'sagDakika': 0,
-                        'kategori': 'Milk',
-                      };
-                    }
-                    await VeriYonetici.saveMamaKayitlari(kayitlar);
-                    solidAciklamaController.dispose();
-                    Navigator.pop(ctx);
-                    setState(() {});
-                  }, const Color(0xFFE91E63), l10n),
-                ],
+                  child: Text(l10n.save),
+                ),
               ),
-            ),
-          );
-        },
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  void _deleteMama(int index) async {
-    final confirm = await _showDeleteConfirm();
-    if (confirm == true) {
-      final kayitlar = VeriYonetici.getMamaKayitlari();
-      kayitlar.removeAt(index);
-      await VeriYonetici.saveMamaKayitlari(kayitlar);
-      setState(() {});
-    }
+  Widget _buildRowTile({
+    required String title,
+    required String value,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+      title: Text(title),
+      subtitle: Text(value),
+      trailing: const Icon(Icons.chevron_right),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      tileColor: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+      onTap: onTap,
+    );
   }
 
-  void _editKaka(int index, Map<String, dynamic> kayit) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Future<void> _showEditNursingSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
-    String tur = VeriYonetici.normalizeDiaperType(
+    final String recordId = kayit['id']?.toString() ?? '';
+    DateTime eventTime = kayit['tarih'] as DateTime;
+    final int left = kayit['solDakika'] as int? ?? 0;
+    final int right = kayit['sagDakika'] as int? ?? 0;
+    String side = right > left ? 'right' : 'left';
+    int duration = side == 'right' ? right : left;
+    if (duration == 0) duration = left + right;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => _buildSheetScaffold(
+          title: l10n.editTitleNursing,
+          onSave: () async {
+            if (duration <= 0) return;
+            final updated = {
+              'id': recordId,
+              'tarih': eventTime,
+              'tur': 'Anne Sütü',
+              'solDakika': side == 'left' ? duration : 0,
+              'sagDakika': side == 'right' ? duration : 0,
+              'miktar': 0,
+              'kategori': 'Milk',
+            };
+            await VeriYonetici.updateMamaKaydiById(recordId, updated);
+            if (mounted) {
+              Navigator.pop(ctx);
+              setState(() {});
+            }
+          },
+          child: Column(
+            children: [
+              CupertinoSlidingSegmentedControl<String>(
+                groupValue: side,
+                children: <String, Widget>{
+                  'left': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.left),
+                  ),
+                  'right': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.right),
+                  ),
+                },
+                onValueChanged: (v) {
+                  if (v != null) setModalState(() => side = v);
+                },
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                dense: true,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                title: Text(l10n.duration),
+                subtitle: Text('$duration ${l10n.minAbbrev}'),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () => setModalState(
+                        () => duration = (duration - 1).clamp(1, 180),
+                      ),
+                      icon: const Icon(Icons.remove_circle_outline),
+                    ),
+                    IconButton(
+                      onPressed: () => setModalState(
+                        () => duration = (duration + 1).clamp(1, 180),
+                      ),
+                      icon: const Icon(Icons.add_circle_outline),
+                    ),
+                  ],
+                ),
+              ),
+              _buildRowTile(
+                title: l10n.time,
+                value: _formatTime(eventTime),
+                onTap: () async {
+                  final picked = await _pickNormalizedDateTime(eventTime);
+                  if (picked != null) setModalState(() => eventTime = picked);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEditFeedingSheet(Map<String, dynamic> kayit) async {
+    final l10n = AppLocalizations.of(context)!;
+    final String recordId = kayit['id']?.toString() ?? '';
+    DateTime eventTime = kayit['tarih'] as DateTime;
+    final noteController = TextEditingController(
+      text: kayit['solidAciklama'] as String? ?? '',
+    );
+    final String tur = (kayit['tur'] as String? ?? '').toLowerCase();
+    final String kategori = (kayit['kategori'] as String? ?? 'Milk')
+        .toLowerCase();
+    String selectedType;
+    if (kategori == 'solid' || tur.contains('kat')) {
+      selectedType = 'solid';
+    } else if (tur.contains('biberon')) {
+      selectedType = 'bottleMilk';
+    } else {
+      selectedType = 'formula';
+    }
+    int amount = (kayit['miktar'] as int? ?? 0).clamp(0, 500);
+    int solidDuration = (kayit['solidDakika'] as int? ?? 0).clamp(0, 180);
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => _buildSheetScaffold(
+          title: l10n.editTitleFeeding,
+          onSave: () async {
+            final Map<String, dynamic> updated = {
+              'id': recordId,
+              'tarih': eventTime,
+            };
+            if (selectedType == 'solid') {
+              updated.addAll({
+                'tur': 'Katı Gıda',
+                'solDakika': 0,
+                'sagDakika': 0,
+                'miktar': 0,
+                'kategori': 'Solid',
+                'solidAciklama': noteController.text.isEmpty
+                    ? null
+                    : noteController.text,
+                'solidDakika': solidDuration,
+              });
+            } else if (selectedType == 'bottleMilk') {
+              updated.addAll({
+                'tur': 'Anne Sütü (Biberon)',
+                'solDakika': 0,
+                'sagDakika': 0,
+                'miktar': amount,
+                'kategori': 'Milk',
+              });
+            } else {
+              updated.addAll({
+                'tur': 'Formül',
+                'solDakika': 0,
+                'sagDakika': 0,
+                'miktar': amount,
+                'kategori': 'Milk',
+              });
+            }
+            await VeriYonetici.updateMamaKaydiById(recordId, updated);
+            noteController.dispose();
+            if (mounted) {
+              Navigator.pop(ctx);
+              setState(() {});
+            }
+          },
+          child: Column(
+            children: [
+              CupertinoSlidingSegmentedControl<String>(
+                groupValue: selectedType,
+                children: <String, Widget>{
+                  'formula': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.formula),
+                  ),
+                  'bottleMilk': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.bottleBreastMilk),
+                  ),
+                  'solid': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.solid),
+                  ),
+                },
+                onValueChanged: (v) {
+                  if (v != null) setModalState(() => selectedType = v);
+                },
+              ),
+              const SizedBox(height: 12),
+              if (selectedType == 'solid')
+                ListTile(
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                  title: Text(l10n.duration),
+                  subtitle: Text('$solidDuration ${l10n.minAbbrev}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () => setModalState(
+                          () =>
+                              solidDuration = (solidDuration - 5).clamp(0, 180),
+                        ),
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                      IconButton(
+                        onPressed: () => setModalState(
+                          () =>
+                              solidDuration = (solidDuration + 5).clamp(0, 180),
+                        ),
+                        icon: const Icon(Icons.add_circle_outline),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                ListTile(
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                  title: Text(l10n.amount),
+                  subtitle: Text('$amount ${l10n.mlAbbrev}'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: () => setModalState(
+                          () => amount = (amount - 10).clamp(0, 500),
+                        ),
+                        icon: const Icon(Icons.remove_circle_outline),
+                      ),
+                      IconButton(
+                        onPressed: () => setModalState(
+                          () => amount = (amount + 10).clamp(0, 500),
+                        ),
+                        icon: const Icon(Icons.add_circle_outline),
+                      ),
+                    ],
+                  ),
+                ),
+              if (selectedType == 'solid')
+                TextField(
+                  controller: noteController,
+                  decoration: InputDecoration(
+                    hintText: l10n.solidFoodHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+              const SizedBox(height: 10),
+              _buildRowTile(
+                title: l10n.time,
+                value: _formatTime(eventTime),
+                onTap: () async {
+                  final picked = await _pickNormalizedDateTime(eventTime);
+                  if (picked != null) setModalState(() => eventTime = picked);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showEditDiaperSheet(Map<String, dynamic> kayit) async {
+    final l10n = AppLocalizations.of(context)!;
+    final String recordId = kayit['id']?.toString() ?? '';
+    DateTime eventTime = kayit['tarih'] as DateTime;
+    String type = VeriYonetici.normalizeDiaperType(
       kayit['diaperType'] ?? kayit['tur'],
     );
-    final DateTime originalTarih = kayit['tarih'];
-    TimeOfDay editedTime = TimeOfDay(
-      hour: originalTarih.hour,
-      minute: originalTarih.minute,
-    );
-    final notesController = TextEditingController(
+    final noteController = TextEditingController(
       text: kayit['notlar'] as String? ?? '',
     );
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) {
-          return Container(
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-            ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '✏️ ${l10n.editDiaper}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF9C27B0),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                // Time picker
-                GestureDetector(
-                  onTap: () async {
-                    final picked = await _showCupertinoTimePicker(ctx, editedTime);
-                    if (picked != null) {
-                      // Check if selected time would be in the future
-                      final now = DateTime.now();
-                      final selectedDateTime = DateTime(
-                        originalTarih.year,
-                        originalTarih.month,
-                        originalTarih.day,
-                        picked.hour,
-                        picked.minute,
-                      );
-                      if (selectedDateTime.isAfter(now)) {
-                        // Don't allow future times - use current time instead
-                        setModalState(() {
-                          editedTime = TimeOfDay(hour: now.hour, minute: now.minute);
-                        });
-                      } else {
-                        setModalState(() => editedTime = picked);
-                      }
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isDark ? Colors.purple.shade900.withValues(alpha: 0.3) : Colors.purple.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: isDark ? Colors.purple.shade200 : Colors.purple.shade700,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${editedTime.hour.toString().padLeft(2, '0')}:${editedTime.minute.toString().padLeft(2, '0')}',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.purple.shade200 : Colors.purple.shade700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _bezEditOptionIcon(
-                      Icons.water_drop_outlined,
-                      l10n.wet,
-                      'wet',
-                      Colors.blue,
-                      tur,
-                      (t) => setModalState(() => tur = t),
-                    ),
-                    _bezEditOptionIcon(
-                      Icons.cloud_outlined,
-                      l10n.dirty,
-                      'dirty',
-                      Colors.brown,
-                      tur,
-                      (t) => setModalState(() => tur = t),
-                    ),
-                    _bezEditOptionIcon(
-                      Icons.baby_changing_station_outlined,
-                      l10n.both,
-                      'both',
-                      Colors.purple,
-                      tur,
-                      (t) => setModalState(() => tur = t),
-                    ),
-                  ],
-                ),
-                // Editable notes field
-                const SizedBox(height: 16),
-                TextField(
-                  controller: notesController,
-                  decoration: InputDecoration(
-                    hintText: l10n.addOptionalNote,
-                    hintStyle: TextStyle(
-                      color: isDark ? Colors.grey.shade500 : Colors.grey.shade400,
-                      fontStyle: FontStyle.italic,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.note_outlined,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                      size: 20,
-                    ),
-                    filled: true,
-                    fillColor: isDark ? Colors.grey.shade800.withValues(alpha: 0.5) : Colors.grey.shade100,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  ),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
-                  ),
-                  maxLines: 2,
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-                const SizedBox(height: 24),
-                _buildSaveButton(() async {
-                  final newTarih = DateTime(
-                    originalTarih.year,
-                    originalTarih.month,
-                    originalTarih.day,
-                    editedTime.hour,
-                    editedTime.minute,
-                  );
-                  final kayitlar = VeriYonetici.getKakaKayitlari();
-                  final diaperType = VeriYonetici.normalizeDiaperType(tur);
-                  kayitlar[index] = {
-                    'tarih': newTarih,
-                    'tur': diaperType,
-                    'diaperType': diaperType,
-                    'eventType': VeriYonetici.diaperEventType,
-                    if (notesController.text.isNotEmpty) 'notlar': notesController.text,
-                  };
-                  // Re-sort by time descending after editing
-                  kayitlar.sort(
-                    (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
-                  );
-                  await VeriYonetici.saveKakaKayitlari(kayitlar);
-                  Navigator.pop(ctx);
-                  setState(() {});
-                }, const Color(0xFF9C27B0), l10n),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _deleteKaka(int index) async {
-    final confirm = await _showDeleteConfirm();
-    if (confirm == true) {
-      final kayitlar = VeriYonetici.getKakaKayitlari();
-      kayitlar.removeAt(index);
-      await VeriYonetici.saveKakaKayitlari(kayitlar);
-      setState(() {});
-    }
-  }
-
-  void _editUyku(int index, Map<String, dynamic> kayit) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
-    DateTime baslangic = kayit['baslangic'];
-    DateTime bitis = kayit['bitis'];
-    TimeOfDay baslangicSaat = TimeOfDay(
-      hour: baslangic.hour,
-      minute: baslangic.minute,
-    );
-    TimeOfDay bitisSaat = TimeOfDay(hour: bitis.hour, minute: bitis.minute);
-
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) {
-          return Container(
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
-            ),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '✏️ ${l10n.editSleep}',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF3F51B5),
+        builder: (ctx, setModalState) => _buildSheetScaffold(
+          title: l10n.editTitleDiaper,
+          onSave: () async {
+            final normalized = VeriYonetici.normalizeDiaperType(type);
+            final updated = {
+              'id': recordId,
+              'tarih': eventTime,
+              'tur': normalized,
+              'diaperType': normalized,
+              'eventType': VeriYonetici.diaperEventType,
+              'notlar': noteController.text,
+            };
+            await VeriYonetici.updateKakaKaydiById(recordId, updated);
+            noteController.dispose();
+            if (mounted) {
+              Navigator.pop(ctx);
+              setState(() {});
+            }
+          },
+          child: Column(
+            children: [
+              CupertinoSlidingSegmentedControl<String>(
+                groupValue: type,
+                children: <String, Widget>{
+                  'wet': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.diaperWet),
                   ),
+                  'dirty': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.diaperDirty),
+                  ),
+                  'both': Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(l10n.diaperBoth),
+                  ),
+                },
+                onValueChanged: (v) {
+                  if (v != null) setModalState(() => type = v);
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildRowTile(
+                title: l10n.time,
+                value: _formatTime(eventTime),
+                onTap: () async {
+                  final picked = await _pickNormalizedDateTime(eventTime);
+                  if (picked != null) setModalState(() => eventTime = picked);
+                },
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: noteController,
+                decoration: InputDecoration(
+                  hintText: l10n.addOptionalNote,
+                  border: const OutlineInputBorder(),
                 ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildTimeColumn(
-                      l10n.start,
-                      baslangicSaat,
-                      (picked) {
-                        setModalState(() => baslangicSaat = picked);
-                      },
-                      ctx,
-                      isDark,
-                    ),
-                    Icon(
-                      Icons.arrow_forward,
-                      color: isDark ? Colors.grey.shade400 : Colors.grey,
-                    ),
-                    _buildTimeColumn(
-                      l10n.end,
-                      bitisSaat,
-                      (picked) {
-                        setModalState(() => bitisSaat = picked);
-                      },
-                      ctx,
-                      isDark,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _buildSaveButton(() async {
-                  final yeniBaslangic = DateTime(
-                    baslangic.year,
-                    baslangic.month,
-                    baslangic.day,
-                    baslangicSaat.hour,
-                    baslangicSaat.minute,
-                  );
-                  var yeniBitis = DateTime(
-                    bitis.year,
-                    bitis.month,
-                    bitis.day,
-                    bitisSaat.hour,
-                    bitisSaat.minute,
-                  );
-                  if (yeniBitis.isBefore(yeniBaslangic)) {
-                    yeniBitis = yeniBitis.add(const Duration(days: 1));
-                  }
-                  final sure = yeniBitis.difference(yeniBaslangic);
-                  final kayitlar = VeriYonetici.getUykuKayitlari();
-                  kayitlar[index] = {
-                    'baslangic': yeniBaslangic,
-                    'bitis': yeniBitis,
-                    'sure': sure,
-                  };
-                  await VeriYonetici.saveUykuKayitlari(kayitlar);
-                  Navigator.pop(ctx);
-                  setState(() {});
-                }, const Color(0xFF3F51B5), l10n),
-              ],
-            ),
-          );
-        },
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  void _deleteUyku(int index) async {
+  Future<void> _showEditSleepSheet(Map<String, dynamic> kayit) async {
+    final l10n = AppLocalizations.of(context)!;
+    final String recordId = kayit['id']?.toString() ?? '';
+    DateTime start = kayit['baslangic'] as DateTime;
+    DateTime end = kayit['bitis'] as DateTime;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setModalState) => _buildSheetScaffold(
+          title: l10n.editTitleSleep,
+          onSave: () async {
+            var normalizedEnd = end;
+            if (normalizedEnd.isBefore(start)) {
+              normalizedEnd = normalizedEnd.add(const Duration(days: 1));
+            }
+            final updated = {
+              'id': recordId,
+              'baslangic': start,
+              'bitis': normalizedEnd,
+              'sure': normalizedEnd.difference(start),
+            };
+            await VeriYonetici.updateUykuKaydiById(recordId, updated);
+            if (mounted) {
+              Navigator.pop(ctx);
+              setState(() {});
+            }
+          },
+          child: Column(
+            children: [
+              _buildRowTile(
+                title: l10n.start,
+                value: _formatTime(start),
+                onTap: () async {
+                  final picked = await _pickNormalizedDateTime(start);
+                  if (picked != null) setModalState(() => start = picked);
+                },
+              ),
+              const SizedBox(height: 8),
+              _buildRowTile(
+                title: l10n.end,
+                value: _formatTime(end),
+                onTap: () async {
+                  final picked = await _pickNormalizedDateTime(end);
+                  if (picked != null) setModalState(() => end = picked);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _deleteMama(String id) async {
+    if (id.isEmpty) return;
     final confirm = await _showDeleteConfirm();
     if (confirm == true) {
-      final kayitlar = VeriYonetici.getUykuKayitlari();
-      kayitlar.removeAt(index);
-      await VeriYonetici.saveUykuKayitlari(kayitlar);
+      await VeriYonetici.deleteMamaKaydiById(id);
+      setState(() {});
+    }
+  }
+
+  void _deleteKaka(String id) async {
+    if (id.isEmpty) return;
+    final confirm = await _showDeleteConfirm();
+    if (confirm == true) {
+      await VeriYonetici.deleteKakaKaydiById(id);
+      setState(() {});
+    }
+  }
+
+  void _deleteUyku(String id) async {
+    if (id.isEmpty) return;
+    final confirm = await _showDeleteConfirm();
+    if (confirm == true) {
+      await VeriYonetici.deleteUykuKaydiById(id);
       setState(() {});
     }
   }
@@ -1731,7 +1798,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               children: [
                 Icon(
                   Icons.timer_outlined,
-                  color: isDark ? Colors.pink.shade200 : const Color(0xFFE91E63),
+                  color: isDark
+                      ? Colors.pink.shade200
+                      : const Color(0xFFE91E63),
                   size: 24,
                 ),
                 const SizedBox(width: 12),
@@ -1747,16 +1816,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ),
             Flexible(
               child: Text(
-                minutes > 0
-                    ? '$minutes ${l10n.minAbbrev}'
-                    : l10n.tapToSetTime,
+                minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSetTime,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.end,
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? Colors.pink.shade200 : const Color(0xFFE91E63),
+                  color: isDark
+                      ? Colors.pink.shade200
+                      : const Color(0xFFE91E63),
                 ),
               ),
             ),
@@ -1864,7 +1933,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   /// Shows a Cupertino-style time picker in a bottom sheet
-  Future<TimeOfDay?> _showCupertinoTimePicker(BuildContext context, TimeOfDay initialTime) async {
+  Future<TimeOfDay?> _showCupertinoTimePicker(
+    BuildContext context,
+    TimeOfDay initialTime,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     TimeOfDay selectedTime = initialTime;
 
@@ -1924,7 +1996,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.time,
                 use24hFormat: true,
-                maximumDate: DateTime.now(),
                 initialDateTime: DateTime(
                   DateTime.now().year,
                   DateTime.now().month,
@@ -1949,7 +2020,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   /// Shows a Cupertino-style duration picker in a bottom sheet
-  Future<Duration?> _showCupertinoDurationPicker(BuildContext context, Duration initialDuration) async {
+  Future<Duration?> _showCupertinoDurationPicker(
+    BuildContext context,
+    Duration initialDuration,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     Duration selectedDuration = initialDuration;
 
@@ -2096,7 +2170,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildSaveButton(VoidCallback onPressed, Color color, AppLocalizations l10n) {
+  Widget _buildSaveButton(
+    VoidCallback onPressed,
+    Color color,
+    AppLocalizations l10n,
+  ) {
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -2109,7 +2187,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
         ),
         child: Text(
-          '✓ ${l10n.update}',
+          'âœ“ ${l10n.update}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -2144,11 +2222,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 32,
-              color: color,
-            ),
+            Icon(icon, size: 32, color: color),
             const SizedBox(height: 4),
             Text(
               label,
@@ -2173,7 +2247,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          '🗑️ ${l10n.delete}',
+          'ğŸ—‘ï¸ ${l10n.delete}',
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(
@@ -2190,7 +2264,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.delete, style: const TextStyle(color: Colors.white)),
+            child: Text(
+              l10n.delete,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),

@@ -37,9 +37,10 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _initialName = VeriYonetici.getBabyName();
-    _initialBirthDate = VeriYonetici.getBirthDate();
-    _initialPhotoPath = VeriYonetici.getBabyPhotoPath();
+    final baby = VeriYonetici.getActiveBaby();
+    _initialName = baby.name;
+    _initialBirthDate = baby.birthDate;
+    _initialPhotoPath = baby.photoPath;
 
     _nameController = TextEditingController(text: _initialName);
     _birthDate = _initialBirthDate;
@@ -391,7 +392,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          formatLocalizedAge(context, _birthDate),
+                          ageString(context, _birthDate),
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

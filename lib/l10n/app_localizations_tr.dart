@@ -280,6 +280,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get healthTime => 'Saat';
 
   @override
+  String get time => 'Saat';
+
+  @override
   String get wet => 'Islak';
 
   @override
@@ -287,6 +290,15 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get both => 'İkisi birden';
+
+  @override
+  String get diaperWet => 'Islak';
+
+  @override
+  String get diaperDirty => 'Kirli';
+
+  @override
+  String get diaperBoth => 'İkisi birden';
 
   @override
   String get optionalNotes => 'Not (Opsiyonel)';
@@ -305,6 +317,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sleepDurationMustBeGreater => 'Uyku suresi 0\'dan buyuk olmalı';
+
+  @override
+  String get eventTimeTooOld => 'Seçilen zaman son 48 saat içinde olmalıdır';
 
   @override
   String get today => 'Bugün';
@@ -362,6 +377,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get editSleep => 'Uyku Düzenle';
+
+  @override
+  String get editTitleFeeding => 'Beslenme Düzenle';
+
+  @override
+  String get editTitleDiaper => 'Bez Düzenle';
+
+  @override
+  String get editTitleSleep => 'Uyku Düzenle';
+
+  @override
+  String get editTitleNursing => 'Emzirme Düzenle';
 
   @override
   String get start => 'Başlangıç';
@@ -1300,6 +1327,32 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get medicationDoseLogged => 'Dose logged';
+
+  @override
+  String get savedMessage => 'Kaydedildi';
+
+  @override
+  String get alreadySavedRecently => 'Zaten az önce kaydedildi';
+
+  @override
+  String get undo => 'Geri al';
+
+  @override
+  String get yesterday => 'Dün';
+
+  @override
+  String get notGivenYet => 'Henüz verilmedi';
+
+  @override
+  String get viewHistory => 'Geçmişi görüntüle';
+
+  @override
+  String get noMedicationHistory => 'Verilme geçmişi yok';
+
+  @override
+  String lastGivenLabel(String value) {
+    return 'Son veriliş: $value';
+  }
 
   @override
   String get scheduleType => 'Kullanım türü';

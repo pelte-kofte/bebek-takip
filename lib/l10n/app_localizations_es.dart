@@ -24,39 +24,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tapToStart => 'Toca para empezar';
 
   @override
-  String get feedingTracker => 'Registro de alimentación';
+  String get feedingTracker => 'Registro de alimentaciÃ³n';
 
   @override
   String get feedingTrackerDesc =>
-      'Registra lactancia, biberones y sólidos fácilmente. Detecta patrones de forma natural.';
+      'Registra lactancia, biberones y sÃ³lidos fÃ¡cilmente. Detecta patrones de forma natural.';
 
   @override
-  String get sleepPatterns => 'Patrones de sueño';
+  String get sleepPatterns => 'Patrones de sueÃ±o';
 
   @override
   String get sleepPatternsDesc =>
-      'Comprende el ritmo de tu bebé y mejora la calidad del sueño para todos.';
+      'Comprende el ritmo de tu bebÃ© y mejora la calidad del sueÃ±o para todos.';
 
   @override
-  String get growthCharts => 'Gráficos de crecimiento';
+  String get growthCharts => 'GrÃ¡ficos de crecimiento';
 
   @override
   String get growthChartsDesc =>
-      'Visualiza los cambios de altura y peso a lo largo del tiempo con gráficos hermosos.';
+      'Visualiza los cambios de altura y peso a lo largo del tiempo con grÃ¡ficos hermosos.';
 
   @override
   String get preciousMemories => 'Recuerdos preciosos';
 
   @override
   String get preciousMemoriesDesc =>
-      'Guarda hitos y momentos divertidos. ¡Crecen muy rápido!';
+      'Guarda hitos y momentos divertidos. Â¡Crecen muy rÃ¡pido!';
 
   @override
   String get dailyRhythm => 'Ritmo diario';
 
   @override
   String get dailyRhythmDesc =>
-      'Las rutinas suaves traen días tranquilos y noches apacibles.';
+      'Las rutinas suaves traen dÃ­as tranquilos y noches apacibles.';
 
   @override
   String get skip => 'Omitir';
@@ -86,10 +86,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ok => 'OK';
 
   @override
-  String get add => 'Añadir';
+  String get add => 'AÃ±adir';
 
   @override
-  String get yes => 'Sí';
+  String get yes => 'SÃ­';
 
   @override
   String get no => 'No';
@@ -107,13 +107,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get tapToSetTime => 'Establecer hora';
 
   @override
-  String get notificationSleepFired => 'Notificación de sueño enviada';
+  String get notificationSleepFired => 'NotificaciÃ³n de sueÃ±o enviada';
 
   @override
-  String get notificationNursingFired => 'Notificación de lactancia enviada';
+  String get notificationNursingFired => 'NotificaciÃ³n de lactancia enviada';
 
   @override
-  String get signedOutSuccessfully => 'Sesión cerrada correctamente';
+  String get signedOutSuccessfully => 'SesiÃ³n cerrada correctamente';
 
   @override
   String errorWithMessage(String message) {
@@ -125,17 +125,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String googleSignInFailed(String error) {
-    return 'Error al iniciar sesión con Google: $error';
+    return 'Error al iniciar sesiÃ³n con Google: $error';
   }
 
   @override
   String signInFailed(String error) {
-    return 'Error al iniciar sesión: $error';
+    return 'Error al iniciar sesiÃ³n: $error';
   }
 
   @override
   String get webPhotoUploadUnsupported =>
-      'La carga de fotos no está disponible en la web';
+      'La carga de fotos no estÃ¡ disponible en la web';
 
   @override
   String babyDataDeleted(String name) {
@@ -143,7 +143,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get babyNameHint => 'Nombre del bebé';
+  String get babyNameHint => 'Nombre del bebÃ©';
 
   @override
   String get babyNotesHint => 'Alergias, preferencias, notas...';
@@ -156,7 +156,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get vaccineNameCannotBeEmpty =>
-      'El nombre de la vacuna no puede estar vacío';
+      'El nombre de la vacuna no puede estar vacÃ­o';
 
   @override
   String get growthWeightHint => 'ej. 7,5';
@@ -165,7 +165,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get growthHeightHint => 'ej. 68,5';
 
   @override
-  String get growthNotesHint => 'Visita al médico, día de vacunación, etc.';
+  String get growthNotesHint => 'Visita al mÃ©dico, dÃ­a de vacunaciÃ³n, etc.';
 
   @override
   String get pleaseEnterWeightHeight => 'Introduce peso y altura';
@@ -195,22 +195,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settings => 'Ajustes';
 
   @override
-  String get addActivity => 'Añadir actividad';
+  String get addActivity => 'AÃ±adir actividad';
 
   @override
-  String get whatHappened => '¿Qué pasó?';
+  String get whatHappened => 'Â¿QuÃ© pasÃ³?';
 
   @override
   String get nursing => 'Lactancia';
 
   @override
-  String get bottle => 'Biberón';
+  String get bottle => 'BiberÃ³n';
 
   @override
-  String get sleep => 'Sueño';
+  String get sleep => 'SueÃ±o';
 
   @override
-  String get diaper => 'Pañal';
+  String get diaper => 'PaÃ±al';
 
   @override
   String get side => 'Lado';
@@ -222,7 +222,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get right => 'Derecho';
 
   @override
-  String get duration => 'Duración';
+  String get duration => 'DuraciÃ³n';
 
   @override
   String get minAbbrev => 'min';
@@ -231,19 +231,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hourAbbrev => 'h';
 
   @override
-  String get category => 'Categoría';
+  String get category => 'CategorÃ­a';
 
   @override
   String get milk => 'Leche';
 
   @override
-  String get solid => 'Sólido';
+  String get solid => 'SÃ³lido';
 
   @override
-  String get whatWasGiven => '¿QUÉ SE DIO?';
+  String get whatWasGiven => 'Â¿QUÃ‰ SE DIO?';
 
   @override
-  String get solidFoodHint => 'Ej.: puré de plátano, zanahoria...';
+  String get solidFoodHint => 'Ej.: purÃ© de plÃ¡tano, zanahoria...';
 
   @override
   String get amount => 'Cantidad';
@@ -255,20 +255,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get breastMilk => 'Leche materna';
 
   @override
-  String get formula => 'Fórmula';
+  String get formula => 'FÃ³rmula';
 
   @override
-  String get sleepStartedAt => 'SUEÑO EMPEZÓ A LAS';
+  String get sleepStartedAt => 'SUEÃ‘O EMPEZÃ“ A LAS';
 
   @override
-  String get wokeUpAt => 'SE DESPERTÓ A LAS';
+  String get wokeUpAt => 'SE DESPERTÃ“ A LAS';
 
   @override
   String get tapToSet => 'Establecer hora';
 
   @override
   String totalSleep(String duration) {
-    return 'Sueño total: $duration';
+    return 'SueÃ±o total: $duration';
   }
 
   @override
@@ -281,6 +281,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get healthTime => 'Hora';
 
   @override
+  String get time => 'Hora';
+
+  @override
   String get wet => 'Mojado';
 
   @override
@@ -290,13 +293,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get both => 'Ambos';
 
   @override
+  String get diaperWet => 'Mojado';
+
+  @override
+  String get diaperDirty => 'Sucio';
+
+  @override
+  String get diaperBoth => 'Ambos';
+
+  @override
   String get optionalNotes => 'Notas opcionales';
 
   @override
-  String get diaperNoteHint => 'Añade una nota sobre el cambio de pañal...';
+  String get diaperNoteHint => 'AÃ±ade una nota sobre el cambio de paÃ±al...';
 
   @override
-  String get pleaseSetDuration => 'Establece una duración';
+  String get pleaseSetDuration => 'Establece una duraciÃ³n';
 
   @override
   String get pleaseSetAmount => 'Establece una cantidad';
@@ -306,7 +318,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sleepDurationMustBeGreater =>
-      'La duración del sueño debe ser mayor que 0';
+      'La duraciÃ³n del sueÃ±o debe ser mayor que 0';
+
+  @override
+  String get eventTimeTooOld =>
+      'La hora seleccionada debe estar dentro de las Ãºltimas 48 horas';
 
   @override
   String get today => 'Hoy';
@@ -327,43 +343,55 @@ class AppLocalizationsEs extends AppLocalizations {
   String get breastfeeding => 'Lactancia';
 
   @override
-  String get bottleBreastMilk => 'Biberón (leche materna)';
+  String get bottleBreastMilk => 'BiberÃ³n (leche materna)';
 
   @override
   String get total => 'Total';
 
   @override
-  String get diaperChange => 'Cambio de pañal';
+  String get diaperChange => 'Cambio de paÃ±al';
 
   @override
-  String get firstFeedingTime => '¿Hora de la primera toma?';
+  String get firstFeedingTime => 'Â¿Hora de la primera toma?';
 
   @override
-  String get trackBabyFeeding => 'Registra la alimentación de tu bebé';
+  String get trackBabyFeeding => 'Registra la alimentaciÃ³n de tu bebÃ©';
 
   @override
-  String get diaperChangeTime => '¡Hora de cambiar el pañal!';
+  String get diaperChangeTime => 'Â¡Hora de cambiar el paÃ±al!';
 
   @override
-  String get trackHygiene => 'Registra la higiene aquí';
+  String get trackHygiene => 'Registra la higiene aquÃ­';
 
   @override
-  String get sweetDreams => 'Dulces sueños...';
+  String get sweetDreams => 'Dulces sueÃ±os...';
 
   @override
-  String get trackSleepPattern => 'Registra el patrón de sueño aquí';
+  String get trackSleepPattern => 'Registra el patrÃ³n de sueÃ±o aquÃ­';
 
   @override
   String get selectAnotherDate => 'Seleccionar otra fecha';
 
   @override
-  String get editFeeding => 'Editar alimentación';
+  String get editFeeding => 'Editar alimentaciÃ³n';
 
   @override
-  String get editDiaper => 'Editar pañal';
+  String get editDiaper => 'Editar paÃ±al';
 
   @override
-  String get editSleep => 'Editar sueño';
+  String get editSleep => 'Editar sueÃ±o';
+
+  @override
+  String get editTitleFeeding => 'Editar alimentaciÃ³n';
+
+  @override
+  String get editTitleDiaper => 'Editar paÃ±al';
+
+  @override
+  String get editTitleSleep => 'Editar sueÃ±o';
+
+  @override
+  String get editTitleNursing => 'Editar lactancia';
 
   @override
   String get start => 'Inicio';
@@ -372,17 +400,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get end => 'Fin';
 
   @override
-  String get attention => 'Atención';
+  String get attention => 'AtenciÃ³n';
 
   @override
   String get deleteConfirm =>
-      '¿Estás seguro de que quieres eliminar este registro?';
+      'Â¿EstÃ¡s seguro de que quieres eliminar este registro?';
 
   @override
   String get myVaccines => 'Mis vacunas';
 
   @override
-  String get addVaccine => 'Añadir vacuna';
+  String get addVaccine => 'AÃ±adir vacuna';
 
   @override
   String get applied => 'Aplicada';
@@ -391,7 +419,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pending => 'Pendiente';
 
   @override
-  String get upcomingVaccines => 'Próximas vacunas';
+  String get upcomingVaccines => 'PrÃ³ximas vacunas';
 
   @override
   String get completedVaccines => 'Vacunas completadas';
@@ -403,7 +431,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get calendar => 'Calendario';
 
   @override
-  String get turkishVaccineCalendar => 'Calendario de vacunación turco';
+  String get turkishVaccineCalendar => 'Calendario de vacunaciÃ³n turco';
 
   @override
   String vaccinesAvailable(int count) {
@@ -417,11 +445,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get clear => 'Limpiar';
 
   @override
-  String get alreadyAdded => 'Ya añadida';
+  String get alreadyAdded => 'Ya aÃ±adida';
 
   @override
   String addVaccines(int count) {
-    return 'Añadir $count vacunas';
+    return 'AÃ±adir $count vacunas';
   }
 
   @override
@@ -429,34 +457,34 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String vaccinesAdded(int count) {
-    return '$count vacunas añadidas';
+    return '$count vacunas aÃ±adidas';
   }
 
   @override
-  String get noVaccineRecords => 'No hay registros de vacunas aún';
+  String get noVaccineRecords => 'No hay registros de vacunas aÃºn';
 
   @override
   String get loadTurkishCalendar =>
-      'Carga el calendario turco o añade manualmente';
+      'Carga el calendario turco o aÃ±ade manualmente';
 
   @override
   String get loadTurkishVaccineCalendar =>
-      'Cargar calendario de vacunación turco';
+      'Cargar calendario de vacunaciÃ³n turco';
 
   @override
-  String get loadCalendarTitle => 'Cargar calendario de vacunación turco';
+  String get loadCalendarTitle => 'Cargar calendario de vacunaciÃ³n turco';
 
   @override
   String get loadCalendarDesc =>
-      'Se cargará el calendario de vacunación turco estándar. Las vacunas existentes no se eliminarán.';
+      'Se cargarÃ¡ el calendario de vacunaciÃ³n turco estÃ¡ndar. Las vacunas existentes no se eliminarÃ¡n.';
 
   @override
   String ageYears(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count años',
-      one: '$count año',
+      other: '$count aÃ±os',
+      one: '$count aÃ±o',
     );
     return '$_temp0';
   }
@@ -466,8 +494,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       years,
       locale: localeName,
-      other: '$years años',
-      one: '$years año',
+      other: '$years aÃ±os',
+      one: '$years aÃ±o',
     );
     String _temp1 = intl.Intl.pluralLogic(
       months,
@@ -489,8 +517,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp1 = intl.Intl.pluralLogic(
       days,
       locale: localeName,
-      other: '$days días',
-      one: '$days día',
+      other: '$days dÃ­as',
+      one: '$days dÃ­a',
     );
     return '$_temp0 $_temp1';
   }
@@ -500,8 +528,8 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count días',
-      one: '$count día',
+      other: '$count dÃ­as',
+      one: '$count dÃ­a',
     );
     return '$_temp0';
   }
@@ -519,19 +547,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get monthly => 'Mensual';
 
   @override
-  String get feeding => 'Alimentación';
+  String get feeding => 'AlimentaciÃ³n';
 
   @override
   String get totalBreastfeeding => 'Total lactancia';
 
   @override
-  String get totalDuration => 'Duración total';
+  String get totalDuration => 'DuraciÃ³n total';
 
   @override
   String get dailyAvg => 'Prom. diario';
 
   @override
-  String get avgDuration => 'Duración prom.';
+  String get avgDuration => 'DuraciÃ³n prom.';
 
   @override
   String get leftBreast => 'Pecho izquierdo';
@@ -540,16 +568,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get rightBreast => 'Pecho derecho';
 
   @override
-  String get solidFood => 'Alimento sólido';
+  String get solidFood => 'Alimento sÃ³lido';
 
   @override
-  String get diaperChanges => 'Cambios de pañal';
+  String get diaperChanges => 'Cambios de paÃ±al';
 
   @override
-  String get longestSleep => 'Sueño más largo';
+  String get longestSleep => 'SueÃ±o mÃ¡s largo';
 
   @override
-  String get sleepCount => 'Núm. de sueños';
+  String get sleepCount => 'NÃºm. de sueÃ±os';
 
   @override
   String get growth => 'Crecimiento';
@@ -564,16 +592,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveAsPdf => 'Guardar como PDF';
 
   @override
-  String get pdfMobileOnly => 'El PDF está disponible en móvil';
+  String get pdfMobileOnly => 'El PDF estÃ¡ disponible en mÃ³vil';
 
   @override
-  String get sharingMobileOnly => 'Compartir está disponible en móvil';
+  String get sharingMobileOnly => 'Compartir estÃ¡ disponible en mÃ³vil';
 
   @override
-  String get pdfSaved => '¡PDF guardado correctamente!';
+  String get pdfSaved => 'Â¡PDF guardado correctamente!';
 
   @override
-  String get babyTrackerReport => 'Informe del seguimiento del bebé';
+  String get babyTrackerReport => 'Informe del seguimiento del bebÃ©';
 
   @override
   String get generatedWith => 'Generado con Baby Tracker App';
@@ -618,43 +646,43 @@ class AppLocalizationsEs extends AppLocalizations {
   String get december => 'Diciembre';
 
   @override
-  String get addOptionalNote => 'Añadir nota (opcional)';
+  String get addOptionalNote => 'AÃ±adir nota (opcional)';
 
   @override
   String get times => 'veces';
 
   @override
-  String get feeding_tab => 'ALIMENTACIÓN';
+  String get feeding_tab => 'ALIMENTACIÃ“N';
 
   @override
-  String get diaper_tab => 'PAÑAL';
+  String get diaper_tab => 'PAÃ‘AL';
 
   @override
-  String get sleep_tab => 'SUEÑO';
+  String get sleep_tab => 'SUEÃ‘O';
 
   @override
   String get list => 'Lista';
 
   @override
-  String get chart => 'Gráfico';
+  String get chart => 'GrÃ¡fico';
 
   @override
-  String get noMeasurements => 'No hay mediciones aún';
+  String get noMeasurements => 'No hay mediciones aÃºn';
 
   @override
-  String get addMeasurements => 'Añade mediciones de altura y peso';
+  String get addMeasurements => 'AÃ±ade mediciones de altura y peso';
 
   @override
-  String get moreDataNeeded => 'Se necesitan más datos para el gráfico';
+  String get moreDataNeeded => 'Se necesitan mÃ¡s datos para el grÃ¡fico';
 
   @override
   String addMoreMeasurements(int count) {
-    return 'Añade $count mediciones más';
+    return 'AÃ±ade $count mediciones mÃ¡s';
   }
 
   @override
   String get atLeast2Measurements =>
-      'Se necesitan al menos 2 mediciones para el gráfico';
+      'Se necesitan al menos 2 mediciones para el grÃ¡fico';
 
   @override
   String get growthTracking => 'Seguimiento de crecimiento';
@@ -672,13 +700,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get activeTimer => 'ACTIVO';
 
   @override
-  String get lastFed => 'ÚLT. ALIMENTACIÓN';
+  String get lastFed => 'ÃšLT. ALIMENTACIÃ“N';
 
   @override
-  String get lastDiaper => 'ÚLT. PAÑAL';
+  String get lastDiaper => 'ÃšLT. PAÃ‘AL';
 
   @override
-  String get lastSleep => 'ÚLT. SUEÑO';
+  String get lastSleep => 'ÃšLT. SUEÃ‘O';
 
   @override
   String get recentActivity => 'REGISTROS DE CUIDADOS RECIENTES';
@@ -687,33 +715,34 @@ class AppLocalizationsEs extends AppLocalizations {
   String get seeHistory => 'VER HISTORIAL';
 
   @override
-  String get noActivitiesLast24h => 'Sin actividad en las últimas 24 horas';
+  String get noActivitiesLast24h => 'Sin actividad en las Ãºltimas 24 horas';
 
   @override
-  String get bottleFeeding => 'Biberón';
+  String get bottleFeeding => 'BiberÃ³n';
 
   @override
-  String get trackYourBabyGrowth => 'Sigue el crecimiento de tu bebé';
+  String get trackYourBabyGrowth => 'Sigue el crecimiento de tu bebÃ©';
 
   @override
-  String get addHeightWeightMeasurements => 'Añade mediciones de peso y altura';
+  String get addHeightWeightMeasurements =>
+      'AÃ±ade mediciones de peso y altura';
 
   @override
-  String get addFirstMeasurement => 'Añadir primera medición';
+  String get addFirstMeasurement => 'AÃ±adir primera mediciÃ³n';
 
   @override
   String get lastUpdatedToday => 'Actualizado hoy';
 
   @override
-  String get lastUpdated1Day => 'Actualizado hace 1 día';
+  String get lastUpdated1Day => 'Actualizado hace 1 dÃ­a';
 
   @override
   String lastUpdatedDays(int days) {
-    return 'Actualizado hace $days días';
+    return 'Actualizado hace $days dÃ­as';
   }
 
   @override
-  String get viewGrowthCharts => 'VER GRÁFICOS DE CRECIMIENTO';
+  String get viewGrowthCharts => 'VER GRÃFICOS DE CRECIMIENTO';
 
   @override
   String get weightLabel => 'PESO';
@@ -737,16 +766,16 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get noRecordsYet => 'No hay registros aún';
+  String get noRecordsYet => 'No hay registros aÃºn';
 
   @override
-  String get dailyTip => 'CONSEJO DEL DÍA';
+  String get dailyTip => 'CONSEJO DEL DÃA';
 
   @override
   String get allTips => 'Todos los consejos';
 
   @override
-  String get upcomingVaccine => 'PRÓXIMA VACUNA';
+  String get upcomingVaccine => 'PRÃ“XIMA VACUNA';
 
   @override
   String nextVaccineLabel(String name) {
@@ -755,21 +784,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'I ${left}min • D ${right}min';
+    return 'I ${left}min â€¢ D ${right}min';
   }
 
   @override
   String breastfeedingSavedSnack(int left, int right) {
-    return '✅ Lactancia guardada: I ${left}min, D ${right}min';
+    return 'âœ… Lactancia guardada: I ${left}min, D ${right}min';
   }
 
   @override
   String sleepSavedSnack(String duration) {
-    return '✅ Sueño guardado: $duration';
+    return 'âœ… SueÃ±o guardado: $duration';
   }
 
   @override
-  String get sleepTooShort => '⚠️ Sueño menor a 1 minuto, no guardado';
+  String get sleepTooShort => 'âš ï¸ SueÃ±o menor a 1 minuto, no guardado';
 
   @override
   String kgThisMonth(String value) {
@@ -782,7 +811,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get noSleep => 'Sin sueño';
+  String get noSleep => 'Sin sueÃ±o';
 
   @override
   String get justNow => 'ahora mismo';
@@ -810,29 +839,29 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get loginBenefitText =>
-      'Inicia sesión para prepararte para las funciones de copia de seguridad y sincronización que llegarán pronto. También puedes continuar sin iniciar sesión.';
+      'Inicia sesiÃ³n para prepararte para las funciones de copia de seguridad y sincronizaciÃ³n que llegarÃ¡n pronto. TambiÃ©n puedes continuar sin iniciar sesiÃ³n.';
 
   @override
-  String get signInWithApple => 'Iniciar sesión con Apple';
+  String get signInWithApple => 'Iniciar sesiÃ³n con Apple';
 
   @override
-  String get signInWithGoogle => 'Iniciar sesión con Google';
+  String get signInWithGoogle => 'Iniciar sesiÃ³n con Google';
 
   @override
-  String get continueWithoutLogin => 'Continuar sin iniciar sesión';
+  String get continueWithoutLogin => 'Continuar sin iniciar sesiÃ³n';
 
   @override
   String get loginOptionalNote =>
-      'El inicio de sesión es opcional. Todas las funciones funcionan sin cuenta.';
+      'El inicio de sesiÃ³n es opcional. Todas las funciones funcionan sin cuenta.';
 
   @override
   String get account => 'Cuenta';
 
   @override
-  String get signIn => 'Iniciar sesión';
+  String get signIn => 'Iniciar sesiÃ³n';
 
   @override
-  String get signOut => 'Cerrar sesión';
+  String get signOut => 'Cerrar sesiÃ³n';
 
   @override
   String signedInAs(String email) {
@@ -843,26 +872,26 @@ class AppLocalizationsEs extends AppLocalizations {
   String get guestMode => 'Modo invitado';
 
   @override
-  String get signInToProtectData => 'Inicia sesión para proteger tus datos';
+  String get signInToProtectData => 'Inicia sesiÃ³n para proteger tus datos';
 
   @override
   String get backupSyncComingSoon =>
-      'Copia de seguridad y sincronización pronto';
+      'Copia de seguridad y sincronizaciÃ³n pronto';
 
   @override
-  String get privacyPolicy => 'Política de privacidad';
+  String get privacyPolicy => 'PolÃ­tica de privacidad';
 
   @override
-  String get privacyPolicySubtitle => 'Ver política de privacidad';
+  String get privacyPolicySubtitle => 'Ver polÃ­tica de privacidad';
 
   @override
-  String get termsOfUse => 'Términos de uso';
+  String get termsOfUse => 'TÃ©rminos de uso';
 
   @override
-  String get termsOfUseSubtitle => 'Ver términos y condiciones';
+  String get termsOfUseSubtitle => 'Ver tÃ©rminos y condiciones';
 
   @override
-  String get pageCouldNotOpen => 'No se pudo abrir la página';
+  String get pageCouldNotOpen => 'No se pudo abrir la pÃ¡gina';
 
   @override
   String get health => 'Salud';
@@ -871,7 +900,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get medications => 'Medicamentos';
 
   @override
-  String get noMedications => 'No hay medicamentos ni suplementos aún';
+  String get noMedications => 'No hay medicamentos ni suplementos aÃºn';
 
   @override
   String get medication => 'Medicamento';
@@ -880,7 +909,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get supplement => 'Suplemento';
 
   @override
-  String get addMedication => 'Añadir medicamento';
+  String get addMedication => 'AÃ±adir medicamento';
 
   @override
   String get editMedication => 'Editar medicamento';
@@ -907,19 +936,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get systemDefault => 'Sistema';
 
   @override
-  String get turkish => 'Türkçe';
+  String get turkish => 'TÃ¼rkÃ§e';
 
   @override
   String get english => 'English';
 
   @override
-  String get russian => 'Русский';
+  String get russian => 'Ğ ÑƒÑÑĞºĞ¸Ğ¹';
 
   @override
-  String get ukrainian => 'Українська';
+  String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
 
   @override
-  String get spanish => 'Español';
+  String get spanish => 'EspaÃ±ol';
 
   @override
   String get languageUpdated => 'Idioma actualizado';
@@ -929,77 +958,77 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_siyah_mekonyum_desc =>
-      'Durante los primeros 2-4 días, esto es normal tanto si tu bebé toma leche materna como fórmula. No hay motivo de preocupación.';
+      'Durante los primeros 2-4 dÃ­as, esto es normal tanto si tu bebÃ© toma leche materna como fÃ³rmula. No hay motivo de preocupaciÃ³n.';
 
   @override
   String get tip_eye_tracking_title => 'Seguimiento visual';
 
   @override
   String get tip_eye_tracking_desc =>
-      'Por ahora, tu bebé solo ve con claridad a unos 25-30 cm. Acerca tu rostro y muévete despacio para que intente seguirte con la mirada.';
+      'Por ahora, tu bebÃ© solo ve con claridad a unos 25-30 cm. Acerca tu rostro y muÃ©vete despacio para que intente seguirte con la mirada.';
 
   @override
   String get tip_neck_support_title => 'Soporte del cuello';
 
   @override
   String get tip_neck_support_desc =>
-      'Sostén siempre la cabeza y el cuello de tu bebé al cargarlo. Los músculos del cuello todavía son muy débiles.';
+      'SostÃ©n siempre la cabeza y el cuello de tu bebÃ© al cargarlo. Los mÃºsculos del cuello todavÃ­a son muy dÃ©biles.';
 
   @override
   String get tip_reflex_stepping_title => 'Reflejo de pasos';
 
   @override
   String get tip_reflex_stepping_desc =>
-      'Sostén a tu bebé en posición vertical y deja que sus pies toquen una superficie plana. Es posible que veas el reflejo de dar pasos.';
+      'SostÃ©n a tu bebÃ© en posiciÃ³n vertical y deja que sus pies toquen una superficie plana. Es posible que veas el reflejo de dar pasos.';
 
   @override
-  String get tip_sound_interest_title => 'Interés por los sonidos';
+  String get tip_sound_interest_title => 'InterÃ©s por los sonidos';
 
   @override
   String get tip_sound_interest_desc =>
-      'Tu bebé es muy sensible a los sonidos. Prueba captar su atención con un sonajero suave o una cajita de música.';
+      'Tu bebÃ© es muy sensible a los sonidos. Prueba captar su atenciÃ³n con un sonajero suave o una cajita de mÃºsica.';
 
   @override
-  String get tip_parent_interaction_title => 'Interacción con los padres';
+  String get tip_parent_interaction_title => 'InteracciÃ³n con los padres';
 
   @override
   String get tip_parent_interaction_desc =>
-      'Haz contacto visual y habla con voz suave. Tu bebé reconoce tu voz y se siente seguro con ella.';
+      'Haz contacto visual y habla con voz suave. Tu bebÃ© reconoce tu voz y se siente seguro con ella.';
 
   @override
   String get tip_color_worlds_title => 'Mundo de colores';
 
   @override
   String get tip_color_worlds_desc =>
-      'Los recién nacidos ven mejor los contrastes en blanco y negro. Puedes mostrarle tarjetas con ese tipo de patrones.';
+      'Los reciÃ©n nacidos ven mejor los contrastes en blanco y negro. Puedes mostrarle tarjetas con ese tipo de patrones.';
 
   @override
-  String get tip_mini_athlete_title => 'Pequeño atleta';
+  String get tip_mini_athlete_title => 'PequeÃ±o atleta';
 
   @override
   String get tip_mini_athlete_desc =>
-      'El tiempo boca abajo fortalece los músculos del cuello y la espalda. Inténtalo unos minutos cada día.';
+      'El tiempo boca abajo fortalece los mÃºsculos del cuello y la espalda. IntÃ©ntalo unos minutos cada dÃ­a.';
 
   @override
   String get tip_sound_hunter_title => 'Cazador de sonidos';
 
   @override
   String get tip_sound_hunter_desc =>
-      'Haz un chasquido suave cerca de la oreja de tu bebé. Puede intentar girar la cabeza hacia el sonido.';
+      'Haz un chasquido suave cerca de la oreja de tu bebÃ©. Puede intentar girar la cabeza hacia el sonido.';
 
   @override
-  String get tip_touch_explore_title => 'Exploración táctil';
+  String get tip_touch_explore_title => 'ExploraciÃ³n tÃ¡ctil';
 
   @override
   String get tip_touch_explore_desc =>
-      'Permite que tu bebé toque diferentes texturas con manos y pies: superficies suaves, rugosas y frescas.';
+      'Permite que tu bebÃ© toque diferentes texturas con manos y pies: superficies suaves, rugosas y frescas.';
 
   @override
   String get tip_tip_agu_conversation_1_2_title => 'Charlas de balbuceo';
 
   @override
   String get tip_tip_agu_conversation_1_2_desc =>
-      'Cuando tu bebé emita sonidos, escúchalo. Respóndele con suavidad cuando termine. Estas pequeñas charlas construyen la comunicación.';
+      'Cuando tu bebÃ© emita sonidos, escÃºchalo. RespÃ³ndele con suavidad cuando termine. Estas pequeÃ±as charlas construyen la comunicaciÃ³n.';
 
   @override
   String get tip_tip_tummy_time_strength_1_2_title =>
@@ -1007,14 +1036,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_tip_tummy_time_strength_1_2_desc =>
-      'Coloca a tu bebé boca abajo por periodos cortos. Anímalo a levantar la cabeza con juguetes coloridos delante.';
+      'Coloca a tu bebÃ© boca abajo por periodos cortos. AnÃ­malo a levantar la cabeza con juguetes coloridos delante.';
 
   @override
   String get tip_tip_baby_massage_1_2_title => 'Masaje relajante';
 
   @override
   String get tip_tip_baby_massage_1_2_desc =>
-      'Después del baño, masajea suavemente empezando por los pies. Favorece la conciencia corporal y ayuda a tu bebé a relajarse.';
+      'DespuÃ©s del baÃ±o, masajea suavemente empezando por los pies. Favorece la conciencia corporal y ayuda a tu bebÃ© a relajarse.';
 
   @override
   String get tip_tip_gesture_speech_1_2_title => 'Hablar con gestos';
@@ -1028,21 +1057,21 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_tip_open_hands_1_2_desc =>
-      'Sus manos se abren cada vez más. Ofrécele juguetes suaves para practicar agarrar y soltar.';
+      'Sus manos se abren cada vez mÃ¡s. OfrÃ©cele juguetes suaves para practicar agarrar y soltar.';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_title => 'Vínculo lado a lado';
+  String get tip_tip_side_by_side_bonding_1_2_title => 'VÃ­nculo lado a lado';
 
   @override
   String get tip_tip_side_by_side_bonding_1_2_desc =>
-      'Acuéstate junto a tu bebé. Sonríe y háblale con cariño mientras intenta girarse hacia ti.';
+      'AcuÃ©state junto a tu bebÃ©. SonrÃ­e y hÃ¡blale con cariÃ±o mientras intenta girarse hacia ti.';
 
   @override
   String get tip_tip_sound_hunter_title => 'Cazador de sonidos';
 
   @override
   String get tip_tip_sound_hunter_desc =>
-      'Agita un sonajero suavemente en un punto que tu bebé no vea. Girar hacia el sonido favorece la audición y la atención.';
+      'Agita un sonajero suavemente en un punto que tu bebÃ© no vea. Girar hacia el sonido favorece la audiciÃ³n y la atenciÃ³n.';
 
   @override
   String get tip_tip_sound_hunter_level2_1_2_title =>
@@ -1050,35 +1079,35 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_tip_sound_hunter_level2_1_2_desc =>
-      'Haz sonidos diferentes a su izquierda y derecha. Buscar el origen fortalece su capacidad de atención.';
+      'Haz sonidos diferentes a su izquierda y derecha. Buscar el origen fortalece su capacidad de atenciÃ³n.';
 
   @override
   String get tip_tip_texture_discovery_1_2_title => 'Tocar y descubrir';
 
   @override
   String get tip_tip_texture_discovery_1_2_desc =>
-      'Ofrécele objetos con distintas texturas. Cada nueva sensación es un nuevo descubrimiento para tu bebé.';
+      'OfrÃ©cele objetos con distintas texturas. Cada nueva sensaciÃ³n es un nuevo descubrimiento para tu bebÃ©.';
 
   @override
   String get tip_tip_outdoor_explorer_4_5_title => 'Explorador al aire libre';
 
   @override
   String get tip_tip_outdoor_explorer_4_5_desc =>
-      'Muéstrale árboles y animales cuando estén afuera. Déjalo tocar y explorar mientras escucha tu voz.';
+      'MuÃ©strale Ã¡rboles y animales cuando estÃ©n afuera. DÃ©jalo tocar y explorar mientras escucha tu voz.';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_title => 'Práctica de alcance';
+  String get tip_tip_reaching_exercise_1_2_title => 'PrÃ¡ctica de alcance';
 
   @override
   String get tip_tip_reaching_exercise_1_2_desc =>
-      'Coloca juguetes a su alcance. Incluso intentar agarrarlos ayuda a fortalecer sus músculos.';
+      'Coloca juguetes a su alcance. Incluso intentar agarrarlos ayuda a fortalecer sus mÃºsculos.';
 
   @override
   String get tip_tip_supported_bounce_1_2_title => 'Rebote con apoyo';
 
   @override
   String get tip_tip_supported_bounce_1_2_desc =>
-      'Sostén a tu bebé erguido sobre tu regazo y permite un rebote suave con apoyo. Ayuda a fortalecer las piernas y a explorar.';
+      'SostÃ©n a tu bebÃ© erguido sobre tu regazo y permite un rebote suave con apoyo. Ayuda a fortalecer las piernas y a explorar.';
 
   @override
   String get tip_tip_visual_tracking_1_2_title => 'Seguimiento visual';
@@ -1092,28 +1121,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_tip_face_play_1_2_desc =>
-      'Acércate, haz contacto visual y usa expresiones faciales divertidas. Tu voz y tu rostro son sus juguetes favoritos.';
+      'AcÃ©rcate, haz contacto visual y usa expresiones faciales divertidas. Tu voz y tu rostro son sus juguetes favoritos.';
 
   @override
   String get tip_tip_emotion_labeling_1_2_title => 'Nombrar emociones';
 
   @override
   String get tip_tip_emotion_labeling_1_2_desc =>
-      'Cuando tu bebé llore, nombra la emoción con calma y reconfórtalo. Sentirse comprendido favorece su seguridad emocional.';
+      'Cuando tu bebÃ© llore, nombra la emociÃ³n con calma y reconfÃ³rtalo. Sentirse comprendido favorece su seguridad emocional.';
 
   @override
-  String get tip_tip_first_meal_title => 'Primera degustación';
+  String get tip_tip_first_meal_title => 'Primera degustaciÃ³n';
 
   @override
   String get tip_tip_first_meal_desc =>
-      'Inicia los sólidos según la recomendación de tu pediatra. Dar comida con cuchara puede ser divertido, pero observa posibles signos de alergia.';
+      'Inicia los sÃ³lidos segÃºn la recomendaciÃ³n de tu pediatra. Dar comida con cuchara puede ser divertido, pero observa posibles signos de alergia.';
 
   @override
   String get tip_tip_hand_to_hand_transfer_4_5_title => 'Manos activas';
 
   @override
   String get tip_tip_hand_to_hand_transfer_4_5_desc =>
-      'Hacia los 4-5 meses, los bebés intentan pasar objetos de una mano a otra. Ofrécele objetos fáciles de agarrar y obsérvalo.';
+      'Hacia los 4-5 meses, los bebÃ©s intentan pasar objetos de una mano a otra. OfrÃ©cele objetos fÃ¡ciles de agarrar y obsÃ©rvalo.';
 
   @override
   String get tip_tip_supported_sitting_4_5_title => 'Sentado con apoyo';
@@ -1127,14 +1156,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tip_tip_feet_discovery_4_5_desc =>
-      'Tu bebé puede agarrar sus pies y llevarlos a la boca cuando está acostado. Deja que los pies exploren diferentes superficies.';
+      'Tu bebÃ© puede agarrar sus pies y llevarlos a la boca cuando estÃ¡ acostado. Deja que los pies exploren diferentes superficies.';
 
   @override
   String get tip_tip_independent_play_4_5_title => 'Juego independiente';
 
   @override
   String get tip_tip_independent_play_4_5_desc =>
-      'Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza.';
+      'Coloca cerca algunos juguetes de distintas texturas y alÃ©jate un poco. El juego independiente fortalece su confianza.';
 
   @override
   String ageMonths(int count) {
@@ -1157,16 +1186,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get darkMode => 'Modo oscuro';
 
   @override
-  String get darkModeSubtitle => 'Tema oscuro cómodo para la vista';
+  String get darkModeSubtitle => 'Tema oscuro cÃ³modo para la vista';
 
   @override
   String get notifications => 'Notificaciones';
 
   @override
-  String get feedingReminder => 'Recordatorio de alimentación';
+  String get feedingReminder => 'Recordatorio de alimentaciÃ³n';
 
   @override
-  String get diaperReminder => 'Recordatorio de pañal';
+  String get diaperReminder => 'Recordatorio de paÃ±al';
 
   @override
   String get off => 'Desactivado';
@@ -1175,13 +1204,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get reminderTime => 'Hora del recordatorio';
 
   @override
-  String get dataManagement => 'Gestión de datos';
+  String get dataManagement => 'GestiÃ³n de datos';
 
   @override
   String get createReport => 'Crear informe';
 
   @override
-  String get weeklyMonthlyStats => 'Estadísticas semanales/mensuales';
+  String get weeklyMonthlyStats => 'EstadÃ­sticas semanales/mensuales';
 
   @override
   String get deleteAllDataTitle => 'Eliminar todos los datos';
@@ -1194,45 +1223,45 @@ class AppLocalizationsEs extends AppLocalizations {
   String get about => 'Acerca de';
 
   @override
-  String get version => 'Versión';
+  String get version => 'VersiÃ³n';
 
   @override
   String get developer => 'Desarrollador';
 
   @override
   String get deleteAllDataWarning =>
-      'Esta acción elimina todos los registros de forma permanente. No se puede deshacer.';
+      'Esta acciÃ³n elimina todos los registros de forma permanente. No se puede deshacer.';
 
   @override
   String get debug => 'DEBUG';
 
   @override
-  String get testSleepNotification => 'Probar notificación de sueño';
+  String get testSleepNotification => 'Probar notificaciÃ³n de sueÃ±o';
 
   @override
-  String get fireSleepNotificationNow => 'Lanzar notificación de sueño ahora';
+  String get fireSleepNotificationNow => 'Lanzar notificaciÃ³n de sueÃ±o ahora';
 
   @override
-  String get testNursingNotification => 'Probar notificación de lactancia';
+  String get testNursingNotification => 'Probar notificaciÃ³n de lactancia';
 
   @override
   String get fireNursingNotificationNow =>
-      'Lanzar notificación de lactancia ahora';
+      'Lanzar notificaciÃ³n de lactancia ahora';
 
   @override
   String get user => 'Usuario';
 
   @override
-  String get selectBaby => 'Seleccionar bebé';
+  String get selectBaby => 'Seleccionar bebÃ©';
 
   @override
-  String get newBabyAdd => 'Agregar nuevo bebé';
+  String get newBabyAdd => 'Agregar nuevo bebÃ©';
 
   @override
-  String get babyProfileTitle => 'Perfil del bebé';
+  String get babyProfileTitle => 'Perfil del bebÃ©';
 
   @override
-  String get babyInformation => 'Información del bebé';
+  String get babyInformation => 'InformaciÃ³n del bebÃ©';
 
   @override
   String get addPhoto => 'Agregar foto';
@@ -1253,20 +1282,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get growthRecords => 'Registros de crecimiento';
 
   @override
-  String get deleteThisBabyData => 'Eliminar los datos de este bebé';
+  String get deleteThisBabyData => 'Eliminar los datos de este bebÃ©';
 
   @override
-  String get otherBabiesUnaffected => 'Los demás bebés no se verán afectados';
+  String get otherBabiesUnaffected =>
+      'Los demÃ¡s bebÃ©s no se verÃ¡n afectados';
 
   @override
-  String get onlyThisBabyPrefix => 'Solo se eliminarán todos los registros de ';
+  String get onlyThisBabyPrefix =>
+      'Solo se eliminarÃ¡n todos los registros de ';
 
   @override
   String get allRecordsWillBeDeleted => '.';
 
   @override
   String get deleteActionIrreversible =>
-      'Los demás bebés no se verán afectados. Esta acción no se puede deshacer.';
+      'Los demÃ¡s bebÃ©s no se verÃ¡n afectados. Esta acciÃ³n no se puede deshacer.';
 
   @override
   String get birth => 'Nacimiento';
@@ -1283,7 +1314,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get otherMonth => 'Otro mes';
 
   @override
-  String get period => 'Período';
+  String get period => 'PerÃ­odo';
 
   @override
   String get status => 'Estado';
@@ -1304,7 +1335,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get routineFilter => 'Rutina';
 
   @override
-  String get asNeededFilter => 'Según necesidad';
+  String get asNeededFilter => 'SegÃºn necesidad';
 
   @override
   String get vaccineProtocolsFilter => 'Protocolos de vacunas';
@@ -1313,7 +1344,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'Según necesidad';
+  String get asNeeded => 'SegÃºn necesidad';
 
   @override
   String get vaccineProtocolLabel => 'Protocolo de vacuna';
@@ -1338,13 +1369,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get medicationDoseLogged => 'Dose logged';
 
   @override
+  String get savedMessage => 'Guardado';
+
+  @override
+  String get alreadySavedRecently => 'Ya se guardó hace un momento';
+
+  @override
+  String get undo => 'Deshacer';
+
+  @override
+  String get yesterday => 'Ayer';
+
+  @override
+  String get notGivenYet => 'AÃºn no administrado';
+
+  @override
+  String get viewHistory => 'Ver historial';
+
+  @override
+  String get noMedicationHistory => 'Sin historial de administraciÃ³n';
+
+  @override
+  String lastGivenLabel(String value) {
+    return 'Ãšltima dosis: $value';
+  }
+
+  @override
   String get scheduleType => 'Tipo de pauta';
 
   @override
   String get dailySchedule => 'Diario';
 
   @override
-  String get prnSchedule => 'Según necesidad';
+  String get prnSchedule => 'SegÃºn necesidad';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';

@@ -1,4 +1,5 @@
 {
     "terminal.integrated.confirmOnKill": "never",
-    "chatgpt.openOnStartup": false
+    "chatgpt.openOnStartup": false,
+    "chatgpt.commentCodeLensEnabled": true
 }

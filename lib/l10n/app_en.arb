@@ -1,4 +1,4 @@
-{
+﻿{
   "@@locale": "en",
   "appName": "Nilico",
   "tagline": "Parenting made simple & memorable.",
@@ -120,15 +120,20 @@
   "type": "Type",
   "healthType": "Type",
   "healthTime": "Time",
+  "time": "Time",
   "wet": "Wet",
   "dirty": "Dirty",
   "both": "Both",
+  "diaperWet": "Wet",
+  "diaperDirty": "Dirty",
+  "diaperBoth": "Both",
   "optionalNotes": "Optional notes",
   "diaperNoteHint": "Add a note about the diaper change...",
   "pleaseSetDuration": "Please set a duration",
   "pleaseSetAmount": "Please set an amount",
   "pleaseSetWakeUpTime": "Please set wake up time",
   "sleepDurationMustBeGreater": "Sleep duration must be greater than 0",
+  "eventTimeTooOld": "Selected time must be within the last 48 hours",
   "today": "Today",
   "summary": "SUMMARY",
   "recentActivities": "RECENT CARE RECORDS",
@@ -148,6 +153,10 @@
   "editFeeding": "Edit Feeding",
   "editDiaper": "Edit Diaper",
   "editSleep": "Edit Sleep",
+  "editTitleFeeding": "Edit Feeding",
+  "editTitleDiaper": "Edit Diaper",
+  "editTitleSleep": "Edit Sleep",
+  "editTitleNursing": "Edit Nursing",
   "start": "Start",
   "end": "End",
   "attention": "Attention",
@@ -355,7 +364,7 @@
       }
     }
   },
-  "leftMinRightMin": "L {left}min • R {right}min",
+  "leftMinRightMin": "L {left}min â€¢ R {right}min",
   "@leftMinRightMin": {
     "placeholders": {
       "left": {
@@ -366,7 +375,7 @@
       }
     }
   },
-  "breastfeedingSavedSnack": "✅ Breastfeeding saved: L {left}min, R {right}min",
+  "breastfeedingSavedSnack": "âœ… Breastfeeding saved: L {left}min, R {right}min",
   "@breastfeedingSavedSnack": {
     "placeholders": {
       "left": {
@@ -377,7 +386,7 @@
       }
     }
   },
-  "sleepSavedSnack": "✅ Sleep saved: {duration}",
+  "sleepSavedSnack": "âœ… Sleep saved: {duration}",
   "@sleepSavedSnack": {
     "placeholders": {
       "duration": {
@@ -385,7 +394,7 @@
       }
     }
   },
-  "sleepTooShort": "⚠️ Sleep under 1 minute, not saved",
+  "sleepTooShort": "âš ï¸ Sleep under 1 minute, not saved",
   "kgThisMonth": "+{value}kg this month",
   "@kgThisMonth": {
     "placeholders": {
@@ -468,11 +477,11 @@
   "notes": "Notes",
   "language": "Language",
   "systemDefault": "System",
-  "turkish": "Türkçe",
+  "turkish": "TÃ¼rkÃ§e",
   "english": "English",
-  "russian": "Русский",
-  "ukrainian": "Українська",
-  "spanish": "Español",
+  "russian": "Ğ ÑƒÑÑĞºĞ¸Ğ¹",
+  "ukrainian": "Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°",
+  "spanish": "EspaÃ±ol",
   "languageUpdated": "Language updated",
   "tip_siyah_mekonyum_title": "First Poop",
   "tip_siyah_mekonyum_desc": "In the first 2-4 days, this is normal whether your baby takes breast milk or formula. No need to worry.",
@@ -623,6 +632,21 @@
   },
   "logGivenNow": "Log given now",
   "medicationDoseLogged": "Dose logged",
+  "savedMessage": "Saved",
+  "alreadySavedRecently": "Already saved a moment ago",
+  "undo": "Undo",
+  "yesterday": "Yesterday",
+  "notGivenYet": "Not given yet",
+  "viewHistory": "View history",
+  "noMedicationHistory": "No given history",
+  "lastGivenLabel": "Last given: {value}",
+  "@lastGivenLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "scheduleType": "Schedule type",
   "dailySchedule": "Daily",
   "prnSchedule": "As-needed",
@@ -670,3 +694,4 @@
   },
   "vaccineProtocolAdded": "Vaccine protocol added"
 }
+

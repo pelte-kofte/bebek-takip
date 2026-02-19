@@ -42,6 +42,12 @@ class VeriYonetici {
   static String _activeBabyId = '';
   static const String _migrationKey = 'multi_baby_migrated';
   static const String diaperEventType = 'diaper';
+  static int _recordIdCounter = 0;
+
+  static String _newRecordId(String prefix) {
+    _recordIdCounter++;
+    return '${prefix}_${DateTime.now().microsecondsSinceEpoch}_$_recordIdCounter';
+  }
 
   static String _normalizeDiaperToken(dynamic rawValue) {
     final value = (rawValue ?? '').toString().trim().toLowerCase();
@@ -399,6 +405,7 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
+              'id': (e['id'] ?? _newRecordId('feeding')).toString(),
               'miktar': e['miktar'] ?? 0,
               'tur': e['tur'] ?? '',
               'solDakika': e['solDakika'] ?? 0,
@@ -423,6 +430,7 @@ class VeriYonetici {
   ) async {
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
+      r['id'] = (r['id'] ?? _newRecordId('feeding')).toString();
     }
 
     _mamaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -432,6 +440,7 @@ class VeriYonetici {
         .map(
           (e) => {
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
+            'id': e['id'],
             'miktar': e['miktar'] ?? 0,
             'tur': e['tur'] ?? '',
             'solDakika': e['solDakika'] ?? 0,
@@ -445,6 +454,29 @@ class VeriYonetici {
     await _prefs!.setString('mama_kayitlari', jsonEncode(data));
   }
 
+  static Future<bool> updateMamaKaydiById(
+    String id,
+    Map<String, dynamic> updated,
+  ) async {
+    final kayitlar = getMamaKayitlari();
+    final index = kayitlar.indexWhere((k) => k['id'] == id);
+    if (index == -1) return false;
+    updated['id'] = id;
+    updated['babyId'] = _activeBabyId;
+    kayitlar[index] = updated;
+    await saveMamaKayitlari(kayitlar);
+    return true;
+  }
+
+  static Future<bool> deleteMamaKaydiById(String id) async {
+    final kayitlar = getMamaKayitlari();
+    final before = kayitlar.length;
+    kayitlar.removeWhere((k) => k['id'] == id);
+    if (kayitlar.length == before) return false;
+    await saveMamaKayitlari(kayitlar);
+    return true;
+  }
+
   // ============ KAKA ============
 
   static List<Map<String, dynamic>> _loadKakaKayitlari() {
@@ -456,6 +488,7 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
+              'id': (e['id'] ?? _newRecordId('diaper')).toString(),
               'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
               'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
               'eventType': normalizeDiaperEventType(
@@ -480,6 +513,7 @@ class VeriYonetici {
   ) async {
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
+      r['id'] = (r['id'] ?? _newRecordId('diaper')).toString();
       final normalizedType = normalizeDiaperType(r['diaperType'] ?? r['tur']);
       r['tur'] = normalizedType;
       r['diaperType'] = normalizedType;
@@ -493,6 +527,7 @@ class VeriYonetici {
         .map(
           (e) => {
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
+            'id': e['id'],
             'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
             'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
             'eventType': normalizeDiaperEventType(
@@ -504,6 +539,29 @@ class VeriYonetici {
         )
         .toList();
     await _prefs!.setString('kaka_kayitlari', jsonEncode(data));
+  }
+
+  static Future<bool> updateKakaKaydiById(
+    String id,
+    Map<String, dynamic> updated,
+  ) async {
+    final kayitlar = getKakaKayitlari();
+    final index = kayitlar.indexWhere((k) => k['id'] == id);
+    if (index == -1) return false;
+    updated['id'] = id;
+    updated['babyId'] = _activeBabyId;
+    kayitlar[index] = updated;
+    await saveKakaKayitlari(kayitlar);
+    return true;
+  }
+
+  static Future<bool> deleteKakaKaydiById(String id) async {
+    final kayitlar = getKakaKayitlari();
+    final before = kayitlar.length;
+    kayitlar.removeWhere((k) => k['id'] == id);
+    if (kayitlar.length == before) return false;
+    await saveKakaKayitlari(kayitlar);
+    return true;
   }
 
   // ============ UYKU ============
@@ -518,6 +576,7 @@ class VeriYonetici {
             (e) => Map<String, dynamic>.from({
               'baslangic': DateTime.parse(e['baslangic']),
               'bitis': DateTime.parse(e['bitis']),
+              'id': (e['id'] ?? _newRecordId('sleep')).toString(),
               'sure': Duration(minutes: e['sure']),
               'babyId': e['babyId'] ?? _activeBabyId,
             }),
@@ -537,6 +596,7 @@ class VeriYonetici {
   ) async {
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
+      r['id'] = (r['id'] ?? _newRecordId('sleep')).toString();
     }
 
     _uykuKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -547,12 +607,36 @@ class VeriYonetici {
           (e) => {
             'baslangic': (e['baslangic'] as DateTime).toIso8601String(),
             'bitis': (e['bitis'] as DateTime).toIso8601String(),
+            'id': e['id'],
             'sure': (e['sure'] as Duration).inMinutes,
             'babyId': e['babyId'],
           },
         )
         .toList();
     await _prefs!.setString('uyku_kayitlari', jsonEncode(data));
+  }
+
+  static Future<bool> updateUykuKaydiById(
+    String id,
+    Map<String, dynamic> updated,
+  ) async {
+    final kayitlar = getUykuKayitlari();
+    final index = kayitlar.indexWhere((k) => k['id'] == id);
+    if (index == -1) return false;
+    updated['id'] = id;
+    updated['babyId'] = _activeBabyId;
+    kayitlar[index] = updated;
+    await saveUykuKayitlari(kayitlar);
+    return true;
+  }
+
+  static Future<bool> deleteUykuKaydiById(String id) async {
+    final kayitlar = getUykuKayitlari();
+    final before = kayitlar.length;
+    kayitlar.removeWhere((k) => k['id'] == id);
+    if (kayitlar.length == before) return false;
+    await saveUykuKayitlari(kayitlar);
+    return true;
   }
 
   // ============ ANILAR ============
@@ -908,6 +992,9 @@ class VeriYonetici {
               'medicationId': e['medicationId'],
               'vaccineId': e['vaccineId'],
               'givenAt': DateTime.parse(e['givenAt']),
+              'doseIndex': (e['doseIndex'] as num?)?.toInt(),
+              'scheduledTime': e['scheduledTime']?.toString(),
+              'protocolStep': e['protocolStep']?.toString(),
               'note': e['note'],
             }),
           )
@@ -931,20 +1018,112 @@ class VeriYonetici {
     }).toList();
   }
 
-  static Future<void> addIlacDozKaydi({
+  static Future<String> addIlacDozKaydi({
     required String medicationId,
     String? vaccineId,
     DateTime? givenAt,
+    int? doseIndex,
+    String? scheduledTime,
+    String? protocolStep,
     String? note,
   }) async {
+    final id = 'dose_${DateTime.now().millisecondsSinceEpoch}';
     _ilacDozKayitlari.insert(0, {
-      'id': 'dose_${DateTime.now().millisecondsSinceEpoch}',
+      'id': id,
       'babyId': _activeBabyId,
       'medicationId': medicationId,
       'vaccineId': vaccineId,
       'givenAt': givenAt ?? DateTime.now(),
+      'doseIndex': doseIndex,
+      'scheduledTime': scheduledTime,
+      'protocolStep': protocolStep,
       'note': note,
     });
+    await _saveIlacDozKayitlari();
+    return id;
+  }
+
+  static int _normalizeDoseIndex(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return 0;
+  }
+
+  static bool _isSameLocalDate(DateTime a, DateTime b) {
+    final la = a.toLocal();
+    final lb = b.toLocal();
+    return la.year == lb.year && la.month == lb.month && la.day == lb.day;
+  }
+
+  static Future<String> upsertIlacDozKaydi({
+    required String medicationId,
+    String? vaccineId,
+    DateTime? givenAt,
+    int? doseIndex,
+    String? scheduledTime,
+    String? protocolStep,
+    String? note,
+  }) async {
+    final targetGivenAt = givenAt ?? DateTime.now();
+    final targetDoseIndex = _normalizeDoseIndex(doseIndex);
+    final targetProtocolStep = protocolStep?.trim().toLowerCase();
+    final matchingIndexes = <int>[];
+    for (int i = 0; i < _ilacDozKayitlari.length; i++) {
+      final r = _ilacDozKayitlari[i];
+      if (r['babyId'] != _activeBabyId) continue;
+      if (r['medicationId'] != medicationId) continue;
+      final existingGivenAt = r['givenAt'] as DateTime?;
+      if (existingGivenAt == null) continue;
+      if (!_isSameLocalDate(existingGivenAt, targetGivenAt)) continue;
+      if (targetProtocolStep != null && targetProtocolStep.isNotEmpty) {
+        final existingStep = r['protocolStep']?.toString().trim().toLowerCase();
+        if (existingStep != targetProtocolStep) continue;
+      } else {
+        if (_normalizeDoseIndex(r['doseIndex']) != targetDoseIndex) continue;
+      }
+      matchingIndexes.add(i);
+    }
+
+    if (matchingIndexes.isNotEmpty) {
+      int primaryIndex = matchingIndexes.first;
+      for (final idx in matchingIndexes.skip(1)) {
+        final current = _ilacDozKayitlari[idx]['givenAt'] as DateTime;
+        final primary = _ilacDozKayitlari[primaryIndex]['givenAt'] as DateTime;
+        if (current.isAfter(primary)) primaryIndex = idx;
+      }
+
+      for (final idx in matchingIndexes.reversed) {
+        if (idx == primaryIndex) continue;
+        _ilacDozKayitlari.removeAt(idx);
+        if (idx < primaryIndex) primaryIndex--;
+      }
+
+      final existing = _ilacDozKayitlari[primaryIndex];
+      existing['givenAt'] = targetGivenAt;
+      existing['vaccineId'] = vaccineId;
+      existing['doseIndex'] = targetDoseIndex;
+      existing['scheduledTime'] = scheduledTime;
+      existing['protocolStep'] = targetProtocolStep;
+      existing['note'] = note;
+      await _saveIlacDozKayitlari();
+      return existing['id'] as String;
+    }
+
+    return addIlacDozKaydi(
+      medicationId: medicationId,
+      vaccineId: vaccineId,
+      givenAt: targetGivenAt,
+      doseIndex: targetDoseIndex,
+      scheduledTime: scheduledTime,
+      protocolStep: targetProtocolStep,
+      note: note,
+    );
+  }
+
+  static Future<void> deleteIlacDozKaydi(String doseId) async {
+    _ilacDozKayitlari.removeWhere(
+      (r) => r['babyId'] == _activeBabyId && r['id'] == doseId,
+    );
     await _saveIlacDozKayitlari();
   }
 
@@ -960,6 +1139,9 @@ class VeriYonetici {
                 'medicationId': e['medicationId'],
                 'vaccineId': e['vaccineId'],
                 'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
+                'doseIndex': e['doseIndex'],
+                'scheduledTime': e['scheduledTime'],
+                'protocolStep': e['protocolStep'],
                 'note': e['note'],
               },
             )
@@ -1120,6 +1302,7 @@ class VeriYonetici {
             .map(
               (e) => {
                 'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'id': e['id'],
                 'miktar': e['miktar'] ?? 0,
                 'tur': e['tur'] ?? '',
                 'solDakika': e['solDakika'] ?? 0,
@@ -1140,6 +1323,7 @@ class VeriYonetici {
             .map(
               (e) => {
                 'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'id': e['id'],
                 'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
                 'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
                 'eventType': normalizeDiaperEventType(
@@ -1161,6 +1345,7 @@ class VeriYonetici {
               (e) => {
                 'baslangic': (e['baslangic'] as DateTime).toIso8601String(),
                 'bitis': (e['bitis'] as DateTime).toIso8601String(),
+                'id': e['id'],
                 'sure': (e['sure'] as Duration).inMinutes,
                 'babyId': e['babyId'],
               },
@@ -1281,6 +1466,9 @@ class VeriYonetici {
                 'medicationId': e['medicationId'],
                 'vaccineId': e['vaccineId'],
                 'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
+                'doseIndex': e['doseIndex'],
+                'scheduledTime': e['scheduledTime'],
+                'protocolStep': e['protocolStep'],
                 'note': e['note'],
               },
             )
