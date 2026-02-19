@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'l10n/app_localizations.dart';
 import 'firebase_options.dart';
 import 'screens/home_screen.dart';
@@ -14,6 +15,7 @@ import 'screens/splash_screen.dart';
 import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
 import 'services/locale_service.dart';
+import 'services/sync_manager.dart';
 
 class AppNavigator {
   static final key = GlobalKey<NavigatorState>();
@@ -34,6 +36,20 @@ void main() async {
 
   // Initialize Firebase (required before FirebaseAuth usage)
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+    );
+  } catch (_) {
+    // Keep app usable if persistence settings are not supported.
+  }
+
+  // Guest mode bootstrap: ensure there is always an authenticated uid.
+  try {
+    await SyncManager.initializeAnonymousSession();
+  } catch (_) {
+    // Keep app running; local mode still works until auth is available.
+  }
 
   // Initialize VeriYonetici (loads all data into cache)
   await VeriYonetici.init();

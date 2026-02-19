@@ -7,6 +7,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
+import '../services/sync_manager.dart';
 
 class LoginEntryScreen extends StatefulWidget {
   const LoginEntryScreen({super.key});
@@ -29,6 +30,11 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     return !kIsWeb;
   }
 
+  Future<void> _authenticateWithCredential(AuthCredential credential) async {
+    await SyncManager.onLogin(credential);
+    _proceedToApp();
+  }
+
   Future<void> _signInWithGoogle() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
@@ -49,8 +55,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
         idToken: googleAuth.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      _proceedToApp();
+      await _authenticateWithCredential(credential);
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -82,8 +87,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
         accessToken: appleCredential.authorizationCode,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      _proceedToApp();
+      await _authenticateWithCredential(oauthCredential);
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
@@ -105,6 +109,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
 
   void _proceedToApp() async {
     await VeriYonetici.setLoginEntryShown();
+    await SyncManager.syncCurrentUserData();
     if (mounted) {
       AppNavigator.goToRoot(const MainScreen());
     }
@@ -182,6 +187,17 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                               fontSize: 15,
                               height: 1.5,
                               color: Colors.white.withValues(alpha: 0.75),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'You can keep using as guest. If you sign in later, your data will sync across devices. Photos are stored locally for now.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              height: 1.4,
+                              color: Colors.white.withValues(alpha: 0.65),
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
 
