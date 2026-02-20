@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
+import '../constants/legal_urls.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
@@ -23,11 +24,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  static const String _privacyPolicyUrl =
-      'https://pelte-kofte.github.io/bebek-takip/privacy.html';
-  static const String _termsOfUseUrl =
-      'https://pelte-kofte.github.io/bebek-takip/terms.html';
-
   final ReminderService _reminderService = ReminderService();
 
   bool _feedingReminderEnabled = false;
@@ -39,6 +35,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+    assert(() {
+      debugAssertLegalUrls();
+      return true;
+    }());
     _loadReminderSettings();
   }
 
@@ -81,14 +81,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _openInAppUrl(String url) async {
     final uri = Uri.parse(url);
+    final inAppLaunched = await launchUrl(
+      uri,
+      mode: kIsWeb
+          ? LaunchMode.externalApplication
+          : LaunchMode.inAppBrowserView,
+    );
+    if (inAppLaunched) return;
 
-    final LaunchMode mode = kIsWeb
-        ? LaunchMode.externalApplication
-        : LaunchMode.platformDefault;
-
-    final launched = await launchUrl(uri, mode: mode);
-
-    if (!launched && mounted) {
+    final externalLaunched = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+    if (!externalLaunched && mounted) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
@@ -687,33 +692,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               textColor,
                               subtitleColor,
                             ),
-                            Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
-                            ),
-                            _buildActionTile(
-                              icon: Icons.privacy_tip_outlined,
-                              iconBgColor: const Color(0xFFE5E0F7),
-                              iconColor: subtitleColor,
-                              title: l10n.privacyPolicy,
-                              subtitle: l10n.privacyPolicySubtitle,
-                              textColor: textColor,
-                              subtitleColor: subtitleColor,
-                              onTap: () => _openInAppUrl(_privacyPolicyUrl),
-                            ),
-                            Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
-                            ),
-                            _buildActionTile(
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      _buildSectionHeader('Legal', subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        cardColor: cardColor,
+                        child: Column(
+                          children: [
+                            _buildLegalTile(
                               icon: Icons.description_outlined,
-                              iconBgColor: const Color(0xFFE5E0F7),
-                              iconColor: subtitleColor,
-                              title: l10n.termsOfUse,
-                              subtitle: l10n.termsOfUseSubtitle,
+                              title: 'Terms of Service',
+                              subtitle: 'Read our terms',
                               textColor: textColor,
                               subtitleColor: subtitleColor,
-                              onTap: () => _openInAppUrl(_termsOfUseUrl),
+                              onTap: () => _openInAppUrl(TERMS_URL),
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 16,
+                            ),
+                            _buildLegalTile(
+                              icon: Icons.privacy_tip_outlined,
+                              title: 'Privacy Policy',
+                              subtitle: 'Read our privacy policy',
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              onTap: () => _openInAppUrl(PRIVACY_URL),
                             ),
                           ],
                         ),
@@ -1170,6 +1178,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildLegalTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color textColor,
+    required Color subtitleColor,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: subtitleColor, size: 22),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(fontSize: 13, color: subtitleColor),
+      ),
+      trailing: Icon(Icons.chevron_right, color: subtitleColor, size: 22),
+      onTap: onTap,
+      visualDensity: const VisualDensity(vertical: -2),
     );
   }
 

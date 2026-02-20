@@ -1,5 +1,5 @@
 GIT
-  remote: https://github.com/CocoaPods/CocoaPods.git
+  remote: https://rubygems.org/gems/cocoapods
   revision: 458dd19585c03d706c2dc23238afd3845a4c6000
   specs:
     cocoapods (1.16.2)
@@ -22,7 +22,7 @@ GIT
       xcodeproj (>= 1.27.0, < 2.0)
 
 GIT
-  remote: https://github.com/CocoaPods/Xcodeproj.git
+  remote: https://rubygems.org/gems/xcodeproj
   revision: 2cf6a2263d2b164b87c1fdaed340667046b4e44d
   specs:
     xcodeproj (1.27.0)

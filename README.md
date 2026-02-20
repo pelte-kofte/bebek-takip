@@ -2,6 +2,12 @@
 
 A new Flutter project.
 
+## Firebase auth requirements
+
+- Enable `Anonymous` sign-in provider in Firebase Console:
+  `Authentication` -> `Sign-in method` -> `Anonymous` -> `Enable`.
+- Keep Apple and Google providers enabled for account linking from guest mode.
+
 ## about
 soft lavanta + şeftali
 warm cream background
@@ -87,4 +93,3 @@ gl        # git pull
 sketch tarzı
 
        "full_text": "Illustration style: hand-drawn colored pencil illustration, clean line art with slightly rough pencil outlines, soft pastel coloring with increased brightness, lighter and more vivid color tones, enhanced saturation while staying natural, visible pencil strokes and gentle shading texture, warm and friendly tone, semi-cartoon realistic proportions, simple facial features with dot eyes and small smiles, flat yet detailed coloring, minimal shadows, soft highlights, storybook illustration feel, cozy and cheerful atmosphere, vibrant yet soft color palette, children-book / lifestyle sketch style, high clarity, no realism, no photo texture"
-

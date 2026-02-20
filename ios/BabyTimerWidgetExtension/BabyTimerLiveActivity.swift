@@ -1,32 +1,19 @@
 import WidgetKit
 import SwiftUI
+import UIKit
 
 #if canImport(ActivityKit)
 import ActivityKit
 #endif
 
-final class WidgetBundleLocator {}
-
-private func widgetExtensionBundle() -> Bundle {
-    Bundle(for: WidgetBundleLocator.self)
-}
-
-#if DEBUG
-private func debugLogWidgetBundleOnce(_ bundle: Bundle) {
-    struct LogState {
-        static var didLog = false
+private func iconImage(for type: String) -> Image {
+    let name = (type == "sleep") ? "la_sleep" : "la_nursing"
+    if let uiImage = UIImage(named: name, in: Bundle.main, compatibleWith: nil) {
+        return Image(uiImage: uiImage).renderingMode(.original)
     }
-
-    guard !LogState.didLog else { return }
-    LogState.didLog = true
-
-    print("Widget bundle:", bundle.bundlePath)
-    if let resourcePath = bundle.resourcePath,
-       let resources = try? FileManager.default.contentsOfDirectory(atPath: resourcePath) {
-        print("Widget resources:", resources)
-    }
+    let fallback = (type == "sleep") ? "moon.zzz.fill" : "drop.fill"
+    return Image(systemName: fallback)
 }
-#endif
 
 @available(iOS 16.1, *)
 struct BabyTimerLiveActivity: Widget {
@@ -38,8 +25,10 @@ struct BabyTimerLiveActivity: Widget {
             DynamicIsland {
                 // Expanded Dynamic Island
                 DynamicIslandExpandedRegion(.leading) {
-                    activityIcon(for: context.attributes.activityType)
-                        .font(.title2)
+                    iconImage(for: context.attributes.activityType)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 24, height: 24)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
@@ -68,11 +57,15 @@ struct BabyTimerLiveActivity: Widget {
                                 Color(red: 0.898, green: 0.878, blue: 0.969)
                                     .clipShape(Capsule())
                             )
+                    } else {
+                        EmptyView()
                     }
                 }
             } compactLeading: {
-                activityIcon(for: context.attributes.activityType)
-                    .font(.caption)
+                iconImage(for: context.attributes.activityType)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
             } compactTrailing: {
                 if let subtitle = subtitleText(for: context), !subtitle.isEmpty {
                     Text(subtitle)
@@ -85,8 +78,10 @@ struct BabyTimerLiveActivity: Widget {
                         .frame(width: 48)
                 }
             } minimal: {
-                activityIcon(for: context.attributes.activityType)
-                    .font(.caption)
+                iconImage(for: context.attributes.activityType)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
             }
         }
     }
@@ -112,20 +107,6 @@ struct BabyTimerLiveActivity: Widget {
         return hasSideLabel ? sideLabel : nil
     }
 
-    @ViewBuilder
-    private func activityIcon(for type: String) -> some View {
-        let name = (type == "sleep") ? "la_sleep" : "la_nursing"
-        let bundle = widgetExtensionBundle()
-#if DEBUG
-        debugLogWidgetBundleOnce(bundle)
-#endif
-
-        Image(name, bundle: bundle)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 18, height: 18)
-    }
-
 }
 
 // MARK: - Lock Screen View
@@ -145,22 +126,10 @@ struct LockScreenView: View {
                 Circle()
                     .fill(iconBackground)
                     .frame(width: 50, height: 50)
-
-                let bundle = widgetExtensionBundle()
-#if DEBUG
-                debugLogWidgetBundleOnce(bundle)
-#endif
-                if context.attributes.activityType == "sleep" {
-                    Image("la_sleep", bundle: bundle)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 22, height: 22)
-                } else {
-                    Image("la_nursing", bundle: bundle)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 22, height: 22)
-                }
+                iconImage(for: context.attributes.activityType)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 22, height: 22)
             }
 
             // Title + Side
