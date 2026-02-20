@@ -46,6 +46,7 @@ class _AddScreenState extends State<AddScreen> {
 
   // Validation error message
   String? _errorMessage;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -2118,7 +2119,7 @@ class _AddScreenState extends State<AddScreen> {
                             // Save button - calm style
                             const SizedBox(height: 16),
                             GestureDetector(
-                              onTap: _saveActivity,
+                              onTap: _isSaving ? null : _saveActivity,
                               child: Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
@@ -2128,15 +2129,27 @@ class _AddScreenState extends State<AddScreen> {
                                   color: const Color(0xFFFF998A),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: Text(
-                                  l10n.save,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                child: _isSaving
+                                    ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                    : Text(
+                                        l10n.save,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                        ),
+                                      ),
                               ),
                             ),
                           ],
@@ -2217,6 +2230,7 @@ class _AddScreenState extends State<AddScreen> {
   }
 
   void _saveActivity() async {
+    if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     // Validation: prevent saving activities with zero values
@@ -2250,104 +2264,111 @@ class _AddScreenState extends State<AddScreen> {
       }
     }
 
-    if (selectedActivity == 'breastfeeding') {
-      final kayitlar = VeriYonetici.getMamaKayitlari();
-      final totalMinutes = minutes + (seconds / 60);
+    setState(() => _isSaving = true);
+    try {
+      if (selectedActivity == 'breastfeeding') {
+        final kayitlar = VeriYonetici.getMamaKayitlari();
+        final totalMinutes = minutes + (seconds / 60);
 
-      kayitlar.insert(0, {
-        'tarih': _feedingDateTime,
-        'tur': 'Anne Sütü',
-        'solDakika': selectedSide == 'left' ? totalMinutes.round() : 0,
-        'sagDakika': selectedSide == 'right' ? totalMinutes.round() : 0,
-        'miktar': 0,
-        'kategori': 'Milk',
-      });
-
-      await VeriYonetici.saveMamaKayitlari(kayitlar);
-      await _scheduleFeedingReminderIfEnabled();
-      HapticFeedback.lightImpact();
-      widget.onSaved?.call();
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } else if (selectedActivity == 'bottle') {
-      final kayitlar = VeriYonetici.getMamaKayitlari();
-
-      if (feedingCategory == 'Solid') {
         kayitlar.insert(0, {
           'tarih': _feedingDateTime,
-          'tur': 'Katı Gıda',
-          'solDakika': 0,
-          'sagDakika': 0,
+          'tur': 'Anne Sütü',
+          'solDakika': selectedSide == 'left' ? totalMinutes.round() : 0,
+          'sagDakika': selectedSide == 'right' ? totalMinutes.round() : 0,
           'miktar': 0,
-          'kategori': 'Solid',
-          'solidAciklama': _solidFoodController.text.isNotEmpty
-              ? _solidFoodController.text
-              : null,
-          'solidDakika': 0,
-        });
-      } else {
-        kayitlar.insert(0, {
-          'tarih': _feedingDateTime,
-          'tur': milkType == 'breast' ? 'Anne Sütü (Biberon)' : 'Formül',
-          'solDakika': 0,
-          'sagDakika': 0,
-          'miktar': bottleAmount,
           'kategori': 'Milk',
         });
-      }
 
-      await VeriYonetici.saveMamaKayitlari(kayitlar);
-      await _scheduleFeedingReminderIfEnabled();
-      HapticFeedback.lightImpact();
-      widget.onSaved?.call();
+        await VeriYonetici.saveMamaKayitlari(kayitlar);
+        await _scheduleFeedingReminderIfEnabled();
+        HapticFeedback.lightImpact();
+        widget.onSaved?.call();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } else if (selectedActivity == 'bottle') {
+        final kayitlar = VeriYonetici.getMamaKayitlari();
+
+        if (feedingCategory == 'Solid') {
+          kayitlar.insert(0, {
+            'tarih': _feedingDateTime,
+            'tur': 'Katı Gıda',
+            'solDakika': 0,
+            'sagDakika': 0,
+            'miktar': 0,
+            'kategori': 'Solid',
+            'solidAciklama': _solidFoodController.text.isNotEmpty
+                ? _solidFoodController.text
+                : null,
+            'solidDakika': 0,
+          });
+        } else {
+          kayitlar.insert(0, {
+            'tarih': _feedingDateTime,
+            'tur': milkType == 'breast' ? 'Anne Sütü (Biberon)' : 'Formül',
+            'solDakika': 0,
+            'sagDakika': 0,
+            'miktar': bottleAmount,
+            'kategori': 'Milk',
+          });
+        }
+
+        await VeriYonetici.saveMamaKayitlari(kayitlar);
+        await _scheduleFeedingReminderIfEnabled();
+        HapticFeedback.lightImpact();
+        widget.onSaved?.call();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } else if (selectedActivity == 'sleep') {
+        if (_sleepEndDateTime == null) return;
+
+        final startDateTime = _sleepStartDateTime;
+        var endDateTime = _sleepEndDateTime!;
+
+        if (_isSameDate(startDateTime, endDateTime) &&
+            endDateTime.isBefore(startDateTime)) {
+          endDateTime = endDateTime.add(const Duration(days: 1));
+        }
+
+        final duration = endDateTime.difference(startDateTime);
+
+        final kayitlar = VeriYonetici.getUykuKayitlari();
+        kayitlar.insert(0, {
+          'baslangic': startDateTime,
+          'bitis': endDateTime,
+          'sure': duration,
+        });
+
+        await VeriYonetici.saveUykuKayitlari(kayitlar);
+        HapticFeedback.lightImpact();
+        widget.onSaved?.call();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      } else if (selectedActivity == 'diaper') {
+        final kayitlar = VeriYonetici.getKakaKayitlari();
+        final diaperType = VeriYonetici.normalizeDiaperType(_diaperType);
+
+        kayitlar.insert(0, {
+          'tarih': _diaperDateTime,
+          'tur': diaperType,
+          'diaperType': diaperType,
+          'eventType': VeriYonetici.diaperEventType,
+          'notlar': _diaperNotesController.text,
+        });
+
+        await VeriYonetici.saveKakaKayitlari(kayitlar);
+        await _scheduleDiaperReminderIfEnabled();
+        HapticFeedback.lightImpact();
+        widget.onSaved?.call();
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      }
+    } finally {
       if (mounted) {
-        Navigator.pop(context);
-      }
-    } else if (selectedActivity == 'sleep') {
-      if (_sleepEndDateTime == null) return;
-
-      final startDateTime = _sleepStartDateTime;
-      var endDateTime = _sleepEndDateTime!;
-
-      if (_isSameDate(startDateTime, endDateTime) &&
-          endDateTime.isBefore(startDateTime)) {
-        endDateTime = endDateTime.add(const Duration(days: 1));
-      }
-
-      final duration = endDateTime.difference(startDateTime);
-
-      final kayitlar = VeriYonetici.getUykuKayitlari();
-      kayitlar.insert(0, {
-        'baslangic': startDateTime,
-        'bitis': endDateTime,
-        'sure': duration,
-      });
-
-      await VeriYonetici.saveUykuKayitlari(kayitlar);
-      HapticFeedback.lightImpact();
-      widget.onSaved?.call();
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } else if (selectedActivity == 'diaper') {
-      final kayitlar = VeriYonetici.getKakaKayitlari();
-      final diaperType = VeriYonetici.normalizeDiaperType(_diaperType);
-
-      kayitlar.insert(0, {
-        'tarih': _diaperDateTime,
-        'tur': diaperType,
-        'diaperType': diaperType,
-        'eventType': VeriYonetici.diaperEventType,
-        'notlar': _diaperNotesController.text,
-      });
-
-      await VeriYonetici.saveKakaKayitlari(kayitlar);
-      await _scheduleDiaperReminderIfEnabled();
-      HapticFeedback.lightImpact();
-      widget.onSaved?.call();
-      if (mounted) {
-        Navigator.pop(context);
+        setState(() => _isSaving = false);
       }
     }
   }

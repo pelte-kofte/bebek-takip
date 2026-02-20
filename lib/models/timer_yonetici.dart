@@ -393,6 +393,47 @@ class TimerYonetici {
     }
   }
 
+  Future<void> clearBabyTimerState(String babyId) async {
+    if (babyId.isEmpty) return;
+
+    if (_emzirmeStartByBaby.containsKey(babyId) ||
+        _emzirmeIlkStartByBaby.containsKey(babyId) ||
+        _solToplamByBaby.containsKey(babyId) ||
+        _sagToplamByBaby.containsKey(babyId)) {
+      await _clearEmzirme(babyId);
+    } else {
+      _emzirmeStartByBaby.remove(babyId);
+      _emzirmeIlkStartByBaby.remove(babyId);
+      _emzirmeTurByBaby.remove(babyId);
+      _emzirmeTarafByBaby.remove(babyId);
+      _solToplamByBaby.remove(babyId);
+      _sagToplamByBaby.remove(babyId);
+      _emzirmeUpdateTimers[babyId]?.cancel();
+      _emzirmeUpdateTimers.remove(babyId);
+      if (_emzirmeControllers.containsKey(babyId)) {
+        _getEmzirmeController(babyId).add(null);
+      }
+      await _prefs?.remove('active_emzirme_start_$babyId');
+      await _prefs?.remove('active_emzirme_ilk_start_$babyId');
+      await _prefs?.remove('active_emzirme_tur_$babyId');
+      await _prefs?.remove('active_emzirme_taraf_$babyId');
+      await _prefs?.remove('active_emzirme_sol_saniye_$babyId');
+      await _prefs?.remove('active_emzirme_sag_saniye_$babyId');
+    }
+
+    if (_uykuStartByBaby.containsKey(babyId)) {
+      await _clearUyku(babyId);
+    } else {
+      _uykuStartByBaby.remove(babyId);
+      _uykuUpdateTimers[babyId]?.cancel();
+      _uykuUpdateTimers.remove(babyId);
+      if (_uykuControllers.containsKey(babyId)) {
+        _getUykuController(babyId).add(null);
+      }
+      await _prefs?.remove('active_uyku_start_$babyId');
+    }
+  }
+
   // ═══════════════════════════════════════════════════════
   //  EMZİRME (NURSING) — baby-scoped
   // ═══════════════════════════════════════════════════════

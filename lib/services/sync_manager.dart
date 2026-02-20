@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/veri_yonetici.dart';
 
@@ -21,6 +22,62 @@ class SyncManager {
     _log('No current user, signing in anonymously.');
     await FirebaseAuth.instance.signInAnonymously();
     _log('Anonymous sign-in completed.');
+  }
+
+  static Future<void> forceGuestSession() async {
+    final auth = FirebaseAuth.instance;
+    final before = auth.currentUser;
+    final beforeProviders =
+        before?.providerData.map((p) => '${p.providerId}:${p.uid}').toList() ??
+        const <String>[];
+    _log(
+      'Guest flow start uid=${before?.uid} anonymous=${before?.isAnonymous} providers=$beforeProviders',
+    );
+
+    final shouldSignOutProviderUser = before != null && !before.isAnonymous;
+
+    if (!kIsWeb && shouldSignOutProviderUser) {
+      final googleSignIn = GoogleSignIn();
+      try {
+        await googleSignIn.disconnect();
+        _log('Google disconnect completed.');
+      } catch (e) {
+        _log('Google disconnect skipped: $e');
+      }
+      try {
+        await googleSignIn.signOut();
+        _log('Google sign-out completed.');
+      } catch (e) {
+        _log('Google sign-out skipped: $e');
+      }
+    }
+
+    if (shouldSignOutProviderUser) {
+      _log(
+        'Guest flow detected signed-in non-anonymous user. Signing out first.',
+      );
+      await auth.signOut();
+    } else {
+      _log(
+        'Guest flow already anonymous-or-empty auth state. Keeping local app data intact.',
+      );
+    }
+
+    if (auth.currentUser == null || !auth.currentUser!.isAnonymous) {
+      _log('Guest flow ensuring anonymous sign-in.');
+      await auth.signInAnonymously();
+    }
+    final anonymous = auth.currentUser;
+    final afterProviders =
+        anonymous?.providerData
+            .map((p) => '${p.providerId}:${p.uid}')
+            .toList() ??
+        const <String>[];
+    _log(
+      'Guest flow end uid=${anonymous?.uid} anonymous=${anonymous?.isAnonymous} providers=$afterProviders',
+    );
+
+    await VeriYonetici.refreshForCurrentUser();
   }
 
   static bool _isLinkConflict(FirebaseAuthException e) {

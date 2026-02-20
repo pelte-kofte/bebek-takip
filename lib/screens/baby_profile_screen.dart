@@ -28,6 +28,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   late String _initialName;
   late DateTime _initialBirthDate;
   String? _initialPhotoPath;
+  bool _isDeletingBaby = false;
 
   bool get _isDirty =>
       _nameController.text.trim() != _initialName ||
@@ -37,7 +38,19 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final baby = VeriYonetici.getActiveBaby();
+    final baby = VeriYonetici.getActiveBabyOrNull();
+    if (baby == null) {
+      _initialName = '';
+      _initialBirthDate = DateTime.now();
+      _initialPhotoPath = null;
+      _nameController = TextEditingController();
+      _birthDate = DateTime.now();
+      _photoPath = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.pop(context);
+      });
+      return;
+    }
     _initialName = baby.name;
     _initialBirthDate = baby.birthDate;
     _initialPhotoPath = baby.photoPath;
@@ -739,6 +752,92 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      _buildCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: _isDeletingBaby
+                              ? null
+                              : () => _showDeleteBabyDialog(
+                                  isDark,
+                                  cardColor,
+                                  textColor,
+                                  subtitleColor,
+                                ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 44,
+                                height: 44,
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.red.shade400.withValues(
+                                          alpha: 0.15,
+                                        )
+                                      : const Color(0xFFFFE5E0),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: _isDeletingBaby
+                                    ? Center(
+                                        child: SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  isDark
+                                                      ? Colors.red.shade300
+                                                      : Colors.red.shade400,
+                                                ),
+                                          ),
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.delete_forever_outlined,
+                                        color: isDark
+                                            ? Colors.red.shade300
+                                            : Colors.red.shade400,
+                                        size: 22,
+                                      ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Delete baby',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? Colors.red.shade300
+                                            : Colors.red.shade400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      'Remove baby profile and all baby records.',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: subtitleColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                color: subtitleColor,
+                                size: 24,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -861,10 +960,12 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
           ),
           GestureDetector(
             onTap: () async {
+              final dialogNavigator = Navigator.of(ctx);
+              final messenger = ScaffoldMessenger.of(context);
               await VeriYonetici.verileriTemizle();
               if (!mounted) return;
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
+              dialogNavigator.pop();
+              messenger.showSnackBar(
                 SnackBar(
                   content: Text(
                     AppLocalizations.of(context)!.babyDataDeleted(babyName),
@@ -890,6 +991,147 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showDeleteBabyDialog(
+    bool isDark,
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final active = VeriYonetici.getActiveBabyOrNull();
+    if (active == null || _isDeletingBaby) return;
+    final babyId = active.id;
+    final babyName = active.name.trim().isEmpty ? 'Baby' : active.name.trim();
+    bool isSubmitting = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: !isSubmitting,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            'Delete baby?',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+          content: Text(
+            'This will remove $babyName and all related records from this device. '
+            'If you are signed in, it will also delete synced data from your account. '
+            'This cannot be undone.',
+            style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
+              child: Text(
+                AppLocalizations.of(context)!.cancel,
+                style: TextStyle(color: subtitleColor, fontSize: 15),
+              ),
+            ),
+            GestureDetector(
+              onTap: isSubmitting
+                  ? null
+                  : () async {
+                      final dialogNavigator = Navigator.of(ctx);
+                      final messenger = ScaffoldMessenger.of(context);
+                      setDialogState(() => isSubmitting = true);
+                      setState(() => _isDeletingBaby = true);
+                      late final BabyDeleteResult result;
+                      try {
+                        result = await VeriYonetici.deleteBaby(babyId);
+                      } catch (_) {
+                        if (mounted) {
+                          dialogNavigator.pop();
+                          setState(() => _isDeletingBaby = false);
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Baby could not be deleted.'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                        return;
+                      }
+                      if (!mounted) return;
+                      dialogNavigator.pop();
+                      setState(() => _isDeletingBaby = false);
+
+                      if (!result.deleted) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Baby could not be deleted.'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                        return;
+                      }
+
+                      if (result.cloudDeleteFailed) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Deleted locally. Cloud delete will retry later.',
+                            ),
+                            backgroundColor: Color(0xFFFFB4A2),
+                          ),
+                        );
+                      } else {
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.babyDataDeleted(babyName),
+                            ),
+                            backgroundColor: const Color(0xFFFFB4A2),
+                          ),
+                        );
+                      }
+
+                      Navigator.pop(context, true);
+                    },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.red.shade300 : Colors.red.shade400,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: isSubmitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        AppLocalizations.of(context)!.delete,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

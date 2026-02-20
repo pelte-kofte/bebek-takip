@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "uk",
   "appName": "Nilico",
   "tagline": "Ğ‘Ğ°Ñ‚ÑŒĞºÑ–Ğ²ÑÑ‚Ğ²Ğ¾ â€” Ğ¿Ñ€Ğ¾ÑÑ‚Ğ¾ Ñ‚Ğ° Ğ½ĞµĞ·Ğ°Ğ±ÑƒÑ‚Ğ½ÑŒĞ¾.",
@@ -364,7 +364,7 @@
       }
     }
   },
-  "leftMinRightMin": "Ğ› {left}Ñ…Ğ² â€¢ ĞŸ {right}Ñ…Ğ²",
+  "leftMinRightMin": "Ğ› {left}Ñ…Ğ² • ĞŸ {right}Ñ…Ğ²",
   "@leftMinRightMin": {
     "placeholders": {
       "left": {
@@ -477,11 +477,11 @@
   "notes": "ĞĞ¾Ñ‚Ğ°Ñ‚ĞºĞ¸",
   "language": "ĞœĞ¾Ğ²Ğ°",
   "systemDefault": "Ğ¡Ğ¸ÑÑ‚ĞµĞ¼Ğ°",
-  "turkish": "TÃ¼rkÃ§e",
+  "turkish": "Türkçe",
   "english": "English",
   "russian": "Ğ ÑƒÑÑĞºĞ¸Ğ¹",
   "ukrainian": "Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°",
-  "spanish": "EspaÃ±ol",
+  "spanish": "Español",
   "languageUpdated": "ĞœĞ¾Ğ²Ñƒ Ğ¾Ğ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ¾",
   "tip_siyah_mekonyum_title": "ĞŸĞµÑ€ÑˆĞ¸Ğ¹ ĞºĞ°Ğ»",
   "tip_siyah_mekonyum_desc": "Ğ£ Ğ¿ĞµÑ€ÑˆÑ– 2-4 Ğ´Ğ½Ñ– Ñ†Ğµ Ğ½Ğ¾Ñ€Ğ¼Ğ°Ğ»ÑŒĞ½Ğ¾, Ğ½ĞµĞ·Ğ°Ğ»ĞµĞ¶Ğ½Ğ¾ Ğ²Ñ–Ğ´ Ñ‚Ğ¾Ğ³Ğ¾, Ñ‡Ğ¸ Ğ¾Ñ‚Ñ€Ğ¸Ğ¼ÑƒÑ” Ğ¼Ğ°Ğ»ÑĞº Ğ³Ñ€ÑƒĞ´Ğ½Ğµ Ğ¼Ğ¾Ğ»Ğ¾ĞºĞ¾, Ñ‡Ğ¸ ÑÑƒĞ¼Ñ–Ñˆ. ĞŸÑ–Ğ´ÑÑ‚Ğ°Ğ² Ğ´Ğ»Ñ Ñ…Ğ²Ğ¸Ğ»ÑĞ²Ğ°Ğ½Ğ½Ñ Ğ½ĞµĞ¼Ğ°Ñ”.",
@@ -694,4 +694,3 @@
   },
   "vaccineProtocolAdded": "Vaccine protocol added"
 }
-

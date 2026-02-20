@@ -33,15 +33,15 @@ class LocaleService {
   static String labelForCode(AppLocalizations l10n, String code) {
     switch (code) {
       case 'tr':
-        return l10n.turkish;
+        return 'Türkçe';
       case 'en':
-        return l10n.english;
+        return 'English';
       case 'ru':
-        return l10n.russian;
+        return 'Русский';
       case 'uk':
-        return l10n.ukrainian;
+        return 'Українська';
       case 'es':
-        return l10n.spanish;
+        return 'Español';
       default:
         return code;
     }

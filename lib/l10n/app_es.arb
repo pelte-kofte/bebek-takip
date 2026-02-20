@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "es",
   "appName": "Nilico",
   "tagline": "Crianza simple e inolvidable.",
@@ -364,7 +364,7 @@
       }
     }
   },
-  "leftMinRightMin": "I {left}min â€¢ D {right}min",
+  "leftMinRightMin": "I {left}min • D {right}min",
   "@leftMinRightMin": {
     "placeholders": {
       "left": {
@@ -477,11 +477,11 @@
   "notes": "Notas",
   "language": "Idioma",
   "systemDefault": "Sistema",
-  "turkish": "TÃ¼rkÃ§e",
+  "turkish": "Türkçe",
   "english": "English",
   "russian": "Ğ ÑƒÑÑĞºĞ¸Ğ¹",
   "ukrainian": "Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°",
-  "spanish": "EspaÃ±ol",
+  "spanish": "Español",
   "languageUpdated": "Idioma actualizado",
   "tip_siyah_mekonyum_title": "Primera caca",
   "tip_siyah_mekonyum_desc": "Durante los primeros 2-4 dÃ­as, esto es normal tanto si tu bebÃ© toma leche materna como fÃ³rmula. No hay motivo de preocupaciÃ³n.",
@@ -694,4 +694,3 @@
   },
   "vaccineProtocolAdded": "Vaccine protocol added"
 }
-

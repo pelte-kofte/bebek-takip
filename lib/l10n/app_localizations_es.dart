@@ -784,7 +784,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'I ${left}min â€¢ D ${right}min';
+    return 'I ${left}min • D ${right}min';
   }
 
   @override
@@ -936,7 +936,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get systemDefault => 'Sistema';
 
   @override
-  String get turkish => 'TÃ¼rkÃ§e';
+  String get turkish => 'Türkçe';
 
   @override
   String get english => 'English';
@@ -948,7 +948,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
 
   @override
-  String get spanish => 'EspaÃ±ol';
+  String get spanish => 'Español';
 
   @override
   String get languageUpdated => 'Idioma actualizado';

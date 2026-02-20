@@ -17,6 +17,7 @@ import 'baby_profile_screen.dart';
 import 'growth_screen.dart';
 import '../models/daily_tip.dart';
 import '../widgets/baby_switcher_sheet.dart';
+import '../widgets/add_baby_sheet.dart';
 import 'tips_archive_screen.dart';
 import 'vaccines_screen.dart';
 import '../utils/vaccine_utils.dart';
@@ -50,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // Stream subscriptions
   StreamSubscription<Duration?>? _emzirmeSubscription;
   StreamSubscription<Duration?>? _uykuSubscription;
+  bool _loggedNursingSeparatorSample = false;
 
   // Baby info
   String _babyName = 'Sofia';
@@ -100,8 +102,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _loadBabyInfo() {
-    final baby = VeriYonetici.getActiveBaby();
+    final baby = VeriYonetici.getActiveBabyOrNull();
     setState(() {
+      if (baby == null) {
+        _babyName = '';
+        _birthDate = DateTime.now();
+        _babyPhotoPath = null;
+        return;
+      }
       _babyName = baby.name;
       _birthDate = baby.birthDate;
       _babyPhotoPath = baby.photoPath;
@@ -156,6 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // EMZİRME FONKSİYONLARI
   void _startSol() async {
+    if (!VeriYonetici.hasActiveBaby()) return;
     await _timerYonetici.switchEmzirmeSide(
       VeriYonetici.getActiveBabyId(),
       'sol',
@@ -163,6 +172,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _startSag() async {
+    if (!VeriYonetici.hasActiveBaby()) return;
     await _timerYonetici.switchEmzirmeSide(
       VeriYonetici.getActiveBabyId(),
       'sag',
@@ -170,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _stopEmzirmeAndSave() async {
+    if (!VeriYonetici.hasActiveBaby()) return;
     final data = await _timerYonetici.stopEmzirme(
       VeriYonetici.getActiveBabyId(),
     );
@@ -239,10 +250,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // UYKU FONKSİYONLARI
   void _startUyku() async {
+    if (!VeriYonetici.hasActiveBaby()) return;
     await _timerYonetici.startUyku(VeriYonetici.getActiveBabyId());
   }
 
   void _stopUykuAndSave() async {
+    if (!VeriYonetici.hasActiveBaby()) return;
     final data = await _timerYonetici.stopUyku(VeriYonetici.getActiveBabyId());
 
     if (data == null) {
@@ -322,6 +335,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final hasBabies = VeriYonetici.getBabies().isNotEmpty;
+
+    if (!hasBabies) {
+      return _buildNoBabyState(context, l10n, isDark);
+    }
+
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
     final hasValidPhoto =
@@ -2251,6 +2270,116 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildNoBabyState(
+    BuildContext context,
+    AppLocalizations l10n,
+    bool isDark,
+  ) {
+    final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
+    final subtitleColor = textColor.withValues(alpha: 0.6);
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.settings_outlined,
+                    color: textColor.withValues(alpha: 0.7),
+                    size: 24,
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const Spacer(),
+              Center(
+                child: Container(
+                  width: 86,
+                  height: 86,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEBE8FF).withValues(alpha: 0.6),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.child_care_rounded,
+                    size: 42,
+                    color: Color(0xFFFF998A),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'No baby yet',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: textColor,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Center(
+                child: Text(
+                  'No baby profile found yet. Tap below to add one.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: subtitleColor,
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _openAddBabySheet,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add baby'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF998A),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                ),
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _openAddBabySheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AddBabySheet(
+        onBabyAdded: () {
+          _loadBabyInfo();
+          widget.onDataChanged?.call();
+        },
+      ),
+    );
+  }
+
   String _getMamaDetail(Map<String, dynamic>? kayit) {
     if (kayit == null) return '';
     final tur = kayit['tur'] as String? ?? '';
@@ -2258,7 +2387,13 @@ class _HomeScreenState extends State<HomeScreen> {
     if (tur == 'Anne Sütü') {
       final sol = kayit['solDakika'] ?? 0;
       final sag = kayit['sagDakika'] ?? 0;
-      return 'Sol ${sol}dk • Sağ ${sag}dk';
+      const sep = ' \u00b7 ';
+      final summary = 'Sol ${sol}dk${sep}Sag ${sag}dk';
+      if (kDebugMode && !_loggedNursingSeparatorSample) {
+        _loggedNursingSeparatorSample = true;
+        debugPrint('[HomeScreen] nursing summary="$summary"');
+      }
+      return summary;
     } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
       final solidAciklama = kayit['solidAciklama'] as String?;
       return (solidAciklama != null && solidAciklama.isNotEmpty)
@@ -2381,7 +2516,8 @@ class _HomeScreenState extends State<HomeScreen> {
         if (tur == 'Anne Sütü') {
           icon = Ikonlar.nursing(size: 28);
           title = Dil.emzirme;
-          subtitle = 'Sol ${sol}dk • Sağ ${sag}dk';
+          const sep = ' \u00b7 ';
+          subtitle = 'Sol ${sol}dk${sep}Sag ${sag}dk';
         } else if (kategori == 'Solid' || tur == 'Katı Gıda') {
           icon = const Icon(
             Icons.restaurant_outlined,

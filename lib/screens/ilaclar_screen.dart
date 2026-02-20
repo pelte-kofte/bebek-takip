@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../services/reminder_service.dart';
@@ -154,13 +155,25 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     });
 
     final l10n = AppLocalizations.of(context)!;
-    final doseId = await VeriYonetici.upsertIlacDozKaydi(
+    final dailyTimes = _dailyTimes(medication);
+    final scheduled = dailyTimes.isNotEmpty ? dailyTimes.first : null;
+    final result = await VeriYonetici.markIlacDozKaydiIfAbsent(
       medicationId: medication['id'] as String,
       vaccineId: medication['scheduleType'] == _filterVaccineProtocol
           ? medication['vaccineId'] as String?
           : null,
       doseIndex: 0,
+      scheduledTime: scheduled,
     );
+    if (kDebugMode) {
+      debugPrint(
+        '[IlaclarScreen] onTap logId=${result.logId} exists=${result.alreadyMarked} action=${result.alreadyMarked ? 'skip' : 'create'}',
+      );
+    }
+    if (result.alreadyMarked) {
+      _showAlreadyMarkedHint();
+      return;
+    }
     HapticFeedback.selectionClick();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -169,7 +182,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
         action: SnackBarAction(
           label: l10n.undo,
           onPressed: () async {
-            await VeriYonetici.deleteIlacDozKaydi(doseId);
+            await VeriYonetici.deleteIlacDozKaydi(result.logId);
             if (mounted) setState(() {});
           },
         ),
@@ -339,17 +352,27 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     _doseChipLastTapAt[key] = now;
 
     final dailyTimes = _dailyTimes(med);
-    await VeriYonetici.upsertIlacDozKaydi(
+    final scheduledTime = doseIndex >= 0 && doseIndex < dailyTimes.length
+        ? dailyTimes[doseIndex]
+        : null;
+    final result = await VeriYonetici.markIlacDozKaydiIfAbsent(
       medicationId: medId,
       vaccineId: med['scheduleType'] == _filterVaccineProtocol
           ? med['vaccineId'] as String?
           : null,
       givenAt: DateTime.now(),
       doseIndex: doseIndex,
-      scheduledTime: doseIndex >= 0 && doseIndex < dailyTimes.length
-          ? dailyTimes[doseIndex]
-          : null,
+      scheduledTime: scheduledTime,
     );
+    if (kDebugMode) {
+      debugPrint(
+        '[IlaclarScreen] onTap logId=${result.logId} exists=${result.alreadyMarked} action=${result.alreadyMarked ? 'skip' : 'create'}',
+      );
+    }
+    if (result.alreadyMarked) {
+      _showAlreadyMarkedHint();
+      return;
+    }
     if (mounted) setState(() {});
   }
 
@@ -367,7 +390,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     }
     _doseChipLastTapAt[key] = now;
 
-    await VeriYonetici.upsertIlacDozKaydi(
+    final result = await VeriYonetici.markIlacDozKaydiIfAbsent(
       medicationId: medId,
       vaccineId: med['scheduleType'] == _filterVaccineProtocol
           ? med['vaccineId'] as String?
@@ -375,7 +398,86 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
       givenAt: DateTime.now(),
       protocolStep: step,
     );
+    if (kDebugMode) {
+      debugPrint(
+        '[IlaclarScreen] onTap logId=${result.logId} exists=${result.alreadyMarked} action=${result.alreadyMarked ? 'skip' : 'create'}',
+      );
+    }
+    if (result.alreadyMarked) {
+      _showAlreadyMarkedHint();
+      return;
+    }
     if (mounted) setState(() {});
+  }
+
+  Future<void> _undoDoseChip(Map<String, dynamic> med, int doseIndex) async {
+    final confirmed = await _confirmUndoDose();
+    if (confirmed != true) return;
+    final dailyTimes = _dailyTimes(med);
+    final scheduledTime = doseIndex >= 0 && doseIndex < dailyTimes.length
+        ? dailyTimes[doseIndex]
+        : null;
+    final deleted = await VeriYonetici.undoIlacDozKaydiBySlot(
+      medicationId: med['id'] as String,
+      dayRef: DateTime.now(),
+      doseIndex: doseIndex,
+      scheduledTime: scheduledTime,
+    );
+    if (kDebugMode) {
+      debugPrint(
+        '[IlaclarScreen] onUndo doseIndex=$doseIndex deleted=$deleted medicationId=${med['id']}',
+      );
+    }
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _undoProtocolStep(Map<String, dynamic> med, String step) async {
+    final confirmed = await _confirmUndoDose();
+    if (confirmed != true) return;
+    final deleted = await VeriYonetici.undoIlacDozKaydiBySlot(
+      medicationId: med['id'] as String,
+      dayRef: DateTime.now(),
+      protocolStep: step,
+    );
+    if (kDebugMode) {
+      debugPrint(
+        '[IlaclarScreen] onUndo protocolStep=$step deleted=$deleted medicationId=${med['id']}',
+      );
+    }
+    if (mounted) setState(() {});
+  }
+
+  Future<bool?> _confirmUndoDose() {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Undo dose?'),
+        content: const Text(
+          'This will remove the given dose log for this slot.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.undo, style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAlreadyMarkedHint() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Already marked. Long-press to undo.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
 
   bool _givenToday(Map<String, dynamic> med) {
@@ -546,56 +648,45 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     );
   }
 
-  int _dailyReminderId(String medicationId, int index) {
-    final seed = 'daily_${medicationId}_$index'.hashCode.abs();
-    return ReminderService.medicationReminderBaseId + (seed % 60000);
-  }
-
-  int _protocolReminderId(
-    String medicationId,
-    String vaccineId,
-    String kind,
-    int minutes,
-    int index,
-  ) {
-    final seed =
-        'protocol_${medicationId}_${vaccineId}_${kind}_${minutes}_$index'
-            .hashCode
-            .abs();
-    return ReminderService.medicationReminderBaseId + (seed % 60000);
-  }
-
   Future<void> _cancelRemindersForMedication(Map<String, dynamic> med) async {
     await _reminderService.initialize();
-    final dailyTimes = _dailyTimes(med);
-    for (int i = 0; i < dailyTimes.length; i++) {
-      await _reminderService.cancelMedicationReminder(
-        _dailyReminderId(med['id'] as String, i),
-      );
-    }
-
-    final offsets = (med['protocolOffsets'] as List?) ?? const [];
-    final vaccineId = med['vaccineId'] as String?;
-    if (vaccineId == null) return;
-
-    for (int i = 0; i < offsets.length; i++) {
-      final item = Map<String, dynamic>.from(offsets[i] as Map);
-      await _reminderService.cancelMedicationReminder(
-        _protocolReminderId(
-          med['id'] as String,
-          vaccineId,
-          (item['kind'] as String?) ?? 'after',
-          (item['minutes'] as num?)?.toInt() ?? 0,
-          i,
-        ),
-      );
-    }
+    await _reminderService.cancelMedicationReminders(
+      med['id'] as String,
+      dailyTimes: _dailyTimes(med),
+      protocolOffsets: ((med['protocolOffsets'] as List?) ?? const [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList(),
+      vaccineId: med['vaccineId'] as String?,
+    );
   }
 
-  Future<void> _syncMedicationReminders(Map<String, dynamic> med) async {
+  Future<void> _syncMedicationReminders(
+    Map<String, dynamic> med, {
+    bool interactive = false,
+  }) async {
     await _cancelRemindersForMedication(med);
     if (med['isActive'] != true) return;
-    await _reminderService.requestPermissions();
+    if (VeriYonetici.isMedicationReminderEnabled() != true) {
+      if (interactive && mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Notifications disabled')));
+      }
+      return;
+    }
+    if (med['remindersEnabled'] != true) return;
+
+    if (interactive) {
+      final granted = await _reminderService.requestPermission();
+      if (!granted) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Permission denied')));
+        }
+        return;
+      }
+    }
 
     final l10n = AppLocalizations.of(context)!;
     final title = l10n.medicationReminderTitle(med['name'] ?? '');
@@ -604,50 +695,27 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
         : l10n.medicationReminderBody;
     final scheduleType = (med['scheduleType'] as String?) ?? _filterPrn;
 
-    if (scheduleType == _filterDaily) {
-      final times = _dailyTimes(med);
-      for (int i = 0; i < times.length; i++) {
-        final parts = times[i].split(':');
-        await _reminderService.scheduleMedicationReminderDaily(
-          id: _dailyReminderId(med['id'] as String, i),
-          title: title,
-          body: body,
-          hour: int.tryParse(parts[0]) ?? 9,
-          minute: int.tryParse(parts[1]) ?? 0,
-        );
+    DateTime? vaccineDate;
+    if (scheduleType == _filterVaccineProtocol) {
+      final vaccineId = med['vaccineId'] as String?;
+      if (vaccineId != null) {
+        final vaccine = VeriYonetici.getAsiKayitlari()
+            .where((v) => v['id'] == vaccineId)
+            .firstOrNull;
+        vaccineDate = vaccine?['tarih'] as DateTime?;
       }
-      return;
     }
 
-    if (scheduleType != _filterVaccineProtocol) return;
-    final vaccineId = med['vaccineId'] as String?;
-    if (vaccineId == null) return;
-    final vaccine = VeriYonetici.getAsiKayitlari()
-        .where((v) => v['id'] == vaccineId)
-        .firstOrNull;
-    final vaccineTime = vaccine?['tarih'] as DateTime?;
-    if (vaccineTime == null) return;
-
-    final offsets = (med['protocolOffsets'] as List?) ?? const [];
-    for (int i = 0; i < offsets.length; i++) {
-      final offset = Map<String, dynamic>.from(offsets[i] as Map);
-      final kind = (offset['kind'] as String?) == 'before' ? 'before' : 'after';
-      final minutes = (offset['minutes'] as num?)?.toInt() ?? 0;
-      final scheduledAt = kind == 'before'
-          ? vaccineTime.subtract(Duration(minutes: minutes))
-          : vaccineTime.add(Duration(minutes: minutes));
-      await _reminderService.scheduleMedicationReminderAt(
-        id: _protocolReminderId(
-          med['id'] as String,
-          vaccineId,
-          kind,
-          minutes,
-          i,
-        ),
-        title: title,
-        body: body,
-        scheduledAt: scheduledAt,
-      );
+    await _reminderService.scheduleMedicationReminders(
+      med,
+      title: title,
+      body: body,
+      vaccineDate: vaccineDate,
+    );
+    if (interactive && mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Reminder scheduled')));
     }
   }
 
@@ -888,6 +956,9 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                                       onTap: isActive
                                           ? () => _toggleDoseChip(med, i)
                                           : null,
+                                      onLongPress: isActive && active
+                                          ? () => _undoDoseChip(med, i)
+                                          : null,
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
@@ -1000,6 +1071,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                                                   med,
                                                   step,
                                                 )
+                                              : null,
+                                          onLongPress: isActive && active
+                                              ? () =>
+                                                    _undoProtocolStep(med, step)
                                               : null,
                                           child: Container(
                                             padding: const EdgeInsets.symmetric(
@@ -1153,6 +1228,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                           !_recentlyTappedMedicationIds.contains(med['id'])
                       ? () => _logGivenNow(med)
                       : null,
+                  onLongPress: isActive ? () => _undoDoseChip(med, 0) : null,
                   icon: const Icon(Icons.check_circle_outline, size: 18),
                   label: Text(l10n.logGivenNow),
                 ),
@@ -1215,6 +1291,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
   final _nameController = TextEditingController();
   final _dosageController = TextEditingController();
   final _notesController = TextEditingController();
+  final ReminderService _reminderService = ReminderService();
 
   String _type = 'medication';
   String _scheduleType = 'prn';
@@ -1318,7 +1395,28 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     }
 
     final medications = VeriYonetici.getIlacKayitlari();
+    final editingId = widget.medication?['id'] as String?;
+    final existingIndex = editingId == null
+        ? -1
+        : medications.indexWhere((m) => m['id'] == editingId);
+    final existing = existingIndex >= 0
+        ? Map<String, dynamic>.from(medications[existingIndex])
+        : null;
+    final medicationId =
+        existing?['id'] as String? ??
+        'ilac_${DateTime.now().millisecondsSinceEpoch}';
+
+    bool remindersEnabled = existing?['remindersEnabled'] == true;
+    if (_scheduleType == 'prn') {
+      remindersEnabled = false;
+    } else if (!_isEditing || remindersEnabled != true) {
+      final optIn = await _askMedicationReminder();
+      if (optIn == null) return;
+      remindersEnabled = optIn;
+    }
+
     final payload = {
+      'id': medicationId,
       'name': name,
       'type': _type,
       'dosage': _dosageController.text.trim().isEmpty
@@ -1339,6 +1437,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
           : null,
       'repeatEveryHours': null,
       'maxDoses': null,
+      'remindersEnabled': remindersEnabled,
       'scheduleText': _scheduleType == 'daily'
           ? '${l10n.everyDay} • ${_dailyTimes.join(', ')}'
           : (_scheduleType == 'prn'
@@ -1346,14 +1445,10 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
                 : l10n.vaccineProtocolLabel),
     };
 
-    if (_isEditing) {
-      final index = medications.indexWhere(
-        (m) => m['id'] == widget.medication!['id'],
-      );
-      if (index != -1) medications[index] = {...medications[index], ...payload};
+    if (_isEditing && existingIndex != -1) {
+      medications[existingIndex] = {...medications[existingIndex], ...payload};
     } else {
       medications.add({
-        'id': 'ilac_${DateTime.now().millisecondsSinceEpoch}',
         'babyId': VeriYonetici.getActiveBabyId(),
         ...payload,
         'createdAt': DateTime.now(),
@@ -1361,8 +1456,122 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     }
 
     await VeriYonetici.saveIlacKayitlari(medications);
+    final saved = medications.firstWhere((m) => m['id'] == medicationId);
+    await _syncSavedMedicationReminder(
+      oldMedication: existing,
+      savedMedication: Map<String, dynamic>.from(saved),
+    );
     HapticFeedback.lightImpact();
     if (mounted) Navigator.pop(context, true);
+  }
+
+  Future<bool?> _askMedicationReminder() {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Set reminders for this medication?'),
+        content: const Text(
+          'You can change this later by editing the medication.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _syncSavedMedicationReminder({
+    Map<String, dynamic>? oldMedication,
+    required Map<String, dynamic> savedMedication,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await _reminderService.initialize();
+
+    if (oldMedication != null) {
+      await _reminderService.cancelMedicationReminders(
+        oldMedication['id'] as String,
+        dailyTimes: _extractDailyTimes(oldMedication),
+        protocolOffsets: _extractProtocolOffsets(oldMedication),
+        vaccineId: oldMedication['vaccineId'] as String?,
+      );
+    }
+    await _reminderService.cancelMedicationReminders(
+      savedMedication['id'] as String,
+      dailyTimes: _extractDailyTimes(savedMedication),
+      protocolOffsets: _extractProtocolOffsets(savedMedication),
+      vaccineId: savedMedication['vaccineId'] as String?,
+    );
+
+    final globalEnabled = VeriYonetici.isMedicationReminderEnabled();
+    final medEnabled = savedMedication['remindersEnabled'] == true;
+    final active = savedMedication['isActive'] == true;
+    final scheduleType = (savedMedication['scheduleType'] as String?) ?? 'prn';
+    if (!globalEnabled || !medEnabled || !active || scheduleType == 'prn') {
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Notifications disabled')),
+        );
+      }
+      return;
+    }
+
+    final granted = await _reminderService.requestPermission();
+    if (!granted) {
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Permission denied')),
+        );
+      }
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    DateTime? vaccineDate;
+    if (scheduleType == 'vaccine_protocol') {
+      final vaccineId = savedMedication['vaccineId'] as String?;
+      if (vaccineId != null) {
+        final vaccine = VeriYonetici.getAsiKayitlari()
+            .where((v) => v['id'] == vaccineId)
+            .firstOrNull;
+        vaccineDate = vaccine?['tarih'] as DateTime?;
+      }
+    }
+
+    await _reminderService.scheduleMedicationReminders(
+      savedMedication,
+      title: l10n.medicationReminderTitle(savedMedication['name'] ?? ''),
+      body: savedMedication['dosage']?.toString().trim().isNotEmpty == true
+          ? l10n.medicationReminderBodyWithDose(savedMedication['dosage'])
+          : l10n.medicationReminderBody,
+      vaccineDate: vaccineDate,
+    );
+    if (mounted) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Reminder scheduled')),
+      );
+    }
+  }
+
+  List<String> _extractDailyTimes(Map<String, dynamic> med) {
+    final raw = med['dailyTimes'];
+    if (raw is! List) return const <String>[];
+    return raw
+        .map((e) => e?.toString() ?? '')
+        .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+        .toList();
+  }
+
+  List<Map<String, dynamic>> _extractProtocolOffsets(Map<String, dynamic> med) {
+    final raw = med['protocolOffsets'];
+    if (raw is! List) return const <Map<String, dynamic>>[];
+    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
 
   @override

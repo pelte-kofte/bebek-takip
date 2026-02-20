@@ -12,6 +12,7 @@ import 'screens/add_screen.dart';
 import 'screens/health_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'screens/splash_screen.dart';
+import 'widgets/add_baby_sheet.dart';
 import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
 import 'services/locale_service.dart';
@@ -53,6 +54,11 @@ void main() async {
 
   // Initialize VeriYonetici (loads all data into cache)
   await VeriYonetici.init();
+  try {
+    await SyncManager.syncCurrentUserData();
+  } catch (_) {
+    // Best-effort sync check only.
+  }
 
   // Initialize timezones once for scheduled reminders
   ReminderService.initializeTimeZonesOnce();
@@ -141,7 +147,9 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final bool promptAddBabyOnStart;
+
+  const MainScreen({super.key, this.promptAddBabyOnStart = false});
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -150,6 +158,31 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   int _refreshKey = 0;
+  bool _didPromptAddBaby = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybePromptAddBaby();
+    });
+  }
+
+  void _maybePromptAddBaby() {
+    if (!mounted || _didPromptAddBaby || !widget.promptAddBabyOnStart) return;
+    if (VeriYonetici.getBabies().isNotEmpty) return;
+    _didPromptAddBaby = true;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AddBabySheet(
+        onBabyAdded: () {
+          _refresh();
+        },
+      ),
+    );
+  }
 
   void _refresh() {
     setState(() {

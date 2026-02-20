@@ -15,7 +15,7 @@ class BabySwitcherSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    final babies = VeriYonetici.getBabies();
+    final babies = _dedupeById(VeriYonetici.getBabies());
     final activeBabyId = VeriYonetici.getActiveBabyId();
 
     return Container(
@@ -188,5 +188,13 @@ class BabySwitcherSheet extends StatelessWidget {
         },
       ),
     );
+  }
+
+  List<Baby> _dedupeById(List<Baby> babies) {
+    final byId = <String, Baby>{};
+    for (final baby in babies) {
+      byId[baby.id] = baby;
+    }
+    return byId.values.toList();
   }
 }

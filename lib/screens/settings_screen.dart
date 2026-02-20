@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../models/veri_yonetici.dart';
@@ -31,6 +32,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool _feedingReminderEnabled = false;
   bool _diaperReminderEnabled = false;
+  bool _medicationReminderEnabled = true;
   TimeOfDay _feedingReminderTime = const TimeOfDay(hour: 14, minute: 0);
   TimeOfDay _diaperReminderTime = const TimeOfDay(hour: 14, minute: 0);
 
@@ -44,6 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _feedingReminderEnabled = VeriYonetici.isFeedingReminderEnabled();
       _diaperReminderEnabled = VeriYonetici.isDiaperReminderEnabled();
+      _medicationReminderEnabled = VeriYonetici.isMedicationReminderEnabled();
       _feedingReminderTime = TimeOfDay(
         hour: VeriYonetici.getFeedingReminderHour(),
         minute: VeriYonetici.getFeedingReminderMinute(),
@@ -115,6 +118,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
     } else {
       await _reminderService.cancelDiaperReminder();
     }
+  }
+
+  Future<void> _toggleMedicationReminder(bool value) async {
+    setState(() => _medicationReminderEnabled = value);
+    await VeriYonetici.setMedicationReminderEnabled(value);
+    await _reminderService.initialize();
+
+    final messenger = ScaffoldMessenger.of(context);
+    final meds = VeriYonetici.getIlacKayitlari();
+    if (!value) {
+      for (final med in meds) {
+        await _reminderService.cancelMedicationReminders(
+          med['id'] as String,
+          dailyTimes: _dailyTimesForReminder(med),
+          protocolOffsets: _protocolOffsetsForReminder(med),
+          vaccineId: med['vaccineId'] as String?,
+        );
+      }
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Notifications disabled')),
+        );
+      }
+      return;
+    }
+
+    final granted = await _reminderService.requestPermission();
+    if (!granted) {
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Permission denied')),
+        );
+      }
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    for (final med in meds) {
+      if (med['isActive'] != true || med['remindersEnabled'] != true) continue;
+      final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
+      if (scheduleType == 'prn') continue;
+      DateTime? vaccineDate;
+      if (scheduleType == 'vaccine_protocol') {
+        final vaccineId = med['vaccineId'] as String?;
+        if (vaccineId != null) {
+          final vaccine = VeriYonetici.getAsiKayitlari()
+              .where((v) => v['id'] == vaccineId)
+              .firstOrNull;
+          vaccineDate = vaccine?['tarih'] as DateTime?;
+        }
+      }
+      await _reminderService.scheduleMedicationReminders(
+        med,
+        title: l10n.medicationReminderTitle(med['name'] ?? ''),
+        body: med['dosage']?.toString().trim().isNotEmpty == true
+            ? l10n.medicationReminderBodyWithDose(med['dosage'])
+            : l10n.medicationReminderBody,
+        vaccineDate: vaccineDate,
+      );
+    }
+    if (mounted) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Reminder scheduled')),
+      );
+    }
+  }
+
+  List<String> _dailyTimesForReminder(Map<String, dynamic> med) {
+    final raw = med['dailyTimes'];
+    if (raw is! List) return const <String>[];
+    return raw
+        .map((e) => e?.toString() ?? '')
+        .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+        .toList();
+  }
+
+  List<Map<String, dynamic>> _protocolOffsetsForReminder(
+    Map<String, dynamic> med,
+  ) {
+    final raw = med['protocolOffsets'];
+    if (raw is! List) return const <Map<String, dynamic>>[];
+    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
 
   void _showTimePicker({
@@ -510,6 +595,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ),
                             ],
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildSwitchTile(
+                              icon: Icons.medication_outlined,
+                              iconBgColor: const Color(0xFFE8F5E9),
+                              iconColor: const Color(0xFF4CAF50),
+                              title: 'Medication reminders',
+                              subtitle: _medicationReminderEnabled
+                                  ? 'Enabled'
+                                  : l10n.off,
+                              value: _medicationReminderEnabled,
+                              onChanged: _toggleMedicationReminder,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                            ),
                           ],
                         ),
                       ),
@@ -722,9 +824,61 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        final user = snapshot.data ?? FirebaseAuth.instance.currentUser;
+        return _buildAccountSectionContent(
+          cardColor: cardColor,
+          textColor: textColor,
+          subtitleColor: subtitleColor,
+          user: user,
+        );
+      },
+    );
+  }
+
+  Widget _buildAccountSectionContent({
+    required Color cardColor,
+    required Color textColor,
+    required Color subtitleColor,
+    required User? user,
+  }) {
     final l10n = AppLocalizations.of(context)!;
-    final user = FirebaseAuth.instance.currentUser;
-    final isLoggedIn = user != null;
+    final isAnonymous = user?.isAnonymous ?? false;
+    final isSignedInProviderUser = user != null && !isAnonymous;
+    final hasSession = user != null;
+
+    String titleText;
+    String detailText;
+    IconData actionIcon;
+    String actionLabel;
+    Color actionBgColor;
+    Color actionTextColor;
+
+    if (!hasSession) {
+      titleText = 'Not signed in';
+      detailText = l10n.signInToProtectData;
+      actionIcon = Icons.login;
+      actionLabel = l10n.signIn;
+      actionBgColor = const Color(0xFFFFB4A2);
+      actionTextColor = Colors.white;
+    } else if (isAnonymous) {
+      titleText = l10n.guestMode;
+      detailText = l10n.signInToProtectData;
+      actionIcon = Icons.login;
+      actionLabel = l10n.signIn;
+      actionBgColor = const Color(0xFFFFB4A2);
+      actionTextColor = Colors.white;
+    } else {
+      final identity = user.email ?? user.displayName ?? l10n.user;
+      titleText = l10n.signedInAs(identity);
+      detailText = identity;
+      actionIcon = Icons.logout;
+      actionLabel = l10n.signOut;
+      actionBgColor = const Color(0xFFFFE5E0);
+      actionTextColor = Colors.red.shade400;
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -742,14 +896,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: isLoggedIn
+                      color: isSignedInProviderUser
                           ? const Color(0xFFE8F5E9)
                           : const Color(0xFFE5E0F7),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      isLoggedIn ? Icons.person : Icons.person_outline,
-                      color: isLoggedIn
+                      isSignedInProviderUser
+                          ? Icons.verified_user
+                          : Icons.person_outline,
+                      color: isSignedInProviderUser
                           ? const Color(0xFF4CAF50)
                           : subtitleColor,
                       size: 22,
@@ -761,18 +917,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isLoggedIn
-                              ? l10n.signedInAs(
-                                  user.email ?? user.displayName ?? l10n.user,
-                                )
-                              : l10n.guestMode,
+                          titleText,
                           style: TextStyle(fontSize: 13, color: subtitleColor),
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          isLoggedIn
-                              ? (user.email ?? user.displayName ?? l10n.user)
-                              : l10n.signInToProtectData,
+                          detailText,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -780,7 +930,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (!isLoggedIn) ...[
+                        if (!isSignedInProviderUser) ...[
                           const SizedBox(height: 2),
                           Text(
                             l10n.backupSyncComingSoon,
@@ -799,7 +949,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Sign In / Sign Out button
               GestureDetector(
                 onTap: () async {
-                  if (isLoggedIn) {
+                  if (isSignedInProviderUser) {
                     await _signOut();
                   } else {
                     _navigateToLogin();
@@ -809,28 +959,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   decoration: BoxDecoration(
-                    color: isLoggedIn
-                        ? const Color(0xFFFFE5E0)
-                        : const Color(0xFFFFB4A2),
+                    color: actionBgColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        isLoggedIn ? Icons.logout : Icons.login,
-                        color: isLoggedIn ? Colors.red.shade400 : Colors.white,
-                        size: 20,
-                      ),
+                      Icon(actionIcon, color: actionTextColor, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        isLoggedIn ? l10n.signOut : l10n.signIn,
+                        actionLabel,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: isLoggedIn
-                              ? Colors.red.shade400
-                              : Colors.white,
+                          color: actionTextColor,
                         ),
                       ),
                     ],
@@ -847,16 +989,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _signOut() async {
     final l10n = AppLocalizations.of(context)!;
     try {
-      await FirebaseAuth.instance.signOut();
-      setState(() {});
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.signedOutSuccessfully),
-            backgroundColor: Color(0xFFFFB4A2),
-          ),
-        );
+      if (!kIsWeb) {
+        try {
+          await GoogleSignIn().disconnect();
+        } catch (_) {}
+        try {
+          await GoogleSignIn().signOut();
+        } catch (_) {}
       }
+      await FirebaseAuth.instance.signOut();
+      if (!mounted) return;
+      AppNavigator.goToRoot(const LoginEntryScreen());
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.signedOutSuccessfully),
+          backgroundColor: Color(0xFFFFB4A2),
+        ),
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1032,6 +1181,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final currentCode = BabyTrackerApp.of(context)?.localeCode ?? 'en';
+    if (kDebugMode) {
+      const sampleTr = 'Türkçe';
+      const sampleEs = 'Español';
+      debugPrint('[Locale] sample="$sampleTr" codeUnits=${sampleTr.codeUnits}');
+      debugPrint('[Locale] sample="$sampleEs" codeUnits=${sampleEs.codeUnits}');
+    }
 
     showModalBottomSheet(
       context: context,

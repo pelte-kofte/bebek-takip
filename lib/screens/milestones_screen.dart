@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,18 +19,10 @@ Widget buildPlatformImage(
 }) {
   if (kIsWeb) {
     // On web, ImagePicker returns blob URLs that work with Image.network
-    return Image.network(
-      path,
-      fit: fit,
-      errorBuilder: errorBuilder,
-    );
+    return Image.network(path, fit: fit, errorBuilder: errorBuilder);
   } else {
     // On mobile/desktop, use File
-    return Image.file(
-      File(path),
-      fit: fit,
-      errorBuilder: errorBuilder,
-    );
+    return Image.file(File(path), fit: fit, errorBuilder: errorBuilder);
   }
 }
 
@@ -53,10 +45,13 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   void _loadMilestones() {
     setState(() {
       _milestones = VeriYonetici.getMilestones();
-      // Sort by date descending (most recent first)
-      _milestones.sort(
-        (a, b) => (b['date'] as DateTime).compareTo(a['date'] as DateTime),
-      );
+      if (kDebugMode) {
+        final top = _milestones
+            .take(3)
+            .map((e) => (e['date'] as DateTime?)?.toIso8601String() ?? '-')
+            .toList();
+        debugPrint('[MilestonesScreen] Top3 memory dates after load=$top');
+      }
     });
   }
 
@@ -452,7 +447,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                             icon: Icon(
                               Icons.more_horiz,
                               size: 18,
-                              color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.4),
                             ),
                             padding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
@@ -474,9 +471,18 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                                 value: 'edit',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                    Icon(
+                                      Icons.edit_outlined,
+                                      size: 18,
+                                      color: Color(0xFF4A3E39),
+                                    ),
                                     SizedBox(width: 10),
-                                    Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: Color(0xFF4A3E39))),
+                                    Text(
+                                      AppLocalizations.of(context)!.edit,
+                                      style: TextStyle(
+                                        color: Color(0xFF4A3E39),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -484,9 +490,18 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                                 value: 'share',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                    Icon(
+                                      Icons.share_outlined,
+                                      size: 18,
+                                      color: Color(0xFF4A3E39),
+                                    ),
                                     SizedBox(width: 10),
-                                    Text(AppLocalizations.of(context)!.share, style: TextStyle(color: Color(0xFF4A3E39))),
+                                    Text(
+                                      AppLocalizations.of(context)!.share,
+                                      style: TextStyle(
+                                        color: Color(0xFF4A3E39),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -494,9 +509,18 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                                 value: 'delete',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
+                                    Icon(
+                                      Icons.delete_outline,
+                                      size: 18,
+                                      color: Color(0xFFFF6B6B),
+                                    ),
                                     SizedBox(width: 10),
-                                    Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Color(0xFFFF6B6B))),
+                                    Text(
+                                      AppLocalizations.of(context)!.delete,
+                                      style: TextStyle(
+                                        color: Color(0xFFFF6B6B),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -528,7 +552,6 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       ),
     );
   }
-
 }
 
 // Add Milestone Screen (Full Screen Modal)
@@ -547,7 +570,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   DateTime _selectedDate = DateTime.now();
   String? _photoPath;
-  PhotoStyle _photoStyle =
+  final PhotoStyle _photoStyle =
       PhotoStyle.softIllustration; // Default: soft illustrated
 
   @override
@@ -875,7 +898,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         TextField(
                           controller: _titleController,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.memoryTitleHint,
+                            hintText: AppLocalizations.of(
+                              context,
+                            )!.memoryTitleHint,
                             hintStyle: TextStyle(
                               color: const Color(
                                 0xFF4A3E39,
@@ -963,7 +988,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           controller: _noteController,
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: AppLocalizations.of(context)!.memoryNoteHint,
+                            hintText: AppLocalizations.of(
+                              context,
+                            )!.memoryNoteHint,
                             hintStyle: TextStyle(
                               color: const Color(
                                 0xFF4A3E39,
@@ -1069,52 +1096,50 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   }
 
   Widget _buildStyleOption(PhotoStyle style, String label, IconData icon) {
-    final isSelected = _photoStyle == style;
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _photoStyle = style),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFFFB4A2) : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-          ),
-          child: Column(
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isSelected
-                    ? Colors.white
-                    : const Color(0xFF4A3E39).withValues(alpha: 0.5),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isSelected
-                      ? Colors.white
-                      : const Color(0xFF4A3E39).withValues(alpha: 0.6),
+        onTap: () {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Coming soon'),
+              duration: Duration(milliseconds: 1200),
+            ),
+          );
+        },
+        child: Opacity(
+          opacity: 0.55,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-              ),
-            ],
+              ],
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1512,7 +1537,9 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                           children: [
                             Icon(
                               Icons.add_photo_alternate_outlined,
-                              color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.5),
                               size: 24,
                             ),
                             const SizedBox(width: 8),
@@ -1521,7 +1548,9 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.6),
                               ),
                             ),
                           ],
@@ -1758,7 +1787,8 @@ class _SharePreviewSheet extends StatelessWidget {
                           child: buildPlatformImage(
                             photoPath,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(
+                            errorBuilder:
+                                (context, error, stackTrace) => const Icon(
                               Icons.star,
                               color: Color(0xFFFFB4A2),
                               size: 28,
@@ -1952,10 +1982,8 @@ class MilestoneDetailScreen extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => _SharePreviewSheet(
-        milestone: milestone,
-        formatDate: formatDate,
-      ),
+      builder: (context) =>
+          _SharePreviewSheet(milestone: milestone, formatDate: formatDate),
     );
   }
 
@@ -2005,7 +2033,8 @@ class MilestoneDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPhoto = milestone['photoPath'] != null &&
+    final hasPhoto =
+        milestone['photoPath'] != null &&
         (milestone['photoPath'] as String).isNotEmpty;
     final title = milestone['title'] ?? '';
     final date = milestone['date'] as DateTime;
@@ -2074,7 +2103,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                           ),
                           child: Icon(
                             Icons.arrow_back,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.7),
                             size: 20,
                           ),
                         ),
@@ -2098,7 +2129,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                           ),
                           child: Icon(
                             Icons.more_horiz,
-                            color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.7),
                             size: 20,
                           ),
                         ),
@@ -2121,9 +2154,16 @@ class MilestoneDetailScreen extends StatelessWidget {
                             value: 'edit',
                             child: Row(
                               children: [
-                                Icon(Icons.edit_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                Icon(
+                                  Icons.edit_outlined,
+                                  size: 18,
+                                  color: Color(0xFF4A3E39),
+                                ),
                                 SizedBox(width: 10),
-                                Text(AppLocalizations.of(context)!.edit, style: TextStyle(color: Color(0xFF4A3E39))),
+                                Text(
+                                  AppLocalizations.of(context)!.edit,
+                                  style: TextStyle(color: Color(0xFF4A3E39)),
+                                ),
                               ],
                             ),
                           ),
@@ -2131,9 +2171,16 @@ class MilestoneDetailScreen extends StatelessWidget {
                             value: 'share',
                             child: Row(
                               children: [
-                                Icon(Icons.share_outlined, size: 18, color: Color(0xFF4A3E39)),
+                                Icon(
+                                  Icons.share_outlined,
+                                  size: 18,
+                                  color: Color(0xFF4A3E39),
+                                ),
                                 SizedBox(width: 10),
-                                Text(AppLocalizations.of(context)!.share, style: TextStyle(color: Color(0xFF4A3E39))),
+                                Text(
+                                  AppLocalizations.of(context)!.share,
+                                  style: TextStyle(color: Color(0xFF4A3E39)),
+                                ),
                               ],
                             ),
                           ),
@@ -2141,9 +2188,16 @@ class MilestoneDetailScreen extends StatelessWidget {
                             value: 'delete',
                             child: Row(
                               children: [
-                                Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF6B6B)),
+                                Icon(
+                                  Icons.delete_outline,
+                                  size: 18,
+                                  color: Color(0xFFFF6B6B),
+                                ),
                                 SizedBox(width: 10),
-                                Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Color(0xFFFF6B6B))),
+                                Text(
+                                  AppLocalizations.of(context)!.delete,
+                                  style: TextStyle(color: Color(0xFFFF6B6B)),
+                                ),
                               ],
                             ),
                           ),
@@ -2163,14 +2217,14 @@ class MilestoneDetailScreen extends StatelessWidget {
                         if (hasPhoto) ...[
                           Container(
                             width: double.infinity,
-                            constraints: const BoxConstraints(
-                              maxHeight: 400,
-                            ),
+                            constraints: const BoxConstraints(maxHeight: 400),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                                  color: const Color(
+                                    0xFFE5E0F7,
+                                  ).withValues(alpha: 0.4),
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
                                 ),
@@ -2184,7 +2238,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
                                       height: 200,
-                                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                                      color: const Color(
+                                        0xFFE5E0F7,
+                                      ).withValues(alpha: 0.3),
                                       child: const Center(
                                         child: Icon(
                                           Icons.image_not_supported,
@@ -2215,7 +2271,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                             Icon(
                               Icons.calendar_today_outlined,
                               size: 16,
-                              color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.5),
                             ),
                             const SizedBox(width: 6),
                             Text(
@@ -2223,7 +2281,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
-                                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.6),
                               ),
                             ),
                           ],
@@ -2238,7 +2298,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                               color: Colors.white.withValues(alpha: 0.8),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+                                color: const Color(
+                                  0xFFE5E0F7,
+                                ).withValues(alpha: 0.5),
                               ),
                             ),
                             child: Text(
@@ -2246,7 +2308,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 16,
                                 height: 1.6,
-                                color: const Color(0xFF4A3E39).withValues(alpha: 0.8),
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.8),
                               ),
                             ),
                           ),

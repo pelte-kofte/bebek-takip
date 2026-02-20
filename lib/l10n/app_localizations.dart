@@ -1481,7 +1481,7 @@ abstract class AppLocalizations {
   /// No description provided for @leftMinRightMin.
   ///
   /// In en, this message translates to:
-  /// **'L {left}min â€¢ R {right}min'**
+  /// **'L {left}min • R {right}min'**
   String leftMinRightMin(int left, int right);
 
   /// No description provided for @breastfeedingSavedSnack.
@@ -1745,7 +1745,7 @@ abstract class AppLocalizations {
   /// No description provided for @turkish.
   ///
   /// In en, this message translates to:
-  /// **'TÃ¼rkÃ§e'**
+  /// **'Türkçe'**
   String get turkish;
 
   /// No description provided for @english.
@@ -1769,7 +1769,7 @@ abstract class AppLocalizations {
   /// No description provided for @spanish.
   ///
   /// In en, this message translates to:
-  /// **'EspaÃ±ol'**
+  /// **'Español'**
   String get spanish;
 
   /// No description provided for @languageUpdated.

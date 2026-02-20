@@ -90,6 +90,8 @@ class ReminderService {
     }
   }
 
+  Future<bool> requestPermission() => requestPermissions();
+
   /// Schedule a feeding reminder notification
   Future<void> scheduleFeedingReminder({
     required DateTime lastFeedingTime,
@@ -425,6 +427,158 @@ class ReminderService {
 
   Future<void> cancelMedicationReminder(int id) async {
     await _notifications.cancel(id);
+  }
+
+  static int medicationReminderId({
+    required String medicationId,
+    required String slotKey,
+  }) {
+    final seed = 'med_${medicationId}_$slotKey'.hashCode.abs();
+    return medicationReminderBaseId + (seed % 60000);
+  }
+
+  List<int> medicationReminderIdsFor(Map<String, dynamic> med) {
+    final medId = (med['id'] ?? '').toString();
+    if (medId.isEmpty) return const <int>[];
+
+    final ids = <int>{};
+    final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
+
+    if (scheduleType == 'daily') {
+      final raw = med['dailyTimes'];
+      final times = raw is List
+          ? raw
+                .map((e) => e?.toString() ?? '')
+                .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+                .toList()
+          : const <String>[];
+      for (int i = 0; i < times.length; i++) {
+        ids.add(
+          medicationReminderId(
+            medicationId: medId,
+            slotKey: 'daily_${times[i]}_$i',
+          ),
+        );
+      }
+    }
+
+    if (scheduleType == 'vaccine_protocol') {
+      final vaccineId = (med['vaccineId'] ?? '').toString();
+      final offsets = (med['protocolOffsets'] as List?) ?? const [];
+      for (int i = 0; i < offsets.length; i++) {
+        final item = Map<String, dynamic>.from(offsets[i] as Map);
+        final kind = (item['kind'] as String?) == 'before' ? 'before' : 'after';
+        final minutes = (item['minutes'] as num?)?.toInt() ?? 0;
+        ids.add(
+          medicationReminderId(
+            medicationId: medId,
+            slotKey: 'protocol_${vaccineId}_${kind}_${minutes}_$i',
+          ),
+        );
+      }
+    }
+
+    return ids.toList()..sort();
+  }
+
+  Future<void> cancelMedicationReminders(
+    String medId, {
+    List<String>? dailyTimes,
+    List<Map<String, dynamic>>? protocolOffsets,
+    String? vaccineId,
+  }) async {
+    if (!_initialized) await initialize();
+    final ids = <int>{};
+
+    final normalizedTimes = (dailyTimes ?? const <String>[])
+        .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+        .toList();
+    for (int i = 0; i < normalizedTimes.length; i++) {
+      ids.add(
+        medicationReminderId(
+          medicationId: medId,
+          slotKey: 'daily_${normalizedTimes[i]}_$i',
+        ),
+      );
+    }
+
+    final offsets = protocolOffsets ?? const <Map<String, dynamic>>[];
+    final vid = vaccineId ?? '';
+    for (int i = 0; i < offsets.length; i++) {
+      final item = Map<String, dynamic>.from(offsets[i]);
+      final kind = (item['kind'] as String?) == 'before' ? 'before' : 'after';
+      final minutes = (item['minutes'] as num?)?.toInt() ?? 0;
+      ids.add(
+        medicationReminderId(
+          medicationId: medId,
+          slotKey: 'protocol_${vid}_${kind}_${minutes}_$i',
+        ),
+      );
+    }
+
+    for (final id in ids) {
+      await _notifications.cancel(id);
+    }
+  }
+
+  Future<void> scheduleMedicationReminders(
+    Map<String, dynamic> med, {
+    required String title,
+    required String body,
+    DateTime? vaccineDate,
+  }) async {
+    if (!_initialized) await initialize();
+
+    final medId = (med['id'] ?? '').toString();
+    if (medId.isEmpty) return;
+
+    final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
+    if (scheduleType == 'daily') {
+      final raw = med['dailyTimes'];
+      final times = raw is List
+          ? raw
+                .map((e) => e?.toString() ?? '')
+                .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+                .toList()
+          : const <String>[];
+      for (int i = 0; i < times.length; i++) {
+        final parts = times[i].split(':');
+        final id = medicationReminderId(
+          medicationId: medId,
+          slotKey: 'daily_${times[i]}_$i',
+        );
+        await scheduleMedicationReminderDaily(
+          id: id,
+          title: title,
+          body: body,
+          hour: int.tryParse(parts[0]) ?? 9,
+          minute: int.tryParse(parts[1]) ?? 0,
+        );
+      }
+      return;
+    }
+
+    if (scheduleType != 'vaccine_protocol' || vaccineDate == null) return;
+    final vaccineId = (med['vaccineId'] ?? '').toString();
+    final offsets = (med['protocolOffsets'] as List?) ?? const [];
+    for (int i = 0; i < offsets.length; i++) {
+      final offset = Map<String, dynamic>.from(offsets[i] as Map);
+      final kind = (offset['kind'] as String?) == 'before' ? 'before' : 'after';
+      final minutes = (offset['minutes'] as num?)?.toInt() ?? 0;
+      final scheduledAt = kind == 'before'
+          ? vaccineDate.subtract(Duration(minutes: minutes))
+          : vaccineDate.add(Duration(minutes: minutes));
+      final id = medicationReminderId(
+        medicationId: medId,
+        slotKey: 'protocol_${vaccineId}_${kind}_${minutes}_$i',
+      );
+      await scheduleMedicationReminderAt(
+        id: id,
+        title: title,
+        body: body,
+        scheduledAt: scheduledAt,
+      );
+    }
   }
 }
 

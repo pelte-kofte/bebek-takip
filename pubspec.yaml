@@ -57,3 +57,12 @@ flutter:
     - assets/illustrations/tips/
     - assets/app_icon/
     - assets/onboarding/
+    - assets/icons/live_preview/
+    - assets/fonts/
+
+  fonts:
+    - family: ReportSans
+      fonts:
+        - asset: assets/fonts/Arial-Regular.ttf
+        - asset: assets/fonts/Arial-Bold.ttf
+          weight: 700

@@ -20,12 +20,13 @@ class AddVaccineScreen extends StatefulWidget {
 class _AddVaccineScreenState extends State<AddVaccineScreen> {
   final _nameController = TextEditingController();
   final _notesController = TextEditingController();
-  String _selectedPeriod = 'Doğumda';
+  String _selectedPeriod = 'DoÄŸumda';
   String _selectedStatus = 'bekleniyor';
   DateTime? _selectedDate;
+  bool _isSaving = false;
 
   final List<String> _periods = [
-    'Doğumda',
+    'DoÄŸumda',
     '2. Ay',
     '4. Ay',
     '6. Ay',
@@ -40,7 +41,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     if (widget.vaccine != null) {
       _nameController.text = widget.vaccine!['ad'] ?? '';
       _notesController.text = widget.vaccine!['notlar'] ?? '';
-      _selectedPeriod = widget.vaccine!['donem'] ?? 'Doğumda';
+      _selectedPeriod = widget.vaccine!['donem'] ?? 'DoÄŸumda';
       _selectedStatus = widget.vaccine!['durum'] ?? 'bekleniyor';
       _selectedDate = widget.vaccine!['tarih'];
     }
@@ -54,6 +55,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   void _saveVaccine() async {
+    if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     if (_nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(
@@ -61,35 +63,42 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
       ).showSnackBar(SnackBar(content: Text(l10n.vaccineNameCannotBeEmpty)));
       return;
     }
+    setState(() => _isSaving = true);
 
-    final vaccines = VeriYonetici.getAsiKayitlari();
-    final newVaccine = {
-      'id':
-          widget.vaccine?['id'] ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
-      'ad': _nameController.text.trim(),
-      'donem': _selectedPeriod,
-      'durum': _selectedStatus,
-      'tarih': _selectedDate,
-      'notlar': _notesController.text.trim(),
-    };
+    try {
+      final vaccines = VeriYonetici.getAsiKayitlari();
+      final newVaccine = {
+        'id':
+            widget.vaccine?['id'] ??
+            DateTime.now().millisecondsSinceEpoch.toString(),
+        'ad': _nameController.text.trim(),
+        'donem': _selectedPeriod,
+        'durum': _selectedStatus,
+        'tarih': _selectedDate,
+        'notlar': _notesController.text.trim(),
+      };
 
-    if (widget.index != null) {
-      vaccines[widget.index!] = newVaccine;
-    } else {
-      vaccines.add(newVaccine);
-    }
+      if (widget.index != null) {
+        vaccines[widget.index!] = newVaccine;
+      } else {
+        vaccines.add(newVaccine);
+      }
 
-    await VeriYonetici.saveAsiKayitlari(vaccines);
-    HapticFeedback.lightImpact();
-    if (mounted) {
-      Navigator.pop(context, true);
+      await VeriYonetici.saveAsiKayitlari(vaccines);
+      HapticFeedback.lightImpact();
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
   /// Returns true if the selected period is a custom one (not in presets)
   bool get _isCustomPeriod {
-    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'Doğumda';
+    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'DoÄŸumda';
   }
 
   String _monthLabel(AppLocalizations l10n, int month) {
@@ -152,7 +161,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       onPressed: () {
                         setState(() {
                           _selectedPeriod = selectedMonth == 0
-                              ? 'Doğumda'
+                              ? 'DoÄŸumda'
                               : '$selectedMonth. Ay';
                         });
                         Navigator.pop(context);
@@ -815,7 +824,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: _saveVaccine,
+        onPressed: _isSaving ? null : _saveVaccine,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFFFB4A2),
           foregroundColor: Colors.white,
@@ -825,10 +834,19 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
           ),
           elevation: 0,
         ),
-        child: Text(
-          widget.vaccine != null ? l10n.update : l10n.save,
-          style: AppTypography.button().copyWith(fontSize: 18),
-        ),
+        child: _isSaving
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                widget.vaccine != null ? l10n.update : l10n.save,
+                style: AppTypography.button().copyWith(fontSize: 18),
+              ),
       ),
     );
   }

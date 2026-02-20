@@ -35,6 +35,7 @@ class ActivitiesScreen extends StatefulWidget {
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
   DateTime _selectedDate = DateTime.now();
   late ActivityType _activeType;
+  bool _loggedNursingSeparatorSample = false;
 
   @override
   void initState() {
@@ -154,7 +155,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       const SizedBox(height: 12),
                     ],
 
-                    // Tarih SeÃ§ici
+                    // Tarih SeÃƒÂ§ici
                     _buildDateSelector(isDark),
                   ],
                 ),
@@ -197,7 +198,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
               ),
 
-              // Ä°Ã§erik (scrollable, Expanded ile kalan alanÄ± doldurur)
+              // Ã„Â°ÃƒÂ§erik (scrollable, Expanded ile kalan alanÃ„Â± doldurur)
               Expanded(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
@@ -336,7 +337,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildActiveContent() {
-    // Her widget'a unique key ver ki AnimatedSwitcher farkÄ± anlasÄ±n
+    // Her widget'a unique key ver ki AnimatedSwitcher farkÃ„Â± anlasÃ„Â±n
     switch (_activeType) {
       case ActivityType.mama:
         return KeyedSubtree(
@@ -405,7 +406,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ã–ZET
+        // Section Header - Ãƒâ€“ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -423,7 +424,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ã–zet kartÄ±
+        // Ãƒâ€“zet kartÃ„Â±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -463,7 +464,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                     if (toplamDakika > 0 && toplamMl > 0)
                       const Text(
-                        'â€¢',
+                        '•',
                         style: TextStyle(color: Color(0xFF888888)),
                       ),
                     if (toplamMl > 0)
@@ -490,7 +491,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÄ°VÄ°TELER
+        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -538,7 +539,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 title = l10n.solid;
                 if (solidDakika > 0) {
                   subtitle =
-                      '${l10n.solidFood} â€¢ $solidDakika ${l10n.minAbbrev}';
+                      '${l10n.solidFood} • $solidDakika ${l10n.minAbbrev}';
                 } else {
                   subtitle = l10n.solidFood;
                 }
@@ -552,7 +553,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 } else {
                   // Old format: left/right split
                   subtitle =
-                      '${l10n.left} $sol${l10n.minAbbrev} â€¢ ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
+                      '${l10n.left} $sol${l10n.minAbbrev} • ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
+                  if (kDebugMode && !_loggedNursingSeparatorSample) {
+                    _loggedNursingSeparatorSample = true;
+                    debugPrint(
+                      '[ActivitiesScreen] nursing subtitle="$subtitle"',
+                    );
+                  }
                 }
               } else {
                 title = '$miktar ${l10n.mlAbbrev}';
@@ -624,7 +631,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ã–ZET
+        // Section Header - Ãƒâ€“ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -642,7 +649,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ã–zet kartÄ±
+        // Ãƒâ€“zet kartÃ„Â±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -672,7 +679,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÄ°VÄ°TELER
+        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -765,7 +772,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ã–ZET
+        // Section Header - Ãƒâ€“ZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -783,7 +790,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ã–zet kartÄ±
+        // Ãƒâ€“zet kartÃ„Â±
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -822,7 +829,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÄ°VÄ°TELER
+        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -1221,6 +1228,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     required String title,
     required Widget child,
     required VoidCallback onSave,
+    required bool isSaving,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
@@ -1235,50 +1243,59 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         top: 8,
         bottom: MediaQuery.of(context).viewInsets.bottom + 16,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 36,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : const Color(0xFF1C1C1E),
-            ),
-          ),
-          const SizedBox(height: 12),
-          Flexible(child: SingleChildScrollView(child: child)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.cancel),
-                ),
+      child: AbsorbPointer(
+        absorbing: isSaving,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FilledButton(
-                  onPressed: onSave,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF4A90E2),
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Flexible(child: SingleChildScrollView(child: child)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.cancel),
                   ),
-                  child: Text(l10n.save),
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: isSaving ? null : onSave,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF4A90E2),
+                    ),
+                    child: isSaving
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10n.save),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1310,6 +1327,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     String side = right > left ? 'right' : 'left';
     int duration = side == 'right' ? right : left;
     if (duration == 0) duration = left + right;
+    bool isSaving = false;
 
     await showModalBottomSheet(
       context: context,
@@ -1318,21 +1336,30 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
           title: l10n.editTitleNursing,
+          isSaving: isSaving,
           onSave: () async {
+            if (isSaving) return;
             if (duration <= 0) return;
-            final updated = {
-              'id': recordId,
-              'tarih': eventTime,
-              'tur': 'Anne Sütü',
-              'solDakika': side == 'left' ? duration : 0,
-              'sagDakika': side == 'right' ? duration : 0,
-              'miktar': 0,
-              'kategori': 'Milk',
-            };
-            await VeriYonetici.updateMamaKaydiById(recordId, updated);
-            if (mounted) {
-              Navigator.pop(ctx);
-              setState(() {});
+            setModalState(() => isSaving = true);
+            try {
+              final updated = {
+                'id': recordId,
+                'tarih': eventTime,
+                'tur': 'Anne Sütü',
+                'solDakika': side == 'left' ? duration : 0,
+                'sagDakika': side == 'right' ? duration : 0,
+                'miktar': 0,
+                'kategori': 'Milk',
+              };
+              await VeriYonetici.updateMamaKaydiById(recordId, updated);
+              if (mounted) {
+                Navigator.pop(ctx);
+                setState(() {});
+              }
+            } finally {
+              if (ctx.mounted) {
+                setModalState(() => isSaving = false);
+              }
             }
           },
           child: Column(
@@ -1412,6 +1439,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     }
     int amount = (kayit['miktar'] as int? ?? 0).clamp(0, 500);
     int solidDuration = (kayit['solidDakika'] as int? ?? 0).clamp(0, 180);
+    bool isSaving = false;
 
     await showModalBottomSheet(
       context: context,
@@ -1420,45 +1448,54 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
           title: l10n.editTitleFeeding,
+          isSaving: isSaving,
           onSave: () async {
-            final Map<String, dynamic> updated = {
-              'id': recordId,
-              'tarih': eventTime,
-            };
-            if (selectedType == 'solid') {
-              updated.addAll({
-                'tur': 'Katı Gıda',
-                'solDakika': 0,
-                'sagDakika': 0,
-                'miktar': 0,
-                'kategori': 'Solid',
-                'solidAciklama': noteController.text.isEmpty
-                    ? null
-                    : noteController.text,
-                'solidDakika': solidDuration,
-              });
-            } else if (selectedType == 'bottleMilk') {
-              updated.addAll({
-                'tur': 'Anne Sütü (Biberon)',
-                'solDakika': 0,
-                'sagDakika': 0,
-                'miktar': amount,
-                'kategori': 'Milk',
-              });
-            } else {
-              updated.addAll({
-                'tur': 'Formül',
-                'solDakika': 0,
-                'sagDakika': 0,
-                'miktar': amount,
-                'kategori': 'Milk',
-              });
-            }
-            await VeriYonetici.updateMamaKaydiById(recordId, updated);
-            noteController.dispose();
-            if (mounted) {
-              Navigator.pop(ctx);
-              setState(() {});
+            if (isSaving) return;
+            setModalState(() => isSaving = true);
+            try {
+              final Map<String, dynamic> updated = {
+                'id': recordId,
+                'tarih': eventTime,
+              };
+              if (selectedType == 'solid') {
+                updated.addAll({
+                  'tur': 'Katı Gıda',
+                  'solDakika': 0,
+                  'sagDakika': 0,
+                  'miktar': 0,
+                  'kategori': 'Solid',
+                  'solidAciklama': noteController.text.isEmpty
+                      ? null
+                      : noteController.text,
+                  'solidDakika': solidDuration,
+                });
+              } else if (selectedType == 'bottleMilk') {
+                updated.addAll({
+                  'tur': 'Anne Sütü (Biberon)',
+                  'solDakika': 0,
+                  'sagDakika': 0,
+                  'miktar': amount,
+                  'kategori': 'Milk',
+                });
+              } else {
+                updated.addAll({
+                  'tur': 'Formül',
+                  'solDakika': 0,
+                  'sagDakika': 0,
+                  'miktar': amount,
+                  'kategori': 'Milk',
+                });
+              }
+              await VeriYonetici.updateMamaKaydiById(recordId, updated);
+              if (mounted) {
+                Navigator.pop(ctx);
+                setState(() {});
+              }
+            } finally {
+              noteController.dispose();
+              if (ctx.mounted) {
+                setModalState(() => isSaving = false);
+              }
             }
           },
           child: Column(
@@ -1569,6 +1606,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final noteController = TextEditingController(
       text: kayit['notlar'] as String? ?? '',
     );
+    bool isSaving = false;
 
     await showModalBottomSheet(
       context: context,
@@ -1577,21 +1615,30 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
           title: l10n.editTitleDiaper,
+          isSaving: isSaving,
           onSave: () async {
-            final normalized = VeriYonetici.normalizeDiaperType(type);
-            final updated = {
-              'id': recordId,
-              'tarih': eventTime,
-              'tur': normalized,
-              'diaperType': normalized,
-              'eventType': VeriYonetici.diaperEventType,
-              'notlar': noteController.text,
-            };
-            await VeriYonetici.updateKakaKaydiById(recordId, updated);
-            noteController.dispose();
-            if (mounted) {
-              Navigator.pop(ctx);
-              setState(() {});
+            if (isSaving) return;
+            setModalState(() => isSaving = true);
+            try {
+              final normalized = VeriYonetici.normalizeDiaperType(type);
+              final updated = {
+                'id': recordId,
+                'tarih': eventTime,
+                'tur': normalized,
+                'diaperType': normalized,
+                'eventType': VeriYonetici.diaperEventType,
+                'notlar': noteController.text,
+              };
+              await VeriYonetici.updateKakaKaydiById(recordId, updated);
+              if (mounted) {
+                Navigator.pop(ctx);
+                setState(() {});
+              }
+            } finally {
+              noteController.dispose();
+              if (ctx.mounted) {
+                setModalState(() => isSaving = false);
+              }
             }
           },
           child: Column(
@@ -1646,6 +1693,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final String recordId = kayit['id']?.toString() ?? '';
     DateTime start = kayit['baslangic'] as DateTime;
     DateTime end = kayit['bitis'] as DateTime;
+    bool isSaving = false;
 
     await showModalBottomSheet(
       context: context,
@@ -1654,21 +1702,30 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
           title: l10n.editTitleSleep,
+          isSaving: isSaving,
           onSave: () async {
-            var normalizedEnd = end;
-            if (normalizedEnd.isBefore(start)) {
-              normalizedEnd = normalizedEnd.add(const Duration(days: 1));
-            }
-            final updated = {
-              'id': recordId,
-              'baslangic': start,
-              'bitis': normalizedEnd,
-              'sure': normalizedEnd.difference(start),
-            };
-            await VeriYonetici.updateUykuKaydiById(recordId, updated);
-            if (mounted) {
-              Navigator.pop(ctx);
-              setState(() {});
+            if (isSaving) return;
+            setModalState(() => isSaving = true);
+            try {
+              var normalizedEnd = end;
+              if (normalizedEnd.isBefore(start)) {
+                normalizedEnd = normalizedEnd.add(const Duration(days: 1));
+              }
+              final updated = {
+                'id': recordId,
+                'baslangic': start,
+                'bitis': normalizedEnd,
+                'sure': normalizedEnd.difference(start),
+              };
+              await VeriYonetici.updateUykuKaydiById(recordId, updated);
+              if (mounted) {
+                Navigator.pop(ctx);
+                setState(() {});
+              }
+            } finally {
+              if (ctx.mounted) {
+                setModalState(() => isSaving = false);
+              }
             }
           },
           child: Column(
@@ -2187,7 +2244,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           ),
         ),
         child: Text(
-          'âœ“ ${l10n.update}',
+          'Ã¢Å“â€œ ${l10n.update}',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -2247,7 +2304,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'ğŸ—‘ï¸ ${l10n.delete}',
+          'ÄŸÅ¸â€”â€˜Ã¯Â¸Â ${l10n.delete}',
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(

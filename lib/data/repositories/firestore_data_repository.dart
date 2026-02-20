@@ -62,22 +62,33 @@ class FirestoreDataRepository implements DataRepository {
     return payload;
   }
 
-  Future<void> _deleteAll(Query<Map<String, dynamic>> query) async {
-    final snap = await query.get();
-    if (snap.docs.isEmpty) return;
+  Future<int> _deleteAllPaginated(
+    Query<Map<String, dynamic>> query, {
+    int pageSize = 400,
+  }) async {
+    int totalDeleted = 0;
 
-    WriteBatch batch = _firestore.batch();
-    int count = 0;
-    for (final doc in snap.docs) {
-      batch.delete(doc.reference);
-      count++;
-      if (count == 450) {
+    while (true) {
+      final snap = await query.limit(pageSize).get();
+      if (snap.docs.isEmpty) break;
+
+      WriteBatch batch = _firestore.batch();
+      int batchOps = 0;
+      for (final doc in snap.docs) {
+        batch.delete(doc.reference);
+        batchOps++;
+        totalDeleted++;
+        if (batchOps == 450) {
+          await batch.commit();
+          batch = _firestore.batch();
+          batchOps = 0;
+        }
+      }
+      if (batchOps > 0) {
         await batch.commit();
-        batch = _firestore.batch();
-        count = 0;
       }
     }
-    if (count > 0) await batch.commit();
+    return totalDeleted;
   }
 
   Future<void> _setWithServerTimestamps(
@@ -425,30 +436,48 @@ class FirestoreDataRepository implements DataRepository {
 
   @override
   Future<void> deleteBabyData(String uid, {required String babyId}) async {
-    await Future.wait([
-      _deleteAll(
-        _userCollection(uid, 'records').where('babyId', isEqualTo: babyId),
-      ),
-      _deleteAll(
-        _userCollection(uid, 'medications').where('babyId', isEqualTo: babyId),
-      ),
-      _deleteAll(
-        _userCollection(
-          uid,
-          'medicationLogs',
-        ).where('babyId', isEqualTo: babyId),
-      ),
-      _userCollection(uid, 'babies').doc(babyId).delete(),
+    final userRef = _firestore.collection('users').doc(uid);
+    final recordsQ = userRef
+        .collection('records')
+        .where('babyId', isEqualTo: babyId);
+    final medicationsQ = userRef
+        .collection('medications')
+        .where('babyId', isEqualTo: babyId);
+    final logsQ = userRef
+        .collection('medicationLogs')
+        .where('babyId', isEqualTo: babyId);
+    final memoriesQ = userRef
+        .collection('memories')
+        .where('babyId', isEqualTo: babyId);
+
+    final results = await Future.wait<int>([
+      _deleteAllPaginated(recordsQ),
+      _deleteAllPaginated(medicationsQ),
+      _deleteAllPaginated(logsQ),
+      _deleteAllPaginated(memoriesQ),
     ]);
+
+    try {
+      await userRef.collection('babies').doc(babyId).delete();
+    } on FirebaseException catch (e) {
+      if (e.code != 'not-found') rethrow;
+    }
+
+    _log(
+      'deleteBabyData uid=$uid babyId=$babyId '
+      'records=${results[0]} medications=${results[1]} '
+      'medicationLogs=${results[2]} memories=${results[3]}',
+    );
   }
 
   @override
   Future<void> clearUserSubtree(String uid) async {
     await Future.wait([
-      _deleteAll(_userCollection(uid, 'records')),
-      _deleteAll(_userCollection(uid, 'medications')),
-      _deleteAll(_userCollection(uid, 'medicationLogs')),
-      _deleteAll(_userCollection(uid, 'babies')),
+      _deleteAllPaginated(_userCollection(uid, 'records')),
+      _deleteAllPaginated(_userCollection(uid, 'medications')),
+      _deleteAllPaginated(_userCollection(uid, 'medicationLogs')),
+      _deleteAllPaginated(_userCollection(uid, 'memories')),
+      _deleteAllPaginated(_userCollection(uid, 'babies')),
     ]);
   }
 }

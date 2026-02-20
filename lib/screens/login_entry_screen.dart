@@ -102,16 +102,62 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     }
   }
 
-  void _skipLogin() {
+  Future<void> _skipLogin() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
     HapticFeedback.lightImpact();
-    _proceedToApp();
+    try {
+      if (kDebugMode) {
+        final before = FirebaseAuth.instance.currentUser;
+        final providers =
+            before?.providerData
+                .map((p) => '${p.providerId}:${p.uid}')
+                .toList() ??
+            const <String>[];
+        debugPrint(
+          '[LoginEntryScreen] guest tap before uid=${before?.uid} anonymous=${before?.isAnonymous} providers=$providers',
+        );
+      }
+      await SyncManager.forceGuestSession();
+      if (kDebugMode) {
+        final after = FirebaseAuth.instance.currentUser;
+        final providers =
+            after?.providerData
+                .map((p) => '${p.providerId}:${p.uid}')
+                .toList() ??
+            const <String>[];
+        debugPrint(
+          '[LoginEntryScreen] guest tap after uid=${after?.uid} anonymous=${after?.isAnonymous} providers=$providers',
+        );
+      }
+      await _proceedToApp(forcePromptAddBabyForGuest: true);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.signInFailed(e.toString())),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
-  void _proceedToApp() async {
+  Future<void> _proceedToApp({bool forcePromptAddBabyForGuest = false}) async {
     await VeriYonetici.setLoginEntryShown();
     await SyncManager.syncCurrentUserData();
+    final user = FirebaseAuth.instance.currentUser;
+    final shouldPromptAddBaby =
+        forcePromptAddBabyForGuest &&
+        user != null &&
+        user.isAnonymous &&
+        VeriYonetici.getBabies().isEmpty;
     if (mounted) {
-      AppNavigator.goToRoot(const MainScreen());
+      AppNavigator.goToRoot(
+        MainScreen(promptAddBabyOnStart: shouldPromptAddBaby),
+      );
     }
   }
 

@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +25,7 @@ class _RaporScreenState extends State<RaporScreen> {
   bool _isCapturing = false;
   final GlobalKey _repaintKey = GlobalKey();
 
-  // İstatistik verileri
+  // Ä°statistik verileri
   Map<String, dynamic> _stats = {};
 
   @override
@@ -40,14 +40,14 @@ class _RaporScreenState extends State<RaporScreen> {
         ? now.subtract(const Duration(days: 7))
         : DateTime(now.year, now.month, 1); // Start of current month
 
-    // Mama kayıtları
+    // Mama kayÄ±tlarÄ±
     final mamaKayitlari = VeriYonetici.getMamaKayitlari()
         .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
         .toList();
 
     // Emzirme istatistikleri
     final emzirmeKayitlari = mamaKayitlari
-        .where((k) => k['tur'] == 'Anne Sütü')
+        .where((k) => k['tur'] == 'Anne SÃ¼tÃ¼')
         .toList();
     int toplamEmzirme = emzirmeKayitlari.length;
     int toplamSolDk = 0;
@@ -57,27 +57,32 @@ class _RaporScreenState extends State<RaporScreen> {
       toplamSagDk += (k['sagDakika'] as int?) ?? 0;
     }
 
-    // Katı gıda (solid food)
+    // KatÄ± gÄ±da (solid food)
     final solidKayitlari = mamaKayitlari
-        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'Katı Gıda')
+        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'KatÄ± GÄ±da')
         .toList();
 
-    // Biberon/Formül (exclude solid food)
+    // Biberon/FormÃ¼l (exclude solid food)
     final biberonKayitlari = mamaKayitlari
-        .where((k) => k['tur'] != 'Anne Sütü' && k['kategori'] != 'Solid' && k['tur'] != 'Katı Gıda')
+        .where(
+          (k) =>
+              k['tur'] != 'Anne SÃ¼tÃ¼' &&
+              k['kategori'] != 'Solid' &&
+              k['tur'] != 'KatÄ± GÄ±da',
+        )
         .toList();
     int toplamBiberonMl = 0;
     int toplamFormulMl = 0;
     for (var k in biberonKayitlari) {
       final miktar = (k['miktar'] as int?) ?? 0;
-      if (k['tur'] == 'Formül') {
+      if (k['tur'] == 'FormÃ¼l') {
         toplamFormulMl += miktar;
       } else {
         toplamBiberonMl += miktar;
       }
     }
 
-    // Bez kayıtları
+    // Bez kayÄ±tlarÄ±
     final kakaKayitlari = VeriYonetici.getKakaKayitlari()
         .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
         .toList();
@@ -103,7 +108,7 @@ class _RaporScreenState extends State<RaporScreen> {
         )
         .length;
 
-    // Uyku kayıtları
+    // Uyku kayÄ±tlarÄ±
     final uykuKayitlari = VeriYonetici.getUykuKayitlari()
         .where((k) => (k['bitis'] as DateTime).isAfter(startDate))
         .toList();
@@ -117,7 +122,7 @@ class _RaporScreenState extends State<RaporScreen> {
       }
     }
 
-    // Büyüme kayıtları
+    // BÃ¼yÃ¼me kayÄ±tlarÄ±
     final boyKiloKayitlari = VeriYonetici.getBoyKiloKayitlari();
     double? sonBoy, sonKilo, oncekiBoy, oncekiKilo;
     if (boyKiloKayitlari.isNotEmpty) {
@@ -145,7 +150,7 @@ class _RaporScreenState extends State<RaporScreen> {
         // Biberon
         'toplamBiberonMl': toplamBiberonMl,
         'toplamFormulMl': toplamFormulMl,
-        // Katı gıda
+        // KatÄ± gÄ±da
         'toplamSolid': solidKayitlari.length,
         // Bez
         'toplamBez': kakaKayitlari.length,
@@ -161,7 +166,7 @@ class _RaporScreenState extends State<RaporScreen> {
         'enUzunUyku':
             '${enUzunUykuDakika ~/ 60} sa ${enUzunUykuDakika % 60} dk',
         'uykuSayisi': uykuKayitlari.length,
-        // Büyüme
+        // BÃ¼yÃ¼me
         'boy': sonBoy,
         'kilo': sonKilo,
         'boyDegisim': sonBoy != null && oncekiBoy != null
@@ -248,7 +253,20 @@ class _RaporScreenState extends State<RaporScreen> {
 
   Widget _buildHeader(bool isDark, Color cardColor, Color textColor) {
     final l10n = AppLocalizations.of(context)!;
-    final months = [l10n.january, l10n.february, l10n.march, l10n.april, l10n.may, l10n.june, l10n.july, l10n.august, l10n.september, l10n.october, l10n.november, l10n.december];
+    final months = [
+      l10n.january,
+      l10n.february,
+      l10n.march,
+      l10n.april,
+      l10n.may,
+      l10n.june,
+      l10n.july,
+      l10n.august,
+      l10n.september,
+      l10n.october,
+      l10n.november,
+      l10n.december,
+    ];
     final startDate = _stats['startDate'] as DateTime?;
     final endDate = _stats['endDate'] as DateTime?;
     String dateRange = '';
@@ -340,7 +358,9 @@ class _RaporScreenState extends State<RaporScreen> {
                       : Icon(
                           Icons.share_outlined,
                           size: 18,
-                          color: isDark ? Colors.white70 : const Color(0xFF666666),
+                          color: isDark
+                              ? Colors.white70
+                              : const Color(0xFF666666),
                         ),
                 ),
               ),
@@ -733,7 +753,7 @@ class _RaporScreenState extends State<RaporScreen> {
     );
   }
 
-  // BEZ DEĞİŞİMİ KARTI
+  // BEZ DEÄÄ°ÅÄ°MÄ° KARTI
   Widget _buildDiaperCard(
     bool isDark,
     Color cardColor,
@@ -1045,7 +1065,7 @@ class _RaporScreenState extends State<RaporScreen> {
     );
   }
 
-  // BÜYÜME KARTI
+  // BÃœYÃœME KARTI
   Widget _buildGrowthCard(
     bool isDark,
     Color cardColor,
@@ -1322,104 +1342,208 @@ class _RaporScreenState extends State<RaporScreen> {
     HapticFeedback.mediumImpact();
 
     try {
+      final regularFont = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Arial-Regular.ttf'),
+      );
+      final boldFont = pw.Font.ttf(
+        await rootBundle.load('assets/fonts/Arial-Bold.ttf'),
+      );
       final pdf = pw.Document();
+      final theme = pw.ThemeData.withFont(
+        base: regularFont,
+        bold: boldFont,
+        italic: regularFont,
+        boldItalic: boldFont,
+      );
+
+      final startDate = _stats['startDate'] as DateTime?;
+      final endDate = _stats['endDate'] as DateTime?;
+      final dateRangeText = startDate == null || endDate == null
+          ? '-'
+          : '${_formatPdfDate(startDate)} - ${_formatPdfDate(endDate)}';
+      final reportType = _isWeekly ? 'Haftalık Rapor' : 'Aylık Rapor';
+      final sectionTitleStyle = pw.TextStyle(
+        fontSize: 14,
+        fontWeight: pw.FontWeight.bold,
+        color: PdfColor.fromInt(0xFF2B2D33),
+      );
+      final labelStyle = pw.TextStyle(
+        fontSize: 10.5,
+        color: PdfColor.fromInt(0xFF5E6470),
+      );
+      final valueStyle = pw.TextStyle(
+        fontSize: 10.5,
+        fontWeight: pw.FontWeight.bold,
+        color: PdfColor.fromInt(0xFF2B2D33),
+      );
+      final medicationCount = VeriYonetici.getIlacDozKayitlari().where((log) {
+        final givenAt = log['givenAt'] as DateTime?;
+        if (givenAt == null || startDate == null || endDate == null) {
+          return false;
+        }
+        return !givenAt.isBefore(startDate) && !givenAt.isAfter(endDate);
+      }).length;
+
+      if (kDebugMode) {
+        const glyphSample = 'ğşİıöüç';
+        debugPrint(
+          '[PDF] glyph sample="$glyphSample" codeUnits=${glyphSample.codeUnits}',
+        );
+      }
 
       pdf.addPage(
-        pw.Page(
+        pw.MultiPage(
+          theme: theme,
           pageFormat: PdfPageFormat.a4,
-          build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                // Header
-                pw.Container(
-                  padding: const pw.EdgeInsets.all(20),
-                  decoration: pw.BoxDecoration(
-                    color: PdfColors.pink50,
-                    borderRadius: pw.BorderRadius.circular(12),
+          margin: const pw.EdgeInsets.symmetric(horizontal: 34, vertical: 32),
+          build: (pw.Context context) => [
+            pw.Container(
+              width: double.infinity,
+              padding: const pw.EdgeInsets.fromLTRB(20, 16, 20, 16),
+              decoration: pw.BoxDecoration(
+                color: PdfColor.fromInt(0xFFF3EFF2),
+                borderRadius: pw.BorderRadius.circular(14),
+                border: pw.Border.all(color: PdfColor.fromInt(0xFFE2DDE1)),
+              ),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'Nilico Raporu',
+                    style: pw.TextStyle(
+                      fontSize: 22,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColor.fromInt(0xFF2B2D33),
+                    ),
                   ),
-                  child: pw.Column(
-                    children: [
-                      pw.Text(
-                        'Nilico Raporu',
-                        style: pw.TextStyle(
-                          fontSize: 24,
-                          fontWeight: pw.FontWeight.bold,
-                          color: PdfColors.pink,
-                        ),
-                      ),
-                      pw.SizedBox(height: 8),
-                      pw.Text(
-                        _isWeekly ? 'Haftalık Rapor' : 'Aylık Rapor',
-                        style: const pw.TextStyle(
-                          fontSize: 16,
-                          color: PdfColors.grey700,
-                        ),
-                      ),
-                    ],
+                  pw.SizedBox(height: 6),
+                  pw.Text(
+                    reportType,
+                    style: pw.TextStyle(
+                      fontSize: 12,
+                      color: PdfColor.fromInt(0xFF5E6470),
+                    ),
+                  ),
+                  pw.SizedBox(height: 3),
+                  pw.Text(
+                    'Tarih Aralığı: $dateRangeText',
+                    style: pw.TextStyle(
+                      fontSize: 11,
+                      color: PdfColor.fromInt(0xFF5E6470),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            pw.SizedBox(height: 14),
+            _buildPdfSection(
+              title: 'Beslenme',
+              rows: [
+                MapEntry('Toplam Emzirme', '${_pdfStat('toplamEmzirme')} kez'),
+                MapEntry(
+                  'Toplam Süre',
+                  '${_pdfStat('toplamEmzirmeDk')} dakika',
+                ),
+                MapEntry('Sol Meme', '${_pdfStat('solMemeDk')} dk'),
+                MapEntry('Sağ Meme', '${_pdfStat('sagMemeDk')} dk'),
+                MapEntry('Biberon', '${_pdfStat('toplamBiberonMl')} ml'),
+                MapEntry('Formül', '${_pdfStat('toplamFormulMl')} ml'),
+                MapEntry('Katı Gıda', '${_pdfStat('toplamSolid')} kez'),
+              ],
+              backgroundColor: PdfColor.fromInt(0xFFFDF3F5),
+              sectionTitleStyle: sectionTitleStyle,
+              labelStyle: labelStyle,
+              valueStyle: valueStyle,
+            ),
+            pw.SizedBox(height: 12),
+            _buildPdfSection(
+              title: 'Bez Değişimi',
+              rows: [
+                MapEntry('Toplam', '${_pdfStat('toplamBez')} kez'),
+                MapEntry('Günlük Ortalama', '${_pdfStat('gunlukBez')} kez'),
+                MapEntry('Islak', _pdfStat('islak')),
+                MapEntry('Kirli', _pdfStat('kirli')),
+                MapEntry('İkisi', _pdfStat('ikisi')),
+              ],
+              backgroundColor: PdfColor.fromInt(0xFFF2F6FC),
+              sectionTitleStyle: sectionTitleStyle,
+              labelStyle: labelStyle,
+              valueStyle: valueStyle,
+            ),
+            pw.SizedBox(height: 12),
+            _buildPdfSection(
+              title: 'Uyku',
+              rows: [
+                MapEntry('Toplam Uyku', '${_pdfStat('toplamUykuSaat')} saat'),
+                MapEntry(
+                  'Günlük Ortalama',
+                  '${_pdfStat('gunlukUykuSaat')} saat',
+                ),
+                MapEntry('En Uzun Uyku', _pdfStat('enUzunUyku')),
+                MapEntry('Uyku Sayısı', '${_pdfStat('uykuSayisi')} kez'),
+              ],
+              backgroundColor: PdfColor.fromInt(0xFFF6F4FC),
+              sectionTitleStyle: sectionTitleStyle,
+              labelStyle: labelStyle,
+              valueStyle: valueStyle,
+            ),
+            pw.SizedBox(height: 12),
+            _buildPdfSection(
+              title: 'Büyüme',
+              rows: [
+                MapEntry('Boy', '${_pdfStat('boy')} cm'),
+                MapEntry('Kilo', '${_pdfStat('kilo')} kg'),
+              ],
+              backgroundColor: PdfColor.fromInt(0xFFF1F8F4),
+              sectionTitleStyle: sectionTitleStyle,
+              labelStyle: labelStyle,
+              valueStyle: valueStyle,
+            ),
+            if (medicationCount > 0) ...[
+              pw.SizedBox(height: 12),
+              _buildPdfSection(
+                title: 'İlaçlar',
+                rows: [MapEntry('Uygulanan Doz', '$medicationCount kez')],
+                backgroundColor: PdfColor.fromInt(0xFFFAF5EE),
+                sectionTitleStyle: sectionTitleStyle,
+                labelStyle: labelStyle,
+                valueStyle: valueStyle,
+              ),
+            ],
+          ],
+          footer: (pw.Context context) => pw.Padding(
+            padding: const pw.EdgeInsets.only(top: 8),
+            child: pw.Row(
+              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+              children: [
+                pw.Text(
+                  'Nilico ile oluşturuldu',
+                  style: pw.TextStyle(
+                    fontSize: 9,
+                    color: PdfColor.fromInt(0xFF9AA0AA),
                   ),
                 ),
-                pw.SizedBox(height: 20),
-
-                // Beslenme
-                _buildPdfSection('Beslenme', [
-                  'Toplam Emzirme: ${_stats['toplamEmzirme']} kez',
-                  'Toplam Süre: ${_stats['toplamEmzirmeDk']} dakika',
-                  'Sol Meme: ${_stats['solMemeDk']} dk | Sağ Meme: ${_stats['sagMemeDk']} dk',
-                  'Biberon: ${_stats['toplamBiberonMl']} ml | Formül: ${_stats['toplamFormulMl']} ml',
-                  'Katı Gıda: ${_stats['toplamSolid']} kez',
-                ], PdfColors.pink100),
-                pw.SizedBox(height: 16),
-
-                // Bez
-                _buildPdfSection('Bez Değişimi', [
-                  'Toplam: ${_stats['toplamBez']} kez',
-                  'Günlük Ortalama: ${_stats['gunlukBez']} kez',
-                  'Islak: ${_stats['islak']} | Kirli: ${_stats['kirli']} | İkisi: ${_stats['ikisi']}',
-                ], PdfColors.blue100),
-                pw.SizedBox(height: 16),
-
-                // Uyku
-                _buildPdfSection('Uyku', [
-                  'Toplam Uyku: ${_stats['toplamUykuSaat']} saat',
-                  'Günlük Ortalama: ${_stats['gunlukUykuSaat']} saat',
-                  'En Uzun Uyku: ${_stats['enUzunUyku']}',
-                  'Uyku Sayısı: ${_stats['uykuSayisi']} kez',
-                ], PdfColors.purple100),
-                pw.SizedBox(height: 16),
-
-                // Büyüme
-                _buildPdfSection('Büyüme', [
-                  'Boy: ${_stats['boy'] ?? '-'} cm',
-                  'Kilo: ${_stats['kilo'] ?? '-'} kg',
-                ], PdfColors.green100),
-
-                pw.Spacer(),
-                pw.Center(
-                  child: pw.Text(
-                    'Nilico ile oluşturuldu',
-                    style: const pw.TextStyle(
-                      fontSize: 10,
-                      color: PdfColors.grey500,
-                    ),
+                pw.Text(
+                  '${context.pageNumber}/${context.pagesCount}',
+                  style: pw.TextStyle(
+                    fontSize: 9,
+                    color: PdfColor.fromInt(0xFF9AA0AA),
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
       );
 
       final bytes = await pdf.save();
 
-      // Save to temporary file
       final output = await getTemporaryDirectory();
       final file = File(
         '${output.path}/bebek_rapor_${DateTime.now().millisecondsSinceEpoch}.pdf',
       );
       await file.writeAsBytes(bytes);
 
-      // Share PDF (works on both web and mobile)
       await Share.shareXFiles([XFile(file.path)], text: 'Nilico Raporu');
 
       if (!mounted) return;
@@ -1432,7 +1556,10 @@ class _RaporScreenState extends State<RaporScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorWithMessage(e.toString())), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(l10n.errorWithMessage(e.toString())),
+          backgroundColor: Colors.red,
+        ),
       );
     }
 
@@ -1455,8 +1582,9 @@ class _RaporScreenState extends State<RaporScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final boundary = _repaintKey.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
+      final boundary =
+          _repaintKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) {
         throw Exception('RepaintBoundary not found');
       }
@@ -1477,45 +1605,85 @@ class _RaporScreenState extends State<RaporScreen> {
       await file.writeAsBytes(bytes);
 
       // Open share sheet
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
-      );
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.errorWithMessage(e.toString())), backgroundColor: Colors.red),
+        SnackBar(
+          content: Text(l10n.errorWithMessage(e.toString())),
+          backgroundColor: Colors.red,
+        ),
       );
     }
 
     setState(() => _isCapturing = false);
   }
 
-  pw.Widget _buildPdfSection(
-    String title,
-    List<String> items,
-    PdfColor bgColor,
-  ) {
+  String _formatPdfDate(DateTime date) {
+    final d = date.toLocal();
+    final day = d.day.toString().padLeft(2, '0');
+    final month = d.month.toString().padLeft(2, '0');
+    return '$day.$month.${d.year}';
+  }
+
+  String _pdfStat(String key) {
+    final value = _stats[key];
+    if (value == null) return '-';
+    if (value is num) {
+      if (value is double && value == value.roundToDouble()) {
+        return value.toInt().toString();
+      }
+      return value.toString();
+    }
+    final text = value.toString().trim();
+    return text.isEmpty ? '-' : text;
+  }
+
+  pw.Widget _buildPdfSection({
+    required String title,
+    required List<MapEntry<String, String>> rows,
+    required PdfColor backgroundColor,
+    required pw.TextStyle sectionTitleStyle,
+    required pw.TextStyle labelStyle,
+    required pw.TextStyle valueStyle,
+  }) {
     return pw.Container(
-      padding: const pw.EdgeInsets.all(16),
+      padding: const pw.EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: pw.BoxDecoration(
-        color: bgColor,
-        borderRadius: pw.BorderRadius.circular(8),
+        color: backgroundColor,
+        borderRadius: pw.BorderRadius.circular(12),
+        border: pw.Border.all(color: PdfColor.fromInt(0xFFE5E7EB)),
       ),
       child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Text(
-            title,
-            style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-          ),
-          pw.SizedBox(height: 8),
-          ...items.map(
-            (item) => pw.Padding(
-              padding: const pw.EdgeInsets.only(bottom: 4),
-              child: pw.Text(item, style: const pw.TextStyle(fontSize: 12)),
-            ),
-          ),
+          pw.Text(title, style: sectionTitleStyle),
+          pw.SizedBox(height: 8.5),
+          ...rows.map((row) {
+            return pw.Padding(
+              padding: const pw.EdgeInsets.only(bottom: 5),
+              child: pw.Row(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Expanded(
+                    flex: 3,
+                    child: pw.Text(row.key, style: labelStyle),
+                  ),
+                  pw.SizedBox(width: 10),
+                  pw.Expanded(
+                    flex: 2,
+                    child: pw.Text(
+                      row.value,
+                      style: valueStyle,
+                      textAlign: pw.TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );

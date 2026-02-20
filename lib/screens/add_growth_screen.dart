@@ -17,6 +17,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -105,9 +106,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           color: const Color(0xFFE5E0F7),
                           borderRadius: BorderRadius.circular(24),
                         ),
-                        child: Center(
-                          child: Ikonlar.growth(size: 64),
-                        ),
+                        child: Center(child: Ikonlar.growth(size: 64)),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -216,7 +215,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.growthWeightHint,
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.growthWeightHint,
                           hintStyle: TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
@@ -273,7 +274,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.growthHeightHint,
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.growthHeightHint,
                           hintStyle: TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
@@ -328,7 +331,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         controller: _notesController,
                         maxLines: 3,
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.growthNotesHint,
+                          hintText: AppLocalizations.of(
+                            context,
+                          )!.growthNotesHint,
                           hintStyle: TextStyle(
                             color: const Color(0xFF7A749E).withOpacity(0.6),
                             fontSize: 14,
@@ -346,7 +351,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
 
                     // Save button
                     GestureDetector(
-                      onTap: _saveGrowth,
+                      onTap: _isSaving ? null : _saveGrowth,
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 18),
@@ -361,16 +366,27 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                             ),
                           ],
                         ),
-                        child: const Text(
-                          'Kaydet',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
+                        child: _isSaving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                'Kaydet',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -384,6 +400,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
   }
 
   void _saveGrowth() async {
+    if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     // Validate required fields
     if (_weightController.text.isEmpty || _heightController.text.isEmpty) {
@@ -395,25 +412,34 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
       );
       return;
     }
+    setState(() => _isSaving = true);
 
-    final kayitlar = VeriYonetici.getBoyKiloKayitlari();
+    try {
+      final kayitlar = VeriYonetici.getBoyKiloKayitlari();
 
-    kayitlar.insert(0, {
-      'tarih': _selectedDate,
-      'boy': double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
-      'kilo': double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
-      'notlar': _notesController.text,
-    });
+      kayitlar.insert(0, {
+        'tarih': _selectedDate,
+        'boy':
+            double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
+        'kilo':
+            double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
+        'notlar': _notesController.text,
+      });
 
-    // Sort by date descending
-    kayitlar.sort(
-      (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
-    );
+      // Sort by date descending
+      kayitlar.sort(
+        (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
+      );
 
-    await VeriYonetici.saveBoyKiloKayitlari(kayitlar);
-    widget.onSaved?.call();
-    if (mounted) {
-      Navigator.pop(context);
+      await VeriYonetici.saveBoyKiloKayitlari(kayitlar);
+      widget.onSaved?.call();
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 }

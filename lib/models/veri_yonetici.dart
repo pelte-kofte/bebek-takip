@@ -11,6 +11,28 @@ import '../services/data_sync_service.dart';
 import 'baby.dart';
 import 'timer_yonetici.dart';
 
+class BabyDeleteResult {
+  final bool deleted;
+  final bool cloudDeleteFailed;
+  final bool hasRemainingBabies;
+
+  const BabyDeleteResult({
+    required this.deleted,
+    required this.cloudDeleteFailed,
+    required this.hasRemainingBabies,
+  });
+}
+
+class MedicationDoseMarkResult {
+  final String logId;
+  final bool alreadyMarked;
+
+  const MedicationDoseMarkResult({
+    required this.logId,
+    required this.alreadyMarked,
+  });
+}
+
 class VeriYonetici {
   // Singleton instance
   static SharedPreferences? _prefs;
@@ -36,6 +58,7 @@ class VeriYonetici {
   static int _feedingReminderInterval = 180; // 3 hours default
   static bool _diaperReminderEnabled = false;
   static int _diaperReminderInterval = 120; // 2 hours default
+  static bool _medicationRemindersEnabled = true;
   static int _feedingReminderHour = 14;
   static int _feedingReminderMinute = 0;
   static int _diaperReminderHour = 14;
@@ -56,6 +79,16 @@ class VeriYonetici {
   static const bool _verboseSyncLogs = true;
   static final Map<String, String> _lastCloudFingerprintByKey = {};
   static final Map<String, DateTime> _lastCloudWriteAtByKey = {};
+
+  static const List<String> _timerKeysByBabyTemplate = <String>[
+    'active_uyku_start_{babyId}',
+    'active_emzirme_start_{babyId}',
+    'active_emzirme_ilk_start_{babyId}',
+    'active_emzirme_tur_{babyId}',
+    'active_emzirme_taraf_{babyId}',
+    'active_emzirme_sol_saniye_{babyId}',
+    'active_emzirme_sag_saniye_{babyId}',
+  ];
 
   static String _newRecordId(String prefix) {
     _recordIdCounter++;
@@ -206,13 +239,21 @@ class VeriYonetici {
       _log('Starting cloud sync for uid=$uid');
       final syncService = _dataSyncService;
       if (syncService == null) return;
+      final localBabiesBefore = _babies.length;
       final remote = await syncService.pullRemoteCoreData(uid);
+      final authUser = FirebaseAuth.instance.currentUser;
+      _log(
+        'Startup auth uid=${authUser?.uid} anonymous=${authUser?.isAnonymous} '
+        'babies local=$localBabiesBefore remote=${remote.babies.length}',
+      );
       final merged = syncService.mergeCoreData(
         local: _currentCoreBundle(),
         remote: remote,
       );
 
-      _babies = merged.babies;
+      final dedupedBabies = _dedupeBabiesById(merged.babies);
+      final didDedupeBabies = dedupedBabies.length != merged.babies.length;
+      _babies = dedupedBabies;
       _mamaKayitlari = merged.mamaKayitlari;
       _kakaKayitlari = merged.kakaKayitlari;
       _uykuKayitlari = merged.uykuKayitlari;
@@ -224,6 +265,10 @@ class VeriYonetici {
       _ilacDozKayitlari = merged.ilacDozKayitlari;
 
       await _saveBabies();
+      if (didDedupeBabies) {
+        _log('Sync dedupe detected. Rewriting baby docs for uid=$uid.');
+        await _syncBabiesToCloud();
+      }
       await _saveAllCollections();
       final shouldMigrate = await syncService.shouldRunInitialMigration(uid);
       if (shouldMigrate) {
@@ -253,6 +298,9 @@ class VeriYonetici {
       _babyName = active.name;
       _birthDate = active.birthDate;
       _babyPhotoPath = active.photoPath;
+    } else {
+      _activeBabyId = '';
+      await _setLocalString('active_baby_id', _activeBabyId);
     }
   }
 
@@ -403,6 +451,14 @@ class VeriYonetici {
     } catch (_) {
       // Best-effort cleanup only.
     }
+  }
+
+  static Future<void> clearCachedUserDataForGuest() async {
+    _lastCloudFingerprintByKey.clear();
+    _lastCloudWriteAtByKey.clear();
+    _log(
+      'Guest session metadata reset completed (non-destructive; local data preserved).',
+    );
   }
 
   static Future<void> restoreDataBundleToUid(
@@ -716,35 +772,20 @@ class VeriYonetici {
     }
 
     // Load babies and resolve active baby
-    _babies = _loadBabies();
+    final loadedBabies = _loadBabies();
+    _babies = _dedupeBabiesById(loadedBabies);
+    if (_babies.length != loadedBabies.length) {
+      await _saveBabies();
+      await _syncBabiesToCloud();
+    }
     _activeBabyId = _getLocalString('active_baby_id') ?? '';
 
-    // ALWAYS ensure at least one baby exists (critical for guest mode)
-    if (_babies.isEmpty) {
-      // Create default baby from legacy data or use defaults
-      final defaultName = _getLocalString('baby_name') ?? 'Baby';
-      final defaultPhotoPath = _getLocalString('baby_photo_path');
-      final birthDateStr = _getLocalString('birth_date');
-      final defaultBirthDate = birthDateStr != null
-          ? DateTime.parse(birthDateStr)
-          : DateTime.now().subtract(
-              const Duration(days: 30),
-            ); // 1 month old default
-
-      final defaultBaby = Baby(
-        id: Baby.generateId(),
-        name: defaultName,
-        birthDate: defaultBirthDate,
-        photoPath: defaultPhotoPath,
-      );
-
-      _babies.add(defaultBaby);
-      _activeBabyId = defaultBaby.id;
-      await _saveBabies();
-      await _setLocalString('active_baby_id', _activeBabyId);
-    } else if (!_babies.any((b) => b.id == _activeBabyId)) {
+    if (_babies.isNotEmpty && !_babies.any((b) => b.id == _activeBabyId)) {
       // Babies exist but active ID is invalid - use first baby
       _activeBabyId = _babies.first.id;
+      await _setLocalString('active_baby_id', _activeBabyId);
+    } else if (_babies.isEmpty && _activeBabyId.isNotEmpty) {
+      _activeBabyId = '';
       await _setLocalString('active_baby_id', _activeBabyId);
     }
 
@@ -758,6 +799,12 @@ class VeriYonetici {
     _asiKayitlari = _loadAsiKayitlari();
     _ilacKayitlari = _loadIlacKayitlari();
     _ilacDozKayitlari = _loadIlacDozKayitlari();
+
+    final authUser = FirebaseAuth.instance.currentUser;
+    _log(
+      'Startup auth uid=${authUser?.uid} anonymous=${authUser?.isAnonymous} '
+      'babies local=${_babies.length} remote=pending',
+    );
 
     // If signed in, prefer Firestore-backed data scoped to current uid.
     await _syncFromCloudIfSignedIn();
@@ -775,6 +822,8 @@ class VeriYonetici {
     _diaperReminderEnabled =
         _prefs!.getBool('diaper_reminder_enabled') ?? false;
     _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
+    _medicationRemindersEnabled =
+        _prefs!.getBool('medication_reminder_enabled') ?? true;
     _feedingReminderHour = _prefs!.getInt('feeding_reminder_time_h') ?? 14;
     _feedingReminderMinute = _prefs!.getInt('feeding_reminder_time_m') ?? 0;
     _diaperReminderHour = _prefs!.getInt('diaper_reminder_time_h') ?? 14;
@@ -788,32 +837,10 @@ class VeriYonetici {
       _birthDate = baby.birthDate;
       _babyPhotoPath = baby.photoPath;
     } else {
-      // Fallback - should never happen after our fix above
-      _babyName = _getLocalString('baby_name') ?? 'Baby';
-      _babyPhotoPath = _getLocalString('baby_photo_path');
-      final birthDateStr = _getLocalString('birth_date');
-      _birthDate = birthDateStr != null
-          ? DateTime.parse(birthDateStr)
-          : DateTime.now().subtract(const Duration(days: 30));
-    }
-
-    // CRITICAL: Final validation - ensure we ALWAYS have a valid active baby
-    if (_babies.isEmpty ||
-        _activeBabyId.isEmpty ||
-        !_babies.any((b) => b.id == _activeBabyId)) {
-      // This should never happen, but if it does, create emergency default baby
-      final emergencyBaby = Baby(
-        id: Baby.generateId(),
-        name: 'Baby',
-        birthDate: DateTime.now().subtract(const Duration(days: 30)),
-        photoPath: null,
-      );
-      _babies.add(emergencyBaby);
-      _activeBabyId = emergencyBaby.id;
-      _babyName = emergencyBaby.name;
-      _birthDate = emergencyBaby.birthDate;
-      _babyPhotoPath = emergencyBaby.photoPath;
-      await _saveBabies();
+      _babyName = 'Baby';
+      _birthDate = DateTime.now().subtract(const Duration(days: 30));
+      _babyPhotoPath = null;
+      _activeBabyId = '';
       await _setLocalString('active_baby_id', _activeBabyId);
     }
 
@@ -826,20 +853,25 @@ class VeriYonetici {
   static Future<void> _migrateToMultiBaby() async {
     // Check if babies key already exists (partial migration)
     final existingBabiesData = _getLocalString('babies');
-    String defaultBabyId;
+    String defaultBabyId = '';
 
     if (existingBabiesData != null && existingBabiesData.isNotEmpty) {
       try {
         final existing = jsonDecode(existingBabiesData) as List;
         if (existing.isNotEmpty) {
           defaultBabyId = existing[0]['id'] as String;
-        } else {
-          defaultBabyId = Baby.generateId();
         }
       } catch (_) {
-        defaultBabyId = Baby.generateId();
+        defaultBabyId = '';
       }
     } else {
+      if (!_hasLegacyDataToMigrate()) {
+        await _setLocalString('babies', jsonEncode([]));
+        await _setLocalString('active_baby_id', '');
+        await _prefs!.setBool(_migrationKey, true);
+        return;
+      }
+
       defaultBabyId = Baby.generateId();
 
       final existingName = _getLocalString('baby_name') ?? 'Sofia';
@@ -861,15 +893,17 @@ class VeriYonetici {
 
     await _setLocalString('active_baby_id', defaultBabyId);
 
-    // Tag all existing records with the default baby ID
-    await _tagExistingRecords('mama_kayitlari', defaultBabyId);
-    await _tagExistingRecords('kaka_kayitlari', defaultBabyId);
-    await _tagExistingRecords('uyku_kayitlari', defaultBabyId);
-    await _tagExistingRecords('anilar', defaultBabyId);
-    await _tagExistingRecords('boykilo_kayitlari', defaultBabyId);
-    await _tagExistingRecords('milestones', defaultBabyId);
-    await _tagExistingRecords('asi_kayitlari', defaultBabyId);
-    await _tagExistingRecords('ilac_kayitlari', defaultBabyId);
+    if (defaultBabyId.isNotEmpty) {
+      // Tag all existing records with the default baby ID
+      await _tagExistingRecords('mama_kayitlari', defaultBabyId);
+      await _tagExistingRecords('kaka_kayitlari', defaultBabyId);
+      await _tagExistingRecords('uyku_kayitlari', defaultBabyId);
+      await _tagExistingRecords('anilar', defaultBabyId);
+      await _tagExistingRecords('boykilo_kayitlari', defaultBabyId);
+      await _tagExistingRecords('milestones', defaultBabyId);
+      await _tagExistingRecords('asi_kayitlari', defaultBabyId);
+      await _tagExistingRecords('ilac_kayitlari', defaultBabyId);
+    }
 
     await _prefs!.setBool(_migrationKey, true);
   }
@@ -890,6 +924,121 @@ class VeriYonetici {
     }
   }
 
+  static bool _hasLegacyDataToMigrate() {
+    if (_getLocalString('baby_name') != null) return true;
+    if (_getLocalString('birth_date') != null) return true;
+    if (_getLocalString('baby_photo_path') != null) return true;
+
+    const dataKeys = <String>[
+      'mama_kayitlari',
+      'kaka_kayitlari',
+      'uyku_kayitlari',
+      'anilar',
+      'boykilo_kayitlari',
+      'milestones',
+      'asi_kayitlari',
+      'ilac_kayitlari',
+      'ilac_doz_kayitlari',
+    ];
+
+    for (final key in dataKeys) {
+      final raw = _getLocalString(key);
+      if (raw == null) continue;
+      final normalized = raw.trim();
+      if (normalized.isNotEmpty && normalized != '[]') return true;
+    }
+    return false;
+  }
+
+  static List<Baby> _dedupeBabiesById(List<Baby> babies) {
+    if (babies.length <= 1) return babies;
+
+    final byId = <String, Baby>{};
+    final duplicateHits = <String, int>{};
+    for (final baby in babies) {
+      final existing = byId[baby.id];
+      if (existing == null) {
+        byId[baby.id] = baby;
+        continue;
+      }
+      duplicateHits[baby.id] = (duplicateHits[baby.id] ?? 1) + 1;
+      byId[baby.id] = _preferBaby(existing, baby);
+    }
+
+    if (duplicateHits.isNotEmpty) {
+      for (final entry in duplicateHits.entries) {
+        _log(
+          'Deduped babies id=${entry.key} duplicates=${entry.value} '
+          'keptScore=${_babyQualityScore(byId[entry.key]!)}',
+        );
+      }
+    }
+    return byId.values.toList();
+  }
+
+  static Baby _preferBaby(Baby a, Baby b) {
+    final aScore = _babyQualityScore(a);
+    final bScore = _babyQualityScore(b);
+    if (bScore > aScore) return b;
+    if (aScore > bScore) return a;
+    return b.createdAt.isAfter(a.createdAt) ? b : a;
+  }
+
+  static int _babyQualityScore(Baby baby) {
+    var score = _recordCountForBabyId(baby.id) * 100;
+    if (baby.name.trim().isNotEmpty &&
+        baby.name.trim().toLowerCase() != 'baby') {
+      score += 10;
+    }
+    if ((baby.photoPath ?? '').trim().isNotEmpty) score += 5;
+    return score;
+  }
+
+  static int _recordCountForBabyId(String babyId) {
+    int count = 0;
+    count += _mamaKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _kakaKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _uykuKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _anilar.where((r) => r['babyId'] == babyId).length;
+    count += _boyKiloKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _milestones.where((r) => r['babyId'] == babyId).length;
+    count += _asiKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _ilacKayitlari.where((r) => r['babyId'] == babyId).length;
+    count += _ilacDozKayitlari.where((r) => r['babyId'] == babyId).length;
+    return count;
+  }
+
+  static int _removeRowsForBaby(
+    List<Map<String, dynamic>> rows,
+    String babyId,
+  ) {
+    final before = rows.length;
+    rows.removeWhere((row) => row['babyId'] == babyId);
+    return before - rows.length;
+  }
+
+  static Future<int> _clearTimerKeysForBaby(String babyId) async {
+    int removed = 0;
+    for (final template in _timerKeysByBabyTemplate) {
+      final key = template.replaceAll('{babyId}', babyId);
+      final hadKey = _prefs?.containsKey(key) ?? false;
+      await _prefs?.remove(key);
+      if (hadKey) removed++;
+    }
+
+    final sleepTimerOwner = _prefs?.getString('active_uyku_baby_id');
+    if (sleepTimerOwner == babyId) {
+      await _prefs?.remove('active_uyku_baby_id');
+      removed++;
+    }
+    final nursingTimerOwner = _prefs?.getString('active_emzirme_baby_id');
+    if (nursingTimerOwner == babyId) {
+      await _prefs?.remove('active_emzirme_baby_id');
+      removed++;
+    }
+    return removed;
+  }
+
   // ============ BABY MANAGEMENT ============
 
   static List<Baby> _loadBabies() {
@@ -906,38 +1055,31 @@ class VeriYonetici {
   }
 
   static Future<void> _saveBabies() async {
+    _babies = _dedupeBabiesById(_babies);
     final data = _babies.map((b) => b.toJson()).toList();
     await _setLocalString('babies', jsonEncode(data));
   }
 
   static List<Baby> getBabies() {
-    return List.from(_babies);
+    return List.from(_dedupeBabiesById(_babies));
+  }
+
+  static bool hasActiveBaby() {
+    return _activeBabyId.isNotEmpty &&
+        _babies.any((b) => b.id == _activeBabyId);
+  }
+
+  static Baby? getActiveBabyOrNull() {
+    if (_babies.isEmpty) return null;
+    final index = _babies.indexWhere((b) => b.id == _activeBabyId);
+    if (index >= 0) return _babies[index];
+    return _babies.first;
   }
 
   static Baby getActiveBaby() {
-    try {
-      return _babies.firstWhere((b) => b.id == _activeBabyId);
-    } catch (e) {
-      // Emergency fallback - should never happen after proper init
-      // If it does, return first baby or create a default
-      if (_babies.isNotEmpty) {
-        return _babies.first;
-      }
-      // Absolute last resort - create and return a temp baby
-      final emergencyBaby = Baby(
-        id: Baby.generateId(),
-        name: 'Baby',
-        birthDate: DateTime.now().subtract(const Duration(days: 30)),
-        photoPath: null,
-      );
-      _babies.add(emergencyBaby);
-      _activeBabyId = emergencyBaby.id;
-      _babyName = emergencyBaby.name;
-      _birthDate = emergencyBaby.birthDate;
-      _saveBabies(); // Save async without await
-      _setLocalString('active_baby_id', _activeBabyId);
-      return emergencyBaby;
-    }
+    final active = getActiveBabyOrNull();
+    if (active != null) return active;
+    throw StateError('No active baby is available.');
   }
 
   static String getActiveBabyId() {
@@ -958,50 +1100,150 @@ class VeriYonetici {
   }
 
   static Future<String> addBaby({
+    String? id,
     required String name,
     required DateTime birthDate,
     String? photoPath,
   }) async {
-    final baby = Baby(
-      id: Baby.generateId(),
-      name: name,
-      birthDate: birthDate,
-      photoPath: photoPath,
-    );
-    _babies.add(baby);
+    final babyId = id ?? Baby.generateId();
+    final existingIndex = _babies.indexWhere((b) => b.id == babyId);
+    if (existingIndex >= 0) {
+      final existing = _babies[existingIndex];
+      _babies[existingIndex] = Baby(
+        id: existing.id,
+        name: name,
+        birthDate: birthDate,
+        photoPath: photoPath ?? existing.photoPath,
+        createdAt: existing.createdAt,
+      );
+    } else {
+      final baby = Baby(
+        id: babyId,
+        name: name,
+        birthDate: birthDate,
+        photoPath: photoPath,
+      );
+      _babies.add(baby);
+    }
+
+    if (_activeBabyId.isEmpty && _babies.any((b) => b.id == babyId)) {
+      _activeBabyId = babyId;
+      await _setLocalString('active_baby_id', _activeBabyId);
+    }
     await _saveBabies();
     await _syncBabiesToCloud();
-    return baby.id;
+    return babyId;
   }
 
-  static Future<bool> removeBaby(String babyId) async {
-    if (_babies.length <= 1) return false;
-    _babies.removeWhere((b) => b.id == babyId);
+  static Future<BabyDeleteResult> deleteBaby(String babyId) async {
+    final exists = _babies.any((b) => b.id == babyId);
+    if (!exists) {
+      return const BabyDeleteResult(
+        deleted: false,
+        cloudDeleteFailed: false,
+        hasRemainingBabies: false,
+      );
+    }
 
-    _mamaKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _kakaKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _uykuKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _anilar.removeWhere((r) => r['babyId'] == babyId);
-    _boyKiloKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _milestones.removeWhere((r) => r['babyId'] == babyId);
-    _asiKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _ilacKayitlari.removeWhere((r) => r['babyId'] == babyId);
-    _ilacDozKayitlari.removeWhere((r) => r['babyId'] == babyId);
+    final removedLocalCounts = <String, int>{};
+    final uid = _currentUid;
+    final authUser = FirebaseAuth.instance.currentUser;
+    bool cloudDeleteFailed = false;
+
+    _log(
+      'Delete baby requested babyId=$babyId uid=$uid anonymous=${authUser?.isAnonymous}',
+    );
+
+    final beforeBabies = _babies.length;
+    _babies.removeWhere((b) => b.id == babyId);
+    removedLocalCounts['babies'] = beforeBabies - _babies.length;
+
+    removedLocalCounts['mama_kayitlari'] = _removeRowsForBaby(
+      _mamaKayitlari,
+      babyId,
+    );
+    removedLocalCounts['kaka_kayitlari'] = _removeRowsForBaby(
+      _kakaKayitlari,
+      babyId,
+    );
+    removedLocalCounts['uyku_kayitlari'] = _removeRowsForBaby(
+      _uykuKayitlari,
+      babyId,
+    );
+    removedLocalCounts['anilar'] = _removeRowsForBaby(_anilar, babyId);
+    removedLocalCounts['boykilo_kayitlari'] = _removeRowsForBaby(
+      _boyKiloKayitlari,
+      babyId,
+    );
+    removedLocalCounts['milestones'] = _removeRowsForBaby(_milestones, babyId);
+    removedLocalCounts['asi_kayitlari'] = _removeRowsForBaby(
+      _asiKayitlari,
+      babyId,
+    );
+    removedLocalCounts['ilac_kayitlari'] = _removeRowsForBaby(
+      _ilacKayitlari,
+      babyId,
+    );
+    removedLocalCounts['ilac_doz_kayitlari'] = _removeRowsForBaby(
+      _ilacDozKayitlari,
+      babyId,
+    );
+
+    final removedTimerKeys = await _clearTimerKeysForBaby(babyId);
+    removedLocalCounts['timer_keys'] = removedTimerKeys;
+    await TimerYonetici().clearBabyTimerState(babyId);
 
     if (_activeBabyId == babyId) {
-      await setActiveBaby(_babies.first.id);
+      if (_babies.isNotEmpty) {
+        _activeBabyId = _babies.first.id;
+      } else {
+        _activeBabyId = '';
+      }
+      await _setLocalString('active_baby_id', _activeBabyId);
+      if (_activeBabyId.isNotEmpty) {
+        await TimerYonetici().onActiveBabyChanged(_activeBabyId);
+      }
+    }
+
+    if (_babies.isNotEmpty && _babies.any((b) => b.id == _activeBabyId)) {
+      final active = getActiveBaby();
+      _babyName = active.name;
+      _birthDate = active.birthDate;
+      _babyPhotoPath = active.photoPath;
+    } else {
+      _babyName = 'Baby';
+      _birthDate = DateTime.now().subtract(const Duration(days: 30));
+      _babyPhotoPath = null;
     }
 
     await _saveBabies();
     await _saveAllCollections();
-    final uid = _currentUid;
+
     if (uid != null && uid.isNotEmpty) {
       try {
         await _firestoreStore.deleteBabyData(uid, babyId: babyId);
-      } catch (_) {}
-      await _syncBabiesToCloud();
+        await _syncBabiesToCloud();
+      } catch (e) {
+        cloudDeleteFailed = true;
+        _log(
+          'Cloud delete failed for babyId=$babyId uid=$uid. '
+          'Deleted locally. TODO: add retry queue. error=$e',
+        );
+      }
     }
-    return true;
+
+    _log('Deleted babyId=$babyId localCounts=$removedLocalCounts');
+
+    return BabyDeleteResult(
+      deleted: true,
+      cloudDeleteFailed: cloudDeleteFailed,
+      hasRemainingBabies: _babies.isNotEmpty,
+    );
+  }
+
+  static Future<bool> removeBaby(String babyId) async {
+    final result = await deleteBaby(babyId);
+    return result.deleted;
   }
 
   static Future<void> updateBaby(
@@ -1371,7 +1613,21 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAnilar() {
-    return _anilar.where((r) => r['babyId'] == _activeBabyId).toList();
+    final rows = _anilar.where((r) => r['babyId'] == _activeBabyId).toList();
+    rows.sort((a, b) {
+      final ad =
+          a['tarih'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bd =
+          b['tarih'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final byDate = bd.compareTo(ad);
+      if (byDate != 0) return byDate;
+      final au =
+          a['updatedAt'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bu =
+          b['updatedAt'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bu.compareTo(au);
+    });
+    return rows;
   }
 
   static Future<void> saveAnilar(List<Map<String, dynamic>> anilar) async {
@@ -1523,7 +1779,38 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getMilestones() {
-    return _milestones.where((r) => r['babyId'] == _activeBabyId).toList();
+    final rows = _milestones
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+
+    rows.sort((a, b) {
+      final ad =
+          a['date'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bd =
+          b['date'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final byDate = bd.compareTo(ad);
+      if (byDate != 0) return byDate;
+
+      final au =
+          a['updatedAt'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bu =
+          b['updatedAt'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final byUpdated = bu.compareTo(au);
+      if (byUpdated != 0) return byUpdated;
+
+      return (b['id']?.toString() ?? '').compareTo(a['id']?.toString() ?? '');
+    });
+
+    if (kDebugMode) {
+      final top = rows
+          .take(3)
+          .map((e) => (e['date'] as DateTime?)?.toIso8601String() ?? '-')
+          .toList();
+      _log('Milestones sorted by date desc. Top3 dates=$top');
+    }
+
+    return rows;
   }
 
   static Future<void> saveMilestones(
@@ -1670,6 +1957,7 @@ class VeriYonetici {
               'maxDoses': e['maxDoses'],
               'notes': e['notes'],
               'isActive': e['isActive'] ?? true,
+              'remindersEnabled': e['remindersEnabled'] == true,
               'createdAt': DateTime.parse(e['createdAt']),
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
@@ -1782,6 +2070,7 @@ class VeriYonetici {
             'maxDoses': e['maxDoses'],
             'notes': e['notes'],
             'isActive': e['isActive'] ?? true,
+            'remindersEnabled': e['remindersEnabled'] == true,
             'createdAt': (e['createdAt'] as DateTime).toIso8601String(),
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
@@ -1808,6 +2097,7 @@ class VeriYonetici {
               'givenAt': DateTime.parse(e['givenAt']),
               'doseIndex': (e['doseIndex'] as num?)?.toInt(),
               'scheduledTime': e['scheduledTime']?.toString(),
+              'scheduledTimeKey': e['scheduledTimeKey']?.toString(),
               'protocolStep': e['protocolStep']?.toString(),
               'note': e['note'],
               'updatedAt': e['updatedAt'] != null
@@ -1879,10 +2169,124 @@ class VeriYonetici {
     return 0;
   }
 
+  static String _localDateKey(DateTime dt) {
+    final local = dt.toLocal();
+    final y = local.year.toString().padLeft(4, '0');
+    final m = local.month.toString().padLeft(2, '0');
+    final d = local.day.toString().padLeft(2, '0');
+    return '$y$m$d';
+  }
+
+  static String? _scheduledTimeKey(String? scheduledTime) {
+    if (scheduledTime == null) return null;
+    final t = scheduledTime.trim();
+    if (t.isEmpty) return null;
+    final normalized = t.replaceAll(':', '');
+    if (RegExp(r'^\d{4}$').hasMatch(normalized)) return normalized;
+    return null;
+  }
+
+  static String _medicationDoseSlotLogId({
+    required String medicationId,
+    required DateTime dayRef,
+    required int doseIndex,
+    String? scheduledTime,
+    String? protocolStep,
+  }) {
+    final dayKey = _localDateKey(dayRef);
+    final normalizedStep = protocolStep?.trim().toLowerCase();
+    if (normalizedStep != null && normalizedStep.isNotEmpty) {
+      return '${medicationId}_${dayKey}_$normalizedStep';
+    }
+    final timeKey = _scheduledTimeKey(scheduledTime);
+    if (timeKey != null) {
+      return '${medicationId}_${dayKey}_${timeKey}_dose$doseIndex';
+    }
+    return '${medicationId}_${dayKey}_dose$doseIndex';
+  }
+
   static bool _isSameLocalDate(DateTime a, DateTime b) {
     final la = a.toLocal();
     final lb = b.toLocal();
     return la.year == lb.year && la.month == lb.month && la.day == lb.day;
+  }
+
+  static Future<MedicationDoseMarkResult> markIlacDozKaydiIfAbsent({
+    required String medicationId,
+    String? vaccineId,
+    DateTime? givenAt,
+    int? doseIndex,
+    String? scheduledTime,
+    String? protocolStep,
+    String? note,
+  }) async {
+    final targetGivenAt = givenAt ?? DateTime.now();
+    final normalizedDose = _normalizeDoseIndex(doseIndex);
+    final normalizedStep = protocolStep?.trim().toLowerCase();
+    final scheduledKey = _scheduledTimeKey(scheduledTime);
+    final logId = _medicationDoseSlotLogId(
+      medicationId: medicationId,
+      dayRef: targetGivenAt,
+      doseIndex: normalizedDose,
+      scheduledTime: scheduledTime,
+      protocolStep: normalizedStep,
+    );
+
+    final exists = _ilacDozKayitlari.any(
+      (r) => r['babyId'] == _activeBabyId && r['id'] == logId,
+    );
+    _log(
+      'Medication onTap logId=$logId exists=$exists '
+      'medicationId=$medicationId doseIndex=$normalizedDose scheduledTimeKey=$scheduledKey',
+    );
+    if (exists) {
+      return MedicationDoseMarkResult(logId: logId, alreadyMarked: true);
+    }
+
+    final now = DateTime.now();
+    _ilacDozKayitlari.insert(0, {
+      'id': logId,
+      'babyId': _activeBabyId,
+      'medicationId': medicationId,
+      'vaccineId': vaccineId,
+      'givenAt': targetGivenAt,
+      'doseIndex': normalizedDose,
+      'scheduledTime': scheduledTime,
+      'scheduledTimeKey': scheduledKey,
+      'protocolStep': normalizedStep,
+      'note': note,
+      'updatedAt': now,
+      'localUpdatedAt': now,
+    });
+    await _saveIlacDozKayitlari();
+    return MedicationDoseMarkResult(logId: logId, alreadyMarked: false);
+  }
+
+  static Future<bool> undoIlacDozKaydiBySlot({
+    required String medicationId,
+    DateTime? dayRef,
+    int? doseIndex,
+    String? scheduledTime,
+    String? protocolStep,
+  }) async {
+    final ref = dayRef ?? DateTime.now();
+    final normalizedDose = _normalizeDoseIndex(doseIndex);
+    final normalizedStep = protocolStep?.trim().toLowerCase();
+    final logId = _medicationDoseSlotLogId(
+      medicationId: medicationId,
+      dayRef: ref,
+      doseIndex: normalizedDose,
+      scheduledTime: scheduledTime,
+      protocolStep: normalizedStep,
+    );
+    final existed = _ilacDozKayitlari.any(
+      (r) => r['babyId'] == _activeBabyId && r['id'] == logId,
+    );
+    if (existed) {
+      await deleteIlacDozKaydi(logId);
+    }
+    _log('Medication onUndo logId=$logId existed=$existed deleted=$existed');
+    return existed;
   }
 
   static Future<String> upsertIlacDozKaydi({
@@ -1978,6 +2382,7 @@ class VeriYonetici {
                 'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
                 'doseIndex': e['doseIndex'],
                 'scheduledTime': e['scheduledTime'],
+                'scheduledTimeKey': e['scheduledTimeKey'],
                 'protocolStep': e['protocolStep'],
                 'note': e['note'],
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
@@ -2052,6 +2457,13 @@ class VeriYonetici {
   static Future<void> setDiaperReminderEnabled(bool value) async {
     _diaperReminderEnabled = value;
     await _prefs!.setBool('diaper_reminder_enabled', value);
+  }
+
+  static bool isMedicationReminderEnabled() => _medicationRemindersEnabled;
+
+  static Future<void> setMedicationReminderEnabled(bool value) async {
+    _medicationRemindersEnabled = value;
+    await _prefs!.setBool('medication_reminder_enabled', value);
   }
 
   static int getDiaperReminderInterval() => _diaperReminderInterval;
@@ -2311,6 +2723,7 @@ class VeriYonetici {
                 'dailyTimes': e['dailyTimes'],
                 'vaccineId': e['vaccineId'],
                 'protocolOffsets': e['protocolOffsets'],
+                'remindersEnabled': e['remindersEnabled'] == true,
                 'repeatEveryHours': e['repeatEveryHours'],
                 'maxDoses': e['maxDoses'],
                 'notes': e['notes'],

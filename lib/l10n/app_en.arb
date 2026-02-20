@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "en",
   "appName": "Nilico",
   "tagline": "Parenting made simple & memorable.",
@@ -364,7 +364,7 @@
       }
     }
   },
-  "leftMinRightMin": "L {left}min â€¢ R {right}min",
+  "leftMinRightMin": "L {left}min • R {right}min",
   "@leftMinRightMin": {
     "placeholders": {
       "left": {
@@ -477,11 +477,11 @@
   "notes": "Notes",
   "language": "Language",
   "systemDefault": "System",
-  "turkish": "TÃ¼rkÃ§e",
+  "turkish": "Türkçe",
   "english": "English",
   "russian": "Ğ ÑƒÑÑĞºĞ¸Ğ¹",
   "ukrainian": "Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°",
-  "spanish": "EspaÃ±ol",
+  "spanish": "Español",
   "languageUpdated": "Language updated",
   "tip_siyah_mekonyum_title": "First Poop",
   "tip_siyah_mekonyum_desc": "In the first 2-4 days, this is normal whether your baby takes breast milk or formula. No need to worry.",
@@ -694,4 +694,3 @@
   },
   "vaccineProtocolAdded": "Vaccine protocol added"
 }
-

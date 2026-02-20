@@ -829,7 +829,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'Ğ› $leftĞ¼Ğ¸Ğ½ â€¢ ĞŸ $rightĞ¼Ğ¸Ğ½';
+    return 'Ğ› $leftĞ¼Ğ¸Ğ½ • ĞŸ $rightĞ¼Ğ¸Ğ½';
   }
 
   @override
@@ -988,7 +988,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get systemDefault => 'Ğ¡Ğ¸ÑÑ‚ĞµĞ¼Ğ°';
 
   @override
-  String get turkish => 'TÃ¼rkÃ§e';
+  String get turkish => 'Türkçe';
 
   @override
   String get english => 'English';
@@ -1000,7 +1000,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
 
   @override
-  String get spanish => 'EspaÃ±ol';
+  String get spanish => 'Español';
 
   @override
   String get languageUpdated => 'Ğ¯Ğ·Ñ‹Ğº Ğ¾Ğ±Ğ½Ğ¾Ğ²Ğ»Ñ‘Ğ½';
