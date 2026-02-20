@@ -849,6 +849,16 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
+                        Text(
+                          'Photos are stored only on this device (not synced yet).',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: const Color(
+                              0xFF4A3E39,
+                            ).withValues(alpha: 0.55),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
                         // Photo style selector (privacy-friendly)
                         Text(
                           'Photo style',
@@ -1557,6 +1567,14 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                         ),
                       ),
                     ),
+                  Text(
+                    'Photos are stored only on this device (not synced yet).',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.55),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   // Title field
                   Text(
                     'Title',
