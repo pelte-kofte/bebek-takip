@@ -12,500 +12,450 @@ class AppLocalizationsUk extends AppLocalizations {
   String get appName => 'Nilico';
 
   @override
-  String get tagline =>
-      'Ğ‘Ğ°Ñ‚ÑŒĞºÑ–Ğ²ÑÑ‚Ğ²Ğ¾ â€” Ğ¿Ñ€Ğ¾ÑÑ‚Ğ¾ Ñ‚Ğ° Ğ½ĞµĞ·Ğ°Ğ±ÑƒÑ‚Ğ½ÑŒĞ¾.';
+  String get tagline => 'Батьківство — просто та незабутньо.';
 
   @override
-  String get freeForever => 'Ğ‘ĞµĞ·ĞºĞ¾ÑˆÑ‚Ğ¾Ğ²Ğ½Ğ¾ Ğ½Ğ°Ğ·Ğ°Ğ²Ğ¶Ğ´Ğ¸';
+  String get freeForever => 'Безкоштовно назавжди';
 
   @override
-  String get securePrivate =>
-      'Ğ‘ĞµĞ·Ğ¿ĞµÑ‡Ğ½Ğ¾ Ñ‚Ğ° ĞºĞ¾Ğ½Ñ„Ñ–Ğ´ĞµĞ½Ñ†Ñ–Ğ¹Ğ½Ğ¾';
+  String get securePrivate => 'Безпечно та конфіденційно';
 
   @override
-  String get tapToStart => 'ĞĞ°Ñ‚Ğ¸ÑĞ½Ñ–Ñ‚ÑŒ, Ñ‰Ğ¾Ğ± Ğ¿Ğ¾Ñ‡Ğ°Ñ‚Ğ¸';
+  String get tapToStart => 'Натисніть, щоб почати';
 
   @override
-  String get feedingTracker => 'Ğ¢Ñ€ĞµĞºĞµÑ€ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½ÑŒ';
+  String get feedingTracker => 'Трекер годувань';
 
   @override
   String get feedingTrackerDesc =>
-      'Ğ—Ğ°Ğ¿Ğ¸ÑÑƒĞ¹Ñ‚Ğµ Ğ³Ñ€ÑƒĞ´Ğ½Ğµ Ğ²Ğ¸Ğ³Ğ¾Ğ´Ğ¾Ğ²ÑƒĞ²Ğ°Ğ½Ğ½Ñ, Ğ¿Ğ»ÑÑˆĞµÑ‡ĞºĞ¸ Ñ‚Ğ° Ğ¿Ñ€Ğ¸ĞºĞ¾Ñ€Ğ¼. ĞŸĞ¾Ğ¼Ñ–Ñ‡Ğ°Ğ¹Ñ‚Ğµ Ğ·Ğ°ĞºĞ¾Ğ½Ğ¾Ğ¼Ñ–Ñ€Ğ½Ğ¾ÑÑ‚Ñ–.';
+      'Записуйте грудне вигодовування, пляшечки та прикорм. Помічайте закономірності.';
 
   @override
-  String get sleepPatterns => 'Ğ ĞµĞ¶Ğ¸Ğ¼ ÑĞ½Ñƒ';
+  String get sleepPatterns => 'Режим сну';
 
   @override
   String get sleepPatternsDesc =>
-      'Ğ’Ğ¸Ğ²Ñ‡Ğ°Ğ¹Ñ‚Ğµ Ñ€Ğ¸Ñ‚Ğ¼ ÑĞ½Ñƒ Ğ²Ğ°ÑˆĞ¾Ğ³Ğ¾ Ğ¼Ğ°Ğ»ÑĞºĞ° Ñ‚Ğ° Ğ¿Ğ¾ĞºÑ€Ğ°Ñ‰ÑƒĞ¹Ñ‚Ğµ ÑĞºÑ–ÑÑ‚ÑŒ ÑĞ½Ñƒ Ğ´Ğ»Ñ Ğ²ÑÑ–Ñ….';
+      'Вивчайте ритм сну вашого малюка та покращуйте якість сну для всіх.';
 
   @override
-  String get growthCharts => 'Ğ“Ñ€Ğ°Ñ„Ñ–ĞºĞ¸ Ñ€Ğ¾ÑÑ‚Ñƒ';
+  String get growthCharts => 'Графіки росту';
 
   @override
   String get growthChartsDesc =>
-      'ĞĞ°Ğ¾Ñ‡Ğ½Ğ¾ Ğ²Ñ–Ğ´ÑÑ‚ĞµĞ¶ÑƒĞ¹Ñ‚Ğµ Ğ·Ğ¼Ñ–Ğ½Ğ¸ Ñ€Ğ¾ÑÑ‚Ñƒ Ñ‚Ğ° Ğ²Ğ°Ğ³Ğ¸ Ğ·Ğ° Ğ´Ğ¾Ğ¿Ğ¾Ğ¼Ğ¾Ğ³Ğ¾Ñ Ğ³Ğ°Ñ€Ğ½Ğ¸Ñ… Ğ³Ñ€Ğ°Ñ„Ñ–ĞºÑ–Ğ².';
+      'Наочно відстежуйте зміни росту та ваги за допомогою гарних графіків.';
 
   @override
-  String get preciousMemories => 'Ğ”Ğ¾Ñ€Ğ¾Ğ³Ğ¾Ñ†Ñ–Ğ½Ğ½Ñ– ÑĞ¿Ğ¾Ğ³Ğ°Ğ´Ğ¸';
+  String get preciousMemories => 'Дорогоцінні спогади';
 
   @override
   String get preciousMemoriesDesc =>
-      'Ğ—Ğ±ĞµÑ€Ñ–Ğ³Ğ°Ğ¹Ñ‚Ğµ Ğ²Ğ°Ğ¶Ğ»Ğ¸Ğ²Ñ– Ğ¼Ğ¾Ğ¼ĞµĞ½Ñ‚Ğ¸ Ñ‚Ğ° ĞºÑƒĞ¼ĞµĞ´Ğ½Ñ– Ñ–ÑÑ‚Ğ¾Ñ€Ñ–Ñ—. Ğ’Ğ¾Ğ½Ğ¸ Ñ‚Ğ°Ğº ÑˆĞ²Ğ¸Ğ´ĞºĞ¾ Ñ€Ğ¾ÑÑ‚ÑƒÑ‚ÑŒ!';
+      'Зберігайте важливі моменти та кумедні історії. Вони так швидко ростуть!';
 
   @override
-  String get dailyRhythm => 'Ğ”ĞµĞ½Ğ½Ğ¸Ğ¹ Ñ€Ğ¸Ñ‚Ğ¼';
+  String get dailyRhythm => 'Денний ритм';
 
   @override
   String get dailyRhythmDesc =>
-      'Ğœ\'ÑĞºĞ¸Ğ¹ Ñ€ĞµĞ¶Ğ¸Ğ¼ Ğ´Ğ½Ñ Ğ¿Ñ€Ğ¸Ğ½Ğ¾ÑĞ¸Ñ‚ÑŒ ÑĞ¿Ğ¾ĞºÑ–Ğ¹Ğ½Ñ– Ğ´Ğ½Ñ– Ñ‚Ğ° Ñ‚Ğ¸Ñ…Ñ– Ğ½Ğ¾Ñ‡Ñ–.';
+      'М\'який режим дня приносить спокійні дні та тихі ночі.';
 
   @override
-  String get skip => 'ĞŸÑ€Ğ¾Ğ¿ÑƒÑÑ‚Ğ¸Ñ‚Ğ¸';
+  String get skip => 'Пропустити';
 
   @override
-  String get startYourJourney => 'Ğ Ğ¾Ğ·Ğ¿Ğ¾Ñ‡Ğ½Ñ–Ñ‚ÑŒ ÑĞ²Ğ¾Ñ Ğ¿Ğ¾Ğ´Ğ¾Ñ€Ğ¾Ğ¶';
+  String get startYourJourney => 'Розпочніть свою подорож';
 
   @override
-  String get continueBtn => 'ĞŸÑ€Ğ¾Ğ´Ğ¾Ğ²Ğ¶Ğ¸Ñ‚Ğ¸';
+  String get continueBtn => 'Продовжити';
 
   @override
-  String get save => 'Ğ—Ğ±ĞµÑ€ĞµĞ³Ñ‚Ğ¸';
+  String get save => 'Зберегти';
 
   @override
-  String get update => 'ĞĞ½Ğ¾Ğ²Ğ¸Ñ‚Ğ¸';
+  String get update => 'Оновити';
 
   @override
-  String get cancel => 'Ğ¡ĞºĞ°ÑÑƒĞ²Ğ°Ñ‚Ğ¸';
+  String get cancel => 'Скасувати';
 
   @override
-  String get delete => 'Ğ’Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸';
+  String get delete => 'Видалити';
 
   @override
-  String get edit => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸';
+  String get edit => 'Змінити';
 
   @override
-  String get ok => 'ĞĞš';
+  String get ok => 'ОК';
 
   @override
-  String get add => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸';
+  String get add => 'Додати';
 
   @override
-  String get yes => 'Ğ¢Ğ°Ğº';
+  String get yes => 'Так';
 
   @override
-  String get no => 'ĞÑ–';
+  String get no => 'Ні';
 
   @override
-  String get share => 'ĞŸĞ¾Ğ´Ñ–Ğ»Ğ¸Ñ‚Ğ¸ÑÑ';
+  String get share => 'Поділитися';
 
   @override
-  String get mlAbbrev => 'Ğ¼Ğ»';
+  String get mlAbbrev => 'мл';
 
   @override
-  String get selectTime => 'ĞĞ±ĞµÑ€Ñ–Ñ‚ÑŒ Ñ‡Ğ°Ñ';
+  String get selectTime => 'Оберіть час';
 
   @override
-  String get tapToSetTime => 'Ğ’ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚Ğ¸ Ñ‡Ğ°Ñ';
+  String get tapToSetTime => 'Встановити час';
 
   @override
-  String get notificationSleepFired =>
-      'Ğ¡Ğ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ ÑĞ¾Ğ½ Ğ½Ğ°Ğ´Ñ–ÑĞ»Ğ°Ğ½Ğ¾';
+  String get notificationSleepFired => 'Сповіщення про сон надіслано';
 
   @override
-  String get notificationNursingFired =>
-      'Ğ¡Ğ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ½Ğ°Ğ´Ñ–ÑĞ»Ğ°Ğ½Ğ¾';
+  String get notificationNursingFired => 'Сповіщення про годування надіслано';
 
   @override
-  String get signedOutSuccessfully =>
-      'Ğ’Ğ¸Ñ…Ñ–Ğ´ Ğ²Ğ¸ĞºĞ¾Ğ½Ğ°Ğ½Ğ¾ ÑƒÑĞ¿Ñ–ÑˆĞ½Ğ¾';
+  String get signedOutSuccessfully => 'Вихід виконано успішно';
 
   @override
   String errorWithMessage(String message) {
-    return 'ĞŸĞ¾Ğ¼Ğ¸Ğ»ĞºĞ°: $message';
+    return 'Помилка: $message';
   }
 
   @override
-  String get allDataDeleted => 'Ğ£ÑÑ– Ğ´Ğ°Ğ½Ñ– Ğ²Ğ¸Ğ´Ğ°Ğ»ĞµĞ½Ğ¾';
+  String get allDataDeleted => 'Усі дані видалено';
 
   @override
   String googleSignInFailed(String error) {
-    return 'Ğ’Ñ…Ñ–Ğ´ Ñ‡ĞµÑ€ĞµĞ· Google Ğ½Ğµ Ğ²Ğ´Ğ°Ğ²ÑÑ: $error';
+    return 'Вхід через Google не вдався: $error';
   }
 
   @override
   String signInFailed(String error) {
-    return 'ĞĞµ Ğ²Ğ´Ğ°Ğ»Ğ¾ÑÑ ÑƒĞ²Ñ–Ğ¹Ñ‚Ğ¸: $error';
+    return 'Не вдалося увійти: $error';
   }
 
   @override
   String get webPhotoUploadUnsupported =>
-      'Ğ—Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶ĞµĞ½Ğ½Ñ Ñ„Ğ¾Ñ‚Ğ¾ Ğ½Ğµ Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ÑƒÑ”Ñ‚ÑŒÑÑ Ñƒ Ğ²ĞµĞ±-Ğ²ĞµÑ€ÑÑ–Ñ—';
+      'Завантаження фото не підтримується у веб-версії';
 
   @override
   String babyDataDeleted(String name) {
-    return 'Ğ”Ğ°Ğ½Ñ– $name Ğ²Ğ¸Ğ´Ğ°Ğ»ĞµĞ½Ğ¾';
+    return 'Дані $name видалено';
   }
 
   @override
-  String get babyNameHint => 'Ğ†Ğ¼\'Ñ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get babyNameHint => 'Ім\'я малюка';
 
   @override
-  String get babyNotesHint =>
-      'ĞĞ»ĞµÑ€Ğ³Ñ–Ñ—, ÑƒĞ¿Ğ¾Ğ´Ğ¾Ğ±Ğ°Ğ½Ğ½Ñ, Ğ½Ğ¾Ñ‚Ğ°Ñ‚ĞºĞ¸...';
+  String get babyNotesHint => 'Алергії, уподобання, нотатки...';
 
   @override
-  String get vaccineNameHint =>
-      'Ğ½Ğ°Ğ¿Ñ€. Ğ“ĞµĞ¿Ğ°Ñ‚Ğ¸Ñ‚ B, Ğ‘Ğ¦Ğ–, ĞºĞ¾Ğ¼Ğ±Ñ–Ğ½Ğ¾Ğ²Ğ°Ğ½Ğ° Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°';
+  String get vaccineNameHint => 'напр. Гепатит B, БЦЖ, комбінована вакцина';
 
   @override
-  String get vaccineDoseHint => 'Ğ½Ğ°Ğ¿Ñ€. Ğ”Ğ¾Ğ·Ğ° 1, ĞĞšĞ”ĞŸ-Ğ†ĞŸĞ’-Ğ¥Ğ†Ğ‘';
+  String get vaccineDoseHint => 'напр. Доза 1, АКДП-ІПВ-ХІБ';
 
   @override
-  String get vaccineNameCannotBeEmpty =>
-      'ĞĞ°Ğ·Ğ²Ğ° Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸ Ğ½Ğµ Ğ¼Ğ¾Ğ¶Ğµ Ğ±ÑƒÑ‚Ğ¸ Ğ¿Ğ¾Ñ€Ğ¾Ğ¶Ğ½ÑŒĞ¾Ñ';
+  String get vaccineNameCannotBeEmpty => 'Назва вакцини не може бути порожньою';
 
   @override
-  String get growthWeightHint => 'Ğ½Ğ°Ğ¿Ñ€. 7,5';
+  String get growthWeightHint => 'напр. 7,5';
 
   @override
-  String get growthHeightHint => 'Ğ½Ğ°Ğ¿Ñ€. 68,5';
+  String get growthHeightHint => 'напр. 68,5';
 
   @override
-  String get growthNotesHint =>
-      'Ğ’Ñ–Ğ·Ğ¸Ñ‚ Ğ´Ğ¾ Ğ»Ñ–ĞºĞ°Ñ€Ñ, Ğ´ĞµĞ½ÑŒ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ— Ñ‚Ğ¾Ñ‰Ğ¾.';
+  String get growthNotesHint => 'Візит до лікаря, день вакцинації тощо.';
 
   @override
-  String get pleaseEnterWeightHeight =>
-      'Ğ’Ğ²ĞµĞ´Ñ–Ñ‚ÑŒ Ğ²Ğ°Ğ³Ñƒ Ñ‚Ğ° Ğ·Ñ€Ñ–ÑÑ‚';
+  String get pleaseEnterWeightHeight => 'Введіть вагу та зріст';
 
   @override
-  String get memoryTitleHint => 'Ğ½Ğ°Ğ¿Ñ€. ĞŸĞµÑ€ÑˆÑ– ĞºÑ€Ğ¾ĞºĞ¸';
+  String get memoryTitleHint => 'напр. Перші кроки';
 
   @override
-  String get memoryNoteHint => 'Ğ—Ğ°Ğ¿Ğ¸ÑˆÑ–Ñ‚ÑŒ ÑĞ¿Ğ¾Ğ³Ğ°Ğ´...';
+  String get memoryNoteHint => 'Запишіть спогад...';
 
   @override
-  String get home => 'Ğ“Ğ¾Ğ»Ğ¾Ğ²Ğ½Ğ°';
+  String get home => 'Головна';
 
   @override
-  String get activities => 'Ğ”Ğ¾Ğ³Ğ»ÑĞ´';
+  String get activities => 'Догляд';
 
   @override
-  String get vaccines => 'Ğ’Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸';
+  String get vaccines => 'Вакцини';
 
   @override
-  String get development => 'Ğ Ğ¾Ğ·Ğ²Ğ¸Ñ‚Ğ¾Ğº';
+  String get development => 'Розвиток';
 
   @override
-  String get memories => 'Ğ¡Ğ¿Ğ¾Ğ³Ğ°Ğ´Ğ¸';
+  String get memories => 'Спогади';
 
   @override
-  String get settings => 'ĞĞ°Ğ»Ğ°ÑˆÑ‚ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get settings => 'Налаштування';
 
   @override
-  String get addActivity => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ·Ğ°Ğ¿Ğ¸Ñ';
+  String get addActivity => 'Додати запис';
 
   @override
-  String get whatHappened => 'Ğ©Ğ¾ ÑÑ‚Ğ°Ğ»Ğ¾ÑÑ?';
+  String get whatHappened => 'Що сталося?';
 
   @override
-  String get nursing => 'Ğ“Ñ€ÑƒĞ´Ğ½Ğµ Ğ²Ğ¸Ğ³Ğ¾Ğ´Ğ¾Ğ²ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get nursing => 'Грудне вигодовування';
 
   @override
-  String get bottle => 'Ğ“Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get bottle => 'Годування';
 
   @override
-  String get sleep => 'Ğ¡Ğ¾Ğ½';
+  String get sleep => 'Сон';
 
   @override
-  String get diaper => 'ĞŸÑ–Ğ´Ğ³ÑƒĞ·Ğ¾Ğº';
+  String get diaper => 'Підгузок';
 
   @override
-  String get side => 'Ğ¡Ñ‚Ğ¾Ñ€Ğ¾Ğ½Ğ°';
+  String get side => 'Сторона';
 
   @override
-  String get left => 'Ğ›Ñ–Ğ²Ğ°';
+  String get left => 'Ліва';
 
   @override
-  String get right => 'ĞŸÑ€Ğ°Ğ²Ğ°';
+  String get right => 'Права';
 
   @override
-  String get duration => 'Ğ¢Ñ€Ğ¸Ğ²Ğ°Ğ»Ñ–ÑÑ‚ÑŒ';
+  String get duration => 'Тривалість';
 
   @override
-  String get minAbbrev => 'Ñ…Ğ²';
+  String get minAbbrev => 'хв';
 
   @override
-  String get hourAbbrev => 'Ğ³Ğ¾Ğ´';
+  String get hourAbbrev => 'год';
 
   @override
-  String get category => 'ĞšĞ°Ñ‚ĞµĞ³Ğ¾Ñ€Ñ–Ñ';
+  String get category => 'Категорія';
 
   @override
-  String get milk => 'ĞœĞ¾Ğ»Ğ¾ĞºĞ¾';
+  String get milk => 'Молоко';
 
   @override
-  String get solid => 'ĞŸÑ€Ğ¸ĞºĞ¾Ñ€Ğ¼';
+  String get solid => 'Прикорм';
 
   @override
-  String get whatWasGiven => 'Ğ©Ğ Ğ”ĞĞ’ĞĞ›Ğ˜?';
+  String get whatWasGiven => 'ЩО ДАВАЛИ?';
 
   @override
-  String get solidFoodHint =>
-      'ĞĞ°Ğ¿Ñ€.: Ğ±Ğ°Ğ½Ğ°Ğ½Ğ¾Ğ²Ğµ Ğ¿ÑÑ€Ğµ, Ğ¼Ğ¾Ñ€ĞºĞ²Ğ°...';
+  String get solidFoodHint => 'Напр.: бананове пюре, морква...';
 
   @override
-  String get amount => 'ĞšÑ–Ğ»ÑŒĞºÑ–ÑÑ‚ÑŒ';
+  String get amount => 'Кількість';
 
   @override
-  String get milkType => 'Ğ¢Ğ¸Ğ¿ Ğ¼Ğ¾Ğ»Ğ¾ĞºĞ°';
+  String get milkType => 'Тип молока';
 
   @override
-  String get breastMilk => 'Ğ“Ñ€ÑƒĞ´Ğ½Ğµ Ğ¼Ğ¾Ğ»Ğ¾ĞºĞ¾';
+  String get breastMilk => 'Грудне молоко';
 
   @override
-  String get formula => 'Ğ¡ÑƒĞ¼Ñ–Ñˆ';
+  String get formula => 'Суміш';
 
   @override
-  String get sleepStartedAt => 'Ğ¡ĞĞ ĞŸĞĞ§ĞĞ’Ğ¡Ğ¯ Ğ';
+  String get sleepStartedAt => 'СОН ПОЧАВСЯ О';
 
   @override
-  String get wokeUpAt => 'ĞŸĞ ĞĞšĞ˜ĞĞ£Ğ’Ğ¡Ğ¯ Ğ';
+  String get wokeUpAt => 'ПРОКИНУВСЯ О';
 
   @override
-  String get tapToSet => 'Ğ’ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ¸Ñ‚Ğ¸ Ñ‡Ğ°Ñ';
+  String get tapToSet => 'Встановити час';
 
   @override
   String totalSleep(String duration) {
-    return 'Ğ—Ğ°Ğ³Ğ°Ğ»ÑŒĞ½Ğ¸Ğ¹ ÑĞ¾Ğ½: $duration';
+    return 'Загальний сон: $duration';
   }
 
   @override
-  String get type => 'Ğ¢Ğ¸Ğ¿';
+  String get type => 'Тип';
 
   @override
-  String get healthType => 'Ğ¢Ğ¸Ğ¿';
+  String get healthType => 'Тип';
 
   @override
-  String get healthTime => 'Ğ§Ğ°Ñ';
+  String get healthTime => 'Час';
 
   @override
-  String get time => 'Ğ§Ğ°Ñ';
+  String get wet => 'Мокрий';
 
   @override
-  String get wet => 'ĞœĞ¾ĞºÑ€Ğ¸Ğ¹';
+  String get dirty => 'Брудний';
 
   @override
-  String get dirty => 'Ğ‘Ñ€ÑƒĞ´Ğ½Ğ¸Ğ¹';
+  String get both => 'Обидва';
 
   @override
-  String get both => 'ĞĞ±Ğ¸Ğ´Ğ²Ğ°';
+  String get optionalNotes => 'Нотатки (необов\'язково)';
 
   @override
-  String get diaperWet => 'ĞœĞ¾ĞºÑ€Ğ¸Ğ¹';
+  String get diaperNoteHint => 'Додайте нотатку про зміну підгузка...';
 
   @override
-  String get diaperDirty => 'Ğ‘Ñ€ÑƒĞ´Ğ½Ğ¸Ğ¹';
+  String get pleaseSetDuration => 'Вкажіть тривалість';
 
   @override
-  String get diaperBoth => 'ĞĞ±Ğ¸Ğ´Ğ²Ğ°';
+  String get pleaseSetAmount => 'Вкажіть кількість';
 
   @override
-  String get optionalNotes => 'ĞĞ¾Ñ‚Ğ°Ñ‚ĞºĞ¸ (Ğ½ĞµĞ¾Ğ±Ğ¾Ğ²\'ÑĞ·ĞºĞ¾Ğ²Ğ¾)';
+  String get pleaseSetWakeUpTime => 'Вкажіть час пробудження';
 
   @override
-  String get diaperNoteHint =>
-      'Ğ”Ğ¾Ğ´Ğ°Ğ¹Ñ‚Ğµ Ğ½Ğ¾Ñ‚Ğ°Ñ‚ĞºÑƒ Ğ¿Ñ€Ğ¾ Ğ·Ğ¼Ñ–Ğ½Ñƒ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·ĞºĞ°...';
+  String get sleepDurationMustBeGreater => 'Тривалість сну має бути більше 0';
 
   @override
-  String get pleaseSetDuration => 'Ğ’ĞºĞ°Ğ¶Ñ–Ñ‚ÑŒ Ñ‚Ñ€Ğ¸Ğ²Ğ°Ğ»Ñ–ÑÑ‚ÑŒ';
+  String get today => 'Сьогодні';
 
   @override
-  String get pleaseSetAmount => 'Ğ’ĞºĞ°Ğ¶Ñ–Ñ‚ÑŒ ĞºÑ–Ğ»ÑŒĞºÑ–ÑÑ‚ÑŒ';
+  String get summary => 'ЗВЕДЕННЯ';
 
   @override
-  String get pleaseSetWakeUpTime =>
-      'Ğ’ĞºĞ°Ğ¶Ñ–Ñ‚ÑŒ Ñ‡Ğ°Ñ Ğ¿Ñ€Ğ¾Ğ±ÑƒĞ´Ğ¶ĞµĞ½Ğ½Ñ';
+  String get recentActivities => 'НЕЩОДАВНІ ЗАПИСИ ДОГЛЯДУ';
 
   @override
-  String get sleepDurationMustBeGreater =>
-      'Ğ¢Ñ€Ğ¸Ğ²Ğ°Ğ»Ñ–ÑÑ‚ÑŒ ÑĞ½Ñƒ Ğ¼Ğ°Ñ” Ğ±ÑƒÑ‚Ğ¸ Ğ±Ñ–Ğ»ÑŒÑˆĞµ 0';
+  String get record => 'запис';
 
   @override
-  String get eventTimeTooOld =>
-      'Ğ’Ğ¸Ğ±Ñ€Ğ°Ğ½Ğ¸Ğ¹ Ñ‡Ğ°Ñ Ğ¼Ğ°Ñ” Ğ±ÑƒÑ‚Ğ¸ Ğ² Ğ¼ĞµĞ¶Ğ°Ñ… Ğ¾ÑÑ‚Ğ°Ğ½Ğ½Ñ–Ñ… 48 Ğ³Ğ¾Ğ´Ğ¸Ğ½';
+  String get records => 'записів';
 
   @override
-  String get today => 'Ğ¡ÑŒĞ¾Ğ³Ğ¾Ğ´Ğ½Ñ–';
+  String get breastfeeding => 'Грудне вигодовування';
 
   @override
-  String get summary => 'Ğ—Ğ’Ğ•Ğ”Ğ•ĞĞĞ¯';
+  String get bottleBreastMilk => 'Пляшечка (грудне молоко)';
 
   @override
-  String get recentActivities =>
-      'ĞĞ•Ğ©ĞĞ”ĞĞ’ĞĞ† Ğ—ĞĞŸĞ˜Ğ¡Ğ˜ Ğ”ĞĞ“Ğ›Ğ¯Ğ”Ğ£';
+  String get total => 'Усього';
 
   @override
-  String get record => 'Ğ·Ğ°Ğ¿Ğ¸Ñ';
+  String get diaperChange => 'Зміна підгузка';
 
   @override
-  String get records => 'Ğ·Ğ°Ğ¿Ğ¸ÑÑ–Ğ²';
+  String get firstFeedingTime => 'Час першого годування?';
 
   @override
-  String get breastfeeding => 'Ğ“Ñ€ÑƒĞ´Ğ½Ğµ Ğ²Ğ¸Ğ³Ğ¾Ğ´Ğ¾Ğ²ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get trackBabyFeeding => 'Відстежуйте годування малюка';
 
   @override
-  String get bottleBreastMilk => 'ĞŸĞ»ÑÑˆĞµÑ‡ĞºĞ° (Ğ³Ñ€ÑƒĞ´Ğ½Ğµ Ğ¼Ğ¾Ğ»Ğ¾ĞºĞ¾)';
+  String get diaperChangeTime => 'Час змінити підгузок!';
 
   @override
-  String get total => 'Ğ£ÑÑŒĞ¾Ğ³Ğ¾';
+  String get trackHygiene => 'Відстежуйте гігієну тут';
 
   @override
-  String get diaperChange => 'Ğ—Ğ¼Ñ–Ğ½Ğ° Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·ĞºĞ°';
+  String get sweetDreams => 'Солодких снів...';
 
   @override
-  String get firstFeedingTime => 'Ğ§Ğ°Ñ Ğ¿ĞµÑ€ÑˆĞ¾Ğ³Ğ¾ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ?';
+  String get trackSleepPattern => 'Відстежуйте режим сну тут';
 
   @override
-  String get trackBabyFeeding =>
-      'Ğ’Ñ–Ğ´ÑÑ‚ĞµĞ¶ÑƒĞ¹Ñ‚Ğµ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get selectAnotherDate => 'Оберіть іншу дату';
 
   @override
-  String get diaperChangeTime => 'Ğ§Ğ°Ñ Ğ·Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·Ğ¾Ğº!';
+  String get editFeeding => 'Змінити годування';
 
   @override
-  String get trackHygiene => 'Ğ’Ñ–Ğ´ÑÑ‚ĞµĞ¶ÑƒĞ¹Ñ‚Ğµ Ğ³Ñ–Ğ³Ñ–Ñ”Ğ½Ñƒ Ñ‚ÑƒÑ‚';
+  String get editDiaper => 'Змінити підгузок';
 
   @override
-  String get sweetDreams => 'Ğ¡Ğ¾Ğ»Ğ¾Ğ´ĞºĞ¸Ñ… ÑĞ½Ñ–Ğ²...';
+  String get editSleep => 'Змінити сон';
 
   @override
-  String get trackSleepPattern =>
-      'Ğ’Ñ–Ğ´ÑÑ‚ĞµĞ¶ÑƒĞ¹Ñ‚Ğµ Ñ€ĞµĞ¶Ğ¸Ğ¼ ÑĞ½Ñƒ Ñ‚ÑƒÑ‚';
+  String get start => 'Початок';
 
   @override
-  String get selectAnotherDate => 'ĞĞ±ĞµÑ€Ñ–Ñ‚ÑŒ Ñ–Ğ½ÑˆÑƒ Ğ´Ğ°Ñ‚Ñƒ';
+  String get end => 'Кінець';
 
   @override
-  String get editFeeding => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get attention => 'Увага';
 
   @override
-  String get editDiaper => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·Ğ¾Ğº';
+  String get deleteConfirm => 'Ви впевнені, що хочете видалити цей запис?';
 
   @override
-  String get editSleep => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ ÑĞ¾Ğ½';
+  String get myVaccines => 'Мої вакцини';
 
   @override
-  String get editTitleFeeding => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get addVaccine => 'Додати вакцину';
 
   @override
-  String get editTitleDiaper => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·Ğ¾Ğº';
+  String get applied => 'Зроблено';
 
   @override
-  String get editTitleSleep => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ ÑĞ¾Ğ½';
+  String get pending => 'Очікується';
 
   @override
-  String get editTitleNursing =>
-      'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ³Ñ€ÑƒĞ´Ğ½Ğµ Ğ²Ğ¸Ğ³Ğ¾Ğ´Ğ¾Ğ²ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get upcomingVaccines => 'Майбутні вакцини';
 
   @override
-  String get start => 'ĞŸĞ¾Ñ‡Ğ°Ñ‚Ğ¾Ğº';
+  String get completedVaccines => 'Зроблені вакцини';
 
   @override
-  String get end => 'ĞšÑ–Ğ½ĞµÑ†ÑŒ';
+  String get selectDate => 'Оберіть дату';
 
   @override
-  String get attention => 'Ğ£Ğ²Ğ°Ğ³Ğ°';
+  String get calendar => 'Календар';
 
   @override
-  String get deleteConfirm =>
-      'Ğ’Ğ¸ Ğ²Ğ¿ĞµĞ²Ğ½ĞµĞ½Ñ–, Ñ‰Ğ¾ Ñ…Ğ¾Ñ‡ĞµÑ‚Ğµ Ğ²Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸ Ñ†ĞµĞ¹ Ğ·Ğ°Ğ¿Ğ¸Ñ?';
-
-  @override
-  String get myVaccines => 'ĞœĞ¾Ñ— Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸';
-
-  @override
-  String get addVaccine => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ñƒ';
-
-  @override
-  String get applied => 'Ğ—Ñ€Ğ¾Ğ±Ğ»ĞµĞ½Ğ¾';
-
-  @override
-  String get pending => 'ĞÑ‡Ñ–ĞºÑƒÑ”Ñ‚ÑŒÑÑ';
-
-  @override
-  String get upcomingVaccines => 'ĞœĞ°Ğ¹Ğ±ÑƒÑ‚Ğ½Ñ– Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸';
-
-  @override
-  String get completedVaccines => 'Ğ—Ñ€Ğ¾Ğ±Ğ»ĞµĞ½Ñ– Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸';
-
-  @override
-  String get selectDate => 'ĞĞ±ĞµÑ€Ñ–Ñ‚ÑŒ Ğ´Ğ°Ñ‚Ñƒ';
-
-  @override
-  String get calendar => 'ĞšĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€';
-
-  @override
-  String get turkishVaccineCalendar =>
-      'Ğ¢ÑƒÑ€ĞµÑ†ÑŒĞºĞ¸Ğ¹ ĞºĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—';
+  String get turkishVaccineCalendar => 'Турецький календар вакцинації';
 
   @override
   String vaccinesAvailable(int count) {
-    return '$count Ğ²Ğ°ĞºÑ†Ğ¸Ğ½ Ğ´Ğ¾ÑÑ‚ÑƒĞ¿Ğ½Ğ¾';
+    return '$count вакцин доступно';
   }
 
   @override
-  String get selectAll => 'ĞĞ±Ñ€Ğ°Ñ‚Ğ¸ Ğ²ÑĞµ';
+  String get selectAll => 'Обрати все';
 
   @override
-  String get clear => 'ĞÑ‡Ğ¸ÑÑ‚Ğ¸Ñ‚Ğ¸';
+  String get clear => 'Очистити';
 
   @override
-  String get alreadyAdded => 'Ğ’Ğ¶Ğµ Ğ´Ğ¾Ğ´Ğ°Ğ½Ğ¾';
+  String get alreadyAdded => 'Вже додано';
 
   @override
   String addVaccines(int count) {
-    return 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ $count Ğ²Ğ°ĞºÑ†Ğ¸Ğ½';
+    return 'Додати $count вакцин';
   }
 
   @override
-  String get selectVaccine => 'ĞĞ±ĞµÑ€Ñ–Ñ‚ÑŒ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ñƒ';
+  String get selectVaccine => 'Оберіть вакцину';
 
   @override
   String vaccinesAdded(int count) {
-    return '$count Ğ²Ğ°ĞºÑ†Ğ¸Ğ½ Ğ´Ğ¾Ğ´Ğ°Ğ½Ğ¾';
+    return '$count вакцин додано';
   }
 
   @override
-  String get noVaccineRecords =>
-      'Ğ—Ğ°Ğ¿Ğ¸ÑÑ–Ğ² Ğ¿Ñ€Ğ¾ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸ Ğ¿Ğ¾ĞºĞ¸ Ğ½ĞµĞ¼Ğ°Ñ”';
+  String get noVaccineRecords => 'Записів про вакцини поки немає';
 
   @override
   String get loadTurkishCalendar =>
-      'Ğ—Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶Ñ‚Ğµ Ñ‚ÑƒÑ€ĞµÑ†ÑŒĞºĞ¸Ğ¹ ĞºĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€ Ğ°Ğ±Ğ¾ Ğ´Ğ¾Ğ´Ğ°Ğ¹Ñ‚Ğµ Ğ²Ñ€ÑƒÑ‡Ğ½Ñƒ';
+      'Завантажте турецький календар або додайте вручну';
 
   @override
   String get loadTurkishVaccineCalendar =>
-      'Ğ—Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶Ğ¸Ñ‚Ğ¸ Ñ‚ÑƒÑ€ĞµÑ†ÑŒĞºĞ¸Ğ¹ ĞºĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—';
+      'Завантажити турецький календар вакцинації';
 
   @override
-  String get loadCalendarTitle =>
-      'Ğ—Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶Ğ¸Ñ‚Ğ¸ Ñ‚ÑƒÑ€ĞµÑ†ÑŒĞºĞ¸Ğ¹ ĞºĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—';
+  String get loadCalendarTitle => 'Завантажити турецький календар вакцинації';
 
   @override
   String get loadCalendarDesc =>
-      'Ğ‘ÑƒĞ´Ğµ Ğ·Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶ĞµĞ½Ğ¾ ÑÑ‚Ğ°Ğ½Ğ´Ğ°Ñ€Ñ‚Ğ½Ğ¸Ğ¹ Ñ‚ÑƒÑ€ĞµÑ†ÑŒĞºĞ¸Ğ¹ ĞºĞ°Ğ»ĞµĞ½Ğ´Ğ°Ñ€ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—. Ğ†ÑĞ½ÑƒÑÑ‡Ñ– Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸ Ğ½Ğµ Ğ±ÑƒĞ´ÑƒÑ‚ÑŒ Ğ²Ğ¸Ğ´Ğ°Ğ»ĞµĞ½Ñ–.';
+      'Буде завантажено стандартний турецький календар вакцинації. Існуючі вакцини не будуть видалені.';
 
   @override
   String ageYears(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Ñ€Ğ¾ĞºÑƒ',
-      many: '$count Ñ€Ğ¾ĞºÑ–Ğ²',
-      few: '$count Ñ€Ğ¾ĞºĞ¸',
-      one: '$count Ñ€Ñ–Ğº',
+      other: '$count року',
+      many: '$count років',
+      few: '$count роки',
+      one: '$count рік',
     );
     return '$_temp0';
   }
@@ -515,18 +465,18 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       years,
       locale: localeName,
-      other: '$years Ñ€Ğ¾ĞºÑƒ',
-      many: '$years Ñ€Ğ¾ĞºÑ–Ğ²',
-      few: '$years Ñ€Ğ¾ĞºĞ¸',
-      one: '$years Ñ€Ñ–Ğº',
+      other: '$years року',
+      many: '$years років',
+      few: '$years роки',
+      one: '$years рік',
     );
     String _temp1 = intl.Intl.pluralLogic(
       months,
       locale: localeName,
-      other: '$months Ğ¼Ñ–ÑÑÑ†Ñ',
-      many: '$months Ğ¼Ñ–ÑÑÑ†Ñ–Ğ²',
-      few: '$months Ğ¼Ñ–ÑÑÑ†Ñ–',
-      one: '$months Ğ¼Ñ–ÑÑÑ†ÑŒ',
+      other: '$months місяця',
+      many: '$months місяців',
+      few: '$months місяці',
+      one: '$months місяць',
     );
     return '$_temp0 $_temp1';
   }
@@ -536,18 +486,18 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       months,
       locale: localeName,
-      other: '$months Ğ¼Ñ–ÑÑÑ†Ñ',
-      many: '$months Ğ¼Ñ–ÑÑÑ†Ñ–Ğ²',
-      few: '$months Ğ¼Ñ–ÑÑÑ†Ñ–',
-      one: '$months Ğ¼Ñ–ÑÑÑ†ÑŒ',
+      other: '$months місяця',
+      many: '$months місяців',
+      few: '$months місяці',
+      one: '$months місяць',
     );
     String _temp1 = intl.Intl.pluralLogic(
       days,
       locale: localeName,
-      other: '$days Ğ´Ğ½Ñ',
-      many: '$days Ğ´Ğ½Ñ–Ğ²',
-      few: '$days Ğ´Ğ½Ñ–',
-      one: '$days Ğ´ĞµĞ½ÑŒ',
+      other: '$days дня',
+      many: '$days днів',
+      few: '$days дні',
+      one: '$days день',
     );
     return '$_temp0 $_temp1';
   }
@@ -557,431 +507,414 @@ class AppLocalizationsUk extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Ğ´Ğ½Ñ',
-      many: '$count Ğ´Ğ½Ñ–Ğ²',
-      few: '$count Ğ´Ğ½Ñ–',
-      one: '$count Ğ´ĞµĞ½ÑŒ',
+      other: '$count дня',
+      many: '$count днів',
+      few: '$count дні',
+      one: '$count день',
     );
     return '$_temp0';
   }
 
   @override
-  String get weeklyReport => 'Ğ¢Ğ¸Ğ¶Ğ½ĞµĞ²Ğ¸Ğ¹ Ğ·Ğ²Ñ–Ñ‚';
+  String get weeklyReport => 'Тижневий звіт';
 
   @override
-  String get monthlyReport => 'ĞœÑ–ÑÑÑ‡Ğ½Ğ¸Ğ¹ Ğ·Ğ²Ñ–Ñ‚';
+  String get monthlyReport => 'Місячний звіт';
 
   @override
-  String get weekly => 'Ğ¢Ğ¸Ğ¶Ğ´ĞµĞ½ÑŒ';
+  String get weekly => 'Тиждень';
 
   @override
-  String get monthly => 'ĞœÑ–ÑÑÑ†ÑŒ';
+  String get monthly => 'Місяць';
 
   @override
-  String get feeding => 'Ğ“Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get feeding => 'Годування';
 
   @override
-  String get totalBreastfeeding =>
-      'Ğ£ÑÑŒĞ¾Ğ³Ğ¾ Ğ³Ñ€ÑƒĞ´Ğ½Ğ¾Ğ³Ğ¾ Ğ²Ğ¸Ğ³Ğ¾Ğ´Ğ¾Ğ²ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get totalBreastfeeding => 'Усього грудного вигодовування';
 
   @override
-  String get totalDuration => 'Ğ—Ğ°Ğ³Ğ°Ğ»ÑŒĞ½Ğ° Ñ‚Ñ€Ğ¸Ğ²Ğ°Ğ»Ñ–ÑÑ‚ÑŒ';
+  String get totalDuration => 'Загальна тривалість';
 
   @override
-  String get dailyAvg => 'Ğ¡ĞµÑ€. Ğ·Ğ° Ğ´ĞµĞ½ÑŒ';
+  String get dailyAvg => 'Сер. за день';
 
   @override
-  String get avgDuration => 'Ğ¡ĞµÑ€. Ñ‚Ñ€Ğ¸Ğ²Ğ°Ğ»Ñ–ÑÑ‚ÑŒ';
+  String get avgDuration => 'Сер. тривалість';
 
   @override
-  String get leftBreast => 'Ğ›Ñ–Ğ²Ğ° Ğ³Ñ€ÑƒĞ´Ğ¸';
+  String get leftBreast => 'Ліва груди';
 
   @override
-  String get rightBreast => 'ĞŸÑ€Ğ°Ğ²Ğ° Ğ³Ñ€ÑƒĞ´Ğ¸';
+  String get rightBreast => 'Права груди';
 
   @override
-  String get solidFood => 'ĞŸÑ€Ğ¸ĞºĞ¾Ñ€Ğ¼';
+  String get solidFood => 'Прикорм';
 
   @override
-  String get diaperChanges => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·ĞºÑ–Ğ²';
+  String get diaperChanges => 'Зміни підгузків';
 
   @override
-  String get longestSleep => 'ĞĞ°Ğ¹Ğ´Ğ¾Ğ²ÑˆĞ¸Ğ¹ ÑĞ¾Ğ½';
+  String get longestSleep => 'Найдовший сон';
 
   @override
-  String get sleepCount => 'ĞšÑ–Ğ»-Ñ‚ÑŒ ÑĞ½Ñ–Ğ²';
+  String get sleepCount => 'Кіл-ть снів';
 
   @override
-  String get growth => 'Ğ Ñ–ÑÑ‚';
+  String get growth => 'Ріст';
 
   @override
-  String get height => 'Ğ—Ñ€Ñ–ÑÑ‚';
+  String get height => 'Зріст';
 
   @override
-  String get weight => 'Ğ’Ğ°Ğ³Ğ°';
+  String get weight => 'Вага';
 
   @override
-  String get saveAsPdf => 'Ğ—Ğ±ĞµÑ€ĞµĞ³Ñ‚Ğ¸ ÑĞº PDF';
+  String get saveAsPdf => 'Зберегти як PDF';
 
   @override
-  String get pdfMobileOnly =>
-      'Ğ—Ğ±ĞµÑ€ĞµĞ¶ĞµĞ½Ğ½Ñ PDF Ğ´Ğ¾ÑÑ‚ÑƒĞ¿Ğ½Ğµ Ğ½Ğ° Ğ¼Ğ¾Ğ±Ñ–Ğ»ÑŒĞ½Ğ¾Ğ¼Ñƒ';
+  String get pdfMobileOnly => 'Збереження PDF доступне на мобільному';
 
   @override
-  String get sharingMobileOnly =>
-      'ĞŸĞ¾Ğ´Ñ–Ğ»Ğ¸Ñ‚Ğ¸ÑÑ Ğ¼Ğ¾Ğ¶Ğ½Ğ° Ğ½Ğ° Ğ¼Ğ¾Ğ±Ñ–Ğ»ÑŒĞ½Ğ¾Ğ¼Ñƒ';
+  String get sharingMobileOnly => 'Поділитися можна на мобільному';
 
   @override
-  String get pdfSaved => 'PDF ÑƒÑĞ¿Ñ–ÑˆĞ½Ğ¾ Ğ·Ğ±ĞµÑ€ĞµĞ¶ĞµĞ½Ğ¾!';
+  String get pdfSaved => 'PDF успішно збережено!';
 
   @override
-  String get babyTrackerReport => 'Ğ—Ğ²Ñ–Ñ‚ Ñ‚Ñ€ĞµĞºĞµÑ€Ğ° Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get babyTrackerReport => 'Звіт трекера малюка';
 
   @override
-  String get generatedWith =>
-      'Ğ¡Ñ‚Ğ²Ğ¾Ñ€ĞµĞ½Ğ¾ Ğ·Ğ° Ğ´Ğ¾Ğ¿Ğ¾Ğ¼Ğ¾Ğ³Ğ¾Ñ Baby Tracker App';
+  String get generatedWith => 'Створено за допомогою Baby Tracker App';
 
   @override
-  String get months => 'Ğ¼Ñ–Ñ.';
+  String get months => 'міс.';
 
   @override
-  String get january => 'Ğ¡Ñ–Ñ‡ĞµĞ½ÑŒ';
+  String get january => 'Січень';
 
   @override
-  String get february => 'Ğ›ÑÑ‚Ğ¸Ğ¹';
+  String get february => 'Лютий';
 
   @override
-  String get march => 'Ğ‘ĞµÑ€ĞµĞ·ĞµĞ½ÑŒ';
+  String get march => 'Березень';
 
   @override
-  String get april => 'ĞšĞ²Ñ–Ñ‚ĞµĞ½ÑŒ';
+  String get april => 'Квітень';
 
   @override
-  String get may => 'Ğ¢Ñ€Ğ°Ğ²ĞµĞ½ÑŒ';
+  String get may => 'Травень';
 
   @override
-  String get june => 'Ğ§ĞµÑ€Ğ²ĞµĞ½ÑŒ';
+  String get june => 'Червень';
 
   @override
-  String get july => 'Ğ›Ğ¸Ğ¿ĞµĞ½ÑŒ';
+  String get july => 'Липень';
 
   @override
-  String get august => 'Ğ¡ĞµÑ€Ğ¿ĞµĞ½ÑŒ';
+  String get august => 'Серпень';
 
   @override
-  String get september => 'Ğ’ĞµÑ€ĞµÑĞµĞ½ÑŒ';
+  String get september => 'Вересень';
 
   @override
-  String get october => 'Ğ–Ğ¾Ğ²Ñ‚ĞµĞ½ÑŒ';
+  String get october => 'Жовтень';
 
   @override
-  String get november => 'Ğ›Ğ¸ÑÑ‚Ğ¾Ğ¿Ğ°Ğ´';
+  String get november => 'Листопад';
 
   @override
-  String get december => 'Ğ“Ñ€ÑƒĞ´ĞµĞ½ÑŒ';
+  String get december => 'Грудень';
 
   @override
-  String get addOptionalNote =>
-      'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ½Ğ¾Ñ‚Ğ°Ñ‚ĞºÑƒ (Ğ½ĞµĞ¾Ğ±Ğ¾Ğ²\'ÑĞ·ĞºĞ¾Ğ²Ğ¾)';
+  String get addOptionalNote => 'Додати нотатку (необов\'язково)';
 
   @override
-  String get times => 'Ñ€Ğ°Ğ·Ñ–Ğ²';
+  String get times => 'разів';
 
   @override
-  String get feeding_tab => 'Ğ“ĞĞ”Ğ£Ğ’ĞĞĞĞ¯';
+  String get feeding_tab => 'ГОДУВАННЯ';
 
   @override
-  String get diaper_tab => 'ĞŸĞ†Ğ”Ğ“Ğ£Ğ—ĞĞš';
+  String get diaper_tab => 'ПІДГУЗОК';
 
   @override
-  String get sleep_tab => 'Ğ¡ĞĞ';
+  String get sleep_tab => 'СОН';
 
   @override
-  String get list => 'Ğ¡Ğ¿Ğ¸ÑĞ¾Ğº';
+  String get list => 'Список';
 
   @override
-  String get chart => 'Ğ“Ñ€Ğ°Ñ„Ñ–Ğº';
+  String get chart => 'Графік';
 
   @override
-  String get noMeasurements => 'Ğ’Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½ÑŒ Ğ¿Ğ¾ĞºĞ¸ Ğ½ĞµĞ¼Ğ°Ñ”';
+  String get noMeasurements => 'Вимірювань поки немає';
 
   @override
-  String get addMeasurements =>
-      'Ğ”Ğ¾Ğ´Ğ°Ğ¹Ñ‚Ğµ Ğ²Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½Ğ½Ñ Ğ·Ñ€Ğ¾ÑÑ‚Ñƒ Ñ‚Ğ° Ğ²Ğ°Ğ³Ğ¸';
+  String get addMeasurements => 'Додайте вимірювання зросту та ваги';
 
   @override
-  String get moreDataNeeded =>
-      'ĞŸĞ¾Ñ‚Ñ€Ñ–Ğ±Ğ½Ğ¾ Ğ±Ñ–Ğ»ÑŒÑˆĞµ Ğ´Ğ°Ğ½Ğ¸Ñ… Ğ´Ğ»Ñ Ğ³Ñ€Ğ°Ñ„Ñ–ĞºĞ°';
+  String get moreDataNeeded => 'Потрібно більше даних для графіка';
 
   @override
   String addMoreMeasurements(int count) {
-    return 'Ğ”Ğ¾Ğ´Ğ°Ğ¹Ñ‚Ğµ Ñ‰Ğµ $count Ğ²Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½ÑŒ';
+    return 'Додайте ще $count вимірювань';
   }
 
   @override
   String get atLeast2Measurements =>
-      'Ğ”Ğ»Ñ Ğ³Ñ€Ğ°Ñ„Ñ–ĞºĞ° Ğ¿Ğ¾Ñ‚Ñ€Ñ–Ğ±Ğ½Ğ¾ Ğ¼Ñ–Ğ½Ñ–Ğ¼ÑƒĞ¼ 2 Ğ²Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½Ğ½Ñ';
+      'Для графіка потрібно мінімум 2 вимірювання';
 
   @override
-  String get growthTracking => 'Ğ’Ñ–Ğ´ÑÑ‚ĞµĞ¶ĞµĞ½Ğ½Ñ Ñ€Ğ¾ÑÑ‚Ñƒ';
+  String get growthTracking => 'Відстеження росту';
 
   @override
-  String get feedingTimer => 'Ğ“ĞĞ”Ğ£Ğ’ĞĞĞĞ¯';
+  String get feedingTimer => 'ГОДУВАННЯ';
 
   @override
-  String get sleepingTimer => 'Ğ¡ĞĞ';
+  String get sleepingTimer => 'СОН';
 
   @override
-  String get stopAndSave => 'Ğ¡Ğ¢ĞĞŸ Ğ† Ğ—Ğ‘Ğ•Ğ Ğ•Ğ“Ğ¢Ğ˜';
+  String get stopAndSave => 'СТОП І ЗБЕРЕГТИ';
 
   @override
-  String get activeTimer => 'ĞĞšĞ¢Ğ˜Ğ’ĞĞ˜Ğ™';
+  String get activeTimer => 'АКТИВНИЙ';
 
   @override
-  String get lastFed => 'ĞĞ¡Ğ¢ĞĞĞĞ„ Ğ“ĞĞ”Ğ£Ğ’ĞĞĞĞ¯';
+  String get lastFed => 'ОСТАННЄ ГОДУВАННЯ';
 
   @override
-  String get lastDiaper => 'ĞĞ¡Ğ¢ĞĞĞĞ†Ğ™ ĞŸĞ†Ğ”Ğ“Ğ£Ğ—ĞĞš';
+  String get lastDiaper => 'ОСТАННІЙ ПІДГУЗОК';
 
   @override
-  String get lastSleep => 'ĞĞ¡Ğ¢ĞĞĞĞ†Ğ™ Ğ¡ĞĞ';
+  String get lastSleep => 'ОСТАННІЙ СОН';
 
   @override
-  String get recentActivity => 'ĞĞ•Ğ©ĞĞ”ĞĞ’ĞĞ† Ğ—ĞĞŸĞ˜Ğ¡Ğ˜ Ğ”ĞĞ“Ğ›Ğ¯Ğ”Ğ£';
+  String get recentActivity => 'НЕЩОДАВНІ ЗАПИСИ ДОГЛЯДУ';
 
   @override
-  String get seeHistory => 'Ğ†Ğ¡Ğ¢ĞĞ Ğ†Ğ¯';
+  String get seeHistory => 'ІСТОРІЯ';
 
   @override
-  String get noActivitiesLast24h =>
-      'ĞĞµĞ¼Ğ°Ñ” Ğ°ĞºÑ‚Ğ¸Ğ²Ğ½Ğ¾ÑÑ‚Ñ– Ğ·Ğ° Ğ¾ÑÑ‚Ğ°Ğ½Ğ½Ñ– 24 Ğ³Ğ¾Ğ´Ğ¸Ğ½Ğ¸';
+  String get noActivitiesLast24h => 'Немає активності за останні 24 години';
 
   @override
-  String get bottleFeeding => 'Ğ“Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get bottleFeeding => 'Годування';
 
   @override
-  String get trackYourBabyGrowth =>
-      'Ğ’Ñ–Ğ´ÑÑ‚ĞµĞ¶ÑƒĞ¹Ñ‚Ğµ Ñ€Ñ–ÑÑ‚ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get trackYourBabyGrowth => 'Відстежуйте ріст малюка';
 
   @override
   String get addHeightWeightMeasurements =>
-      'Ğ”Ğ¾Ğ´Ğ°Ğ¹Ñ‚Ğµ Ğ²Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½Ğ½Ñ Ğ²Ğ°Ğ³Ğ¸ Ñ‚Ğ° Ğ·Ñ€Ğ¾ÑÑ‚Ñƒ';
+      'Додайте вимірювання ваги та зросту';
 
   @override
-  String get addFirstMeasurement =>
-      'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ¿ĞµÑ€ÑˆĞµ Ğ²Ğ¸Ğ¼Ñ–Ñ€ÑĞ²Ğ°Ğ½Ğ½Ñ';
+  String get addFirstMeasurement => 'Додати перше вимірювання';
 
   @override
-  String get lastUpdatedToday => 'ĞĞ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ¾ ÑÑŒĞ¾Ğ³Ğ¾Ğ´Ğ½Ñ–';
+  String get lastUpdatedToday => 'Оновлено сьогодні';
 
   @override
-  String get lastUpdated1Day => 'ĞĞ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ¾ 1 Ğ´ĞµĞ½ÑŒ Ñ‚Ğ¾Ğ¼Ñƒ';
+  String get lastUpdated1Day => 'Оновлено 1 день тому';
 
   @override
   String lastUpdatedDays(int days) {
-    return 'ĞĞ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ¾ $days Ğ´Ğ½. Ñ‚Ğ¾Ğ¼Ñƒ';
+    return 'Оновлено $days дн. тому';
   }
 
   @override
-  String get viewGrowthCharts => 'Ğ“Ğ ĞĞ¤Ğ†ĞšĞ˜ Ğ ĞĞ¡Ğ¢Ğ£';
+  String get viewGrowthCharts => 'ГРАФІКИ РОСТУ';
 
   @override
-  String get weightLabel => 'Ğ’ĞĞ“Ğ';
+  String get weightLabel => 'ВАГА';
 
   @override
-  String get heightLabel => 'Ğ—Ğ Ğ†Ğ¡Ğ¢';
+  String get heightLabel => 'ЗРІСТ';
 
   @override
   String mAgo(int count) {
-    return '$count Ñ…Ğ² Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$count хв тому';
   }
 
   @override
   String hmAgo(int hours, int minutes) {
-    return '$hoursĞ³Ğ¾Ğ´ $minutesÑ…Ğ² Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$hoursгод $minutesхв тому';
   }
 
   @override
   String dAgo(int days) {
-    return '$daysĞ´ Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$daysд тому';
   }
 
   @override
-  String get noRecordsYet => 'Ğ—Ğ°Ğ¿Ğ¸ÑÑ–Ğ² Ğ¿Ğ¾ĞºĞ¸ Ğ½ĞµĞ¼Ğ°Ñ”';
+  String get noRecordsYet => 'Записів поки немає';
 
   @override
-  String get dailyTip => 'ĞŸĞĞ ĞĞ”Ğ Ğ”ĞĞ¯';
+  String get dailyTip => 'ПОРАДА ДНЯ';
 
   @override
-  String get allTips => 'Ğ£ÑÑ– Ğ¿Ğ¾Ñ€Ğ°Ğ´Ğ¸';
+  String get allTips => 'Усі поради';
 
   @override
-  String get upcomingVaccine => 'ĞœĞĞ™Ğ‘Ğ£Ğ¢ĞĞ¯ Ğ’ĞĞšĞ¦Ğ˜ĞĞ';
+  String get upcomingVaccine => 'МАЙБУТНЯ ВАКЦИНА';
 
   @override
   String nextVaccineLabel(String name) {
-    return 'ĞĞ°ÑÑ‚ÑƒĞ¿Ğ½Ğ°: $name';
+    return 'Наступна: $name';
   }
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'Ğ› $leftÑ…Ğ² • ĞŸ $rightÑ…Ğ²';
+    return 'Л $leftхв • П $rightхв';
   }
 
   @override
   String breastfeedingSavedSnack(int left, int right) {
-    return 'âœ… Ğ“Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ·Ğ±ĞµÑ€ĞµĞ¶ĞµĞ½Ğ¾: Ğ› $leftÑ…Ğ², ĞŸ $rightÑ…Ğ²';
+    return '✅ Годування збережено: Л $leftхв, П $rightхв';
   }
 
   @override
   String sleepSavedSnack(String duration) {
-    return 'âœ… Ğ¡Ğ¾Ğ½ Ğ·Ğ±ĞµÑ€ĞµĞ¶ĞµĞ½Ğ¾: $duration';
+    return '✅ Сон збережено: $duration';
   }
 
   @override
-  String get sleepTooShort =>
-      'âš ï¸ Ğ¡Ğ¾Ğ½ Ğ¼ĞµĞ½ÑˆĞµ 1 Ñ…Ğ²Ğ¸Ğ»Ğ¸Ğ½Ğ¸, Ğ½Ğµ Ğ·Ğ±ĞµÑ€ĞµĞ¶ĞµĞ½Ğ¾';
+  String get sleepTooShort => '⚠️ Сон менше 1 хвилини, не збережено';
 
   @override
   String kgThisMonth(String value) {
-    return '+$valueĞºĞ³ Ğ·Ğ° Ğ¼Ñ–ÑÑÑ†ÑŒ';
+    return '+$valueкг за місяць';
   }
 
   @override
   String cmThisMonth(String value) {
-    return '+$valueÑĞ¼ Ğ·Ğ° Ğ¼Ñ–ÑÑÑ†ÑŒ';
+    return '+$valueсм за місяць';
   }
 
   @override
-  String get noSleep => 'ĞĞµĞ¼Ğ°Ñ” ÑĞ½Ñƒ';
+  String get noSleep => 'Немає сну';
 
   @override
-  String get justNow => 'Ñ‰Ğ¾Ğ¹Ğ½Ğ¾';
+  String get justNow => 'щойно';
 
   @override
   String minutesAgo(int count) {
-    return '$count Ñ…Ğ² Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$count хв тому';
   }
 
   @override
   String hoursAgo(int count) {
-    return '$countĞ³Ğ¾Ğ´ Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$countгод тому';
   }
 
   @override
   String daysAgo(int count) {
-    return '$countĞ´ Ñ‚Ğ¾Ğ¼Ñƒ';
+    return '$countд тому';
   }
 
   @override
-  String get welcomeToNilico => 'Ğ›Ğ°ÑĞºĞ°Ğ²Ğ¾ Ğ¿Ñ€Ğ¾ÑĞ¸Ğ¼Ğ¾ Ğ´Ğ¾ Nilico';
+  String get welcomeToNilico => 'Ласкаво просимо до Nilico';
 
   @override
-  String get createYourAccount => 'Ğ¡Ñ‚Ğ²Ğ¾Ñ€Ñ–Ñ‚ÑŒ Ğ°ĞºĞ°ÑƒĞ½Ñ‚';
+  String get createYourAccount => 'Створіть акаунт';
 
   @override
   String get loginBenefitText =>
-      'Ğ£Ğ²Ñ–Ğ¹Ğ´Ñ–Ñ‚ÑŒ, Ñ‰Ğ¾Ğ± Ğ¿Ñ–Ğ´Ğ³Ğ¾Ñ‚ÑƒĞ²Ğ°Ñ‚Ğ¸ÑÑ Ğ´Ğ¾ Ğ¼Ğ°Ğ¹Ğ±ÑƒÑ‚Ğ½Ñ–Ñ… Ñ„ÑƒĞ½ĞºÑ†Ñ–Ğ¹ Ñ€ĞµĞ·ĞµÑ€Ğ²Ğ½Ğ¾Ğ³Ğ¾ ĞºĞ¾Ğ¿Ñ–ÑĞ²Ğ°Ğ½Ğ½Ñ Ñ‚Ğ° ÑĞ¸Ğ½Ñ…Ñ€Ğ¾Ğ½Ñ–Ğ·Ğ°Ñ†Ñ–Ñ—. ĞœĞ¾Ğ¶Ğ½Ğ° Ğ¿Ñ€Ğ¾Ğ´Ğ¾Ğ²Ğ¶Ğ¸Ñ‚Ğ¸ Ğ±ĞµĞ· Ğ²Ñ…Ğ¾Ğ´Ñƒ.';
+      'Увійдіть, щоб підготуватися до майбутніх функцій резервного копіювання та синхронізації. Можна продовжити без входу.';
 
   @override
-  String get signInWithApple => 'Ğ£Ğ²Ñ–Ğ¹Ñ‚Ğ¸ Ñ‡ĞµÑ€ĞµĞ· Apple';
+  String get signInWithApple => 'Увійти через Apple';
 
   @override
-  String get signInWithGoogle => 'Ğ£Ğ²Ñ–Ğ¹Ñ‚Ğ¸ Ñ‡ĞµÑ€ĞµĞ· Google';
+  String get signInWithGoogle => 'Увійти через Google';
 
   @override
-  String get continueWithoutLogin => 'ĞŸÑ€Ğ¾Ğ´Ğ¾Ğ²Ğ¶Ğ¸Ñ‚Ğ¸ Ğ±ĞµĞ· Ğ²Ñ…Ğ¾Ğ´Ñƒ';
+  String get continueWithoutLogin => 'Продовжити без входу';
 
   @override
   String get loginOptionalNote =>
-      'Ğ’Ñ…Ñ–Ğ´ Ğ½ĞµĞ¾Ğ±Ğ¾Ğ²\'ÑĞ·ĞºĞ¾Ğ²Ğ¸Ğ¹. Ğ£ÑÑ– Ñ„ÑƒĞ½ĞºÑ†Ñ–Ñ— Ğ¿Ñ€Ğ°Ñ†ÑÑÑ‚ÑŒ Ğ±ĞµĞ· Ğ°ĞºĞ°ÑƒĞ½Ñ‚Ñƒ.';
+      'Вхід необов\'язковий. Усі функції працюють без акаунту.';
 
   @override
-  String get account => 'ĞĞºĞ°ÑƒĞ½Ñ‚';
+  String get account => 'Акаунт';
 
   @override
-  String get signIn => 'Ğ£Ğ²Ñ–Ğ¹Ñ‚Ğ¸';
+  String get signIn => 'Увійти';
 
   @override
-  String get signOut => 'Ğ’Ğ¸Ğ¹Ñ‚Ğ¸';
+  String get signOut => 'Вийти';
 
   @override
   String signedInAs(String email) {
-    return 'Ğ’Ğ¸ ÑƒĞ²Ñ–Ğ¹ÑˆĞ»Ğ¸ ÑĞº $email';
+    return 'Ви увійшли як $email';
   }
 
   @override
-  String get guestMode => 'Ğ“Ğ¾ÑÑ‚ÑŒĞ¾Ğ²Ğ¸Ğ¹ Ñ€ĞµĞ¶Ğ¸Ğ¼';
+  String get guestMode => 'Гостьовий режим';
 
   @override
-  String get signInToProtectData =>
-      'Ğ£Ğ²Ñ–Ğ¹Ğ´Ñ–Ñ‚ÑŒ, Ñ‰Ğ¾Ğ± Ğ·Ğ°Ñ…Ğ¸ÑÑ‚Ğ¸Ñ‚Ğ¸ Ğ´Ğ°Ğ½Ñ–';
+  String get signInToProtectData => 'Увійдіть, щоб захистити дані';
 
   @override
   String get backupSyncComingSoon =>
-      'Ğ ĞµĞ·ĞµÑ€Ğ²Ğ½Ğµ ĞºĞ¾Ğ¿Ñ–ÑĞ²Ğ°Ğ½Ğ½Ñ Ñ‚Ğ° ÑĞ¸Ğ½Ñ…Ñ€Ğ¾Ğ½Ñ–Ğ·Ğ°Ñ†Ñ–Ñ Ğ½ĞµĞ·Ğ°Ğ±Ğ°Ñ€Ğ¾Ğ¼';
+      'Резервне копіювання та синхронізація незабаром';
 
   @override
-  String get privacyPolicy =>
-      'ĞŸĞ¾Ğ»Ñ–Ñ‚Ğ¸ĞºĞ° ĞºĞ¾Ğ½Ñ„Ñ–Ğ´ĞµĞ½Ñ†Ñ–Ğ¹Ğ½Ğ¾ÑÑ‚Ñ–';
+  String get privacyPolicy => 'Політика конфіденційності';
 
   @override
-  String get privacyPolicySubtitle =>
-      'ĞŸĞµÑ€ĞµĞ³Ğ»ÑĞ½ÑƒÑ‚Ğ¸ Ğ¿Ğ¾Ğ»Ñ–Ñ‚Ğ¸ĞºÑƒ ĞºĞ¾Ğ½Ñ„Ñ–Ğ´ĞµĞ½Ñ†Ñ–Ğ¹Ğ½Ğ¾ÑÑ‚Ñ–';
+  String get privacyPolicySubtitle => 'Переглянути політику конфіденційності';
 
   @override
-  String get termsOfUse => 'Ğ£Ğ¼Ğ¾Ğ²Ğ¸ Ğ²Ğ¸ĞºĞ¾Ñ€Ğ¸ÑÑ‚Ğ°Ğ½Ğ½Ñ';
+  String get termsOfUse => 'Умови використання';
 
   @override
-  String get termsOfUseSubtitle =>
-      'ĞŸĞµÑ€ĞµĞ³Ğ»ÑĞ½ÑƒÑ‚Ğ¸ ÑƒĞ¼Ğ¾Ğ²Ğ¸ Ğ²Ğ¸ĞºĞ¾Ñ€Ğ¸ÑÑ‚Ğ°Ğ½Ğ½Ñ';
+  String get termsOfUseSubtitle => 'Переглянути умови використання';
 
   @override
-  String get pageCouldNotOpen =>
-      'ĞĞµ Ğ²Ğ´Ğ°Ğ»Ğ¾ÑÑ Ğ²Ñ–Ğ´ĞºÑ€Ğ¸Ñ‚Ğ¸ ÑÑ‚Ğ¾Ñ€Ñ–Ğ½ĞºÑƒ';
+  String get pageCouldNotOpen => 'Не вдалося відкрити сторінку';
 
   @override
-  String get health => 'Ğ—Ğ´Ğ¾Ñ€Ğ¾Ğ²\'Ñ';
+  String get health => 'Здоров\'я';
 
   @override
-  String get medications => 'Ğ›Ñ–ĞºĞ¸';
+  String get medications => 'Ліки';
 
   @override
-  String get noMedications =>
-      'Ğ›Ñ–ĞºÑ–Ğ² Ñ‚Ğ° Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ¾Ğº Ğ¿Ğ¾ĞºĞ¸ Ğ½ĞµĞ¼Ğ°Ñ”';
+  String get noMedications => 'Ліків та добавок поки немає';
 
   @override
-  String get medication => 'Ğ›Ñ–ĞºĞ¸';
+  String get medication => 'Ліки';
 
   @override
-  String get supplement => 'Ğ”Ğ¾Ğ±Ğ°Ğ²ĞºĞ°';
+  String get supplement => 'Добавка';
 
   @override
-  String get addMedication => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ»Ñ–ĞºĞ¸';
+  String get addMedication => 'Додати ліки';
 
   @override
-  String get editMedication => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ğ»Ñ–ĞºĞ¸';
+  String get editMedication => 'Змінити ліки';
 
   @override
-  String get medicationName => 'ĞĞ°Ğ·Ğ²Ğ°';
+  String get medicationName => 'Назва';
 
   @override
-  String get medicationNameRequired => 'Ğ’Ğ²ĞµĞ´Ñ–Ñ‚ÑŒ Ğ½Ğ°Ğ·Ğ²Ñƒ';
+  String get medicationNameRequired => 'Введіть назву';
 
   @override
-  String get dosage => 'Ğ”Ğ¾Ğ·ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get dosage => 'Дозування';
 
   @override
-  String get schedule => 'Ğ Ğ¾Ğ·ĞºĞ»Ğ°Ğ´';
+  String get schedule => 'Розклад';
 
   @override
-  String get notes => 'ĞĞ¾Ñ‚Ğ°Ñ‚ĞºĞ¸';
+  String get notes => 'Нотатки';
 
   @override
-  String get language => 'ĞœĞ¾Ğ²Ğ°';
+  String get language => 'Мова';
 
   @override
-  String get systemDefault => 'Ğ¡Ğ¸ÑÑ‚ĞµĞ¼Ğ°';
+  String get systemDefault => 'Система';
 
   @override
   String get turkish => 'Türkçe';
@@ -990,440 +923,411 @@ class AppLocalizationsUk extends AppLocalizations {
   String get english => 'English';
 
   @override
-  String get russian => 'Ğ ÑƒÑÑĞºĞ¸Ğ¹';
+  String get russian => 'Русский';
 
   @override
-  String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
+  String get ukrainian => 'Українська';
 
   @override
   String get spanish => 'Español';
 
   @override
-  String get languageUpdated => 'ĞœĞ¾Ğ²Ñƒ Ğ¾Ğ½Ğ¾Ğ²Ğ»ĞµĞ½Ğ¾';
+  String get languageUpdated => 'Мову оновлено';
 
   @override
-  String get tip_siyah_mekonyum_title => 'ĞŸĞµÑ€ÑˆĞ¸Ğ¹ ĞºĞ°Ğ»';
+  String get tip_siyah_mekonyum_title => 'Перший кал';
 
   @override
   String get tip_siyah_mekonyum_desc =>
-      'Ğ£ Ğ¿ĞµÑ€ÑˆÑ– 2-4 Ğ´Ğ½Ñ– Ñ†Ğµ Ğ½Ğ¾Ñ€Ğ¼Ğ°Ğ»ÑŒĞ½Ğ¾, Ğ½ĞµĞ·Ğ°Ğ»ĞµĞ¶Ğ½Ğ¾ Ğ²Ñ–Ğ´ Ñ‚Ğ¾Ğ³Ğ¾, Ñ‡Ğ¸ Ğ¾Ñ‚Ñ€Ğ¸Ğ¼ÑƒÑ” Ğ¼Ğ°Ğ»ÑĞº Ğ³Ñ€ÑƒĞ´Ğ½Ğµ Ğ¼Ğ¾Ğ»Ğ¾ĞºĞ¾, Ñ‡Ğ¸ ÑÑƒĞ¼Ñ–Ñˆ. ĞŸÑ–Ğ´ÑÑ‚Ğ°Ğ² Ğ´Ğ»Ñ Ñ…Ğ²Ğ¸Ğ»ÑĞ²Ğ°Ğ½Ğ½Ñ Ğ½ĞµĞ¼Ğ°Ñ”.';
+      'У перші 2-4 дні це нормально, незалежно від того, чи отримує малюк грудне молоко, чи суміш. Підстав для хвилювання немає.';
 
   @override
-  String get tip_eye_tracking_title => 'Ğ’Ñ–Ğ·ÑƒĞ°Ğ»ÑŒĞ½Ğµ ÑÑ‚ĞµĞ¶ĞµĞ½Ğ½Ñ';
+  String get tip_eye_tracking_title => 'Візуальне стеження';
 
   @override
   String get tip_eye_tracking_desc =>
-      'ĞŸĞ¾ĞºĞ¸ Ñ‰Ğ¾ Ğ¼Ğ°Ğ»ÑĞº Ñ‡Ñ–Ñ‚ĞºĞ¾ Ğ±Ğ°Ñ‡Ğ¸Ñ‚ÑŒ Ğ»Ğ¸ÑˆĞµ Ğ½Ğ° Ğ²Ñ–Ğ´ÑÑ‚Ğ°Ğ½Ñ– Ğ¿Ñ€Ğ¸Ğ±Ğ»Ğ¸Ğ·Ğ½Ğ¾ 25-30 ÑĞ¼. ĞĞ°Ğ±Ğ»Ğ¸Ğ·ÑŒÑ‚Ğµ Ğ¾Ğ±Ğ»Ğ¸Ñ‡Ñ‡Ñ Ğ¹ Ñ€ÑƒÑ…Ğ°Ğ¹Ñ‚ĞµÑÑ Ğ¿Ğ¾Ğ²Ñ–Ğ»ÑŒĞ½Ğ¾, Ñ‰Ğ¾Ğ± Ğ²Ñ–Ğ½ ÑÑ‚ĞµĞ¶Ğ¸Ğ² Ğ¾Ñ‡Ğ¸Ğ¼Ğ°.';
+      'Поки що малюк чітко бачить лише на відстані приблизно 25-30 см. Наблизьте обличчя й рухайтеся повільно, щоб він стежив очима.';
 
   @override
-  String get tip_neck_support_title => 'ĞŸÑ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ĞºĞ° ÑˆĞ¸Ñ—';
+  String get tip_neck_support_title => 'Підтримка шиї';
 
   @override
   String get tip_neck_support_desc =>
-      'Ğ—Ğ°Ğ²Ğ¶Ğ´Ğ¸ Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ÑƒĞ¹Ñ‚Ğµ Ğ³Ğ¾Ğ»Ğ¾Ğ²Ñƒ Ğ¹ ÑˆĞ¸Ñ Ğ¼Ğ°Ğ»ÑĞºĞ°, ĞºĞ¾Ğ»Ğ¸ Ğ±ĞµÑ€ĞµÑ‚Ğµ Ğ¹Ğ¾Ğ³Ğ¾ Ğ½Ğ° Ñ€ÑƒĞºĞ¸. Ğœ\'ÑĞ·Ğ¸ ÑˆĞ¸Ñ— Ñ‰Ğµ Ğ´ÑƒĞ¶Ğµ ÑĞ»Ğ°Ğ±ĞºÑ–.';
+      'Завжди підтримуйте голову й шию малюка, коли берете його на руки. М\'язи шиї ще дуже слабкі.';
 
   @override
-  String get tip_reflex_stepping_title => 'ĞšÑ€Ğ¾ĞºĞ¾Ğ²Ğ¸Ğ¹ Ñ€ĞµÑ„Ğ»ĞµĞºÑ';
+  String get tip_reflex_stepping_title => 'Кроковий рефлекс';
 
   @override
   String get tip_reflex_stepping_desc =>
-      'Ğ¢Ñ€Ğ¸Ğ¼Ğ°Ğ¹Ñ‚Ğµ Ğ¼Ğ°Ğ»ÑĞºĞ° Ğ²ĞµÑ€Ñ‚Ğ¸ĞºĞ°Ğ»ÑŒĞ½Ğ¾ Ğ¹ Ğ´Ğ°Ğ¹Ñ‚Ğµ ÑÑ‚Ğ¾Ğ¿Ğ°Ğ¼ Ñ‚Ğ¾Ñ€ĞºĞ½ÑƒÑ‚Ğ¸ÑÑ Ñ€Ñ–Ğ²Ğ½Ğ¾Ñ— Ğ¿Ğ¾Ğ²ĞµÑ€Ñ…Ğ½Ñ–. Ğ’Ğ¸ Ğ¼Ğ¾Ğ¶ĞµÑ‚Ğµ Ğ¿Ğ¾Ğ¼Ñ–Ñ‚Ğ¸Ñ‚Ğ¸ ĞºÑ€Ğ¾ĞºĞ¾Ğ²Ñ– Ñ€ÑƒÑ…Ğ¸.';
+      'Тримайте малюка вертикально й дайте стопам торкнутися рівної поверхні. Ви можете помітити крокові рухи.';
 
   @override
-  String get tip_sound_interest_title => 'Ğ†Ğ½Ñ‚ĞµÑ€ĞµÑ Ğ´Ğ¾ Ğ·Ğ²ÑƒĞºÑ–Ğ²';
+  String get tip_sound_interest_title => 'Інтерес до звуків';
 
   @override
   String get tip_sound_interest_desc =>
-      'ĞœĞ°Ğ»ÑĞº Ğ´ÑƒĞ¶Ğµ Ñ‡ÑƒÑ‚Ğ»Ğ¸Ğ²Ğ¸Ğ¹ Ğ´Ğ¾ Ğ·Ğ²ÑƒĞºÑ–Ğ². Ğ¡Ğ¿Ñ€Ğ¾Ğ±ÑƒĞ¹Ñ‚Ğµ Ğ¿Ñ€Ğ¸Ğ²ĞµÑ€Ğ½ÑƒÑ‚Ğ¸ Ğ¹Ğ¾Ğ³Ğ¾ ÑƒĞ²Ğ°Ğ³Ñƒ Ğ¼\'ÑĞºĞ¾Ñ Ğ±Ñ€ÑĞ·ĞºĞ°Ğ»ÑŒÑ†ĞµĞ¼ Ğ°Ğ±Ğ¾ ÑĞ¿Ğ¾ĞºÑ–Ğ¹Ğ½Ğ¾Ñ Ğ¼ÑƒĞ·Ğ¸Ñ‡Ğ½Ğ¾Ñ Ñ–Ğ³Ñ€Ğ°ÑˆĞºĞ¾Ñ.';
+      'Малюк дуже чутливий до звуків. Спробуйте привернути його увагу м\'якою брязкальцем або спокійною музичною іграшкою.';
 
   @override
-  String get tip_parent_interaction_title =>
-      'Ğ’Ğ·Ğ°Ñ”Ğ¼Ğ¾Ğ´Ñ–Ñ Ğ· Ğ±Ğ°Ñ‚ÑŒĞºĞ°Ğ¼Ğ¸';
+  String get tip_parent_interaction_title => 'Взаємодія з батьками';
 
   @override
   String get tip_parent_interaction_desc =>
-      'Ğ’ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ğ»ÑĞ¹Ñ‚Ğµ Ğ·Ğ¾Ñ€Ğ¾Ğ²Ğ¸Ğ¹ ĞºĞ¾Ğ½Ñ‚Ğ°ĞºÑ‚ Ñ– Ğ³Ğ¾Ğ²Ğ¾Ñ€Ñ–Ñ‚ÑŒ Ğ»Ğ°Ğ³Ñ–Ğ´Ğ½Ğ¸Ğ¼ Ğ³Ğ¾Ğ»Ğ¾ÑĞ¾Ğ¼. ĞœĞ°Ğ»ÑĞº Ğ²Ğ¿Ñ–Ğ·Ğ½Ğ°Ñ” Ğ²Ğ°Ñˆ Ğ³Ğ¾Ğ»Ğ¾Ñ Ñ– Ğ¿Ğ¾Ñ‡ÑƒĞ²Ğ°Ñ”Ñ‚ÑŒÑÑ Ğ² Ğ±ĞµĞ·Ğ¿ĞµÑ†Ñ–.';
+      'Встановлюйте зоровий контакт і говоріть лагідним голосом. Малюк впізнає ваш голос і почувається в безпеці.';
 
   @override
-  String get tip_color_worlds_title => 'Ğ¡Ğ²Ñ–Ñ‚ ĞºĞ¾Ğ»ÑŒĞ¾Ñ€Ñ–Ğ²';
+  String get tip_color_worlds_title => 'Світ кольорів';
 
   @override
   String get tip_color_worlds_desc =>
-      'ĞĞ¾Ğ²Ğ¾Ğ½Ğ°Ñ€Ğ¾Ğ´Ğ¶ĞµĞ½Ñ– Ğ½Ğ°Ğ¹ĞºÑ€Ğ°Ñ‰Ğµ Ğ±Ğ°Ñ‡Ğ°Ñ‚ÑŒ Ñ‡Ğ¾Ñ€Ğ½Ğ¾-Ğ±Ñ–Ğ»Ñ– ĞºĞ¾Ğ½Ñ‚Ñ€Ğ°ÑÑ‚Ğ¸. ĞœĞ¾Ğ¶Ğ½Ğ° Ğ¿Ğ¾ĞºĞ°Ğ·ÑƒĞ²Ğ°Ñ‚Ğ¸ ĞºĞ°Ñ€Ñ‚ĞºĞ¸ Ğ· Ñ‚Ğ°ĞºĞ¸Ğ¼Ğ¸ Ğ²Ñ–Ğ·ĞµÑ€ÑƒĞ½ĞºĞ°Ğ¼Ğ¸.';
+      'Новонароджені найкраще бачать чорно-білі контрасти. Можна показувати картки з такими візерунками.';
 
   @override
-  String get tip_mini_athlete_title => 'ĞœĞ°Ğ»ĞµĞ½ÑŒĞºĞ¸Ğ¹ ÑĞ¿Ğ¾Ñ€Ñ‚ÑĞ¼ĞµĞ½';
+  String get tip_mini_athlete_title => 'Маленький спортсмен';
 
   @override
   String get tip_mini_athlete_desc =>
-      'Ğ§Ğ°Ñ Ğ½Ğ° Ğ¶Ğ¸Ğ²Ğ¾Ñ‚Ğ¸ĞºÑƒ Ğ·Ğ¼Ñ–Ñ†Ğ½ÑÑ” Ğ¼\'ÑĞ·Ğ¸ ÑˆĞ¸Ñ— Ñ‚Ğ° ÑĞ¿Ğ¸Ğ½Ğ¸. Ğ¡Ğ¿Ñ€Ğ¾Ğ±ÑƒĞ¹Ñ‚Ğµ ĞºÑ–Ğ»ÑŒĞºĞ° Ñ…Ğ²Ğ¸Ğ»Ğ¸Ğ½ Ñ‰Ğ¾Ğ´Ğ½Ñ.';
+      'Час на животику зміцнює м\'язи шиї та спини. Спробуйте кілька хвилин щодня.';
 
   @override
-  String get tip_sound_hunter_title => 'ĞœĞ¸ÑĞ»Ğ¸Ğ²ĞµÑ†ÑŒ Ğ·Ğ° Ğ·Ğ²ÑƒĞºĞ°Ğ¼Ğ¸';
+  String get tip_sound_hunter_title => 'Мисливець за звуками';
 
   @override
   String get tip_sound_hunter_desc =>
-      'Ğ¢Ğ¸Ñ…Ğ¾ ĞºĞ»Ğ°Ñ†Ğ½Ñ–Ñ‚ÑŒ Ğ¿Ğ°Ğ»ÑŒÑ†ÑĞ¼Ğ¸ Ğ±Ñ–Ğ»Ñ Ğ²ÑƒÑˆĞºĞ° Ğ¼Ğ°Ğ»ÑĞºĞ°. Ğ’Ñ–Ğ½ Ğ¼Ğ¾Ğ¶Ğµ ÑĞ¿Ñ€Ğ¾Ğ±ÑƒĞ²Ğ°Ñ‚Ğ¸ Ğ¿Ğ¾Ğ²ĞµÑ€Ğ½ÑƒÑ‚Ğ¸ Ğ³Ğ¾Ğ»Ğ¾Ğ²Ñƒ Ğ´Ğ¾ Ğ·Ğ²ÑƒĞºÑƒ.';
+      'Тихо клацніть пальцями біля вушка малюка. Він може спробувати повернути голову до звуку.';
 
   @override
-  String get tip_touch_explore_title =>
-      'Ğ¢Ğ°ĞºÑ‚Ğ¸Ğ»ÑŒĞ½Ğµ Ğ´Ğ¾ÑĞ»Ñ–Ğ´Ğ¶ĞµĞ½Ğ½Ñ';
+  String get tip_touch_explore_title => 'Тактильне дослідження';
 
   @override
   String get tip_touch_explore_desc =>
-      'Ğ”Ğ°Ğ¹Ñ‚Ğµ Ğ¼Ğ°Ğ»ÑĞºĞ¾Ğ²Ñ– Ğ²Ñ–Ğ´Ñ‡ÑƒÑ‚Ğ¸ Ñ€Ñ–Ğ·Ğ½Ñ– Ñ‚ĞµĞºÑÑ‚ÑƒÑ€Ğ¸ Ñ€ÑƒĞºĞ°Ğ¼Ğ¸ Ğ¹ ÑÑ‚Ğ¾Ğ¿Ğ°Ğ¼Ğ¸: Ğ¼\'ÑĞºÑ–, ÑˆĞ¾Ñ€ÑÑ‚ĞºÑ– Ñ‚Ğ° Ğ¿Ñ€Ğ¾Ñ…Ğ¾Ğ»Ğ¾Ğ´Ğ½Ñ– Ğ¿Ğ¾Ğ²ĞµÑ€Ñ…Ğ½Ñ–.';
+      'Дайте малюкові відчути різні текстури руками й стопами: м\'які, шорсткі та прохолодні поверхні.';
 
   @override
-  String get tip_tip_agu_conversation_1_2_title =>
-      'Ğ Ğ¾Ğ·Ğ¼Ğ¾Ğ²Ğ¸ Ğ· Ğ»ĞµĞ¿ĞµÑ‚Ğ¾Ğ¼';
+  String get tip_tip_agu_conversation_1_2_title => 'Розмови з лепетом';
 
   @override
   String get tip_tip_agu_conversation_1_2_desc =>
-      'ĞšĞ¾Ğ»Ğ¸ Ğ¼Ğ°Ğ»ÑĞº Ğ²Ğ¸Ğ´Ğ°Ñ” Ğ·Ğ²ÑƒĞºĞ¸, ÑƒĞ²Ğ°Ğ¶Ğ½Ğ¾ ÑĞ»ÑƒÑ…Ğ°Ğ¹Ñ‚Ğµ. Ğ›Ğ°Ğ³Ñ–Ğ´Ğ½Ğ¾ Ğ²Ñ–Ğ´Ğ¿Ğ¾Ğ²Ñ–Ğ´Ğ°Ğ¹Ñ‚Ğµ, ĞºĞ¾Ğ»Ğ¸ Ğ²Ñ–Ğ½ Ğ·Ğ°Ğ²ĞµÑ€ÑˆĞ¸Ñ‚ÑŒ. Ğ¢Ğ°ĞºÑ– Ğ¼Ñ–Ğ½Ñ–-Ñ€Ğ¾Ğ·Ğ¼Ğ¾Ğ²Ğ¸ Ñ€Ğ¾Ğ·Ğ²Ğ¸Ğ²Ğ°ÑÑ‚ÑŒ ÑĞ¿Ñ–Ğ»ĞºÑƒĞ²Ğ°Ğ½Ğ½Ñ.';
+      'Коли малюк видає звуки, уважно слухайте. Лагідно відповідайте, коли він завершить. Такі міні-розмови розвивають спілкування.';
 
   @override
   String get tip_tip_tummy_time_strength_1_2_title =>
-      'Ğ¡Ğ¸Ğ»ÑŒĞ½Ñ– Ğ¿Ğ»ĞµÑ‡Ğ¸ĞºĞ¸ (Ñ‡Ğ°Ñ Ğ½Ğ° Ğ¶Ğ¸Ğ²Ğ¾Ñ‚Ğ¸ĞºÑƒ)';
+      'Сильні плечики (час на животику)';
 
   @override
   String get tip_tip_tummy_time_strength_1_2_desc =>
-      'ĞšĞ»Ğ°Ğ´Ñ–Ñ‚ÑŒ Ğ¼Ğ°Ğ»ÑĞºĞ° Ğ½Ğ° Ğ¶Ğ¸Ğ²Ğ¾Ñ‚Ğ¸Ğº Ğ½Ğ° ĞºĞ¾Ñ€Ğ¾Ñ‚ĞºĞ¸Ğ¹ Ñ‡Ğ°Ñ. Ğ—Ğ°Ğ¾Ñ…Ğ¾Ñ‡ÑƒĞ¹Ñ‚Ğµ Ğ¿Ñ–Ğ´Ğ½Ñ–Ğ¼Ğ°Ñ‚Ğ¸ Ğ³Ğ¾Ğ»Ğ¾Ğ²Ñƒ ÑÑĞºÑ€Ğ°Ğ²Ğ¾Ñ Ñ–Ğ³Ñ€Ğ°ÑˆĞºĞ¾Ñ Ğ¿ĞµÑ€ĞµĞ´ Ğ½Ğ¸Ğ¼.';
+      'Кладіть малюка на животик на короткий час. Заохочуйте піднімати голову яскравою іграшкою перед ним.';
 
   @override
-  String get tip_tip_baby_massage_1_2_title =>
-      'Ğ—Ğ°ÑĞ¿Ğ¾ĞºÑ–Ğ¹Ğ»Ğ¸Ğ²Ğ¸Ğ¹ Ğ¼Ğ°ÑĞ°Ğ¶';
+  String get tip_tip_baby_massage_1_2_title => 'Заспокійливий масаж';
 
   @override
   String get tip_tip_baby_massage_1_2_desc =>
-      'ĞŸÑ–ÑĞ»Ñ ĞºÑƒĞ¿Ğ°Ğ½Ğ½Ñ Ñ€Ğ¾Ğ±Ñ–Ñ‚ÑŒ Ğ½Ñ–Ğ¶Ğ½Ğ¸Ğ¹ Ğ¼Ğ°ÑĞ°Ğ¶, Ğ¿Ğ¾Ñ‡Ğ¸Ğ½Ğ°ÑÑ‡Ğ¸ Ğ·Ñ– ÑÑ‚Ğ¾Ğ¿. Ğ¦Ğµ Ñ€Ğ¾Ğ·Ğ²Ğ¸Ğ²Ğ°Ñ” Ğ²Ñ–Ğ´Ñ‡ÑƒÑ‚Ñ‚Ñ Ñ‚Ñ–Ğ»Ğ° Ğ¹ Ğ´Ğ¾Ğ¿Ğ¾Ğ¼Ğ°Ğ³Ğ°Ñ” Ğ¼Ğ°Ğ»ÑĞºĞ¾Ğ²Ñ– Ñ€Ğ¾Ğ·ÑĞ»Ğ°Ğ±Ğ¸Ñ‚Ğ¸ÑÑ.';
+      'Після купання робіть ніжний масаж, починаючи зі стоп. Це розвиває відчуття тіла й допомагає малюкові розслабитися.';
 
   @override
-  String get tip_tip_gesture_speech_1_2_title =>
-      'ĞœĞ¾Ğ²Ğ»ĞµĞ½Ğ½Ñ Ğ· Ğ¶ĞµÑÑ‚Ğ°Ğ¼Ğ¸';
+  String get tip_tip_gesture_speech_1_2_title => 'Мовлення з жестами';
 
   @override
   String get tip_tip_gesture_speech_1_2_desc =>
-      'Ğ’Ğ¸ĞºĞ¾Ñ€Ğ¸ÑÑ‚Ğ¾Ğ²ÑƒĞ¹Ñ‚Ğµ Ğ¶ĞµÑÑ‚Ğ¸ Ğ¿Ñ–Ğ´ Ñ‡Ğ°Ñ Ñ€Ğ¾Ğ·Ğ¼Ğ¾Ğ²Ğ¸. ĞŸĞ¾Ğ¼Ğ°Ñ…Ğ°Ğ¹Ñ‚Ğµ Ñ€ÑƒĞºĞ¾Ñ Ğ´Ğ»Ñ Ğ¹Ğ´ĞµĞ¼Ğ¾ Ñ– Ğ¿Ğ¾Ñ‚Ñ€Ñ–Ñ‚ÑŒ Ğ´Ğ¾Ğ»Ğ¾Ğ½Ñ– Ğ´Ğ»Ñ Ğ²ÑĞµ. Ğ¦Ğµ Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ÑƒÑ” Ğ·Ğ¾Ñ€Ğ¾Ğ²Ñƒ Ğ¿Ğ°Ğ¼\'ÑÑ‚ÑŒ.';
+      'Використовуйте жести під час розмови. Помахайте рукою для йдемо і потріть долоні для все. Це підтримує зорову пам\'ять.';
 
   @override
-  String get tip_tip_open_hands_1_2_title => 'Ğ’Ñ–Ğ»ÑŒĞ½Ñ– Ğ¿Ğ°Ğ»ÑŒÑ‡Ğ¸ĞºĞ¸';
+  String get tip_tip_open_hands_1_2_title => 'Вільні пальчики';
 
   @override
   String get tip_tip_open_hands_1_2_desc =>
-      'ĞšÑƒĞ»Ğ°Ñ‡ĞºĞ¸ Ñ€Ğ¾Ğ·Ñ‚Ğ¸ÑĞºĞ°ÑÑ‚ÑŒÑÑ Ğ´ĞµĞ´Ğ°Ğ»Ñ– Ñ‡Ğ°ÑÑ‚Ñ–ÑˆĞµ. ĞŸÑ€Ğ¾Ğ¿Ğ¾Ğ½ÑƒĞ¹Ñ‚Ğµ Ğ¼\'ÑĞºÑ– Ñ–Ğ³Ñ€Ğ°ÑˆĞºĞ¸, Ñ‰Ğ¾Ğ± Ñ‚Ñ€ĞµĞ½ÑƒĞ²Ğ°Ñ‚Ğ¸ Ñ…Ğ°Ğ¿Ğ°Ğ½Ğ½Ñ Ğ¹ Ğ²Ñ–Ğ´Ğ¿ÑƒÑĞºĞ°Ğ½Ğ½Ñ.';
+      'Кулачки розтискаються дедалі частіше. Пропонуйте м\'які іграшки, щоб тренувати хапання й відпускання.';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_title =>
-      'Ğ‘Ğ»Ğ¸Ğ·ÑŒĞºÑ–ÑÑ‚ÑŒ Ğ¿Ğ¾Ñ€ÑƒÑ‡';
+  String get tip_tip_side_by_side_bonding_1_2_title => 'Близькість поруч';
 
   @override
   String get tip_tip_side_by_side_bonding_1_2_desc =>
-      'Ğ›ÑĞ¶Ñ‚Ğµ Ğ¿Ğ¾Ñ€ÑƒÑ‡ Ñ–Ğ· Ğ¼Ğ°Ğ»ÑĞºĞ¾Ğ¼. Ğ£ÑĞ¼Ñ–Ñ…Ğ°Ğ¹Ñ‚ĞµÑÑ Ñ‚Ğ° Ğ³Ğ¾Ğ²Ğ¾Ñ€Ñ–Ñ‚ÑŒ Ğ»Ğ°Ğ³Ñ–Ğ´Ğ½Ğ¾, Ğ¿Ğ¾ĞºĞ¸ Ğ²Ñ–Ğ½ Ğ½Ğ°Ğ¼Ğ°Ğ³Ğ°Ñ”Ñ‚ÑŒÑÑ Ğ¿Ğ¾Ğ²ĞµÑ€Ğ½ÑƒÑ‚Ğ¸ÑÑ Ğ´Ğ¾ Ğ²Ğ°Ñ.';
+      'Ляжте поруч із малюком. Усміхайтеся та говоріть лагідно, поки він намагається повернутися до вас.';
 
   @override
-  String get tip_tip_sound_hunter_title =>
-      'ĞœĞ¸ÑĞ»Ğ¸Ğ²ĞµÑ†ÑŒ Ğ·Ğ° Ğ·Ğ²ÑƒĞºĞ°Ğ¼Ğ¸';
+  String get tip_tip_sound_hunter_title => 'Мисливець за звуками';
 
   @override
   String get tip_tip_sound_hunter_desc =>
-      'Ğ¢Ğ¸Ñ…Ğ¾ Ğ¿Ğ¾Ñ‚Ñ€ÑÑÑ–Ñ‚ÑŒ Ğ±Ñ€ÑĞ·ĞºĞ°Ğ»ÑŒÑ†ĞµĞ¼ Ñ‚Ğ°Ğ¼, Ğ´Ğµ Ğ¼Ğ°Ğ»ÑĞº Ğ¹Ğ¾Ğ³Ğ¾ Ğ½Ğµ Ğ±Ğ°Ñ‡Ğ¸Ñ‚ÑŒ. ĞŸĞ¾Ğ²Ğ¾Ñ€Ğ¾Ñ‚ Ğ½Ğ° Ğ·Ğ²ÑƒĞº Ñ€Ğ¾Ğ·Ğ²Ğ¸Ğ²Ğ°Ñ” ÑĞ»ÑƒÑ… Ñ– ĞºĞ¾Ğ½Ñ†ĞµĞ½Ñ‚Ñ€Ğ°Ñ†Ñ–Ñ.';
+      'Тихо потрясіть брязкальцем там, де малюк його не бачить. Поворот на звук розвиває слух і концентрацію.';
 
   @override
   String get tip_tip_sound_hunter_level2_1_2_title =>
-      'ĞœĞ¸ÑĞ»Ğ¸Ğ²ĞµÑ†ÑŒ Ğ·Ğ° Ğ·Ğ²ÑƒĞºĞ°Ğ¼Ğ¸ (Ñ€Ñ–Ğ²ĞµĞ½ÑŒ 2)';
+      'Мисливець за звуками (рівень 2)';
 
   @override
   String get tip_tip_sound_hunter_level2_1_2_desc =>
-      'Ğ¡Ñ‚Ğ²Ğ¾Ñ€ÑĞ¹Ñ‚Ğµ Ñ€Ñ–Ğ·Ğ½Ñ– Ğ·Ğ²ÑƒĞºĞ¸ Ğ»Ñ–Ğ²Ğ¾Ñ€ÑƒÑ‡ Ñ– Ğ¿Ñ€Ğ°Ğ²Ğ¾Ñ€ÑƒÑ‡. ĞŸĞ¾ÑˆÑƒĞº Ğ´Ğ¶ĞµÑ€ĞµĞ»Ğ° Ğ·Ğ¼Ñ–Ñ†Ğ½ÑÑ” ÑƒĞ²Ğ°Ğ³Ñƒ.';
+      'Створюйте різні звуки ліворуч і праворуч. Пошук джерела зміцнює увагу.';
 
   @override
-  String get tip_tip_texture_discovery_1_2_title =>
-      'Ğ¢Ğ¾Ñ€ĞºĞ°Ñ‚Ğ¸ÑÑ Ğ¹ Ğ²Ñ–Ğ´ĞºÑ€Ğ¸Ğ²Ğ°Ñ‚Ğ¸';
+  String get tip_tip_texture_discovery_1_2_title => 'Торкатися й відкривати';
 
   @override
   String get tip_tip_texture_discovery_1_2_desc =>
-      'ĞŸÑ€Ğ¾Ğ¿Ğ¾Ğ½ÑƒĞ¹Ñ‚Ğµ Ğ¿Ñ€ĞµĞ´Ğ¼ĞµÑ‚Ğ¸ Ğ· Ñ€Ñ–Ğ·Ğ½Ğ¾Ñ Ñ„Ğ°ĞºÑ‚ÑƒÑ€Ğ¾Ñ. ĞšĞ¾Ğ¶Ğ½Ğµ Ğ½Ğ¾Ğ²Ğµ Ğ²Ñ–Ğ´Ñ‡ÑƒÑ‚Ñ‚Ñ â€” Ñ†Ğµ Ğ½Ğ¾Ğ²Ğµ Ğ²Ñ–Ğ´ĞºÑ€Ğ¸Ñ‚Ñ‚Ñ Ğ´Ğ»Ñ Ğ¼Ğ°Ğ»ÑĞºĞ°.';
+      'Пропонуйте предмети з різною фактурою. Кожне нове відчуття — це нове відкриття для малюка.';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_title =>
-      'Ğ”Ğ¾ÑĞ»Ñ–Ğ´Ğ½Ğ¸Ğº Ğ½Ğ°Ğ´Ğ²Ğ¾Ñ€Ñ–';
+  String get tip_tip_outdoor_explorer_4_5_title => 'Дослідник надворі';
 
   @override
   String get tip_tip_outdoor_explorer_4_5_desc =>
-      'ĞŸĞ¾ĞºĞ°Ğ·ÑƒĞ¹Ñ‚Ğµ Ğ´ĞµÑ€ĞµĞ²Ğ° Ğ¹ Ñ‚Ğ²Ğ°Ñ€Ğ¸Ğ½ Ğ¿Ñ–Ğ´ Ñ‡Ğ°Ñ Ğ¿Ñ€Ğ¾Ğ³ÑƒĞ»ÑĞ½ĞºĞ¸. Ğ”Ğ¾Ğ·Ğ²Ğ¾Ğ»ÑŒÑ‚Ğµ Ğ¼Ğ°Ğ»ÑĞºĞ¾Ğ²Ñ– Ñ‚Ğ¾Ñ€ĞºĞ°Ñ‚Ğ¸ÑÑ Ñ‚Ğ° Ğ´Ğ¾ÑĞ»Ñ–Ğ´Ğ¶ÑƒĞ²Ğ°Ñ‚Ğ¸, Ñ‡ÑƒÑÑ‡Ğ¸ Ğ²Ğ°Ñˆ Ğ³Ğ¾Ğ»Ğ¾Ñ.';
+      'Показуйте дерева й тварин під час прогулянки. Дозвольте малюкові торкатися та досліджувати, чуючи ваш голос.';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_title =>
-      'Ğ¢Ñ€ĞµĞ½ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ´Ğ¾Ñ‚ÑĞ³ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get tip_tip_reaching_exercise_1_2_title => 'Тренування дотягування';
 
   @override
   String get tip_tip_reaching_exercise_1_2_desc =>
-      'Ğ Ğ¾Ğ·Ğ¼Ñ–Ñ‰ÑƒĞ¹Ñ‚Ğµ Ñ–Ğ³Ñ€Ğ°ÑˆĞºĞ¸ Ğ² Ğ·Ğ¾Ğ½Ñ– Ğ´Ğ¾ÑÑĞ¶Ğ½Ğ¾ÑÑ‚Ñ–. ĞĞ°Ğ²Ñ–Ñ‚ÑŒ ÑĞ¿Ñ€Ğ¾Ğ±Ğ¸ Ğ´Ğ¾Ñ‚ÑĞ³Ğ½ÑƒÑ‚Ğ¸ÑÑ Ğ´Ğ¾Ğ¿Ğ¾Ğ¼Ğ°Ğ³Ğ°ÑÑ‚ÑŒ Ğ·Ğ¼Ñ–Ñ†Ğ½ÑĞ²Ğ°Ñ‚Ğ¸ Ğ¼\'ÑĞ·Ğ¸.';
+      'Розміщуйте іграшки в зоні досяжності. Навіть спроби дотягнутися допомагають зміцнювати м\'язи.';
 
   @override
-  String get tip_tip_supported_bounce_1_2_title =>
-      'ĞŸÑ€ÑƒĞ¶Ğ¸Ğ½ĞºĞ¸ Ğ· Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ĞºĞ¾Ñ';
+  String get tip_tip_supported_bounce_1_2_title => 'Пружинки з підтримкою';
 
   @override
   String get tip_tip_supported_bounce_1_2_desc =>
-      'Ğ¢Ñ€Ğ¸Ğ¼Ğ°Ğ¹Ñ‚Ğµ Ğ¼Ğ°Ğ»ÑĞºĞ° Ğ²ĞµÑ€Ñ‚Ğ¸ĞºĞ°Ğ»ÑŒĞ½Ğ¾ Ğ½Ğ° ĞºĞ¾Ğ»Ñ–Ğ½Ğ°Ñ… Ñ– Ğ¼\'ÑĞºĞ¾ Ğ¿Ñ€ÑƒĞ¶Ğ¸Ğ½ÑŒÑ‚Ğµ Ğ· Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ĞºĞ¾Ñ. Ğ¦Ğµ Ğ´Ğ¾Ğ¿Ğ¾Ğ¼Ğ°Ğ³Ğ°Ñ” Ğ·Ğ¼Ñ–Ñ†Ğ½ÑĞ²Ğ°Ñ‚Ğ¸ Ğ½Ñ–Ğ¶ĞºĞ¸ Ñ‚Ğ° Ğ´Ğ¾ÑĞ»Ñ–Ğ´Ğ¶ÑƒĞ²Ğ°Ñ‚Ğ¸ Ğ½Ğ¾Ğ²Ğµ.';
+      'Тримайте малюка вертикально на колінах і м\'яко пружиньте з підтримкою. Це допомагає зміцнювати ніжки та досліджувати нове.';
 
   @override
-  String get tip_tip_visual_tracking_1_2_title =>
-      'Ğ’Ñ–Ğ·ÑƒĞ°Ğ»ÑŒĞ½Ğµ ÑÑ‚ĞµĞ¶ĞµĞ½Ğ½Ñ';
+  String get tip_tip_visual_tracking_1_2_title => 'Візуальне стеження';
 
   @override
   String get tip_tip_visual_tracking_1_2_desc =>
-      'ĞŸĞ¾Ğ²Ñ–Ğ»ÑŒĞ½Ğ¾ Ñ€ÑƒÑ…Ğ°Ğ¹Ñ‚Ğµ ÑÑĞºÑ€Ğ°Ğ²Ñƒ Ñ–Ğ³Ñ€Ğ°ÑˆĞºÑƒ Ğ·Ñ– Ğ·Ğ²ÑƒĞºĞ¾Ğ¼ Ñƒ Ğ¿Ğ¾Ğ»Ñ– Ğ·Ğ¾Ñ€Ñƒ Ğ¼Ğ°Ğ»ÑĞºĞ°. Ğ¦Ğµ Ñ‡ÑƒĞ´Ğ¾Ğ²Ğ° Ğ²Ğ¿Ñ€Ğ°Ğ²Ğ° Ğ´Ğ»Ñ Ğ²Ñ–Ğ·ÑƒĞ°Ğ»ÑŒĞ½Ğ¾Ğ³Ğ¾ ÑÑ‚ĞµĞ¶ĞµĞ½Ğ½Ñ.';
+      'Повільно рухайте яскраву іграшку зі звуком у полі зору малюка. Це чудова вправа для візуального стеження.';
 
   @override
-  String get tip_tip_face_play_1_2_title => 'Ğ“Ñ€Ğ° Ğ· Ğ¼Ñ–Ğ¼Ñ–ĞºĞ¾Ñ';
+  String get tip_tip_face_play_1_2_title => 'Гра з мімікою';
 
   @override
   String get tip_tip_face_play_1_2_desc =>
-      'ĞĞ°Ğ±Ğ»Ğ¸Ğ·ÑŒÑ‚ĞµÑÑ, Ğ²ÑÑ‚Ğ°Ğ½Ğ¾Ğ²Ñ–Ñ‚ÑŒ Ğ·Ğ¾Ñ€Ğ¾Ğ²Ğ¸Ğ¹ ĞºĞ¾Ğ½Ñ‚Ğ°ĞºÑ‚ Ñ– Ğ²Ğ¸ĞºĞ¾Ñ€Ğ¸ÑÑ‚Ğ¾Ğ²ÑƒĞ¹Ñ‚Ğµ ĞºÑƒĞ¼ĞµĞ´Ğ½Ñƒ Ğ¼Ñ–Ğ¼Ñ–ĞºÑƒ. Ğ’Ğ°Ñˆ Ğ³Ğ¾Ğ»Ğ¾Ñ Ñ– Ğ¾Ğ±Ğ»Ğ¸Ñ‡Ñ‡Ñ â€” ÑƒĞ»ÑĞ±Ğ»ĞµĞ½Ñ– Ñ–Ğ³Ñ€Ğ°ÑˆĞºĞ¸ Ğ¼Ğ°Ğ»ÑĞºĞ°.';
+      'Наблизьтеся, встановіть зоровий контакт і використовуйте кумедну міміку. Ваш голос і обличчя — улюблені іграшки малюка.';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_title =>
-      'ĞĞ°Ğ·Ğ¸Ğ²Ğ°Ğ½Ğ½Ñ ĞµĞ¼Ğ¾Ñ†Ñ–Ğ¹';
+  String get tip_tip_emotion_labeling_1_2_title => 'Називання емоцій';
 
   @override
   String get tip_tip_emotion_labeling_1_2_desc =>
-      'ĞšĞ¾Ğ»Ğ¸ Ğ¼Ğ°Ğ»ÑĞº Ğ¿Ğ»Ğ°Ñ‡Ğµ, ÑĞ¿Ğ¾ĞºÑ–Ğ¹Ğ½Ğ¾ Ğ½Ğ°Ğ·Ğ¸Ğ²Ğ°Ğ¹Ñ‚Ğµ Ğ¹Ğ¾Ğ³Ğ¾ ĞµĞ¼Ğ¾Ñ†Ñ–Ñ Ñ‚Ğ° Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ÑƒĞ¹Ñ‚Ğµ. Ğ’Ñ–Ğ´Ñ‡ÑƒÑ‚Ñ‚Ñ, Ñ‰Ğ¾ Ğ¹Ğ¾Ğ³Ğ¾ Ñ€Ğ¾Ğ·ÑƒĞ¼Ñ–ÑÑ‚ÑŒ, Ğ·Ğ¼Ñ–Ñ†Ğ½ÑÑ” ĞµĞ¼Ğ¾Ñ†Ñ–Ğ¹Ğ½Ñƒ Ğ±ĞµĞ·Ğ¿ĞµĞºÑƒ.';
+      'Коли малюк плаче, спокійно називайте його емоцію та підтримуйте. Відчуття, що його розуміють, зміцнює емоційну безпеку.';
 
   @override
-  String get tip_tip_first_meal_title =>
-      'ĞŸĞµÑ€ÑˆĞµ Ğ·Ğ½Ğ°Ğ¹Ğ¾Ğ¼ÑÑ‚Ğ²Ğ¾ Ğ·Ñ– ÑĞ¼Ğ°ĞºĞ¾Ğ¼';
+  String get tip_tip_first_meal_title => 'Перше знайомство зі смаком';
 
   @override
   String get tip_tip_first_meal_desc =>
-      'ĞŸĞ¾Ñ‡Ğ¸Ğ½Ğ°Ğ¹Ñ‚Ğµ Ğ¿Ñ€Ğ¸ĞºĞ¾Ñ€Ğ¼ Ğ·Ğ° Ñ€ĞµĞºĞ¾Ğ¼ĞµĞ½Ğ´Ğ°Ñ†Ñ–Ñ”Ñ Ğ¿ĞµĞ´Ñ–Ğ°Ñ‚Ñ€Ğ°. Ğ“Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ· Ğ»Ğ¾Ğ¶ĞµÑ‡ĞºĞ¸ Ğ¼Ğ¾Ğ¶Ğµ Ğ±ÑƒÑ‚Ğ¸ Ğ¿Ñ€Ğ¸Ñ”Ğ¼Ğ½Ğ¸Ğ¼, Ğ°Ğ»Ğµ Ğ²Ğ°Ğ¶Ğ»Ğ¸Ğ²Ğ¾ ÑÑ‚ĞµĞ¶Ğ¸Ñ‚Ğ¸ Ğ·Ğ° Ğ¾Ğ·Ğ½Ğ°ĞºĞ°Ğ¼Ğ¸ Ğ°Ğ»ĞµÑ€Ğ³Ñ–Ñ—.';
+      'Починайте прикорм за рекомендацією педіатра. Годування з ложечки може бути приємним, але важливо стежити за ознаками алергії.';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_title =>
-      'ĞĞºÑ‚Ğ¸Ğ²Ğ½Ñ– Ñ€ÑƒÑ‡ĞºĞ¸';
+  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Активні ручки';
 
   @override
   String get tip_tip_hand_to_hand_transfer_4_5_desc =>
-      'ĞŸÑ€Ğ¸Ğ±Ğ»Ğ¸Ğ·Ğ½Ğ¾ Ñƒ 4-5 Ğ¼Ñ–ÑÑÑ†Ñ–Ğ² Ğ¼Ğ°Ğ»ÑĞºĞ¸ Ğ½Ğ°Ğ¼Ğ°Ğ³Ğ°ÑÑ‚ÑŒÑÑ Ğ¿ĞµÑ€ĞµĞºĞ»Ğ°Ğ´Ğ°Ñ‚Ğ¸ Ğ¿Ñ€ĞµĞ´Ğ¼ĞµÑ‚Ğ¸ Ğ· Ğ¾Ğ´Ğ½Ñ–Ñ”Ñ— Ñ€ÑƒĞºĞ¸ Ğ² Ñ–Ğ½ÑˆÑƒ. ĞŸÑ€Ğ¾Ğ¿Ğ¾Ğ½ÑƒĞ¹Ñ‚Ğµ Ğ·Ñ€ÑƒÑ‡Ğ½Ñ– Ğ´Ğ»Ñ Ğ·Ğ°Ñ…Ğ¾Ğ¿Ğ»ĞµĞ½Ğ½Ñ Ğ¿Ñ€ĞµĞ´Ğ¼ĞµÑ‚Ğ¸ Ñ‚Ğ° ÑĞ¿Ğ¾ÑÑ‚ĞµÑ€Ñ–Ğ³Ğ°Ğ¹Ñ‚Ğµ.';
+      'Приблизно у 4-5 місяців малюки намагаються перекладати предмети з однієї руки в іншу. Пропонуйте зручні для захоплення предмети та спостерігайте.';
 
   @override
-  String get tip_tip_supported_sitting_4_5_title =>
-      'Ğ¡Ğ¸Ğ´Ñ–Ğ½Ğ½Ñ Ğ· Ğ¿Ñ–Ğ´Ñ‚Ñ€Ğ¸Ğ¼ĞºĞ¾Ñ';
+  String get tip_tip_supported_sitting_4_5_title => 'Сидіння з підтримкою';
 
   @override
   String get tip_tip_supported_sitting_4_5_desc =>
-      'Ğ¢Ñ€ĞµĞ½ÑƒĞ¹Ñ‚Ğµ ÑĞ¸Ğ´Ñ–Ğ½Ğ½Ñ Ğ· Ğ¾Ğ¿Ğ¾Ñ€Ğ¾Ñ Ğ½Ğ° Ğ¿Ğ¾Ğ´ÑƒÑˆĞºĞ¸. ĞŸĞ¾ĞºĞ»Ğ°Ğ´Ñ–Ñ‚ÑŒ Ñ–Ğ³Ñ€Ğ°ÑˆĞºÑƒ Ğ¿ĞµÑ€ĞµĞ´ Ğ¼Ğ°Ğ»ÑĞºĞ¾Ğ¼, Ñ‰Ğ¾Ğ± Ğ·Ğ°Ğ¾Ñ…Ğ¾Ñ‚Ğ¸Ñ‚Ğ¸ Ñ€Ñ–Ğ²Ğ½Ğ¾Ğ²Ğ°Ğ³Ñƒ Ñ‚Ğ° Ğ¾Ğ¿Ğ¾Ñ€Ñƒ ĞºĞ¾Ñ€Ğ¿ÑƒÑĞ¾Ğ¼.';
+      'Тренуйте сидіння з опорою на подушки. Покладіть іграшку перед малюком, щоб заохотити рівновагу та опору корпусом.';
 
   @override
-  String get tip_tip_feet_discovery_4_5_title =>
-      'Ğ—Ğ½Ğ°Ğ¹Ğ¾Ğ¼ÑÑ‚Ğ²Ğ¾ Ğ·Ñ– ÑÑ‚Ğ¾Ğ¿Ğ°Ğ¼Ğ¸';
+  String get tip_tip_feet_discovery_4_5_title => 'Знайомство зі стопами';
 
   @override
   String get tip_tip_feet_discovery_4_5_desc =>
-      'Ğ›ĞµĞ¶Ğ°Ñ‡Ğ¸ Ğ½Ğ° ÑĞ¿Ğ¸Ğ½Ñ–, Ğ¼Ğ°Ğ»ÑĞº Ğ¼Ğ¾Ğ¶Ğµ Ñ…Ğ°Ğ¿Ğ°Ñ‚Ğ¸ ÑÑ‚Ğ¾Ğ¿Ğ¸ Ğ¹ Ñ‚ÑĞ³Ğ½ÑƒÑ‚Ğ¸ Ñ—Ñ… Ğ´Ğ¾ Ñ€Ğ¾Ñ‚Ğ°. Ğ”Ğ¾Ğ·Ğ²Ğ¾Ğ»ÑŒÑ‚Ğµ ÑÑ‚Ğ¾Ğ¿Ğ°Ğ¼ Ğ´Ğ¾ÑĞ»Ñ–Ğ´Ğ¶ÑƒĞ²Ğ°Ñ‚Ğ¸ Ñ€Ñ–Ğ·Ğ½Ñ– Ğ¿Ğ¾Ğ²ĞµÑ€Ñ…Ğ½Ñ–.';
+      'Лежачи на спині, малюк може хапати стопи й тягнути їх до рота. Дозвольте стопам досліджувати різні поверхні.';
 
   @override
-  String get tip_tip_independent_play_4_5_title =>
-      'Ğ¡Ğ°Ğ¼Ğ¾ÑÑ‚Ñ–Ğ¹Ğ½Ğ° Ğ³Ñ€Ğ°';
+  String get tip_tip_independent_play_4_5_title => 'Самостійна гра';
 
   @override
   String get tip_tip_independent_play_4_5_desc =>
-      'ĞŸĞ¾ĞºĞ»Ğ°Ğ´Ñ–Ñ‚ÑŒ Ğ¿Ğ¾Ñ€ÑƒÑ‡ ĞºÑ–Ğ»ÑŒĞºĞ° Ñ–Ğ³Ñ€Ğ°ÑˆĞ¾Ğº Ñ–Ğ· Ñ€Ñ–Ğ·Ğ½Ğ¾Ñ Ñ„Ğ°ĞºÑ‚ÑƒÑ€Ğ¾Ñ Ğ¹ Ñ‚Ñ€Ğ¾Ñ…Ğ¸ Ğ²Ñ–Ğ´Ñ–Ğ¹Ğ´Ñ–Ñ‚ÑŒ. Ğ¡Ğ°Ğ¼Ğ¾ÑÑ‚Ñ–Ğ¹Ğ½Ğ° Ğ³Ñ€Ğ° Ğ·Ğ¼Ñ–Ñ†Ğ½ÑÑ” Ğ²Ğ¿ĞµĞ²Ğ½ĞµĞ½Ñ–ÑÑ‚ÑŒ Ğ¼Ğ°Ğ»ÑĞºĞ°.';
+      'Покладіть поруч кілька іграшок із різною фактурою й трохи відійдіть. Самостійна гра зміцнює впевненість малюка.';
 
   @override
   String ageMonths(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count Ğ¼Ñ–ÑÑÑ†Ñ',
-      many: '$count Ğ¼Ñ–ÑÑÑ†Ñ–Ğ²',
-      few: '$count Ğ¼Ñ–ÑÑÑ†Ñ–',
-      one: '$count Ğ¼Ñ–ÑÑÑ†ÑŒ',
+      other: '$count місяця',
+      many: '$count місяців',
+      few: '$count місяці',
+      one: '$count місяць',
     );
     return '$_temp0';
   }
 
   @override
-  String get appPreferences => 'ĞĞ°Ğ»Ğ°ÑˆÑ‚ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ·Ğ°ÑÑ‚Ğ¾ÑÑƒĞ½ĞºÑƒ';
+  String get appPreferences => 'Налаштування застосунку';
 
   @override
-  String get appearance => 'Ğ’Ğ¸Ğ³Ğ»ÑĞ´';
+  String get appearance => 'Вигляд';
 
   @override
-  String get darkMode => 'Ğ¢ĞµĞ¼Ğ½Ğ¸Ğ¹ Ñ€ĞµĞ¶Ğ¸Ğ¼';
+  String get darkMode => 'Темний режим';
 
   @override
-  String get darkModeSubtitle =>
-      'ĞšĞ¾Ğ¼Ñ„Ğ¾Ñ€Ñ‚Ğ½Ğ° Ñ‚ĞµĞ¼Ğ½Ğ° Ñ‚ĞµĞ¼Ğ° Ğ´Ğ»Ñ Ğ¾Ñ‡ĞµĞ¹';
+  String get darkModeSubtitle => 'Комфортна темна тема для очей';
 
   @override
-  String get notifications => 'Ğ¡Ğ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ';
+  String get notifications => 'Сповіщення';
 
   @override
-  String get feedingReminder =>
-      'ĞĞ°Ğ³Ğ°Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ¿Ñ€Ğ¾ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get feedingReminder => 'Нагадування про годування';
 
   @override
-  String get diaperReminder => 'ĞĞ°Ğ³Ğ°Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ¿Ñ€Ğ¾ Ğ¿Ñ–Ğ´Ğ³ÑƒĞ·Ğ¾Ğº';
+  String get diaperReminder => 'Нагадування про підгузок';
 
   @override
-  String get off => 'Ğ’Ğ¸Ğ¼ĞºĞ½ĞµĞ½Ğ¾';
+  String get off => 'Вимкнено';
 
   @override
-  String get reminderTime => 'Ğ§Ğ°Ñ Ğ½Ğ°Ğ³Ğ°Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get reminderTime => 'Час нагадування';
 
   @override
-  String get dataManagement => 'ĞšĞµÑ€ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ´Ğ°Ğ½Ğ¸Ğ¼Ğ¸';
+  String get dataManagement => 'Керування даними';
 
   @override
-  String get createReport => 'Ğ¡Ñ‚Ğ²Ğ¾Ñ€Ğ¸Ñ‚Ğ¸ Ğ·Ğ²Ñ–Ñ‚';
+  String get createReport => 'Створити звіт';
 
   @override
-  String get weeklyMonthlyStats =>
-      'Ğ¢Ğ¸Ğ¶Ğ½ĞµĞ²Ğ°/Ğ¼Ñ–ÑÑÑ‡Ğ½Ğ° ÑÑ‚Ğ°Ñ‚Ğ¸ÑÑ‚Ğ¸ĞºĞ°';
+  String get weeklyMonthlyStats => 'Тижнева/місячна статистика';
 
   @override
-  String get deleteAllDataTitle => 'Ğ’Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸ Ğ²ÑÑ– Ğ´Ğ°Ğ½Ñ–';
+  String get deleteAllDataTitle => 'Видалити всі дані';
 
   @override
-  String get deleteAllDataSubtitle =>
-      'ĞĞ°Ğ·Ğ°Ğ²Ğ¶Ğ´Ğ¸ Ğ²Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸ Ğ²ÑÑ– Ğ·Ğ°Ğ¿Ğ¸ÑĞ¸';
+  String get deleteAllDataSubtitle => 'Назавжди видалити всі записи';
 
   @override
-  String get about => 'ĞŸÑ€Ğ¾ Ğ·Ğ°ÑÑ‚Ğ¾ÑÑƒĞ½Ğ¾Ğº';
+  String get about => 'Про застосунок';
 
   @override
-  String get version => 'Ğ’ĞµÑ€ÑÑ–Ñ';
+  String get version => 'Версія';
 
   @override
-  String get developer => 'Ğ Ğ¾Ğ·Ñ€Ğ¾Ğ±Ğ½Ğ¸Ğº';
+  String get developer => 'Розробник';
 
   @override
   String get deleteAllDataWarning =>
-      'Ğ¦Ñ Ğ´Ñ–Ñ Ğ½Ğ°Ğ·Ğ°Ğ²Ğ¶Ğ´Ğ¸ Ğ²Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚ÑŒ ÑƒÑÑ– Ğ·Ğ°Ğ¿Ğ¸ÑĞ¸. Ğ¡ĞºĞ°ÑÑƒĞ²Ğ°Ñ‚Ğ¸ Ğ½ĞµĞ¼Ğ¾Ğ¶Ğ»Ğ¸Ğ²Ğ¾.';
+      'Ця дія назавжди видалить усі записи. Скасувати неможливо.';
 
   @override
   String get debug => 'DEBUG';
 
   @override
-  String get testSleepNotification =>
-      'Ğ¢ĞµÑÑ‚ ÑĞ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ ÑĞ¾Ğ½';
+  String get testSleepNotification => 'Тест сповіщення про сон';
 
   @override
-  String get fireSleepNotificationNow =>
-      'ĞĞ°Ğ´Ñ–ÑĞ»Ğ°Ñ‚Ğ¸ ÑĞ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ ÑĞ¾Ğ½ Ğ·Ğ°Ñ€Ğ°Ğ·';
+  String get fireSleepNotificationNow => 'Надіслати сповіщення про сон зараз';
 
   @override
-  String get testNursingNotification =>
-      'Ğ¢ĞµÑÑ‚ ÑĞ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ';
+  String get testNursingNotification => 'Тест сповіщення про годування';
 
   @override
   String get fireNursingNotificationNow =>
-      'ĞĞ°Ğ´Ñ–ÑĞ»Ğ°Ñ‚Ğ¸ ÑĞ¿Ğ¾Ğ²Ñ–Ñ‰ĞµĞ½Ğ½Ñ Ğ¿Ñ€Ğ¾ Ğ³Ğ¾Ğ´ÑƒĞ²Ğ°Ğ½Ğ½Ñ Ğ·Ğ°Ñ€Ğ°Ğ·';
+      'Надіслати сповіщення про годування зараз';
 
   @override
-  String get user => 'ĞšĞ¾Ñ€Ğ¸ÑÑ‚ÑƒĞ²Ğ°Ñ‡';
+  String get user => 'Користувач';
 
   @override
-  String get selectBaby => 'ĞĞ±Ñ€Ğ°Ñ‚Ğ¸ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get selectBaby => 'Обрати малюка';
 
   @override
-  String get newBabyAdd => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ğ½Ğ¾Ğ²Ğ¾Ğ³Ğ¾ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get newBabyAdd => 'Додати нового малюка';
 
   @override
-  String get babyProfileTitle => 'ĞŸÑ€Ğ¾Ñ„Ñ–Ğ»ÑŒ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get babyProfileTitle => 'Профіль малюка';
 
   @override
-  String get babyInformation => 'Ğ†Ğ½Ñ„Ğ¾Ñ€Ğ¼Ğ°Ñ†Ñ–Ñ Ğ¿Ñ€Ğ¾ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get babyInformation => 'Інформація про малюка';
 
   @override
-  String get addPhoto => 'Ğ”Ğ¾Ğ´Ğ°Ñ‚Ğ¸ Ñ„Ğ¾Ñ‚Ğ¾';
+  String get addPhoto => 'Додати фото';
 
   @override
-  String get changePhoto => 'Ğ—Ğ¼Ñ–Ğ½Ğ¸Ñ‚Ğ¸ Ñ„Ğ¾Ñ‚Ğ¾';
+  String get changePhoto => 'Змінити фото';
 
   @override
-  String get removePhoto => 'Ğ’Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸ Ñ„Ğ¾Ñ‚Ğ¾';
+  String get removePhoto => 'Видалити фото';
 
   @override
-  String get birthDateLabel => 'Ğ”Ğ°Ñ‚Ğ° Ğ½Ğ°Ñ€Ğ¾Ğ´Ğ¶ĞµĞ½Ğ½Ñ';
+  String get birthDateLabel => 'Дата народження';
 
   @override
-  String get notesOptional => 'ĞĞ¾Ñ‚Ğ°Ñ‚ĞºĞ¸ (Ğ½ĞµĞ¾Ğ±Ğ¾Ğ²\'ÑĞ·ĞºĞ¾Ğ²Ğ¾)';
+  String get notesOptional => 'Нотатки (необов\'язково)';
 
   @override
-  String get growthRecords => 'Ğ—Ğ°Ğ¿Ğ¸ÑĞ¸ Ñ€Ğ¾ÑÑ‚Ñƒ';
+  String get growthRecords => 'Записи росту';
 
   @override
-  String get deleteThisBabyData =>
-      'Ğ’Ğ¸Ğ´Ğ°Ğ»Ğ¸Ñ‚Ğ¸ Ğ´Ğ°Ğ½Ñ– Ñ†ÑŒĞ¾Ğ³Ğ¾ Ğ¼Ğ°Ğ»ÑĞºĞ°';
+  String get deleteThisBabyData => 'Видалити дані цього малюка';
 
   @override
-  String get otherBabiesUnaffected =>
-      'Ğ†Ğ½ÑˆÑ– Ğ´Ñ–Ñ‚Ğ¸ Ğ½Ğµ Ğ¿Ğ¾ÑÑ‚Ñ€Ğ°Ğ¶Ğ´Ğ°ÑÑ‚ÑŒ';
+  String get otherBabiesUnaffected => 'Інші діти не постраждають';
 
   @override
-  String get onlyThisBabyPrefix =>
-      'Ğ‘ÑƒĞ´ÑƒÑ‚ÑŒ Ğ²Ğ¸Ğ´Ğ°Ğ»ĞµĞ½Ñ– Ğ»Ğ¸ÑˆĞµ Ğ²ÑÑ– Ğ·Ğ°Ğ¿Ğ¸ÑĞ¸ Ğ¼Ğ°Ğ»ÑĞºĞ° ';
+  String get onlyThisBabyPrefix => 'Будуть видалені лише всі записи малюка ';
 
   @override
   String get allRecordsWillBeDeleted => '.';
 
   @override
   String get deleteActionIrreversible =>
-      'Ğ†Ğ½ÑˆÑ– Ğ´Ñ–Ñ‚Ğ¸ Ğ½Ğµ Ğ¿Ğ¾ÑÑ‚Ñ€Ğ°Ğ¶Ğ´Ğ°ÑÑ‚ÑŒ. Ğ¦Ñ Ğ´Ñ–Ñ Ğ½ĞµĞ¼Ğ¾Ğ¶Ğ»Ğ¸Ğ²Ğ¾ ÑĞºĞ°ÑÑƒĞ²Ğ°Ñ‚Ğ¸.';
+      'Інші діти не постраждають. Цю дію неможливо скасувати.';
 
   @override
-  String get birth => 'ĞĞ°Ñ€Ğ¾Ğ´Ğ¶ĞµĞ½Ğ½Ñ';
+  String get birth => 'Народження';
 
   @override
   String monthNumber(int month) {
-    return '$month-Ğ¹ Ğ¼Ñ–ÑÑÑ†ÑŒ';
+    return '$month-й місяць';
   }
 
   @override
-  String get selectMonth => 'ĞĞ±ĞµÑ€Ñ–Ñ‚ÑŒ Ğ¼Ñ–ÑÑÑ†ÑŒ';
+  String get selectMonth => 'Оберіть місяць';
 
   @override
-  String get otherMonth => 'Ğ†Ğ½ÑˆĞ¸Ğ¹ Ğ¼Ñ–ÑÑÑ†ÑŒ';
+  String get otherMonth => 'Інший місяць';
 
   @override
-  String get period => 'ĞŸĞµÑ€Ñ–Ğ¾Ğ´';
+  String get period => 'Період';
 
   @override
-  String get status => 'Ğ¡Ñ‚Ğ°Ñ‚ÑƒÑ';
+  String get status => 'Статус';
 
   @override
-  String get scheduledDate => 'Ğ—Ğ°Ğ¿Ğ»Ğ°Ğ½Ğ¾Ğ²Ğ°Ğ½Ğ° Ğ´Ğ°Ñ‚Ğ°';
+  String get scheduledDate => 'Запланована дата';
 
   @override
-  String get editVaccine => 'Ğ ĞµĞ´Ğ°Ğ³ÑƒĞ²Ğ°Ñ‚Ğ¸ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ñƒ';
+  String get editVaccine => 'Редагувати вакцину';
 
   @override
-  String get vaccineName => 'ĞĞ°Ğ·Ğ²Ğ° Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ¸';
+  String get vaccineName => 'Назва вакцини';
 
   @override
-  String get allLabel => 'Ğ£ÑÑ–';
+  String get allLabel => 'Усі';
 
   @override
-  String get routineFilter => 'Ğ ĞµĞ³ÑƒĞ»ÑÑ€Ğ½Ğ¾';
+  String get routineFilter => 'Регулярно';
 
   @override
-  String get asNeededFilter => 'Ğ—Ğ° Ğ¿Ğ¾Ñ‚Ñ€ĞµĞ±Ğ¸';
+  String get asNeededFilter => 'За потреби';
 
   @override
-  String get vaccineProtocolsFilter =>
-      'ĞŸÑ€Ğ¾Ñ‚Ğ¾ĞºĞ¾Ğ»Ğ¸ Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—';
+  String get vaccineProtocolsFilter => 'Протоколи вакцинації';
 
   @override
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'Ğ—Ğ° Ğ¿Ğ¾Ñ‚Ñ€ĞµĞ±Ğ¸';
+  String get asNeeded => 'За потреби';
 
   @override
-  String get vaccineProtocolLabel => 'ĞŸÑ€Ğ¾Ñ‚Ğ¾ĞºĞ¾Ğ» Ğ²Ğ°ĞºÑ†Ğ¸Ğ½Ğ°Ñ†Ñ–Ñ—';
+  String get vaccineProtocolLabel => 'Протокол вакцинації';
 
   @override
   String linkedToVaccine(String vaccine) {
@@ -1435,49 +1339,23 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String doseCountLabel(int count) {
-    return 'Ğ—Ğ°Ñ€ĞµÑ”ÑÑ‚Ñ€Ğ¾Ğ²Ğ°Ğ½Ğ¾ Ğ´Ğ¾Ğ·: $count';
+    return 'Зареєстровано доз: $count';
   }
 
   @override
-  String get logGivenNow => 'ĞŸĞ¾Ğ·Ğ½Ğ°Ñ‡Ğ¸Ñ‚Ğ¸ ÑĞº Ğ´Ğ°Ğ½Ğ¾';
+  String get logGivenNow => 'Позначити як дано';
 
   @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override
-  String get savedMessage => 'Збережено';
+  String get scheduleType => 'Тип схеми';
 
   @override
-  String get alreadySavedRecently => 'Вже щойно збережено';
+  String get dailySchedule => 'Щодня';
 
   @override
-  String get undo => 'Ğ¡ĞºĞ°ÑÑƒĞ²Ğ°Ñ‚Ğ¸';
-
-  @override
-  String get yesterday => 'Ğ’Ñ‡Ğ¾Ñ€Ğ°';
-
-  @override
-  String get notGivenYet => 'Ğ©Ğµ Ğ½Ğµ Ğ´Ğ°Ğ²Ğ°Ğ»Ğ¸';
-
-  @override
-  String get viewHistory => 'Ğ†ÑÑ‚Ğ¾Ñ€Ñ–Ñ';
-
-  @override
-  String get noMedicationHistory => 'ĞĞµĞ¼Ğ°Ñ” Ñ–ÑÑ‚Ğ¾Ñ€Ñ–Ñ— Ğ¿Ñ€Ğ¸Ğ¹Ğ¾Ğ¼Ñƒ';
-
-  @override
-  String lastGivenLabel(String value) {
-    return 'ĞÑÑ‚Ğ°Ğ½Ğ½Ñ–Ğ¹ Ğ¿Ñ€Ğ¸Ğ¹Ğ¾Ğ¼: $value';
-  }
-
-  @override
-  String get scheduleType => 'Ğ¢Ğ¸Ğ¿ ÑÑ…ĞµĞ¼Ğ¸';
-
-  @override
-  String get dailySchedule => 'Ğ©Ğ¾Ğ´Ğ½Ñ';
-
-  @override
-  String get prnSchedule => 'Ğ—Ğ° Ğ¿Ğ¾Ñ‚Ñ€ĞµĞ±Ğ¸';
+  String get prnSchedule => 'За потреби';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';
@@ -1514,8 +1392,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get createNew => 'Create new';
 
   @override
-  String get chooseExistingMedication =>
-      'Ğ’Ğ¸Ğ±Ñ€Ğ°Ñ‚Ğ¸ Ğ½Ğ°ÑĞ²Ğ½Ğ¸Ğ¹ Ğ¿Ñ€ĞµĞ¿Ğ°Ñ€Ğ°Ñ‚';
+  String get chooseExistingMedication => 'Вибрати наявний препарат';
 
   @override
   String get feverReducerHint => 'Fever reducer';
@@ -1532,4 +1409,58 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get vaccineProtocolAdded => 'Vaccine protocol added';
+
+  @override
+  String get time => 'Час';
+
+  @override
+  String get diaperWet => 'Мокрий';
+
+  @override
+  String get diaperDirty => 'Брудний';
+
+  @override
+  String get diaperBoth => 'Обидва';
+
+  @override
+  String get eventTimeTooOld =>
+      'Вибраний час має бути в межах останніх 48 годин';
+
+  @override
+  String get editTitleFeeding => 'Змінити годування';
+
+  @override
+  String get editTitleDiaper => 'Змінити підгузок';
+
+  @override
+  String get editTitleSleep => 'Змінити сон';
+
+  @override
+  String get editTitleNursing => 'Змінити грудне вигодовування';
+
+  @override
+  String get savedMessage => 'Збережено';
+
+  @override
+  String get alreadySavedRecently => 'Вже щойно збережено';
+
+  @override
+  String get undo => 'Скасувати';
+
+  @override
+  String get yesterday => 'Вчора';
+
+  @override
+  String get notGivenYet => 'Ще не давали';
+
+  @override
+  String get viewHistory => 'Історія';
+
+  @override
+  String get noMedicationHistory => 'Немає історії прийому';
+
+  @override
+  String lastGivenLabel(String value) {
+    return 'Останній прийом: $value';
+  }
 }

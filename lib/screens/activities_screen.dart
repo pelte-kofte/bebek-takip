@@ -3,9 +3,7 @@ import 'package:flutter/cupertino.dart'
     show
         CupertinoDatePicker,
         CupertinoDatePickerMode,
-        CupertinoSlidingSegmentedControl,
-        CupertinoTimerPicker,
-        CupertinoTimerPickerMode;
+        CupertinoSlidingSegmentedControl;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
@@ -155,7 +153,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       const SizedBox(height: 12),
                     ],
 
-                    // Tarih SeÃƒÂ§ici
+                    // Tarih Secici
                     _buildDateSelector(isDark),
                   ],
                 ),
@@ -198,7 +196,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
               ),
 
-              // Ã„Â°ÃƒÂ§erik (scrollable, Expanded ile kalan alanÃ„Â± doldurur)
+              // Icerik (scrollable, Expanded ile kalan alani doldurur)
               Expanded(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
@@ -337,7 +335,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildActiveContent() {
-    // Her widget'a unique key ver ki AnimatedSwitcher farkÃ„Â± anlasÃ„Â±n
+    // Her widget'a unique key ver ki AnimatedSwitcher farki anlasin
     switch (_activeType) {
       case ActivityType.mama:
         return KeyedSubtree(
@@ -406,7 +404,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ãƒâ€“ZET
+        // Section Header - OZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -424,7 +422,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ãƒâ€“zet kartÃ„Â±
+        // Ozet karti
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -491,7 +489,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
+        // Section Header - SON AKTIVITELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -631,7 +629,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ãƒâ€“ZET
+        // Section Header - OZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -649,7 +647,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ãƒâ€“zet kartÃ„Â±
+        // Ozet karti
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -679,7 +677,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
+        // Section Header - SON AKTIVITELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -772,7 +770,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - Ãƒâ€“ZET
+        // Section Header - OZET
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
           child: Row(
@@ -790,7 +788,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             ],
           ),
         ),
-        // Ãƒâ€“zet kartÃ„Â±
+        // Ozet karti
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -829,7 +827,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         const SizedBox(height: 24),
 
-        // Section Header - SON AKTÃ„Â°VÃ„Â°TELER
+        // Section Header - SON AKTIVITELER
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
           child: Row(
@@ -1201,6 +1199,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       helpText: l10n.selectDate,
     );
     if (pickedDate == null) return null;
+    if (!mounted) return null;
 
     final pickedTime = await _showCupertinoTimePicker(
       context,
@@ -1352,10 +1351,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'kategori': 'Milk',
               };
               await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-              }
+              if (!mounted) return;
+              Navigator.of(context).pop();
+              setState(() {});
             } finally {
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
@@ -1487,10 +1485,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 });
               }
               await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-              }
+              if (!mounted) return;
+              Navigator.of(context).pop();
+              setState(() {});
             } finally {
               noteController.dispose();
               if (ctx.mounted) {
@@ -1630,10 +1627,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'notlar': noteController.text,
               };
               await VeriYonetici.updateKakaKaydiById(recordId, updated);
-              if (mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-              }
+              if (!mounted) return;
+              Navigator.of(context).pop();
+              setState(() {});
             } finally {
               noteController.dispose();
               if (ctx.mounted) {
@@ -1718,10 +1714,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'sure': normalizedEnd.difference(start),
               };
               await VeriYonetici.updateUykuKaydiById(recordId, updated);
-              if (mounted) {
-                Navigator.pop(ctx);
-                setState(() {});
-              }
+              if (!mounted) return;
+              Navigator.of(context).pop();
+              setState(() {});
             } finally {
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
@@ -1782,212 +1777,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   // ============ HELPER WIDGETS ============
-
-  Widget _buildTurButtonIcon(
-    IconData icon,
-    String label,
-    String value,
-    String selected,
-    Function(String) onSelect,
-  ) {
-    final isSelected = selected == value;
-    return GestureDetector(
-      onTap: () => onSelect(value),
-      child: Container(
-        width: 85,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE91E63) : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 28,
-              color: isSelected ? Colors.white : Colors.black87,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDurationEditor(
-    int minutes,
-    Function(int) onChanged,
-    bool isDark,
-    AppLocalizations l10n,
-    BuildContext context,
-  ) {
-    return GestureDetector(
-      onTap: () async {
-        final picked = await _showCupertinoDurationPicker(
-          context,
-          Duration(minutes: minutes),
-        );
-        if (picked != null) {
-          onChanged(picked.inMinutes);
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.pink.shade900.withValues(alpha: 0.3)
-              : Colors.pink.shade50,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.timer_outlined,
-                  color: isDark
-                      ? Colors.pink.shade200
-                      : const Color(0xFFE91E63),
-                  size: 24,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  l10n.duration,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-            Flexible(
-              child: Text(
-                minutes > 0 ? '$minutes ${l10n.minAbbrev}' : l10n.tapToSetTime,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.end,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: isDark
-                      ? Colors.pink.shade200
-                      : const Color(0xFFE91E63),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMemeRow(
-    String label,
-    String emoji,
-    int dakika,
-    Function(int) onChanged,
-    bool isDark,
-    AppLocalizations l10n,
-  ) {
-    return Row(
-      children: [
-        Text(emoji, style: const TextStyle(fontSize: 24)),
-        const SizedBox(width: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : Colors.black,
-          ),
-        ),
-        const Spacer(),
-        _buildCircleButton(
-          Icons.remove,
-          () => onChanged((dakika - 1).clamp(0, 60)),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          '$dakika ${l10n.minAbbrev}',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFE91E63),
-          ),
-        ),
-        const SizedBox(width: 12),
-        _buildCircleButton(
-          Icons.add,
-          () => onChanged((dakika + 1).clamp(0, 60)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMiktarEditor(
-    int miktar,
-    Function(int) onChanged,
-    bool isDark,
-    AppLocalizations l10n,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.pink.shade900.withValues(alpha: 0.3)
-            : Colors.pink.shade50,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildCircleButton(
-            Icons.remove,
-            () => onChanged((miktar - 10).clamp(0, 500)),
-          ),
-          const SizedBox(width: 24),
-          Text(
-            '$miktar ${l10n.mlAbbrev}',
-            style: const TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFE91E63),
-            ),
-          ),
-          const SizedBox(width: 24),
-          _buildCircleButton(
-            Icons.add,
-            () => onChanged((miktar + 10).clamp(0, 500)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCircleButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        decoration: const BoxDecoration(
-          color: Color(0xFFE91E63),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
-    );
-  }
 
   /// Shows a Cupertino-style time picker in a bottom sheet
   Future<TimeOfDay?> _showCupertinoTimePicker(
@@ -2077,224 +1866,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   /// Shows a Cupertino-style duration picker in a bottom sheet
-  Future<Duration?> _showCupertinoDurationPicker(
-    BuildContext context,
-    Duration initialDuration,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    Duration selectedDuration = initialDuration;
-
-    final result = await showModalBottomSheet<Duration>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: 280,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFBF5),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Header with buttons
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      l10n.cancel,
-                      style: const TextStyle(
-                        color: Color(0xFF866F65),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, selectedDuration),
-                    child: Text(
-                      l10n.ok,
-                      style: const TextStyle(
-                        color: Color(0xFFFF998A),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Cupertino Timer Picker
-            Expanded(
-              child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm,
-                initialTimerDuration: initialDuration,
-                onTimerDurationChanged: (Duration duration) {
-                  selectedDuration = duration;
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    return result;
-  }
-
-  Widget _buildTimeSelector(
-    TimeOfDay saat,
-    Function(TimeOfDay) onChanged,
-    BuildContext ctx,
-  ) {
-    return GestureDetector(
-      onTap: () async {
-        final picked = await _showCupertinoTimePicker(ctx, saat);
-        if (picked != null) onChanged(picked);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE91E63), width: 2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.access_time, color: Color(0xFFE91E63)),
-            const SizedBox(width: 8),
-            Text(
-              '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFE91E63),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTimeColumn(
-    String label,
-    TimeOfDay saat,
-    Function(TimeOfDay) onChanged,
-    BuildContext ctx,
-    bool isDark,
-  ) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(color: isDark ? Colors.grey.shade400 : Colors.grey),
-        ),
-        const SizedBox(height: 8),
-        GestureDetector(
-          onTap: () async {
-            final picked = await _showCupertinoTimePicker(ctx, saat);
-            if (picked != null) onChanged(picked);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.indigo.shade50,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '${saat.hour.toString().padLeft(2, '0')}:${saat.minute.toString().padLeft(2, '0')}',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF3F51B5),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSaveButton(
-    VoidCallback onPressed,
-    Color color,
-    AppLocalizations l10n,
-  ) {
-    return SizedBox(
-      width: double.infinity,
-      height: 56,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        child: Text(
-          'Ã¢Å“â€œ ${l10n.update}',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _bezEditOptionIcon(
-    IconData icon,
-    String label,
-    String value,
-    Color color,
-    String selected,
-    Function(String) onSelect,
-  ) {
-    final isSelected = selected == value;
-    return GestureDetector(
-      onTap: () => onSelect(value),
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: BoxDecoration(
-          color: isSelected
-              ? color.withValues(alpha: 0.2)
-              : color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: isSelected ? Border.all(color: color, width: 2) : null,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 32, color: color),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<bool?> _showDeleteConfirm() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
@@ -2304,7 +1875,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          'ÄŸÅ¸â€”â€˜Ã¯Â¸Â ${l10n.delete}',
+          '??? ${l10n.delete}',
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(

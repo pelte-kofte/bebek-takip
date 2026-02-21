@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +11,7 @@ import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:intl/intl.dart';
 
 class RaporScreen extends StatefulWidget {
   const RaporScreen({super.key});
@@ -25,7 +26,7 @@ class _RaporScreenState extends State<RaporScreen> {
   bool _isCapturing = false;
   final GlobalKey _repaintKey = GlobalKey();
 
-  // Ä°statistik verileri
+  // Istatistik verileri
   Map<String, dynamic> _stats = {};
 
   @override
@@ -40,14 +41,14 @@ class _RaporScreenState extends State<RaporScreen> {
         ? now.subtract(const Duration(days: 7))
         : DateTime(now.year, now.month, 1); // Start of current month
 
-    // Mama kayÄ±tlarÄ±
+    // Mama kayitlari
     final mamaKayitlari = VeriYonetici.getMamaKayitlari()
         .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
         .toList();
 
     // Emzirme istatistikleri
     final emzirmeKayitlari = mamaKayitlari
-        .where((k) => k['tur'] == 'Anne SÃ¼tÃ¼')
+        .where((k) => k['tur'] == 'Anne S?t?')
         .toList();
     int toplamEmzirme = emzirmeKayitlari.length;
     int toplamSolDk = 0;
@@ -57,32 +58,32 @@ class _RaporScreenState extends State<RaporScreen> {
       toplamSagDk += (k['sagDakika'] as int?) ?? 0;
     }
 
-    // KatÄ± gÄ±da (solid food)
+    // Kati gida (solid food)
     final solidKayitlari = mamaKayitlari
-        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'KatÄ± GÄ±da')
+        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'Kat? G?da')
         .toList();
 
-    // Biberon/FormÃ¼l (exclude solid food)
+    // Biberon/Formul (exclude solid food)
     final biberonKayitlari = mamaKayitlari
         .where(
           (k) =>
-              k['tur'] != 'Anne SÃ¼tÃ¼' &&
+              k['tur'] != 'Anne S?t?' &&
               k['kategori'] != 'Solid' &&
-              k['tur'] != 'KatÄ± GÄ±da',
+              k['tur'] != 'Kat? G?da',
         )
         .toList();
     int toplamBiberonMl = 0;
     int toplamFormulMl = 0;
     for (var k in biberonKayitlari) {
       final miktar = (k['miktar'] as int?) ?? 0;
-      if (k['tur'] == 'FormÃ¼l') {
+      if (k['tur'] == 'Form?l') {
         toplamFormulMl += miktar;
       } else {
         toplamBiberonMl += miktar;
       }
     }
 
-    // Bez kayÄ±tlarÄ±
+    // Bez kayitlari
     final kakaKayitlari = VeriYonetici.getKakaKayitlari()
         .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
         .toList();
@@ -108,7 +109,7 @@ class _RaporScreenState extends State<RaporScreen> {
         )
         .length;
 
-    // Uyku kayÄ±tlarÄ±
+    // Uyku kayitlari
     final uykuKayitlari = VeriYonetici.getUykuKayitlari()
         .where((k) => (k['bitis'] as DateTime).isAfter(startDate))
         .toList();
@@ -122,7 +123,7 @@ class _RaporScreenState extends State<RaporScreen> {
       }
     }
 
-    // BÃ¼yÃ¼me kayÄ±tlarÄ±
+    // Buyume kayitlari
     final boyKiloKayitlari = VeriYonetici.getBoyKiloKayitlari();
     double? sonBoy, sonKilo, oncekiBoy, oncekiKilo;
     if (boyKiloKayitlari.isNotEmpty) {
@@ -150,7 +151,7 @@ class _RaporScreenState extends State<RaporScreen> {
         // Biberon
         'toplamBiberonMl': toplamBiberonMl,
         'toplamFormulMl': toplamFormulMl,
-        // KatÄ± gÄ±da
+        // Kati gida
         'toplamSolid': solidKayitlari.length,
         // Bez
         'toplamBez': kakaKayitlari.length,
@@ -163,10 +164,9 @@ class _RaporScreenState extends State<RaporScreen> {
         'gunlukUykuSaat': (toplamUykuDakika / 60 / gunSayisi).toStringAsFixed(
           1,
         ),
-        'enUzunUyku':
-            '${enUzunUykuDakika ~/ 60} sa ${enUzunUykuDakika % 60} dk',
+        'enUzunUykuDakika': enUzunUykuDakika,
         'uykuSayisi': uykuKayitlari.length,
-        // BÃ¼yÃ¼me
+        // Buyume
         'boy': sonBoy,
         'kilo': sonKilo,
         'boyDegisim': sonBoy != null && oncekiBoy != null
@@ -753,7 +753,7 @@ class _RaporScreenState extends State<RaporScreen> {
     );
   }
 
-  // BEZ DEÄÄ°ÅÄ°MÄ° KARTI
+  // BEZ DEGISIMI KARTI
   Widget _buildDiaperCard(
     bool isDark,
     Color cardColor,
@@ -1040,7 +1040,10 @@ class _RaporScreenState extends State<RaporScreen> {
                   children: [
                     Expanded(
                       child: _buildStatItem(
-                        '${_stats['enUzunUyku'] ?? '-'}',
+                        _formatDurationMinutes(
+                          _stats['enUzunUykuDakika'],
+                          l10n,
+                        ),
                         l10n.longestSleep,
                         const Color(0xFFD9B3FF),
                         const Color(0xFF9B6FCC),
@@ -1065,7 +1068,7 @@ class _RaporScreenState extends State<RaporScreen> {
     );
   }
 
-  // BÃœYÃœME KARTI
+  // BUYUME KARTI
   Widget _buildGrowthCard(
     bool isDark,
     Color cardColor,
@@ -1328,6 +1331,9 @@ class _RaporScreenState extends State<RaporScreen> {
 
   Future<void> _exportPDF() async {
     final l10n = AppLocalizations.of(context)!;
+    final appLocale = Localizations.localeOf(context);
+    final localeTag = appLocale.toLanguageTag();
+
     if (kIsWeb) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -1360,8 +1366,9 @@ class _RaporScreenState extends State<RaporScreen> {
       final endDate = _stats['endDate'] as DateTime?;
       final dateRangeText = startDate == null || endDate == null
           ? '-'
-          : '${_formatPdfDate(startDate)} - ${_formatPdfDate(endDate)}';
-      final reportType = _isWeekly ? 'Haftalık Rapor' : 'Aylık Rapor';
+          : '${_formatPdfDate(startDate, localeTag)} - ${_formatPdfDate(endDate, localeTag)}';
+      final reportType = _isWeekly ? l10n.weeklyReport : l10n.monthlyReport;
+
       final sectionTitleStyle = pw.TextStyle(
         fontSize: 14,
         fontWeight: pw.FontWeight.bold,
@@ -1376,6 +1383,7 @@ class _RaporScreenState extends State<RaporScreen> {
         fontWeight: pw.FontWeight.bold,
         color: PdfColor.fromInt(0xFF2B2D33),
       );
+
       final medicationCount = VeriYonetici.getIlacDozKayitlari().where((log) {
         final givenAt = log['givenAt'] as DateTime?;
         if (givenAt == null || startDate == null || endDate == null) {
@@ -1383,13 +1391,6 @@ class _RaporScreenState extends State<RaporScreen> {
         }
         return !givenAt.isBefore(startDate) && !givenAt.isAfter(endDate);
       }).length;
-
-      if (kDebugMode) {
-        const glyphSample = 'ğşİıöüç';
-        debugPrint(
-          '[PDF] glyph sample="$glyphSample" codeUnits=${glyphSample.codeUnits}',
-        );
-      }
 
       pdf.addPage(
         pw.MultiPage(
@@ -1409,7 +1410,7 @@ class _RaporScreenState extends State<RaporScreen> {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'Nilico Raporu',
+                    l10n.babyTrackerReport,
                     style: pw.TextStyle(
                       fontSize: 22,
                       fontWeight: pw.FontWeight.bold,
@@ -1426,7 +1427,7 @@ class _RaporScreenState extends State<RaporScreen> {
                   ),
                   pw.SizedBox(height: 3),
                   pw.Text(
-                    'Tarih Aralığı: $dateRangeText',
+                    '${l10n.period}: $dateRangeText',
                     style: pw.TextStyle(
                       fontSize: 11,
                       color: PdfColor.fromInt(0xFF5E6470),
@@ -1437,18 +1438,30 @@ class _RaporScreenState extends State<RaporScreen> {
             ),
             pw.SizedBox(height: 14),
             _buildPdfSection(
-              title: 'Beslenme',
+              title: l10n.feeding,
               rows: [
-                MapEntry('Toplam Emzirme', '${_pdfStat('toplamEmzirme')} kez'),
                 MapEntry(
-                  'Toplam Süre',
-                  '${_pdfStat('toplamEmzirmeDk')} dakika',
+                  l10n.totalBreastfeeding,
+                  '${_pdfStat('toplamEmzirme')} ${l10n.times}',
                 ),
-                MapEntry('Sol Meme', '${_pdfStat('solMemeDk')} dk'),
-                MapEntry('Sağ Meme', '${_pdfStat('sagMemeDk')} dk'),
-                MapEntry('Biberon', '${_pdfStat('toplamBiberonMl')} ml'),
-                MapEntry('Formül', '${_pdfStat('toplamFormulMl')} ml'),
-                MapEntry('Katı Gıda', '${_pdfStat('toplamSolid')} kez'),
+                MapEntry(
+                  l10n.totalDuration,
+                  '${_pdfStat('toplamEmzirmeDk')} ${l10n.minAbbrev}',
+                ),
+                MapEntry(
+                  l10n.leftBreast,
+                  '${_pdfStat('solMemeDk')} ${l10n.minAbbrev}',
+                ),
+                MapEntry(
+                  l10n.rightBreast,
+                  '${_pdfStat('sagMemeDk')} ${l10n.minAbbrev}',
+                ),
+                MapEntry(l10n.bottle, '${_pdfStat('toplamBiberonMl')} ml'),
+                MapEntry(l10n.formula, '${_pdfStat('toplamFormulMl')} ml'),
+                MapEntry(
+                  l10n.solidFood,
+                  '${_pdfStat('toplamSolid')} ${l10n.times}',
+                ),
               ],
               backgroundColor: PdfColor.fromInt(0xFFFDF3F5),
               sectionTitleStyle: sectionTitleStyle,
@@ -1457,13 +1470,16 @@ class _RaporScreenState extends State<RaporScreen> {
             ),
             pw.SizedBox(height: 12),
             _buildPdfSection(
-              title: 'Bez Değişimi',
+              title: l10n.diaperChanges,
               rows: [
-                MapEntry('Toplam', '${_pdfStat('toplamBez')} kez'),
-                MapEntry('Günlük Ortalama', '${_pdfStat('gunlukBez')} kez'),
-                MapEntry('Islak', _pdfStat('islak')),
-                MapEntry('Kirli', _pdfStat('kirli')),
-                MapEntry('İkisi', _pdfStat('ikisi')),
+                MapEntry(l10n.total, '${_pdfStat('toplamBez')} ${l10n.times}'),
+                MapEntry(
+                  l10n.dailyAvg,
+                  '${_pdfStat('gunlukBez')} ${l10n.times}',
+                ),
+                MapEntry(l10n.wet, _pdfStat('islak')),
+                MapEntry(l10n.dirty, _pdfStat('kirli')),
+                MapEntry(l10n.both, _pdfStat('ikisi')),
               ],
               backgroundColor: PdfColor.fromInt(0xFFF2F6FC),
               sectionTitleStyle: sectionTitleStyle,
@@ -1472,15 +1488,24 @@ class _RaporScreenState extends State<RaporScreen> {
             ),
             pw.SizedBox(height: 12),
             _buildPdfSection(
-              title: 'Uyku',
+              title: l10n.sleep,
               rows: [
-                MapEntry('Toplam Uyku', '${_pdfStat('toplamUykuSaat')} saat'),
                 MapEntry(
-                  'Günlük Ortalama',
-                  '${_pdfStat('gunlukUykuSaat')} saat',
+                  '${l10n.total} ${l10n.sleep}',
+                  '${_pdfStat('toplamUykuSaat')} ${l10n.hourAbbrev}',
                 ),
-                MapEntry('En Uzun Uyku', _pdfStat('enUzunUyku')),
-                MapEntry('Uyku Sayısı', '${_pdfStat('uykuSayisi')} kez'),
+                MapEntry(
+                  '${l10n.dailyAvg} ${l10n.sleep}',
+                  '${_pdfStat('gunlukUykuSaat')} ${l10n.hourAbbrev}',
+                ),
+                MapEntry(
+                  l10n.longestSleep,
+                  _formatDurationMinutes(_stats['enUzunUykuDakika'], l10n),
+                ),
+                MapEntry(
+                  l10n.sleepCount,
+                  '${_pdfStat('uykuSayisi')} ${l10n.times}',
+                ),
               ],
               backgroundColor: PdfColor.fromInt(0xFFF6F4FC),
               sectionTitleStyle: sectionTitleStyle,
@@ -1489,10 +1514,10 @@ class _RaporScreenState extends State<RaporScreen> {
             ),
             pw.SizedBox(height: 12),
             _buildPdfSection(
-              title: 'Büyüme',
+              title: l10n.growth,
               rows: [
-                MapEntry('Boy', '${_pdfStat('boy')} cm'),
-                MapEntry('Kilo', '${_pdfStat('kilo')} kg'),
+                MapEntry(l10n.height, '${_pdfStat('boy')} cm'),
+                MapEntry(l10n.weight, '${_pdfStat('kilo')} kg'),
               ],
               backgroundColor: PdfColor.fromInt(0xFFF1F8F4),
               sectionTitleStyle: sectionTitleStyle,
@@ -1502,8 +1527,10 @@ class _RaporScreenState extends State<RaporScreen> {
             if (medicationCount > 0) ...[
               pw.SizedBox(height: 12),
               _buildPdfSection(
-                title: 'İlaçlar',
-                rows: [MapEntry('Uygulanan Doz', '$medicationCount kez')],
+                title: l10n.medications,
+                rows: [
+                  MapEntry(l10n.applied, '$medicationCount ${l10n.times}'),
+                ],
                 backgroundColor: PdfColor.fromInt(0xFFFAF5EE),
                 sectionTitleStyle: sectionTitleStyle,
                 labelStyle: labelStyle,
@@ -1517,7 +1544,7 @@ class _RaporScreenState extends State<RaporScreen> {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text(
-                  'Nilico ile oluşturuldu',
+                  l10n.generatedWith,
                   style: pw.TextStyle(
                     fontSize: 9,
                     color: PdfColor.fromInt(0xFF9AA0AA),
@@ -1544,7 +1571,7 @@ class _RaporScreenState extends State<RaporScreen> {
       );
       await file.writeAsBytes(bytes);
 
-      await Share.shareXFiles([XFile(file.path)], text: 'Nilico Raporu');
+      await Share.shareXFiles([XFile(file.path)], text: l10n.babyTrackerReport);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1621,11 +1648,16 @@ class _RaporScreenState extends State<RaporScreen> {
     setState(() => _isCapturing = false);
   }
 
-  String _formatPdfDate(DateTime date) {
-    final d = date.toLocal();
-    final day = d.day.toString().padLeft(2, '0');
-    final month = d.month.toString().padLeft(2, '0');
-    return '$day.$month.${d.year}';
+  String _formatPdfDate(DateTime date, String localeTag) {
+    final localDate = date.toLocal();
+    final normalizedLocale = localeTag.isEmpty ? 'en' : localeTag;
+    try {
+      return DateFormat.yMMMd(normalizedLocale).format(localDate);
+    } catch (_) {
+      final day = localDate.day.toString().padLeft(2, '0');
+      final month = localDate.month.toString().padLeft(2, '0');
+      return '$day.$month.${localDate.year}';
+    }
   }
 
   String _pdfStat(String key) {
@@ -1639,6 +1671,30 @@ class _RaporScreenState extends State<RaporScreen> {
     }
     final text = value.toString().trim();
     return text.isEmpty ? '-' : text;
+  }
+
+  String _formatDurationMinutes(dynamic value, AppLocalizations l10n) {
+    if (value == null) return '-';
+
+    int minutes;
+    if (value is num) {
+      minutes = value.toInt();
+    } else {
+      minutes = int.tryParse(value.toString()) ?? 0;
+    }
+
+    if (minutes <= 0) return '-';
+
+    final hours = minutes ~/ 60;
+    final remainingMinutes = minutes % 60;
+
+    if (hours > 0 && remainingMinutes > 0) {
+      return '$hours ${l10n.hourAbbrev} $remainingMinutes ${l10n.minAbbrev}';
+    }
+    if (hours > 0) {
+      return '$hours ${l10n.hourAbbrev}';
+    }
+    return '$remainingMinutes ${l10n.minAbbrev}';
   }
 
   pw.Widget _buildPdfSection({

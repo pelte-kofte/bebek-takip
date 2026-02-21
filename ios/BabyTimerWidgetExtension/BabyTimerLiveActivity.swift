@@ -8,11 +8,11 @@ import ActivityKit
 
 private func iconImage(for type: String) -> Image {
     let name = (type == "sleep") ? "la_sleep" : "la_nursing"
-    if let uiImage = UIImage(named: name, in: Bundle.main, compatibleWith: nil) {
+    let bundle = Bundle(for: BabyTimerLiveActivity.self)
+    if let uiImage = UIImage(named: name, in: bundle, compatibleWith: nil) {
         return Image(uiImage: uiImage).renderingMode(.original)
     }
-    let fallback = (type == "sleep") ? "moon.zzz.fill" : "drop.fill"
-    return Image(systemName: fallback)
+    return Image(systemName: "exclamationmark.triangle.fill")
 }
 
 @available(iOS 16.1, *)
