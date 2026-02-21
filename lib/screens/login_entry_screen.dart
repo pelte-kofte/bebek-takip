@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../main.dart';
+import '../services/apple_auth_service.dart';
 import '../services/sync_manager.dart';
 
 class LoginEntryScreen extends StatefulWidget {
@@ -18,6 +18,7 @@ class LoginEntryScreen extends StatefulWidget {
 
 class _LoginEntryScreenState extends State<LoginEntryScreen> {
   bool _isLoading = false;
+  bool _isAppleSigningIn = false;
 
   // Check if platform supports Apple Sign In (iOS only, not web/Android)
   bool get _supportsAppleSignIn {
@@ -73,33 +74,48 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   }
 
   Future<void> _signInWithApple() async {
-    setState(() => _isLoading = true);
+    if (_isAppleSigningIn || AppleAuthService.instance.inProgress) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+      _isAppleSigningIn = true;
+    });
     try {
-      final appleCredential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        accessToken: appleCredential.authorizationCode,
-      );
-
-      await _authenticateWithCredential(oauthCredential);
+      final credential = await AppleAuthService.instance.signIn();
+      if (credential == null) return;
+      await _proceedToApp();
     } catch (e) {
-      setState(() => _isLoading = false);
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
+        final message = _isMissingOrInvalidNonce(e)
+            ? 'Please try again'
+            : l10n.signInFailed(e.toString());
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.signInFailed(e.toString())),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(message), backgroundColor: Colors.red),
         );
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAppleSigningIn = false;
+          _isLoading = false;
+        });
+      } else {
+        _isAppleSigningIn = false;
+      }
     }
+  }
+
+  bool _isMissingOrInvalidNonce(Object error) {
+    if (error is FirebaseAuthException) {
+      return error.code == 'missing-or-invalid-nonce' ||
+          error.message?.contains('missing-or-invalid-nonce') == true ||
+          error.message?.contains('Duplicate credential received') == true;
+    }
+    final text = error.toString();
+    return text.contains('missing-or-invalid-nonce') ||
+        text.contains('Duplicate credential received');
   }
 
   Future<void> _skipLogin() async {
@@ -258,7 +274,9 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                                 // Apple Sign In (iOS only)
                                 if (_supportsAppleSignIn)
                                   _buildSignInButton(
-                                    onTap: _signInWithApple,
+                                    onTap: _isAppleSigningIn
+                                        ? null
+                                        : _signInWithApple,
                                     icon: Icons.apple,
                                     label: l10n.signInWithApple,
                                     backgroundColor: Colors.white,
@@ -325,7 +343,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   }
 
   Widget _buildSignInButton({
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
     IconData? icon,
     bool googleLogo = false,
     required String label,
@@ -333,13 +351,16 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     required Color textColor,
     Color? borderColor,
   }) {
+    final isDisabled = onTap == null;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: isDisabled
+              ? backgroundColor.withValues(alpha: 0.65)
+              : backgroundColor,
           borderRadius: BorderRadius.circular(14),
           border: borderColor != null
               ? Border.all(color: borderColor, width: 1)
