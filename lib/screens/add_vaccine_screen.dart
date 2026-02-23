@@ -20,13 +20,13 @@ class AddVaccineScreen extends StatefulWidget {
 class _AddVaccineScreenState extends State<AddVaccineScreen> {
   final _nameController = TextEditingController();
   final _notesController = TextEditingController();
-  String _selectedPeriod = 'DoÄŸumda';
+  String _selectedPeriod = 'Doğumda';
   String _selectedStatus = 'bekleniyor';
   DateTime? _selectedDate;
   bool _isSaving = false;
 
   final List<String> _periods = [
-    'DoÄŸumda',
+    'Doğumda',
     '2. Ay',
     '4. Ay',
     '6. Ay',
@@ -41,7 +41,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     if (widget.vaccine != null) {
       _nameController.text = widget.vaccine!['ad'] ?? '';
       _notesController.text = widget.vaccine!['notlar'] ?? '';
-      _selectedPeriod = widget.vaccine!['donem'] ?? 'DoÄŸumda';
+      _selectedPeriod = widget.vaccine!['donem'] ?? 'Doğumda';
       _selectedStatus = widget.vaccine!['durum'] ?? 'bekleniyor';
       _selectedDate = widget.vaccine!['tarih'];
     }
@@ -98,7 +98,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
 
   /// Returns true if the selected period is a custom one (not in presets)
   bool get _isCustomPeriod {
-    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'DoÄŸumda';
+    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'Doğumda';
   }
 
   String _monthLabel(AppLocalizations l10n, int month) {
@@ -161,7 +161,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       onPressed: () {
                         setState(() {
                           _selectedPeriod = selectedMonth == 0
-                              ? 'DoÄŸumda'
+                              ? 'Doğumda'
                               : '$selectedMonth. Ay';
                         });
                         Navigator.pop(context);

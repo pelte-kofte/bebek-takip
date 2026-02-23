@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/sleep_notification_service.dart';
 import '../services/reminder_service.dart';
@@ -36,6 +36,11 @@ class TimerYonetici {
   // ── Per-baby periodic timers ──
   final Map<String, Timer> _emzirmeUpdateTimers = {};
   final Map<String, Timer> _uykuUpdateTimers = {};
+  final Map<String, DateTime> _lastStartTapByKey = {};
+  final Map<String, DateTime> _lastStopTapByKey = {};
+  final Set<String> _startBusyKeys = <String>{};
+  final Set<String> _stopBusyKeys = <String>{};
+  static const Duration _sameActionCooldown = Duration(milliseconds: 300);
 
   // ── Live Activity localized labels (injected by UI layer) ──
   String _liveSleepTitle = 'Sleep';
@@ -56,6 +61,56 @@ class TimerYonetici {
       if (baby.id == babyId) return baby.name;
     }
     return fallbackName;
+  }
+
+  void _logTransition(String message) {
+    if (kDebugMode) {
+      debugPrint('[TimerYonetici] $message');
+    }
+  }
+
+  String _actionKey({
+    required String action,
+    required String timerType,
+    required String babyId,
+  }) {
+    return '$action:$timerType:$babyId';
+  }
+
+  bool _shouldRejectSameAction({
+    required String action,
+    required String timerType,
+    required String babyId,
+  }) {
+    final key = _actionKey(action: action, timerType: timerType, babyId: babyId);
+    final now = DateTime.now();
+    final lastTapByKey = action == 'start' ? _lastStartTapByKey : _lastStopTapByKey;
+    final busyKeys = action == 'start' ? _startBusyKeys : _stopBusyKeys;
+    final lastTap = lastTapByKey[key];
+
+    if (busyKeys.contains(key)) {
+      return true;
+    }
+    if (lastTap != null && now.difference(lastTap) < _sameActionCooldown) {
+      return true;
+    }
+
+    lastTapByKey[key] = now;
+    busyKeys.add(key);
+    return false;
+  }
+
+  void _clearActionBusy({
+    required String action,
+    required String timerType,
+    required String babyId,
+  }) {
+    final key = _actionKey(action: action, timerType: timerType, babyId: babyId);
+    if (action == 'start') {
+      _startBusyKeys.remove(key);
+    } else {
+      _stopBusyKeys.remove(key);
+    }
   }
 
   Future<void> setLiveActivityLocalization({
@@ -266,20 +321,9 @@ class TimerYonetici {
 
     if (duration.inMinutes < 1) return;
 
-    final allRecords = _prefs?.getString('uyku_kayitlari');
-    List<dynamic> records = [];
-    if (allRecords != null && allRecords.isNotEmpty) {
-      try {
-        records = jsonDecode(allRecords) as List;
-      } catch (_) {}
-    }
-    records.insert(0, {
-      'baslangic': start.toIso8601String(),
-      'bitis': bitis.toIso8601String(),
-      'sure': duration.inMinutes,
-      'babyId': babyId,
-    });
-    await _prefs?.setString('uyku_kayitlari', jsonEncode(records));
+    final kayitlar = VeriYonetici.getUykuKayitlari();
+    kayitlar.insert(0, {'baslangic': start, 'bitis': bitis, 'sure': duration});
+    await VeriYonetici.saveUykuKayitlari(kayitlar);
   }
 
   Future<void> _stopAndSaveEmzirmeFromNotification(String babyId) async {
@@ -330,24 +374,16 @@ class TimerYonetici {
 
     final solDakika = (solSaniye / 60).ceil();
     final sagDakika = (sagSaniye / 60).ceil();
-
-    final allRecords = _prefs?.getString('mama_kayitlari');
-    List<dynamic> records = [];
-    if (allRecords != null && allRecords.isNotEmpty) {
-      try {
-        records = jsonDecode(allRecords) as List;
-      } catch (_) {}
-    }
-    records.insert(0, {
-      'tarih': tarih.toIso8601String(),
+    final kayitlar = VeriYonetici.getMamaKayitlari();
+    kayitlar.insert(0, {
+      'tarih': tarih,
       'tur': 'Anne Sütü',
       'solDakika': solDakika > 0 ? solDakika : (solSaniye > 0 ? 1 : 0),
       'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
       'miktar': 0,
       'kategori': 'Milk',
-      'babyId': babyId,
     });
-    await _prefs?.setString('mama_kayitlari', jsonEncode(records));
+    await VeriYonetici.saveMamaKayitlari(kayitlar);
 
     if (VeriYonetici.isFeedingReminderEnabled()) {
       final reminderService = ReminderService();
@@ -444,45 +480,63 @@ class TimerYonetici {
     String? taraf,
   }) async {
     if (babyId.isEmpty) return;
-    if (_emzirmeStartByBaby.containsKey(babyId)) return; // Already running
-
-    final now = DateTime.now();
-    _emzirmeStartByBaby[babyId] = now;
-    _emzirmeIlkStartByBaby[babyId] = now;
-    _emzirmeTurByBaby[babyId] = tur;
-    if (taraf != null) {
-      _emzirmeTarafByBaby[babyId] = taraf;
-    }
-    _solToplamByBaby[babyId] = 0;
-    _sagToplamByBaby[babyId] = 0;
-
-    await _prefs?.setString(
-      'active_emzirme_start_$babyId',
-      now.toIso8601String(),
-    );
-    await _prefs?.setString(
-      'active_emzirme_ilk_start_$babyId',
-      now.toIso8601String(),
-    );
-    await _prefs?.setString('active_emzirme_tur_$babyId', tur);
-    if (taraf != null) {
-      await _prefs?.setString('active_emzirme_taraf_$babyId', taraf);
-    } else {
-      await _prefs?.remove('active_emzirme_taraf_$babyId');
-    }
-
-    _startEmzirmeUpdateTimer(babyId);
-    await _notificationService.showNursingNotification(now, taraf);
-    await _liveActivityService.startNursingActivity(
+    _logTransition('start requested type=nursing babyId=$babyId side=${taraf ?? '-'}');
+    if (_shouldRejectSameAction(
+      action: 'start',
+      timerType: 'nursing',
       babyId: babyId,
-      babyName: _babyNameFor(babyId),
-      startTime: now,
-      side: taraf ?? 'sol',
-      localizedTitle: _liveNursingTitle,
-      localizedSubtitle: _nursingSubtitleForSide(taraf ?? 'sol'),
-      localizedLeftLabel: _liveLeftLabel,
-      localizedRightLabel: _liveRightLabel,
-    );
+    )) {
+      _logTransition('start rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy');
+      return;
+    }
+    if (_emzirmeStartByBaby.containsKey(babyId)) {
+      _logTransition('start rejected type=nursing babyId=$babyId reason=already_running');
+      _clearActionBusy(action: 'start', timerType: 'nursing', babyId: babyId);
+      return;
+    }
+
+    _logTransition('start accepted type=nursing babyId=$babyId');
+    try {
+      final now = DateTime.now();
+      _emzirmeStartByBaby[babyId] = now;
+      _emzirmeIlkStartByBaby[babyId] = now;
+      _emzirmeTurByBaby[babyId] = tur;
+      if (taraf != null) {
+        _emzirmeTarafByBaby[babyId] = taraf;
+      }
+      _solToplamByBaby[babyId] = 0;
+      _sagToplamByBaby[babyId] = 0;
+
+      await _prefs?.setString(
+        'active_emzirme_start_$babyId',
+        now.toIso8601String(),
+      );
+      await _prefs?.setString(
+        'active_emzirme_ilk_start_$babyId',
+        now.toIso8601String(),
+      );
+      await _prefs?.setString('active_emzirme_tur_$babyId', tur);
+      if (taraf != null) {
+        await _prefs?.setString('active_emzirme_taraf_$babyId', taraf);
+      } else {
+        await _prefs?.remove('active_emzirme_taraf_$babyId');
+      }
+
+      _startEmzirmeUpdateTimer(babyId);
+      await _notificationService.showNursingNotification(now, taraf);
+      await _liveActivityService.startNursingActivity(
+        babyId: babyId,
+        babyName: _babyNameFor(babyId),
+        startTime: now,
+        side: taraf ?? 'sol',
+        localizedTitle: _liveNursingTitle,
+        localizedSubtitle: _nursingSubtitleForSide(taraf ?? 'sol'),
+        localizedLeftLabel: _liveLeftLabel,
+        localizedRightLabel: _liveRightLabel,
+      );
+    } finally {
+      _clearActionBusy(action: 'start', timerType: 'nursing', babyId: babyId);
+    }
   }
 
   Future<void> switchEmzirmeSide(String babyId, String newTaraf) async {
@@ -544,36 +598,93 @@ class TimerYonetici {
 
   Future<Map<String, dynamic>?> stopEmzirme(String babyId) async {
     if (babyId.isEmpty) return null;
-
-    final start = _emzirmeStartByBaby[babyId];
-    final solTotal = _solToplamByBaby[babyId] ?? 0;
-    final sagTotal = _sagToplamByBaby[babyId] ?? 0;
-
-    if (start == null && solTotal == 0 && sagTotal == 0) return null;
-
-    int solSaniye = solTotal;
-    int sagSaniye = sagTotal;
-
-    if (start != null) {
-      final currentDuration = DateTime.now().difference(start);
-      final taraf = _emzirmeTarafByBaby[babyId];
-      if (taraf == 'sol') {
-        solSaniye += currentDuration.inSeconds;
-      } else if (taraf == 'sag') {
-        sagSaniye += currentDuration.inSeconds;
-      }
+    _logTransition('stop requested type=nursing babyId=$babyId');
+    if (_shouldRejectSameAction(
+      action: 'stop',
+      timerType: 'nursing',
+      babyId: babyId,
+    )) {
+      _logTransition('stop rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy');
+      return null;
     }
 
-    final data = {
-      'tarih': _emzirmeIlkStartByBaby[babyId] ?? DateTime.now(),
-      'bitis': DateTime.now(),
-      'tur': _emzirmeTurByBaby[babyId] ?? 'anne',
-      'solSaniye': solSaniye,
-      'sagSaniye': sagSaniye,
-    };
+    try {
+      final start = _emzirmeStartByBaby[babyId];
+      final solTotal = _solToplamByBaby[babyId] ?? 0;
+      final sagTotal = _sagToplamByBaby[babyId] ?? 0;
 
-    await _clearEmzirme(babyId);
-    return data;
+      if (start == null && solTotal == 0 && sagTotal == 0) {
+        _logTransition('stop rejected type=nursing babyId=$babyId reason=not_running');
+        return null;
+      }
+
+      _logTransition('stop accepted type=nursing babyId=$babyId');
+      int solSaniye = solTotal;
+      int sagSaniye = sagTotal;
+
+      if (start != null) {
+        final currentDuration = DateTime.now().difference(start);
+        final taraf = _emzirmeTarafByBaby[babyId];
+        if (kDebugMode) {
+          debugPrint(
+            '[TimerYonetici] nursing stop: taraf=$taraf elapsed=${currentDuration.inSeconds}s solTotal=$solTotal sagTotal=$sagTotal',
+          );
+        }
+        if (taraf == 'sol') {
+          solSaniye += currentDuration.inSeconds;
+        } else if (taraf == 'sag') {
+          sagSaniye += currentDuration.inSeconds;
+        } else {
+          // taraf is null or unexpected — elapsed seconds would be lost and both
+          // sides would stay at 0, triggering the silent early-return guard in the
+          // UI layer. Attribute elapsed to left side so the record is never dropped.
+          if (kDebugMode) {
+            debugPrint(
+              '[TimerYonetici] WARNING: taraf=$taraf (null/unexpected), attributing ${currentDuration.inSeconds}s to sol',
+            );
+          }
+          solSaniye += currentDuration.inSeconds;
+        }
+      }
+
+      if (kDebugMode) {
+        debugPrint(
+          '[TimerYonetici] nursing stop payload: solSaniye=$solSaniye sagSaniye=$sagSaniye',
+        );
+      }
+
+      final data = {
+        'tarih': _emzirmeIlkStartByBaby[babyId] ?? DateTime.now(),
+        'bitis': DateTime.now(),
+        'tur': _emzirmeTurByBaby[babyId] ?? 'anne',
+        'solSaniye': solSaniye,
+        'sagSaniye': sagSaniye,
+      };
+
+      try {
+        await _clearEmzirme(babyId);
+      } catch (e, st) {
+        if (kDebugMode) {
+          debugPrint('[TimerYonetici] _clearEmzirme error (non-fatal): $e\n$st');
+        }
+        // Ensure in-memory state is cleared even if async cleanup failed,
+        // so the timer doesn't appear active on next build.
+        _emzirmeStartByBaby.remove(babyId);
+        _emzirmeIlkStartByBaby.remove(babyId);
+        _emzirmeTurByBaby.remove(babyId);
+        _emzirmeTarafByBaby.remove(babyId);
+        _solToplamByBaby.remove(babyId);
+        _sagToplamByBaby.remove(babyId);
+        _emzirmeUpdateTimers[babyId]?.cancel();
+        _emzirmeUpdateTimers.remove(babyId);
+        final ctrl = _emzirmeControllers[babyId];
+        if (ctrl != null && !ctrl.isClosed) ctrl.add(null);
+      }
+
+      return data;
+    } finally {
+      _clearActionBusy(action: 'stop', timerType: 'nursing', babyId: babyId);
+    }
   }
 
   Future<void> _clearEmzirme(String babyId) async {
@@ -613,37 +724,92 @@ class TimerYonetici {
 
   Future<void> startUyku(String babyId) async {
     if (babyId.isEmpty) return;
-    if (_uykuStartByBaby.containsKey(babyId)) return; // Already running
-
-    final now = DateTime.now();
-    _uykuStartByBaby[babyId] = now;
-
-    await _prefs?.setString('active_uyku_start_$babyId', now.toIso8601String());
-
-    _startUykuUpdateTimer(babyId);
-    await _notificationService.showSleepNotification(now);
-    await _liveActivityService.startSleepActivity(
+    _logTransition('start requested type=sleep babyId=$babyId');
+    if (_shouldRejectSameAction(
+      action: 'start',
+      timerType: 'sleep',
       babyId: babyId,
-      babyName: _babyNameFor(babyId),
-      startTime: now,
-      localizedTitle: _liveSleepTitle,
-      localizedSubtitle: _liveSleepSubtitle,
-    );
+    )) {
+      _logTransition('start rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy');
+      return;
+    }
+    if (_uykuStartByBaby.containsKey(babyId)) {
+      _logTransition('start rejected type=sleep babyId=$babyId reason=already_running');
+      _clearActionBusy(action: 'start', timerType: 'sleep', babyId: babyId);
+      return;
+    }
+    _logTransition('start accepted type=sleep babyId=$babyId');
+    try {
+      final now = DateTime.now();
+      _uykuStartByBaby[babyId] = now;
+
+      await _prefs?.setString(
+        'active_uyku_start_$babyId',
+        now.toIso8601String(),
+      );
+
+      _startUykuUpdateTimer(babyId);
+      await _notificationService.showSleepNotification(now);
+      await _liveActivityService.startSleepActivity(
+        babyId: babyId,
+        babyName: _babyNameFor(babyId),
+        startTime: now,
+        localizedTitle: _liveSleepTitle,
+        localizedSubtitle: _liveSleepSubtitle,
+      );
+    } finally {
+      _clearActionBusy(action: 'start', timerType: 'sleep', babyId: babyId);
+    }
   }
 
   Future<Map<String, dynamic>?> stopUyku(String babyId) async {
     if (babyId.isEmpty) return null;
+    _logTransition('stop requested type=sleep babyId=$babyId');
+    if (_shouldRejectSameAction(
+      action: 'stop',
+      timerType: 'sleep',
+      babyId: babyId,
+    )) {
+      _logTransition('stop rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy');
+      return null;
+    }
+    try {
+      final start = _uykuStartByBaby[babyId];
+      if (start == null) {
+        _logTransition('stop rejected type=sleep babyId=$babyId reason=not_running');
+        return null;
+      }
+      _logTransition('stop accepted type=sleep babyId=$babyId');
 
-    final start = _uykuStartByBaby[babyId];
-    if (start == null) return null;
+      final bitis = DateTime.now();
+      final sure = bitis.difference(start);
 
-    final bitis = DateTime.now();
-    final sure = bitis.difference(start);
+      if (kDebugMode) {
+        debugPrint(
+          '[TimerYonetici] sleep stop payload: elapsed=${sure.inSeconds}s',
+        );
+      }
 
-    final data = {'baslangic': start, 'bitis': bitis, 'sure': sure};
+      final data = {'baslangic': start, 'bitis': bitis, 'sure': sure};
 
-    await _clearUyku(babyId);
-    return data;
+      try {
+        await _clearUyku(babyId);
+      } catch (e, st) {
+        if (kDebugMode) {
+          debugPrint('[TimerYonetici] _clearUyku error (non-fatal): $e\n$st');
+        }
+        // Ensure in-memory state is cleared even if async cleanup failed.
+        _uykuStartByBaby.remove(babyId);
+        _uykuUpdateTimers[babyId]?.cancel();
+        _uykuUpdateTimers.remove(babyId);
+        final ctrl = _uykuControllers[babyId];
+        if (ctrl != null && !ctrl.isClosed) ctrl.add(null);
+      }
+
+      return data;
+    } finally {
+      _clearActionBusy(action: 'stop', timerType: 'sleep', babyId: babyId);
+    }
   }
 
   Future<void> _clearUyku(String babyId) async {
@@ -785,3 +951,4 @@ class TimerYonetici {
     _notificationService.dispose();
   }
 }
+

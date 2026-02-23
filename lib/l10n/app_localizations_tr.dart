@@ -1373,7 +1373,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get diaperDirty => 'Kirli';
 
   @override
-  String get diaperBoth => 'Ä°kisi birden';
+  String get diaperBoth => 'İkisi birden';
 
   @override
   String get eventTimeTooOld => 'Seçilen zaman son 48 saat içinde olmalıdır';

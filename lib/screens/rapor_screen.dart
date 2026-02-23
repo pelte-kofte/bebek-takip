@@ -48,7 +48,7 @@ class _RaporScreenState extends State<RaporScreen> {
 
     // Emzirme istatistikleri
     final emzirmeKayitlari = mamaKayitlari
-        .where((k) => k['tur'] == 'Anne S?t?')
+        .where((k) => k['tur'] == 'Anne Sütü')
         .toList();
     int toplamEmzirme = emzirmeKayitlari.length;
     int toplamSolDk = 0;
@@ -60,23 +60,23 @@ class _RaporScreenState extends State<RaporScreen> {
 
     // Kati gida (solid food)
     final solidKayitlari = mamaKayitlari
-        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'Kat? G?da')
+        .where((k) => k['kategori'] == 'Solid' || k['tur'] == 'Katı Gıda')
         .toList();
 
     // Biberon/Formul (exclude solid food)
     final biberonKayitlari = mamaKayitlari
         .where(
           (k) =>
-              k['tur'] != 'Anne S?t?' &&
+              k['tur'] != 'Anne Sütü' &&
               k['kategori'] != 'Solid' &&
-              k['tur'] != 'Kat? G?da',
+              k['tur'] != 'Katı Gıda',
         )
         .toList();
     int toplamBiberonMl = 0;
     int toplamFormulMl = 0;
     for (var k in biberonKayitlari) {
       final miktar = (k['miktar'] as int?) ?? 0;
-      if (k['tur'] == 'Form?l') {
+      if (k['tur'] == 'Formül') {
         toplamFormulMl += miktar;
       } else {
         toplamBiberonMl += miktar;
@@ -1348,12 +1348,28 @@ class _RaporScreenState extends State<RaporScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final regularFont = pw.Font.ttf(
-        await rootBundle.load('assets/fonts/Arial-Regular.ttf'),
-      );
-      final boldFont = pw.Font.ttf(
-        await rootBundle.load('assets/fonts/Arial-Bold.ttf'),
-      );
+      // Prefer NotoSans (full Unicode: Latin, Cyrillic, Greek …).
+      // Drop the TTF files into assets/fonts/ to activate:
+      //   assets/fonts/NotoSans-Regular.ttf
+      //   assets/fonts/NotoSans-Bold.ttf
+      // Falls back to Arial (covers Latin/TR/ES) when they are absent.
+      pw.Font regularFont;
+      pw.Font boldFont;
+      try {
+        regularFont = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/NotoSans-Regular.ttf'),
+        );
+        boldFont = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/NotoSans-Bold.ttf'),
+        );
+      } catch (_) {
+        regularFont = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Arial-Regular.ttf'),
+        );
+        boldFont = pw.Font.ttf(
+          await rootBundle.load('assets/fonts/Arial-Bold.ttf'),
+        );
+      }
       final pdf = pw.Document();
       final theme = pw.ThemeData.withFont(
         base: regularFont,

@@ -49,6 +49,7 @@ class VeriYonetici {
   static List<Map<String, dynamic>> _ilacKayitlari = [];
   static List<Map<String, dynamic>> _ilacDozKayitlari = [];
   static final ValueNotifier<int> _vaccineVersion = ValueNotifier<int>(0);
+  static final ValueNotifier<int> _dataVersion = ValueNotifier<int>(0);
   static bool _darkMode = false;
   static bool _firstLaunch = true;
   static bool _loginEntryShown = false;
@@ -146,6 +147,11 @@ class VeriYonetici {
     if (kDebugMode && _verboseSyncLogs) {
       debugPrint('[VeriYonetici] $message');
     }
+  }
+
+  static void _notifyDataChanged({required String reason}) {
+    _dataVersion.value++;
+    _log('UI refresh triggered (data changed signal fired) reason=$reason');
   }
 
   static dynamic _canonicalize(dynamic value) {
@@ -1330,6 +1336,7 @@ class VeriYonetici {
 
     _mamaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
     _mamaKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _notifyDataChanged(reason: 'mama_kayitlari');
 
     final data = _mamaKayitlari
         .map(
@@ -1350,6 +1357,9 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('mama_kayitlari', jsonEncode(data));
+    if (kDebugMode) {
+      _log('record persisted type=feeding count=${kayitlar.length}');
+    }
     await _syncActiveBabyRecordsToCloud();
   }
 
@@ -1439,6 +1449,7 @@ class VeriYonetici {
 
     _kakaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
     _kakaKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _notifyDataChanged(reason: 'kaka_kayitlari');
 
     final data = _kakaKayitlari
         .map(
@@ -1459,6 +1470,9 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('kaka_kayitlari', jsonEncode(data));
+    if (kDebugMode) {
+      _log('record persisted type=diaper count=${kayitlar.length}');
+    }
     await _syncActiveBabyRecordsToCloud();
   }
 
@@ -1541,6 +1555,7 @@ class VeriYonetici {
 
     _uykuKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
     _uykuKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _notifyDataChanged(reason: 'uyku_kayitlari');
 
     final data = _uykuKayitlari
         .map(
@@ -1557,6 +1572,9 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('uyku_kayitlari', jsonEncode(data));
+    if (kDebugMode) {
+      _log('record persisted type=sleep count=${kayitlar.length}');
+    }
     await _syncActiveBabyRecordsToCloud();
   }
 
@@ -1886,6 +1904,7 @@ class VeriYonetici {
   }
 
   static ValueNotifier<int> get vaccineNotifier => _vaccineVersion;
+  static ValueNotifier<int> get dataNotifier => _dataVersion;
 
   static Future<void> saveAsiKayitlari(
     List<Map<String, dynamic>> kayitlar,

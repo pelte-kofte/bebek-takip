@@ -386,7 +386,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _buildAccountSection(cardColor, textColor, subtitleColor),
                       const SizedBox(height: 24),
 
-                      // GÃ–RÃœNÃœM Section
+                      // GÖRÜNÜM Section
                       _buildSectionHeader(l10n.appearance, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
@@ -435,7 +435,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // BÄ°LDÄ°RÄ°MLER Section
+                      // BİLDİRİMLER Section
                       _buildSectionHeader(l10n.notifications, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
@@ -622,7 +622,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      // VERÄ° YÃ–NETÄ°MÄ° Section
+                      // VERİ YÖNETİMİ Section
                       _buildSectionHeader(l10n.dataManagement, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(

@@ -31,6 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _emzirmeKaydediliyor = false;
+  late final VoidCallback _dataChangedListener;
 
   // Emzirme sayaç değişkenleri
   bool _solAktif = false;
@@ -60,6 +61,14 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _dataChangedListener = () {
+      if (!mounted) return;
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] State notified → scheduling rebuild recents');
+      }
+      setState(() {});
+    };
+    VeriYonetici.dataNotifier.addListener(_dataChangedListener);
     _loadBabyInfo();
     _initializeTimerValues();
     _setupTimerListeners();
@@ -152,6 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
+    VeriYonetici.dataNotifier.removeListener(_dataChangedListener);
     _emzirmeSubscription?.cancel();
     _uykuSubscription?.cancel();
     super.dispose();
@@ -176,11 +186,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _stopEmzirmeAndSave() async {
     if (!VeriYonetici.hasActiveBaby()) return;
-    final data = await _timerYonetici.stopEmzirme(
-      VeriYonetici.getActiveBabyId(),
-    );
+    if (kDebugMode) debugPrint('[HomeScreen] Stop pressed type=nursing');
+
+    // ── 1. Stop timer ──────────────────────────────────────────────────────────
+    Map<String, dynamic>? data;
+    try {
+      data = await _timerYonetici.stopEmzirme(VeriYonetici.getActiveBabyId());
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[HomeScreen] stopEmzirme threw: $e\n$st');
+      setState(() {
+        _solAktif = false;
+        _sagAktif = false;
+      });
+      return;
+    }
 
     if (data == null) {
+      if (kDebugMode) debugPrint('[HomeScreen] stopEmzirme returned null, skipping save');
       setState(() {
         _solAktif = false;
         _sagAktif = false;
@@ -191,7 +213,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final solSaniye = data['solSaniye'] as int;
     final sagSaniye = data['sagSaniye'] as int;
 
+    if (kDebugMode) {
+      debugPrint(
+        '[HomeScreen] nursing stop data: solSaniye=$solSaniye sagSaniye=$sagSaniye',
+      );
+    }
+
     if (solSaniye == 0 && sagSaniye == 0) {
+      // Both sides zero — timer ran but no side was ever attributed. This
+      // should not happen after the TimerYonetici fix (null taraf → sol),
+      // but guard here so we at least log rather than silently drop.
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] WARNING: both sides 0 after stop, skipping save');
+      }
       setState(() {
         _solAktif = false;
         _sagAktif = false;
@@ -199,12 +233,9 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    setState(() {
-      _emzirmeKaydediliyor = true;
-    });
+    setState(() => _emzirmeKaydediliyor = true);
 
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    // ── 2. Persist ─────────────────────────────────────────────────────────────
     final solDakika = (solSaniye / 60).ceil();
     final sagDakika = (sagSaniye / 60).ceil();
 
@@ -217,19 +248,37 @@ class _HomeScreenState extends State<HomeScreen> {
       'miktar': 0,
     });
 
-    await VeriYonetici.saveMamaKayitlari(kayitlar);
+    try {
+      if (kDebugMode) {
+        debugPrint(
+          '[HomeScreen] saving nursing record: solDakika=$solDakika sagDakika=$sagDakika',
+        );
+      }
+      await VeriYonetici.saveMamaKayitlari(kayitlar);
+      if (kDebugMode) {
+        debugPrint(
+          '[HomeScreen] nursing record saved OK, total=${VeriYonetici.getMamaKayitlari().length}',
+        );
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[HomeScreen] ERROR saving nursing record: $e\n$st');
+    }
 
-    // Schedule feeding reminder if enabled
+    // ── 3. Schedule reminder ───────────────────────────────────────────────────
     if (VeriYonetici.isFeedingReminderEnabled()) {
-      final scheduledAt = _nextReminderDateTime(
-        TimeOfDay(
-          hour: VeriYonetici.getFeedingReminderHour(),
-          minute: VeriYonetici.getFeedingReminderMinute(),
-        ),
-      );
-      final reminderService = ReminderService();
-      await reminderService.initialize();
-      await reminderService.scheduleFeedingReminderAt(scheduledAt);
+      try {
+        final scheduledAt = _nextReminderDateTime(
+          TimeOfDay(
+            hour: VeriYonetici.getFeedingReminderHour(),
+            minute: VeriYonetici.getFeedingReminderMinute(),
+          ),
+        );
+        final reminderService = ReminderService();
+        await reminderService.initialize();
+        await reminderService.scheduleFeedingReminderAt(scheduledAt);
+      } catch (e, st) {
+        if (kDebugMode) debugPrint('[HomeScreen] reminder schedule error: $e\n$st');
+      }
     }
 
     setState(() {
@@ -251,12 +300,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _stopUykuAndSave() async {
     if (!VeriYonetici.hasActiveBaby()) return;
-    final data = await _timerYonetici.stopUyku(VeriYonetici.getActiveBabyId());
+    if (kDebugMode) debugPrint('[HomeScreen] Stop pressed type=sleep');
+
+    // ── 1. Stop timer ──────────────────────────────────────────────────────────
+    Map<String, dynamic>? data;
+    try {
+      data = await _timerYonetici.stopUyku(VeriYonetici.getActiveBabyId());
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[HomeScreen] stopUyku threw: $e\n$st');
+      setState(() => _uykuSaniye = 0);
+      return;
+    }
 
     if (data == null) {
-      setState(() {
-        _uykuSaniye = 0;
-      });
+      if (kDebugMode) debugPrint('[HomeScreen] stopUyku returned null, skipping save');
+      setState(() => _uykuSaniye = 0);
       return;
     }
 
@@ -264,15 +322,17 @@ class _HomeScreenState extends State<HomeScreen> {
     final bitis = data['bitis'] as DateTime;
     final duration = bitis.difference(baslangic);
 
+    if (kDebugMode) {
+      debugPrint('[HomeScreen] sleep stop data: elapsed=${duration.inSeconds}s');
+    }
+
     if (duration.inMinutes < 1) {
-      setState(() {
-        _uykuSaniye = 0;
-      });
+      if (kDebugMode) debugPrint('[HomeScreen] sleep < 1 min, skipping save');
+      setState(() => _uykuSaniye = 0);
       return;
     }
 
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    // ── 2. Persist ─────────────────────────────────────────────────────────────
     final kayitlar = VeriYonetici.getUykuKayitlari();
     kayitlar.insert(0, {
       'baslangic': data['baslangic'],
@@ -280,12 +340,23 @@ class _HomeScreenState extends State<HomeScreen> {
       'sure': data['sure'],
     });
 
-    await VeriYonetici.saveUykuKayitlari(kayitlar);
+    try {
+      if (kDebugMode) {
+        debugPrint(
+          '[HomeScreen] saving sleep record: duration=${duration.inMinutes}m',
+        );
+      }
+      await VeriYonetici.saveUykuKayitlari(kayitlar);
+      if (kDebugMode) {
+        debugPrint(
+          '[HomeScreen] sleep record saved OK, total=${VeriYonetici.getUykuKayitlari().length}',
+        );
+      }
+    } catch (e, st) {
+      if (kDebugMode) debugPrint('[HomeScreen] ERROR saving sleep record: $e\n$st');
+    }
 
-    setState(() {
-      _uykuSaniye = 0;
-    });
-
+    setState(() => _uykuSaniye = 0);
     widget.onDataChanged?.call();
   }
 
@@ -807,13 +878,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   // RECENT ACTIVITY LIST (last 24 hours)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: _buildRecentActivitiesList(
-                      l10n,
-                      mamaKayitlari,
-                      kakaKayitlari,
-                      VeriYonetici.getUykuKayitlari(),
-                      isDark,
-                      textColor,
+                    child: ValueListenableBuilder<int>(
+                      valueListenable: VeriYonetici.dataNotifier,
+                      builder: (context, _, _) => _buildRecentActivitiesList(
+                        l10n,
+                        VeriYonetici.getMamaKayitlari(),
+                        VeriYonetici.getKakaKayitlari(),
+                        VeriYonetici.getUykuKayitlari(),
+                        isDark,
+                        textColor,
+                      ),
                     ),
                   ),
 
@@ -1149,6 +1223,10 @@ class _HomeScreenState extends State<HomeScreen> {
     timeline.sort(
       (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
     );
+
+    if (kDebugMode) {
+      debugPrint('[HomeScreen] Recents rebuilt, count=${timeline.length}');
+    }
 
     if (timeline.isEmpty) {
       return Padding(

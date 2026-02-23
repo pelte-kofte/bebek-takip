@@ -84,15 +84,6 @@ class TipsArchiveScreen extends StatelessWidget {
                             letterSpacing: -0.5,
                           ),
                         ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '0–1 Ay Dönemi',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: subtitleColor,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
                       ],
                     ),
                   ],
@@ -243,3 +234,4 @@ class TipsArchiveScreen extends StatelessWidget {
     );
   }
 }
+
