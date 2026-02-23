@@ -16,7 +16,7 @@ private func iconImage(for type: String) -> Image {
     let name = (type == "sleep") ? "la_sleep" : "la_nursing"
     let bundle = widgetExtensionBundle()
     #if DEBUG
-    print("[LiveActivity] loading '\(name)' from bundle=\(bundle.bundleIdentifier ?? "nil") url=\(bundle.bundleURL?.lastPathComponent ?? "?")")
+    print("[LiveActivity] loading '\(name)' from bundle=\(bundle.bundleIdentifier ?? "nil") url=\(bundle.bundleURL.lastPathComponent)")
     #endif
     if let uiImage = UIImage(named: name, in: bundle, compatibleWith: nil) {
         #if DEBUG
