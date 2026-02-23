@@ -6,12 +6,27 @@ import UIKit
 import ActivityKit
 #endif
 
+final class BabyTimerWidgetBundleMarker: NSObject {}
+
+private func widgetExtensionBundle() -> Bundle {
+    Bundle(for: BabyTimerWidgetBundleMarker.self)
+}
+
 private func iconImage(for type: String) -> Image {
     let name = (type == "sleep") ? "la_sleep" : "la_nursing"
-    let bundle = Bundle(for: BabyTimerLiveActivity.self)
+    let bundle = widgetExtensionBundle()
+    #if DEBUG
+    print("[LiveActivity] loading '\(name)' from bundle=\(bundle.bundleIdentifier ?? "nil") url=\(bundle.bundleURL?.lastPathComponent ?? "?")")
+    #endif
     if let uiImage = UIImage(named: name, in: bundle, compatibleWith: nil) {
-        return Image(uiImage: uiImage).renderingMode(.original)
+        #if DEBUG
+        print("[LiveActivity] ✓ loaded '\(name)' size=\(uiImage.size) renderingMode=\(uiImage.renderingMode.rawValue)")
+        #endif
+        return Image(uiImage: uiImage.withRenderingMode(.alwaysOriginal))
     }
+    #if DEBUG
+    print("[LiveActivity] ✗ UIImage nil for '\(name)' – using fallback SF symbol")
+    #endif
     return Image(systemName: "exclamationmark.triangle.fill")
 }
 
