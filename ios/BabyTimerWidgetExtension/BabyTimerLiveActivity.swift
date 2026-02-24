@@ -43,7 +43,7 @@ struct BabyTimerLiveActivity: Widget {
                     iconImage(for: context.attributes.activityType)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 24, height: 24)
+                        .frame(width: 30, height: 30)
                 }
                 DynamicIslandExpandedRegion(.center) {
                     VStack(spacing: 2) {
@@ -80,7 +80,7 @@ struct BabyTimerLiveActivity: Widget {
                 iconImage(for: context.attributes.activityType)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 18, height: 18)
+                    .frame(width: 22, height: 22)
             } compactTrailing: {
                 if let subtitle = subtitleText(for: context), !subtitle.isEmpty {
                     Text(subtitle)
@@ -96,7 +96,7 @@ struct BabyTimerLiveActivity: Widget {
                 iconImage(for: context.attributes.activityType)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 18, height: 18)
+                    .frame(width: 20, height: 20)
             }
         }
     }
@@ -144,7 +144,7 @@ struct LockScreenView: View {
                 iconImage(for: context.attributes.activityType)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 22, height: 22)
+                    .frame(width: 28, height: 28)
             }
 
             // Title + Side
