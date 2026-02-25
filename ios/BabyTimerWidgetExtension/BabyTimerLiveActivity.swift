@@ -143,8 +143,10 @@ struct LockScreenView: View {
                     .frame(width: 50, height: 50)
                 iconImage(for: context.attributes.activityType)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: 28, height: 28)
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .scaleEffect(1.1)
             }
 
             // Title + Side
