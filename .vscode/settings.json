@@ -1,5 +1,6 @@
 {
     "terminal.integrated.confirmOnKill": "never",
     "chatgpt.openOnStartup": false,
-    "chatgpt.commentCodeLensEnabled": true
+    "chatgpt.commentCodeLensEnabled": true,
+    "cmake.sourceDirectory": "/Users/bekircemkusdemir/Projects/bebek-takip/windows/runner"
 }
