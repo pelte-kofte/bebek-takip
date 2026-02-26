@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,11 +21,6 @@ class AppleAuthService {
 
   bool get inProgress => _inProgress;
 
-  bool get _isIOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
-
-  bool get _useWebAuthenticationOptions =>
-      kIsWeb || defaultTargetPlatform == TargetPlatform.android;
-
   bool _isLinkConflict(FirebaseAuthException e) {
     return e.code == 'credential-already-in-use' ||
         e.code == 'email-already-in-use' ||
@@ -34,6 +31,40 @@ class AppleAuthService {
     if (kDebugMode) {
       debugPrint('[AppleAuthService] $message');
     }
+  }
+
+  String? _decodeAppleTokenField(
+    dynamic value,
+    String fieldName,
+    String attemptId,
+  ) {
+    if (value == null) {
+      _log('[$attemptId] $fieldName is null.');
+      return null;
+    }
+    if (value is Uint8List) {
+      if (value.isEmpty) {
+        _log('[$attemptId] $fieldName is empty Uint8List.');
+        return null;
+      }
+      return utf8.decode(value);
+    }
+    if (value is List<int>) {
+      if (value.isEmpty) {
+        _log('[$attemptId] $fieldName is empty List<int>.');
+        return null;
+      }
+      return utf8.decode(value);
+    }
+    if (value is String) {
+      if (value.isEmpty) {
+        _log('[$attemptId] $fieldName is empty String.');
+        return null;
+      }
+      return value;
+    }
+    _log('[$attemptId] $fieldName has unsupported type: ${value.runtimeType}');
+    return null;
   }
 
   String _generateAttemptId() {
@@ -84,10 +115,14 @@ class AppleAuthService {
       case 'missing-or-invalid-nonce':
       case 'missing-identity-token':
       case 'missing-web-auth-options':
-        _log('[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}');
+        _log(
+          '[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}',
+        );
         return;
       default:
-        _log('[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}');
+        _log(
+          '[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}',
+        );
     }
   }
 
@@ -114,8 +149,25 @@ class AppleAuthService {
 
       final AuthorizationCredentialAppleID appleCredential;
       try {
-        if (_isIOS) {
-          // iOS native flow: never pass webAuthenticationOptions here.
+        if (kIsWeb) {
+          final webOptions = _webAuthOptions(attemptId);
+          if (webOptions == null) {
+            throw FirebaseAuthException(
+              code: 'missing-web-auth-options',
+              message:
+                  'APPLE_SERVICE_ID and APPLE_REDIRECT_URI are required on web.',
+            );
+          }
+          appleCredential = await SignInWithApple.getAppleIDCredential(
+            scopes: const [
+              AppleIDAuthorizationScopes.email,
+              AppleIDAuthorizationScopes.fullName,
+            ],
+            nonce: hashedNonce,
+            webAuthenticationOptions: webOptions,
+          );
+        } else if (Platform.isIOS) {
+          // iOS native flow only: never pass webAuthenticationOptions here.
           appleCredential = await SignInWithApple.getAppleIDCredential(
             scopes: const [
               AppleIDAuthorizationScopes.email,
@@ -123,13 +175,13 @@ class AppleAuthService {
             ],
             nonce: hashedNonce,
           );
-        } else if (_useWebAuthenticationOptions) {
+        } else if (Platform.isAndroid) {
           final webOptions = _webAuthOptions(attemptId);
           if (webOptions == null) {
             throw FirebaseAuthException(
               code: 'missing-web-auth-options',
               message:
-                  'APPLE_SERVICE_ID and APPLE_REDIRECT_URI are required on Android/Web.',
+                  'APPLE_SERVICE_ID and APPLE_REDIRECT_URI are required on Android.',
             );
           }
           appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -158,14 +210,24 @@ class AppleAuthService {
         rethrow;
       }
 
-      _log(
-        '[$attemptId] GOT Apple credential '
-        '(hasToken=${appleCredential.identityToken != null}, '
-        'hasCode=${appleCredential.authorizationCode.isNotEmpty})',
+      final identityTokenString = _decodeAppleTokenField(
+        appleCredential.identityToken,
+        'identityToken',
+        attemptId,
+      );
+      final authorizationCodeString = _decodeAppleTokenField(
+        appleCredential.authorizationCode,
+        'authorizationCode',
+        attemptId,
       );
 
-      final identityToken = appleCredential.identityToken;
-      if (identityToken == null || identityToken.isEmpty) {
+      _log(
+        '[$attemptId] GOT Apple credential '
+        '(hasToken=${identityTokenString != null}, '
+        'hasCode=${authorizationCodeString != null})',
+      );
+
+      if (identityTokenString == null) {
         _log('[$attemptId] Apple credential missing identityToken.');
         throw FirebaseAuthException(
           code: 'missing-identity-token',
@@ -173,27 +235,28 @@ class AppleAuthService {
         );
       }
 
-      if (appleCredential.authorizationCode.isEmpty) {
-        _log(
-          '[$attemptId] Apple credential missing authorizationCode. '
-          'Continuing because Firebase sign-in uses identityToken + nonce.',
+      if (authorizationCodeString == null) {
+        _log('[$attemptId] Apple credential missing authorizationCode.');
+        throw FirebaseAuthException(
+          code: 'missing-authorization-code',
+          message: 'Apple authorization code is missing.',
         );
       }
 
       final currentNonce = _currentNonce;
       if (currentNonce == null || currentNonce.isEmpty) {
-        _log('[$attemptId] Missing raw nonce before Firebase credential creation.');
+        _log(
+          '[$attemptId] Missing raw nonce before Firebase credential creation.',
+        );
         throw FirebaseAuthException(
           code: 'missing-or-invalid-nonce',
           message: 'Missing nonce. Please try again.',
         );
       }
 
-      final oauthCredential =
-          OAuthProvider('apple.com').credential(
-            idToken: identityToken,
-            rawNonce: currentNonce,
-          );
+      final oauthCredential = OAuthProvider(
+        'apple.com',
+      ).credential(idToken: identityTokenString, rawNonce: currentNonce);
 
       final auth = FirebaseAuth.instance;
       final currentUser = auth.currentUser;
@@ -211,7 +274,9 @@ class AppleAuthService {
           if (!_isLinkConflict(e)) {
             rethrow;
           }
-          _log('[$attemptId] Link conflict (${e.code}); signing out anon, retrying signIn');
+          _log(
+            '[$attemptId] Link conflict (${e.code}); signing out anon, retrying signIn',
+          );
           await auth.signOut();
           try {
             result = await auth.signInWithCredential(oauthCredential);
@@ -228,7 +293,11 @@ class AppleAuthService {
         try {
           result = await auth.signInWithCredential(oauthCredential);
         } on FirebaseAuthException catch (e) {
-          _logFirebaseAuthException(attemptId, e, stage: 'signInWithCredential');
+          _logFirebaseAuthException(
+            attemptId,
+            e,
+            stage: 'signInWithCredential',
+          );
           rethrow;
         }
       }
