@@ -1412,6 +1412,342 @@ abstract class AppLocalizations {
   /// **'All tips'**
   String get allTips;
 
+  /// No description provided for @tip_engelli_kosu_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Obstacle Course (Crawling Edition)'**
+  String get tip_engelli_kosu_title;
+
+  /// No description provided for @tip_engelli_kosu_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Place small pillow or blanket obstacles on the floor. Getting over them to reach a toy helps build problem-solving skills.'**
+  String get tip_engelli_kosu_desc;
+
+  /// No description provided for @tip_hafif_agir_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Heavy or Light?'**
+  String get tip_hafif_agir_title;
+
+  /// No description provided for @tip_hafif_agir_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Place a feather-light cloth in one hand and a heavier block in the other. Let your baby compare the feel, texture, and weight.'**
+  String get tip_hafif_agir_desc;
+
+  /// No description provided for @tip_beni_ismimle_cagir_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Me by My Name'**
+  String get tip_beni_ismimle_cagir_title;
+
+  /// No description provided for @tip_beni_ismimle_cagir_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'While your baby is looking away, softly say their name. Encourage them to turn toward you. Recognizing their name is a big milestone this month.'**
+  String get tip_beni_ismimle_cagir_desc;
+
+  /// No description provided for @tip_su_ne_title.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s That? (Pointing)'**
+  String get tip_su_ne_title;
+
+  /// No description provided for @tip_su_ne_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Point to different objects in the room and name them. Trying to point too shows your baby is exploring the world with you.'**
+  String get tip_su_ne_desc;
+
+  /// No description provided for @tip_komut_dinlemece_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening Game'**
+  String get tip_komut_dinlemece_title;
+
+  /// No description provided for @tip_komut_dinlemece_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Give simple one-step directions like \"Give me the ball\" or \"Look at me.\" This helps your baby connect words with actions.'**
+  String get tip_komut_dinlemece_desc;
+
+  /// No description provided for @tip_buyuk_yuruyus_title.
+  ///
+  /// In en, this message translates to:
+  /// **'The Big Walk'**
+  String get tip_buyuk_yuruyus_title;
+
+  /// No description provided for @tip_buyuk_yuruyus_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your baby\'s hands or use a safe push walker to encourage steps. Stay close as they practice balance and enjoy the excitement of early walking.'**
+  String get tip_buyuk_yuruyus_desc;
+
+  /// No description provided for @tip_duzenleme_saati_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Tidy-Up Time'**
+  String get tip_duzenleme_saati_title;
+
+  /// No description provided for @tip_duzenleme_saati_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Put scattered toys into a basket or box together. Say, \"Let\'s put it in the box!\" and encourage your baby to toss them in.'**
+  String get tip_duzenleme_saati_desc;
+
+  /// No description provided for @tip_emekleme_parkuru_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Crawling Course'**
+  String get tip_emekleme_parkuru_title;
+
+  /// No description provided for @tip_emekleme_parkuru_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a small obstacle course with soft blankets and pillows. Place a favorite toy a little farther away and encourage your baby to crawl toward it.'**
+  String get tip_emekleme_parkuru_desc;
+
+  /// No description provided for @tip_aynadaki_bebek_title.
+  ///
+  /// In en, this message translates to:
+  /// **'The Mysterious Baby in the Mirror'**
+  String get tip_aynadaki_bebek_title;
+
+  /// No description provided for @tip_aynadaki_bebek_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sit your baby in front of a safe mirror. Let them watch their reflection and touch the mirror. Ask, \"Who is that?\" to support self-recognition and visual development.'**
+  String get tip_aynadaki_bebek_desc;
+
+  /// No description provided for @tip_yuvarla_bakalim_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s Roll It'**
+  String get tip_yuvarla_bakalim_title;
+
+  /// No description provided for @tip_yuvarla_bakalim_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sit on the floor facing each other and roll a soft ball back and forth. Encourage your baby to catch it and push it back to build hand-eye coordination.'**
+  String get tip_yuvarla_bakalim_desc;
+
+  /// No description provided for @tip_nesne_karsilastirma_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparing Objects'**
+  String get tip_nesne_karsilastirma_title;
+
+  /// No description provided for @tip_nesne_karsilastirma_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Place a soft toy in one hand and a hard block in the other. Give your baby time to notice differences in texture and weight.'**
+  String get tip_nesne_karsilastirma_desc;
+
+  /// No description provided for @tip_kucuk_okuyucu_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Little Reader'**
+  String get tip_kucuk_okuyucu_title;
+
+  /// No description provided for @tip_kucuk_okuyucu_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Look through sturdy board books together. Give your baby space to turn the pages, helping a little if needed, to support fine motor skills and curiosity.'**
+  String get tip_kucuk_okuyucu_desc;
+
+  /// No description provided for @tip_yercekimi_deneyi_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Gravity Experiment'**
+  String get tip_yercekimi_deneyi_title;
+
+  /// No description provided for @tip_yercekimi_deneyi_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'When your baby drops a toy on purpose and waits for you to pick it up, that\'s a cause-and-effect game. Say, \"It fell!\" and join the discovery.'**
+  String get tip_yercekimi_deneyi_desc;
+
+  /// No description provided for @tip_adimadim_macera_title.
+  ///
+  /// In en, this message translates to:
+  /// **'First Step Excitement'**
+  String get tip_adimadim_macera_title;
+
+  /// No description provided for @tip_adimadim_macera_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your baby securely under the arms and let their feet press into the floor. Gently guide them forward so they can feel the motion of walking.'**
+  String get tip_adimadim_macera_desc;
+
+  /// No description provided for @tip_comert_bebek_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Generous Baby'**
+  String get tip_comert_bebek_title;
+
+  /// No description provided for @tip_comert_bebek_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask, \"Can you give it to me?\" and hold out your hand for the toy. Celebrate with a warm \"Thank you!\" when your baby shares it.'**
+  String get tip_comert_bebek_desc;
+
+  /// No description provided for @tip_yemek_zamani_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Mealtime'**
+  String get tip_yemek_zamani_title;
+
+  /// No description provided for @tip_yemek_zamani_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sit at the table together and enjoy the funniest little moments. Reaching for soft cooked vegetables helps build arm coordination and tiny motor movements.'**
+  String get tip_yemek_zamani_desc;
+
+  /// No description provided for @tip_alkis_zamani_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Clap Time'**
+  String get tip_alkis_zamani_title;
+
+  /// No description provided for @tip_alkis_zamani_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clap along and encourage your baby to join in. Trying to copy the rhythm helps build attention and coordination.'**
+  String get tip_alkis_zamani_desc;
+
+  /// No description provided for @tip_alo_kim_o_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello, Who\'s There?'**
+  String get tip_alo_kim_o_title;
+
+  /// No description provided for @tip_alo_kim_o_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold a toy phone to your ear and make short pretend calls, then offer it to your baby. This playful role game supports sound imitation and social interaction.'**
+  String get tip_alo_kim_o_desc;
+
+  /// No description provided for @tip_baybay_partisi_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Bye-Bye Party'**
+  String get tip_baybay_partisi_title;
+
+  /// No description provided for @tip_baybay_partisi_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Wave and say \"bye-bye\" when someone leaves. Encourage your baby to wave too. Copying this simple gesture supports early communication.'**
+  String get tip_baybay_partisi_desc;
+
+  /// No description provided for @tip_birak_izle_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop and Watch'**
+  String get tip_birak_izle_title;
+
+  /// No description provided for @tip_birak_izle_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Let your baby drop a toy and watch where it goes together. Following the fall helps build cause-and-effect understanding.'**
+  String get tip_birak_izle_desc;
+
+  /// No description provided for @tip_goster_bakalim_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Me'**
+  String get tip_goster_bakalim_title;
+
+  /// No description provided for @tip_goster_bakalim_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask simple questions like \"Where is the ball?\" or \"Show me the light.\" Point first, then encourage your baby to look and point too.'**
+  String get tip_goster_bakalim_desc;
+
+  /// No description provided for @tip_hazine_kutusu_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Treasure Box'**
+  String get tip_hazine_kutusu_title;
+
+  /// No description provided for @tip_hazine_kutusu_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare a small box with safe household objects. Let your baby pull items out and inspect them. Each object becomes a new discovery.'**
+  String get tip_hazine_kutusu_desc;
+
+  /// No description provided for @tip_minik_kitap_kurdu_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Little Bookworm'**
+  String get tip_minik_kitap_kurdu_title;
+
+  /// No description provided for @tip_minik_kitap_kurdu_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip through a sturdy board book together. Name the pictures and give your baby a chance to turn the pages too.'**
+  String get tip_minik_kitap_kurdu_desc;
+
+  /// No description provided for @tip_mobilya_dagcilari_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Furniture Climbers'**
+  String get tip_mobilya_dagcilari_title;
+
+  /// No description provided for @tip_mobilya_dagcilari_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Support your baby\'s attempts to pull up on a sofa or another safe low surface. Climbing and holding on builds strength and balance.'**
+  String get tip_mobilya_dagcilari_desc;
+
+  /// No description provided for @tip_saksak_alkis_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Clap-Clap Fun'**
+  String get tip_saksak_alkis_title;
+
+  /// No description provided for @tip_saksak_alkis_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Clap your hands with a happy rhythm. As your baby tries to copy you, they build rhythm awareness and two-handed coordination.'**
+  String get tip_saksak_alkis_desc;
+
+  /// No description provided for @tip_sira_sende_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Turn'**
+  String get tip_sira_sende_title;
+
+  /// No description provided for @tip_sira_sende_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Move a simple toy first, then hand it over and say, \"Your turn.\" It\'s an easy way to introduce turn-taking and back-and-forth play.'**
+  String get tip_sira_sende_desc;
+
+  /// No description provided for @tip_veral_oyunu_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Give-and-Take Game'**
+  String get tip_veral_oyunu_title;
+
+  /// No description provided for @tip_veral_oyunu_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Let your baby take a toy from you and offer it back. This simple exchange supports sharing and social connection.'**
+  String get tip_veral_oyunu_desc;
+
+  /// No description provided for @tip_yuvarla_bekle_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll and Wait'**
+  String get tip_yuvarla_bekle_title;
+
+  /// No description provided for @tip_yuvarla_bekle_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Roll a soft ball toward your baby and pause for their response. That brief wait helps them understand turn-taking and stay engaged.'**
+  String get tip_yuvarla_bekle_desc;
+
   /// UI text
   ///
   /// In en, this message translates to:

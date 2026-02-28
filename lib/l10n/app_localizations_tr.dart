@@ -715,6 +715,202 @@ class AppLocalizationsTr extends AppLocalizations {
   String get allTips => 'Tüm ipuçları';
 
   @override
+  String get tip_engelli_kosu_title => 'Engelli Koşu (Emekleme Versiyon)';
+
+  @override
+  String get tip_engelli_kosu_desc =>
+      'Yere yastıklardan veya battaniyelerden küçük engeller koy. Hedefteki oyuncağa ulaşmak için bu engelleri aşması, problem çözme yeteneğini geliştirir.';
+
+  @override
+  String get tip_hafif_agir_title => 'Ağır mı Hafif mi?';
+
+  @override
+  String get tip_hafif_agir_desc =>
+      'Bir eline tüy gibi hafif bir bez, diğerine ise daha ağır bir blok ver. Nesneleri karşılaştırmasını ve doku/ağırlık farkını anlamasını izle.';
+
+  @override
+  String get tip_beni_ismimle_cagir_title => 'İsmimle Çağır Beni';
+
+  @override
+  String get tip_beni_ismimle_cagir_desc =>
+      'O başka bir yere bakarken adını fısılda veya söyle. Sana dönüp bakması için teşvik et. İsmini tanıması bu ayın en büyük başarısı kanka!';
+
+  @override
+  String get tip_su_ne_title => 'Şu Ne? (İşaretleme)';
+
+  @override
+  String get tip_su_ne_desc =>
+      'Odadaki farklı nesneleri parmağınla gösterip adını söyle. Onun da parmağıyla bir yerleri işaret etmeye çalışması, dünyayı seninle beraber keşfettiğini gösterir.';
+
+  @override
+  String get tip_komut_dinlemece_title => 'Komut Dinlemece';
+
+  @override
+  String get tip_komut_dinlemece_desc =>
+      '\"Topu ver\" veya \"Bana bak\" gibi tek aşamalı basit komutlar ver. Kelimelerle hareketleri eşleştirmesine yardımcı ol; anlama becerisi bu ay hızla gelişiyor.';
+
+  @override
+  String get tip_buyuk_yuruyus_title => 'Büyük Yürüyüş';
+
+  @override
+  String get tip_buyuk_yuruyus_desc =>
+      'Ellerinden tutarak ya da güvenli bir yürüme oyuncağıyla adım atmasını sağla. Dengede kalma çabasına eşlik et; ilk adımların heyecanı başka hiçbir şeyde yok!';
+
+  @override
+  String get tip_duzenleme_saati_title => 'Düzenleme Saati';
+
+  @override
+  String get tip_duzenleme_saati_desc =>
+      'Dağılan oyuncakları bir sepetin veya kutunun içine beraber koyun. \"Hadi şimdi kutuya!\" diyerek oyuncakları içeri atmasını sağla. Organizasyon yeteneği gelişsin.';
+
+  @override
+  String get tip_emekleme_parkuru_title => 'Emekleme Parkuru';
+
+  @override
+  String get tip_emekleme_parkuru_desc =>
+      'Yere yumuşak battaniyeler ve yastıklar koyarak küçük bir engel parkuru yap. En sevdiği oyuncağı uzağa yerleştirerek onu yere karın üstü bırak ve ona ulaşması için emeklemeye teşvik et.';
+
+  @override
+  String get tip_aynadaki_bebek_title => 'Aynadaki Gizemli Bebek';
+
+  @override
+  String get tip_aynadaki_bebek_desc =>
+      'Bebeğini güvenli bir aynanın karşısına oturt. Kendi yansımasını izlemesini, aynaya dokunmasını sağla. \"Bu kimmiş?\" diyerek kendini tanımasına ve görsel algısının gelişmesine yardımcı ol.';
+
+  @override
+  String get tip_yuvarla_bakalim_title => 'Yuvarla Bakalım';
+
+  @override
+  String get tip_yuvarla_bakalim_desc =>
+      'Karşılıklı yere oturun ve yumuşak bir topu birbirinize yuvarlayın. Topu yakalamaya çalışması ve sana geri itmesi için onu cesaretlendir; el-göz koordinasyonu tavan yapsın!';
+
+  @override
+  String get tip_nesne_karsilastirma_title => 'Nesne Karşılaştırma';
+
+  @override
+  String get tip_nesne_karsilastirma_desc =>
+      'Elini birine yumuşak bir oyuncak, diğerine sert bir blok ver. Dokuları ve ağırlıkları arasındaki farkı anlaması için ona zaman tanı. Duyusal farkındalık için harika bir egzersiz!';
+
+  @override
+  String get tip_kucuk_okuyucu_title => 'Küçük Okuyucu';
+
+  @override
+  String get tip_kucuk_okuyucu_desc =>
+      'Kalın sayfalı kitapları beraber inceleyin. Sayfayı çevirmesi için ona alan tanı, gerekirse hafifçe ucundan kaldırarak yardım et. İnce motor becerileri ve merak duygusu için birebir.';
+
+  @override
+  String get tip_yercekimi_deneyi_title => 'Yerçekimi Deneyi';
+
+  @override
+  String get tip_yercekimi_deneyi_desc =>
+      'Elindeki oyuncağı bilerek yere bırakması ve senin almanı beklemesi aslında bir neden-sonuç oyunudur. Bıraktığında \"Gitti!\" diyerek bu keşfine eşlik et.';
+
+  @override
+  String get tip_adimadim_macera_title => 'İlk Adım Heyecanı';
+
+  @override
+  String get tip_adimadim_macera_desc =>
+      'Onu koltuk altlarından sıkıca tut ve ayaklarını yere basmasını sağla. Hafifçe öne doğru yönlendirerek yürüme hissini tatmasını sağla; bacak kaslarını ve dengesini geliştirir.';
+
+  @override
+  String get tip_comert_bebek_title => 'Cömert Bebek';
+
+  @override
+  String get tip_comert_bebek_desc =>
+      '\"Bana verir misin?\" diyerek elindeki oyuncağı iste. Sana uzattığında \"Teşekkür ederim!\" diyerek kutla. Bu, karşılıklı etkileşim ve paylaşma bilincini başlatır.';
+
+  @override
+  String get tip_yemek_zamani_title => 'Yemek Zamanı';
+
+  @override
+  String get tip_yemek_zamani_desc =>
+      'Bebeğinizle beraber sofraya oturun ve en komik hallerine şahit olun. Önündeki haşlanmış sebzeleri yüzüne bularken el kol koordinasyonu ve mikro hareketleri gelişecektir!';
+
+  @override
+  String get tip_alkis_zamani_title => 'Alkış Zamanı';
+
+  @override
+  String get tip_alkis_zamani_desc =>
+      'Sen alkış tuttukça bebeğini de sana eşlik etmesi için cesaretlendir. Ritmi taklit etmeye çalışması hem dikkatini hem de koordinasyonunu güçlendirir.';
+
+  @override
+  String get tip_alo_kim_o_title => 'Alo, Kim O?';
+
+  @override
+  String get tip_alo_kim_o_desc =>
+      'Oyuncak bir telefonu kulağına götürüp kısa kısa konuşmalar yap. Sonra telefonu ona uzat. Bu minik rol oyunu ses taklidini ve sosyal etkileşimi destekler.';
+
+  @override
+  String get tip_baybay_partisi_title => 'Baybay Partisi';
+
+  @override
+  String get tip_baybay_partisi_desc =>
+      'Evden çıkan birine el sallayıp \"bay bay\" de. Bebeğinin de el sallamaya çalışmasını teşvik et. Taklit yoluyla iletişim becerisi hızla gelişir.';
+
+  @override
+  String get tip_birak_izle_title => 'Bırak İzle';
+
+  @override
+  String get tip_birak_izle_desc =>
+      'Elindeki oyuncağı yere bırakmasına izin ver ve nereye gittiğini birlikte takip edin. Düşen nesneyi izlemesi neden-sonuç ilişkisini kurmasına yardım eder.';
+
+  @override
+  String get tip_goster_bakalim_title => 'Göster Bakalım';
+
+  @override
+  String get tip_goster_bakalim_desc =>
+      '\"Top nerede?\" ya da \"ışığı göster\" gibi küçük sorular sor. Parmağınla gösterdiğinde onu da bakmaya ve işaret etmeye teşvik et.';
+
+  @override
+  String get tip_hazine_kutusu_title => 'Hazine Kutusu';
+
+  @override
+  String get tip_hazine_kutusu_desc =>
+      'Güvenli ev eşyalarından oluşan küçük bir kutu hazırla. İçinden çıkarıp incelemesine izin ver. Her yeni nesne onun için ayrı bir keşif alanıdır.';
+
+  @override
+  String get tip_minik_kitap_kurdu_title => 'Minik Kitap Kurdu';
+
+  @override
+  String get tip_minik_kitap_kurdu_desc =>
+      'Kalın sayfalı bir kitabı birlikte karıştırın. Resimlere bakıp anlatırken sayfaları çevirmesine fırsat ver. Merakı ve ince motor becerileri birlikte güçlenir.';
+
+  @override
+  String get tip_mobilya_dagcilari_title => 'Mobilya Dağcıları';
+
+  @override
+  String get tip_mobilya_dagcilari_desc =>
+      'Koltuğa ya da güvenli bir alçağa tutunarak ayağa kalkma denemelerini destekle. Tırmanma ve tutunma çabası kaslarını ve dengesini geliştirir.';
+
+  @override
+  String get tip_saksak_alkis_title => 'Şakşak Alkış';
+
+  @override
+  String get tip_saksak_alkis_desc =>
+      'Ellerini neşeyle birbirine vurup alkış yap. Bebeğin seni taklit etmeye çalıştıkça ritim duygusu ve çift taraflı koordinasyonu gelişir.';
+
+  @override
+  String get tip_sira_sende_title => 'Sıra Sende';
+
+  @override
+  String get tip_sira_sende_desc =>
+      'Basit bir oyuncağı önce sen hareket ettir, sonra ona uzatıp \"şimdi sıra sende\" de. Sıra bekleme ve karşılıklı etkileşim için güzel bir başlangıçtır.';
+
+  @override
+  String get tip_veral_oyunu_title => 'Ver-Al Oyunu';
+
+  @override
+  String get tip_veral_oyunu_desc =>
+      'Elindeki oyuncağı senden almasına, sonra geri vermesine alan aç. Bu küçük alışveriş oyunu paylaşma ve karşılıklı ilişki kurma becerisini besler.';
+
+  @override
+  String get tip_yuvarla_bekle_title => 'Yuvarla Bekle';
+
+  @override
+  String get tip_yuvarla_bekle_desc =>
+      'Yumuşak bir topu ona doğru yuvarla ve tepki vermesini bekle. Bekleme anı, oyunun sırasını anlamasına ve dikkatini toplamasına yardım eder.';
+
+  @override
   String get upcomingVaccine => 'YAKLAŞAN AŞI';
 
   @override

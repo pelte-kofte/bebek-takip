@@ -743,6 +743,202 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allTips => 'All tips';
 
   @override
+  String get tip_engelli_kosu_title => 'Obstacle Course (Crawling Edition)';
+
+  @override
+  String get tip_engelli_kosu_desc =>
+      'Place small pillow or blanket obstacles on the floor. Getting over them to reach a toy helps build problem-solving skills.';
+
+  @override
+  String get tip_hafif_agir_title => 'Heavy or Light?';
+
+  @override
+  String get tip_hafif_agir_desc =>
+      'Place a feather-light cloth in one hand and a heavier block in the other. Let your baby compare the feel, texture, and weight.';
+
+  @override
+  String get tip_beni_ismimle_cagir_title => 'Call Me by My Name';
+
+  @override
+  String get tip_beni_ismimle_cagir_desc =>
+      'While your baby is looking away, softly say their name. Encourage them to turn toward you. Recognizing their name is a big milestone this month.';
+
+  @override
+  String get tip_su_ne_title => 'What\'s That? (Pointing)';
+
+  @override
+  String get tip_su_ne_desc =>
+      'Point to different objects in the room and name them. Trying to point too shows your baby is exploring the world with you.';
+
+  @override
+  String get tip_komut_dinlemece_title => 'Listening Game';
+
+  @override
+  String get tip_komut_dinlemece_desc =>
+      'Give simple one-step directions like \"Give me the ball\" or \"Look at me.\" This helps your baby connect words with actions.';
+
+  @override
+  String get tip_buyuk_yuruyus_title => 'The Big Walk';
+
+  @override
+  String get tip_buyuk_yuruyus_desc =>
+      'Hold your baby\'s hands or use a safe push walker to encourage steps. Stay close as they practice balance and enjoy the excitement of early walking.';
+
+  @override
+  String get tip_duzenleme_saati_title => 'Tidy-Up Time';
+
+  @override
+  String get tip_duzenleme_saati_desc =>
+      'Put scattered toys into a basket or box together. Say, \"Let\'s put it in the box!\" and encourage your baby to toss them in.';
+
+  @override
+  String get tip_emekleme_parkuru_title => 'Crawling Course';
+
+  @override
+  String get tip_emekleme_parkuru_desc =>
+      'Make a small obstacle course with soft blankets and pillows. Place a favorite toy a little farther away and encourage your baby to crawl toward it.';
+
+  @override
+  String get tip_aynadaki_bebek_title => 'The Mysterious Baby in the Mirror';
+
+  @override
+  String get tip_aynadaki_bebek_desc =>
+      'Sit your baby in front of a safe mirror. Let them watch their reflection and touch the mirror. Ask, \"Who is that?\" to support self-recognition and visual development.';
+
+  @override
+  String get tip_yuvarla_bakalim_title => 'Let\'s Roll It';
+
+  @override
+  String get tip_yuvarla_bakalim_desc =>
+      'Sit on the floor facing each other and roll a soft ball back and forth. Encourage your baby to catch it and push it back to build hand-eye coordination.';
+
+  @override
+  String get tip_nesne_karsilastirma_title => 'Comparing Objects';
+
+  @override
+  String get tip_nesne_karsilastirma_desc =>
+      'Place a soft toy in one hand and a hard block in the other. Give your baby time to notice differences in texture and weight.';
+
+  @override
+  String get tip_kucuk_okuyucu_title => 'Little Reader';
+
+  @override
+  String get tip_kucuk_okuyucu_desc =>
+      'Look through sturdy board books together. Give your baby space to turn the pages, helping a little if needed, to support fine motor skills and curiosity.';
+
+  @override
+  String get tip_yercekimi_deneyi_title => 'Gravity Experiment';
+
+  @override
+  String get tip_yercekimi_deneyi_desc =>
+      'When your baby drops a toy on purpose and waits for you to pick it up, that\'s a cause-and-effect game. Say, \"It fell!\" and join the discovery.';
+
+  @override
+  String get tip_adimadim_macera_title => 'First Step Excitement';
+
+  @override
+  String get tip_adimadim_macera_desc =>
+      'Hold your baby securely under the arms and let their feet press into the floor. Gently guide them forward so they can feel the motion of walking.';
+
+  @override
+  String get tip_comert_bebek_title => 'Generous Baby';
+
+  @override
+  String get tip_comert_bebek_desc =>
+      'Ask, \"Can you give it to me?\" and hold out your hand for the toy. Celebrate with a warm \"Thank you!\" when your baby shares it.';
+
+  @override
+  String get tip_yemek_zamani_title => 'Mealtime';
+
+  @override
+  String get tip_yemek_zamani_desc =>
+      'Sit at the table together and enjoy the funniest little moments. Reaching for soft cooked vegetables helps build arm coordination and tiny motor movements.';
+
+  @override
+  String get tip_alkis_zamani_title => 'Clap Time';
+
+  @override
+  String get tip_alkis_zamani_desc =>
+      'Clap along and encourage your baby to join in. Trying to copy the rhythm helps build attention and coordination.';
+
+  @override
+  String get tip_alo_kim_o_title => 'Hello, Who\'s There?';
+
+  @override
+  String get tip_alo_kim_o_desc =>
+      'Hold a toy phone to your ear and make short pretend calls, then offer it to your baby. This playful role game supports sound imitation and social interaction.';
+
+  @override
+  String get tip_baybay_partisi_title => 'Bye-Bye Party';
+
+  @override
+  String get tip_baybay_partisi_desc =>
+      'Wave and say \"bye-bye\" when someone leaves. Encourage your baby to wave too. Copying this simple gesture supports early communication.';
+
+  @override
+  String get tip_birak_izle_title => 'Drop and Watch';
+
+  @override
+  String get tip_birak_izle_desc =>
+      'Let your baby drop a toy and watch where it goes together. Following the fall helps build cause-and-effect understanding.';
+
+  @override
+  String get tip_goster_bakalim_title => 'Show Me';
+
+  @override
+  String get tip_goster_bakalim_desc =>
+      'Ask simple questions like \"Where is the ball?\" or \"Show me the light.\" Point first, then encourage your baby to look and point too.';
+
+  @override
+  String get tip_hazine_kutusu_title => 'Treasure Box';
+
+  @override
+  String get tip_hazine_kutusu_desc =>
+      'Prepare a small box with safe household objects. Let your baby pull items out and inspect them. Each object becomes a new discovery.';
+
+  @override
+  String get tip_minik_kitap_kurdu_title => 'Little Bookworm';
+
+  @override
+  String get tip_minik_kitap_kurdu_desc =>
+      'Flip through a sturdy board book together. Name the pictures and give your baby a chance to turn the pages too.';
+
+  @override
+  String get tip_mobilya_dagcilari_title => 'Furniture Climbers';
+
+  @override
+  String get tip_mobilya_dagcilari_desc =>
+      'Support your baby\'s attempts to pull up on a sofa or another safe low surface. Climbing and holding on builds strength and balance.';
+
+  @override
+  String get tip_saksak_alkis_title => 'Clap-Clap Fun';
+
+  @override
+  String get tip_saksak_alkis_desc =>
+      'Clap your hands with a happy rhythm. As your baby tries to copy you, they build rhythm awareness and two-handed coordination.';
+
+  @override
+  String get tip_sira_sende_title => 'Your Turn';
+
+  @override
+  String get tip_sira_sende_desc =>
+      'Move a simple toy first, then hand it over and say, \"Your turn.\" It\'s an easy way to introduce turn-taking and back-and-forth play.';
+
+  @override
+  String get tip_veral_oyunu_title => 'Give-and-Take Game';
+
+  @override
+  String get tip_veral_oyunu_desc =>
+      'Let your baby take a toy from you and offer it back. This simple exchange supports sharing and social connection.';
+
+  @override
+  String get tip_yuvarla_bekle_title => 'Roll and Wait';
+
+  @override
+  String get tip_yuvarla_bekle_desc =>
+      'Roll a soft ball toward your baby and pause for their response. That brief wait helps them understand turn-taking and stay engaged.';
+
+  @override
   String get upcomingVaccine => 'UPCOMING VACCINE';
 
   @override
