@@ -6,29 +6,29 @@ class AppColors {
   static const Color bgLight = Color(0xFFFDF6F0);
   static const Color bgLightCard = Color(0xFFFFFFFA);
   static const Color bgLightSurface = Color(0xFFFFF8F2);
-  
+
   // Background - Dark
   static const Color bgDark = Color(0xFF1E1E2A);
   static const Color bgDarkCard = Color(0xFF2A2A3A);
   static const Color bgDarkSurface = Color(0xFF252535);
-  
+
   // Primary
   static const Color primary = Color(0xFFE8A0A0);
   static const Color primaryLight = Color(0xFFFFD4D4);
   static const Color primaryDark = Color(0xFFD48A8A);
-  
+
   // Accents
   static const Color accentBlue = Color(0xFFA8D4E6);
   static const Color accentGreen = Color(0xFFB8E0C8);
   static const Color accentPeach = Color(0xFFFFD8C0);
   static const Color accentLavender = Color(0xFFD4C4E8);
   static const Color accentYellow = Color(0xFFFFF0B8);
-  
+
   // Text - Light
   static const Color textPrimaryLight = Color(0xFF4A4458);
   static const Color textSecondaryLight = Color(0xFF8A8494);
   static const Color textMutedLight = Color(0xFFB0A8B8);
-  
+
   // Text - Dark
   static const Color textPrimaryDark = Color(0xFFF0EAF4);
   static const Color textSecondaryDark = Color(0xFFB8B0C0);
@@ -85,7 +85,9 @@ class AppTypography {
     return GoogleFonts.quicksand(
       fontSize: 14,
       fontWeight: FontWeight.w500,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+      color: isDark
+          ? AppColors.textSecondaryDark
+          : AppColors.textSecondaryLight,
       height: 1.4,
     );
   }
@@ -96,7 +98,9 @@ class AppTypography {
     return GoogleFonts.quicksand(
       fontSize: 12,
       fontWeight: FontWeight.w600,
-      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+      color: isDark
+          ? AppColors.textSecondaryDark
+          : AppColors.textSecondaryLight,
       letterSpacing: 0.3,
       height: 1.3,
     );
@@ -188,9 +192,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: GoogleFonts.quicksand(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -200,9 +202,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: AppColors.bgLightCard,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgLight,
@@ -268,9 +268,7 @@ class AppTheme {
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         textStyle: GoogleFonts.quicksand(
           fontSize: 16,
           fontWeight: FontWeight.w700,
@@ -280,9 +278,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: AppColors.bgDarkCard,
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgDark,

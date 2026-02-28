@@ -82,9 +82,15 @@ class TimerYonetici {
     required String timerType,
     required String babyId,
   }) {
-    final key = _actionKey(action: action, timerType: timerType, babyId: babyId);
+    final key = _actionKey(
+      action: action,
+      timerType: timerType,
+      babyId: babyId,
+    );
     final now = DateTime.now();
-    final lastTapByKey = action == 'start' ? _lastStartTapByKey : _lastStopTapByKey;
+    final lastTapByKey = action == 'start'
+        ? _lastStartTapByKey
+        : _lastStopTapByKey;
     final busyKeys = action == 'start' ? _startBusyKeys : _stopBusyKeys;
     final lastTap = lastTapByKey[key];
 
@@ -105,7 +111,11 @@ class TimerYonetici {
     required String timerType,
     required String babyId,
   }) {
-    final key = _actionKey(action: action, timerType: timerType, babyId: babyId);
+    final key = _actionKey(
+      action: action,
+      timerType: timerType,
+      babyId: babyId,
+    );
     if (action == 'start') {
       _startBusyKeys.remove(key);
     } else {
@@ -480,17 +490,23 @@ class TimerYonetici {
     String? taraf,
   }) async {
     if (babyId.isEmpty) return;
-    _logTransition('start requested type=nursing babyId=$babyId side=${taraf ?? '-'}');
+    _logTransition(
+      'start requested type=nursing babyId=$babyId side=${taraf ?? '-'}',
+    );
     if (_shouldRejectSameAction(
       action: 'start',
       timerType: 'nursing',
       babyId: babyId,
     )) {
-      _logTransition('start rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy');
+      _logTransition(
+        'start rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy',
+      );
       return;
     }
     if (_emzirmeStartByBaby.containsKey(babyId)) {
-      _logTransition('start rejected type=nursing babyId=$babyId reason=already_running');
+      _logTransition(
+        'start rejected type=nursing babyId=$babyId reason=already_running',
+      );
       _clearActionBusy(action: 'start', timerType: 'nursing', babyId: babyId);
       return;
     }
@@ -604,7 +620,9 @@ class TimerYonetici {
       timerType: 'nursing',
       babyId: babyId,
     )) {
-      _logTransition('stop rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy');
+      _logTransition(
+        'stop rejected type=nursing babyId=$babyId reason=same_action_cooldown_or_busy',
+      );
       return null;
     }
 
@@ -614,7 +632,9 @@ class TimerYonetici {
       final sagTotal = _sagToplamByBaby[babyId] ?? 0;
 
       if (start == null && solTotal == 0 && sagTotal == 0) {
-        _logTransition('stop rejected type=nursing babyId=$babyId reason=not_running');
+        _logTransition(
+          'stop rejected type=nursing babyId=$babyId reason=not_running',
+        );
         return null;
       }
 
@@ -665,7 +685,9 @@ class TimerYonetici {
         await _clearEmzirme(babyId);
       } catch (e, st) {
         if (kDebugMode) {
-          debugPrint('[TimerYonetici] _clearEmzirme error (non-fatal): $e\n$st');
+          debugPrint(
+            '[TimerYonetici] _clearEmzirme error (non-fatal): $e\n$st',
+          );
         }
         // Ensure in-memory state is cleared even if async cleanup failed,
         // so the timer doesn't appear active on next build.
@@ -730,11 +752,15 @@ class TimerYonetici {
       timerType: 'sleep',
       babyId: babyId,
     )) {
-      _logTransition('start rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy');
+      _logTransition(
+        'start rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy',
+      );
       return;
     }
     if (_uykuStartByBaby.containsKey(babyId)) {
-      _logTransition('start rejected type=sleep babyId=$babyId reason=already_running');
+      _logTransition(
+        'start rejected type=sleep babyId=$babyId reason=already_running',
+      );
       _clearActionBusy(action: 'start', timerType: 'sleep', babyId: babyId);
       return;
     }
@@ -770,13 +796,17 @@ class TimerYonetici {
       timerType: 'sleep',
       babyId: babyId,
     )) {
-      _logTransition('stop rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy');
+      _logTransition(
+        'stop rejected type=sleep babyId=$babyId reason=same_action_cooldown_or_busy',
+      );
       return null;
     }
     try {
       final start = _uykuStartByBaby[babyId];
       if (start == null) {
-        _logTransition('stop rejected type=sleep babyId=$babyId reason=not_running');
+        _logTransition(
+          'stop rejected type=sleep babyId=$babyId reason=not_running',
+        );
         return null;
       }
       _logTransition('stop accepted type=sleep babyId=$babyId');
@@ -951,4 +981,3 @@ class TimerYonetici {
     _notificationService.dispose();
   }
 }
-

@@ -33,18 +33,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     });
   }
 
-  List<Map<String, dynamic>> _getVaccinesByPeriod(String period) {
-    return _vaccines.where((v) => v['donem'] == period).toList();
-  }
-
-  List<Map<String, dynamic>> _getCompletedVaccines() {
-    return _vaccines.where((v) => v['durum'] == 'uygulandi').toList();
-  }
-
-  List<Map<String, dynamic>> _getUpcomingVaccines() {
-    return _vaccines.where((v) => v['durum'] == 'bekleniyor').toList();
-  }
-
   /// Extracts month number from 'donem' field
   /// Returns null if cannot parse (e.g., "4-6 Yaş")
   int? _getMonthFromDonem(String donem) {
@@ -182,7 +170,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     DropdownButtonFormField<String>(
-                      value: source,
+                      initialValue: source,
                       items: [
                         DropdownMenuItem(
                           value: 'new',
@@ -207,7 +195,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                       ),
                     if (source == 'existing')
                       DropdownButtonFormField<String>(
-                        value: selectedMedicationId,
+                        initialValue: selectedMedicationId,
                         items: candidates
                             .map(
                               (m) => DropdownMenuItem<String>(
@@ -221,7 +209,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                       ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(
-                      value: beforeHours,
+                      initialValue: beforeHours,
                       items: List.generate(13, (i) => i)
                           .map(
                             (h) => DropdownMenuItem<int>(
@@ -235,7 +223,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<int>(
-                      value: afterHours,
+                      initialValue: afterHours,
                       items: List.generate(25, (i) => i)
                           .map(
                             (h) => DropdownMenuItem<int>(
@@ -331,7 +319,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: Colors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -370,14 +358,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         ),
       ),
     );
-  }
-
-  void _markAsCompleted(int index) async {
-    setState(() {
-      _vaccines[index]['durum'] = 'uygulandi';
-      _vaccines[index]['tarih'] = DateTime.now();
-    });
-    await VeriYonetici.saveAsiKayitlari(_vaccines);
   }
 
   void _onReorder(int oldIndex, int newIndex) async {
@@ -488,7 +468,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                   height: 4,
                   margin: const EdgeInsets.only(top: 12, bottom: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.3),
+                    color: Colors.grey.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -561,7 +541,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.primary,
                             side: BorderSide(
-                              color: AppColors.primary.withOpacity(0.3),
+                              color: AppColors.primary.withValues(alpha: 0.3),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             shape: RoundedRectangleBorder(
@@ -586,7 +566,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           style: OutlinedButton.styleFrom(
                             foregroundColor: const Color(0xFF866F65),
                             side: BorderSide(
-                              color: const Color(0xFF866F65).withOpacity(0.3),
+                              color: const Color(
+                                0xFF866F65,
+                              ).withValues(alpha: 0.3),
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             shape: RoundedRectangleBorder(
@@ -616,14 +598,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: isDark
-                                ? Colors.white.withOpacity(0.05)
+                                ? Colors.white.withValues(alpha: 0.05)
                                 : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isDuplicate
-                                  ? Colors.grey.withOpacity(0.2)
+                                  ? Colors.grey.withValues(alpha: 0.2)
                                   : isSelected
-                                  ? AppColors.primary.withOpacity(0.3)
+                                  ? AppColors.primary.withValues(alpha: 0.3)
                                   : Colors.transparent,
                               width: isSelected ? 2 : 1,
                             ),
@@ -646,10 +628,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 color: isDuplicate
                                     ? (isDark
                                           ? AppColors.textSecondaryDark
-                                                .withOpacity(0.5)
+                                                .withValues(alpha: 0.5)
                                           : const Color(
                                               0xFF866F65,
-                                            ).withOpacity(0.5))
+                                            ).withValues(alpha: 0.5))
                                     : null,
                                 decoration: isDuplicate
                                     ? TextDecoration.lineThrough
@@ -664,10 +646,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 color: isDuplicate
                                     ? (isDark
                                           ? AppColors.textSecondaryDark
-                                                .withOpacity(0.4)
+                                                .withValues(alpha: 0.4)
                                           : const Color(
                                               0xFF866F65,
-                                            ).withOpacity(0.4))
+                                            ).withValues(alpha: 0.4))
                                     : (isDark
                                           ? AppColors.textSecondaryDark
                                           : const Color(0xFF866F65)),
@@ -676,8 +658,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             secondary: isDuplicate
                                 ? Icon(
                                     Icons.check_circle,
-                                    color: AppColors.accentGreen.withOpacity(
-                                      0.5,
+                                    color: AppColors.accentGreen.withValues(
+                                      alpha: 0.5,
                                     ),
                                     size: 20,
                                   )
@@ -729,7 +711,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 );
                                 _loadVaccines();
 
-                                if (mounted) {
+                                if (context.mounted) {
                                   Navigator.pop(context);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
@@ -745,8 +727,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: AppColors.primary
-                              .withOpacity(0.3),
+                          disabledBackgroundColor: AppColors.primary.withValues(
+                            alpha: 0.3,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
@@ -899,9 +882,11 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               decoration: BoxDecoration(
                 color: isDark
                     ? AppColors.bgDarkCard
-                    : const Color(0xFFFFDAB9).withOpacity(0.5),
+                    : const Color(0xFFFFDAB9).withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.2),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -929,13 +914,15 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isDark
-            ? AppColors.bgDarkCard.withOpacity(0.9)
-            : Colors.white.withOpacity(0.9),
+            ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.05)),
+        border: Border.all(
+          color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+        ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFB4A2).withOpacity(0.08),
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -1006,70 +993,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
-  Widget _buildVaccinesByPeriod(String period, String title, bool isDark) {
-    final vaccines = _getVaccinesByPeriod(period);
-    if (vaccines.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 16),
-          child: Text(
-            title,
-            style: AppTypography.label(context).copyWith(
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : const Color(0xFF866F65),
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-        ...vaccines.asMap().entries.map((entry) {
-          final vaccine = entry.value;
-          final index = _vaccines.indexOf(vaccine);
-          final isCompleted = vaccine['durum'] == 'uygulandi';
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildVaccineCard(vaccine, index, isDark, isCompleted),
-          );
-        }),
-      ],
-    );
-  }
-
-  Widget _buildUpcomingVaccines(bool isDark) {
-    final l10n = AppLocalizations.of(context)!;
-    final upcomingVaccines = _getUpcomingVaccines();
-    if (upcomingVaccines.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 16),
-          child: Text(
-            l10n.upcomingVaccines,
-            style: AppTypography.label(context).copyWith(
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : const Color(0xFF866F65),
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-        ...upcomingVaccines.asMap().entries.map((entry) {
-          final index = _vaccines.indexOf(entry.value);
-          final vaccine = entry.value;
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _buildUpcomingVaccineCard(vaccine, index, isDark),
-          );
-        }),
-      ],
-    );
-  }
-
   Widget _buildReorderableVaccineCard(
     Map<String, dynamic> vaccine,
     int index,
@@ -1088,13 +1011,15 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.bgDarkCard.withOpacity(0.9)
-              : Colors.white.withOpacity(0.9),
+              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.05)),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+          ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFB4A2).withOpacity(0.08),
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1121,7 +1046,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               decoration: BoxDecoration(
                 color: isCompleted
                     ? const Color(0xFFFFDAB9)
-                    : AppColors.accentPeach.withOpacity(0.5),
+                    : AppColors.accentPeach.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(
@@ -1163,7 +1088,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.2),
+                  color: AppColors.accentGreen.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
@@ -1176,8 +1101,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             Icon(
               Icons.edit_outlined,
               color: isDark
-                  ? AppColors.textSecondaryDark.withOpacity(0.5)
-                  : const Color(0xFF866F65).withOpacity(0.5),
+                  ? AppColors.textSecondaryDark.withValues(alpha: 0.5)
+                  : const Color(0xFF866F65).withValues(alpha: 0.5),
               size: 18,
             ),
           ],
@@ -1186,6 +1111,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildVaccineCard(
     Map<String, dynamic> vaccine,
     int index,
@@ -1204,13 +1130,15 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.bgDarkCard.withOpacity(0.9)
-              : Colors.white.withOpacity(0.9),
+              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.05)),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+          ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFB4A2).withOpacity(0.08),
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1262,7 +1190,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withOpacity(0.2),
+                  color: AppColors.accentGreen.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
@@ -1275,8 +1203,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             Icon(
               Icons.edit_outlined,
               color: isDark
-                  ? AppColors.textSecondaryDark.withOpacity(0.5)
-                  : const Color(0xFF866F65).withOpacity(0.5),
+                  ? AppColors.textSecondaryDark.withValues(alpha: 0.5)
+                  : const Color(0xFF866F65).withValues(alpha: 0.5),
               size: 18,
             ),
           ],
@@ -1285,6 +1213,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildUpcomingVaccineCard(
     Map<String, dynamic> vaccine,
     int index,
@@ -1302,13 +1231,13 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.bgDarkCard.withOpacity(0.9)
-              : Colors.white.withOpacity(0.9),
+              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primary.withOpacity(0.05)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.05)),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
@@ -1320,7 +1249,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.accentPeach.withOpacity(0.5),
+                color: AppColors.accentPeach.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(Icons.vaccines, color: AppColors.primary, size: 24),
@@ -1357,8 +1286,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             Icon(
               Icons.edit_outlined,
               color: isDark
-                  ? AppColors.textSecondaryDark.withOpacity(0.5)
-                  : const Color(0xFF866F65).withOpacity(0.5),
+                  ? AppColors.textSecondaryDark.withValues(alpha: 0.5)
+                  : const Color(0xFF866F65).withValues(alpha: 0.5),
               size: 18,
             ),
           ],
@@ -1435,17 +1364,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
         color: isDark
-            ? AppColors.bgDarkCard.withOpacity(0.9)
-            : Colors.white.withOpacity(0.9),
+            ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+            : Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withOpacity(0.05)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
           Icon(
             Icons.vaccines_outlined,
             size: 64,
-            color: AppColors.primary.withOpacity(0.5),
+            color: AppColors.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -1485,7 +1414,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

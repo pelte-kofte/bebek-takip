@@ -12,6 +12,78 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/event_datetime_utils.dart';
 
+class _AddScreenSnapshot {
+  const _AddScreenSnapshot({
+    required this.selectedActivity,
+    required this.selectedSide,
+    required this.minutes,
+    required this.seconds,
+    required this.bottleAmount,
+    required this.milkType,
+    required this.feedingCategory,
+    required this.solidFood,
+    required this.sleepStartDateTime,
+    required this.sleepEndDateTime,
+    required this.diaperType,
+    required this.diaperDateTime,
+    required this.diaperNotes,
+    required this.feedingDateTime,
+  });
+
+  final String selectedActivity;
+  final String selectedSide;
+  final int minutes;
+  final int seconds;
+  final int bottleAmount;
+  final String milkType;
+  final String feedingCategory;
+  final String solidFood;
+  final DateTime sleepStartDateTime;
+  final DateTime? sleepEndDateTime;
+  final String diaperType;
+  final DateTime diaperDateTime;
+  final String diaperNotes;
+  final DateTime feedingDateTime;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is _AddScreenSnapshot &&
+        other.selectedActivity == selectedActivity &&
+        other.selectedSide == selectedSide &&
+        other.minutes == minutes &&
+        other.seconds == seconds &&
+        other.bottleAmount == bottleAmount &&
+        other.milkType == milkType &&
+        other.feedingCategory == feedingCategory &&
+        other.solidFood == solidFood &&
+        other.sleepStartDateTime == sleepStartDateTime &&
+        other.sleepEndDateTime == sleepEndDateTime &&
+        other.diaperType == diaperType &&
+        other.diaperDateTime == diaperDateTime &&
+        other.diaperNotes == diaperNotes &&
+        other.feedingDateTime == feedingDateTime;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    selectedActivity,
+    selectedSide,
+    minutes,
+    seconds,
+    bottleAmount,
+    milkType,
+    feedingCategory,
+    solidFood,
+    sleepStartDateTime,
+    sleepEndDateTime,
+    diaperType,
+    diaperDateTime,
+    diaperNotes,
+    feedingDateTime,
+  );
+}
+
 class AddScreen extends StatefulWidget {
   final VoidCallback? onSaved;
   final String? initialActivity;
@@ -47,6 +119,7 @@ class _AddScreenState extends State<AddScreen> {
   // Validation error message
   String? _errorMessage;
   bool _isSaving = false;
+  late _AddScreenSnapshot _initialSnapshot;
 
   @override
   void initState() {
@@ -56,6 +129,7 @@ class _AddScreenState extends State<AddScreen> {
     _sleepStartDateTime = now;
     _diaperDateTime = now;
     _feedingDateTime = now;
+    _initialSnapshot = _captureSnapshot();
   }
 
   @override
@@ -106,6 +180,59 @@ class _AddScreenState extends State<AddScreen> {
     return scheduled;
   }
 
+  _AddScreenSnapshot _captureSnapshot() {
+    return _AddScreenSnapshot(
+      selectedActivity: selectedActivity,
+      selectedSide: selectedSide,
+      minutes: minutes,
+      seconds: seconds,
+      bottleAmount: bottleAmount,
+      milkType: milkType,
+      feedingCategory: feedingCategory,
+      solidFood: _solidFoodController.text,
+      sleepStartDateTime: _sleepStartDateTime,
+      sleepEndDateTime: _sleepEndDateTime,
+      diaperType: _diaperType,
+      diaperDateTime: _diaperDateTime,
+      diaperNotes: _diaperNotesController.text,
+      feedingDateTime: _feedingDateTime,
+    );
+  }
+
+  bool get _isDirty => _captureSnapshot() != _initialSnapshot;
+
+  Future<bool> _confirmDiscardChanges() async {
+    if (!_isDirty) return true;
+    final shouldDiscard = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Discard changes?'),
+        content: const Text(
+          'You have unsaved changes. Discard them and close?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Continue editing'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    return shouldDiscard ?? false;
+  }
+
+  Future<void> _handleCloseRequested() async {
+    if (_isSaving) return;
+    final shouldClose = await _confirmDiscardChanges();
+    if (!mounted || !shouldClose) return;
+    Navigator.pop(context, false);
+  }
+
   /// Shows a Cupertino-style time picker in a bottom sheet
   Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initialTime) async {
     TimeOfDay selectedTime = initialTime;
@@ -129,7 +256,7 @@ class _AddScreenState extends State<AddScreen> {
               height: 4,
               margin: const EdgeInsets.only(top: 12, bottom: 8),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.3),
+                color: Colors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -327,649 +454,1787 @@ class _AddScreenState extends State<AddScreen> {
     final surfaceColor = isDark ? AppColors.bgDarkSurface : Colors.white;
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
-      constraints: BoxConstraints(maxHeight: screenHeight * 0.95),
-      decoration: BoxDecoration(
-        color: sheetBg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Stack(
-        children: [
-          // Decorative background blobs - top-right corner
-          Positioned(
-            top: -100,
-            right: -100,
-            child: IgnorePointer(
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF998A).withValues(alpha: 0.03),
-                  shape: BoxShape.circle,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        await _handleCloseRequested();
+      },
+      child: Container(
+        constraints: BoxConstraints(maxHeight: screenHeight * 0.95),
+        decoration: BoxDecoration(
+          color: sheetBg,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Stack(
+          children: [
+            // Decorative background blobs - top-right corner
+            Positioned(
+              top: -100,
+              right: -100,
+              child: IgnorePointer(
+                child: Container(
+                  width: 300,
+                  height: 300,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFF998A).withValues(alpha: 0.03),
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Decorative background blobs - bottom-left corner
-          Positioned(
-            bottom: -150,
-            left: -150,
-            child: IgnorePointer(
-              child: Container(
-                width: 400,
-                height: 400,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.04),
-                  shape: BoxShape.circle,
+            // Decorative background blobs - bottom-left corner
+            Positioned(
+              bottom: -150,
+              left: -150,
+              child: IgnorePointer(
+                child: Container(
+                  width: 400,
+                  height: 400,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.04),
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             ),
-          ),
-          // Main content
-          SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 24,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: surfaceColor,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.close,
-                            color: isDark
-                                ? AppColors.textPrimaryDark
-                                : const Color(0xFF4A3F3F),
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Compact activity type row
-                Builder(
-                  builder: (context) {
-                    final l10n = AppLocalizations.of(context)!;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          _buildCompactActivityChip(
-                            'breastfeeding',
-                            const Icon(
-                              Icons.child_care_outlined,
-                              size: 24,
-                              color: Color(0xFFFF998A),
-                            ),
-                            l10n.nursing,
-                          ),
-                          const SizedBox(width: 6),
-                          _buildCompactActivityChip(
-                            'bottle',
-                            const Icon(
-                              Icons.local_drink_outlined,
-                              size: 24,
-                              color: Color(0xFFFF998A),
-                            ),
-                            l10n.bottle,
-                          ),
-                          const SizedBox(width: 6),
-                          _buildCompactActivityChip(
-                            'sleep',
-                            const Icon(
-                              Icons.bedtime_outlined,
-                              size: 24,
-                              color: Color(0xFFFF998A),
-                            ),
-                            l10n.sleep,
-                          ),
-                          const SizedBox(width: 6),
-                          _buildCompactActivityChip(
-                            'diaper',
-                            const Icon(
-                              Icons.baby_changing_station_outlined,
-                              size: 24,
-                              color: Color(0xFFFF998A),
-                            ),
-                            l10n.diaper,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 12),
-                // Detail panel - warmer card design
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: 20,
-                        right: 20,
-                        top: 0,
-                        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-                      ),
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? AppColors.bgDarkSurface
-                              : Colors.white.withValues(alpha: 0.95),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(
-                            color: isDark
-                                ? Colors.white.withValues(alpha: 0.08)
-                                : const Color(
-                                    0xFFE5E0F7,
-                                  ).withValues(alpha: 0.5),
-                          ),
-                          boxShadow: isDark
-                              ? []
-                              : [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFE5E0F7,
-                                    ).withValues(alpha: 0.3),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (selectedActivity == 'breastfeeding' ||
-                                selectedActivity == 'bottle') ...[
-                              Text(
-                                l10n.selectTime.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
+            // Main content
+            SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: _isSaving ? null : _handleCloseRequested,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: surfaceColor,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
                                 ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              color: isDark
+                                  ? AppColors.textPrimaryDark
+                                  : const Color(0xFF4A3F3F),
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Compact activity type row
+                  Builder(
+                    builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            _buildCompactActivityChip(
+                              'breastfeeding',
+                              const Icon(
+                                Icons.child_care_outlined,
+                                size: 24,
+                                color: Color(0xFFFF998A),
                               ),
-                              const SizedBox(height: 12),
-                              GestureDetector(
-                                onTap: () async {
-                                  final picked = await _pickEventDateTime(
-                                    _feedingDateTime,
-                                  );
-                                  if (picked != null) {
-                                    setState(() => _feedingDateTime = picked);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 14,
+                              l10n.nursing,
+                            ),
+                            const SizedBox(width: 6),
+                            _buildCompactActivityChip(
+                              'bottle',
+                              const Icon(
+                                Icons.local_drink_outlined,
+                                size: 24,
+                                color: Color(0xFFFF998A),
+                              ),
+                              l10n.bottle,
+                            ),
+                            const SizedBox(width: 6),
+                            _buildCompactActivityChip(
+                              'sleep',
+                              const Icon(
+                                Icons.bedtime_outlined,
+                                size: 24,
+                                color: Color(0xFFFF998A),
+                              ),
+                              l10n.sleep,
+                            ),
+                            const SizedBox(width: 6),
+                            _buildCompactActivityChip(
+                              'diaper',
+                              const Icon(
+                                Icons.baby_changing_station_outlined,
+                                size: 24,
+                                color: Color(0xFFFF998A),
+                              ),
+                              l10n.diaper,
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  // Detail panel - warmer card design
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: 20,
+                          right: 20,
+                          top: 0,
+                          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+                        ),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? AppColors.bgDarkSurface
+                                : Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : const Color(
+                                      0xFFE5E0F7,
+                                    ).withValues(alpha: 0.5),
+                            ),
+                            boxShadow: isDark
+                                ? []
+                                : [
+                                    BoxShadow(
+                                      color: const Color(
+                                        0xFFE5E0F7,
+                                      ).withValues(alpha: 0.3),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (selectedActivity == 'breastfeeding' ||
+                                  selectedActivity == 'bottle') ...[
+                                Text(
+                                  l10n.selectTime.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : const Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
                                   ),
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await _pickEventDateTime(
+                                      _feedingDateTime,
+                                    );
+                                    if (picked != null) {
+                                      setState(() => _feedingDateTime = picked);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: isDark
+                                          ? null
+                                          : const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                      border: isDark
+                                          ? Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.15,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.08,
+                                                  )
+                                                : const Color(0xFFF4EDF9),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.access_time,
+                                              size: 24,
+                                              color: Color(0xFFFF998A),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Text(
+                                          _formatTime(_feedingDateTime),
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? AppColors.textPrimaryDark
+                                                : const Color(0xFF4A3F3F),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Icon(
+                                          Icons.edit_outlined,
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                              : const Color(0xFF7A749E),
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                              ],
+                              if (selectedActivity == 'breastfeeding') ...[
+                                // Compact side selector
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context)!;
+                                    return Row(
+                                      children: [
+                                        Text(
+                                          l10n.side,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.6,
+                                                  )
+                                                : const Color(0xFF7A749E),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Container(
+                                          padding: const EdgeInsets.all(3),
+                                          decoration: BoxDecoration(
+                                            color: surfaceColor,
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () => setState(
+                                                  () => selectedSide = 'left',
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 8,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        selectedSide == 'left'
+                                                        ? const Color(
+                                                            0xFFFF998A,
+                                                          )
+                                                        : Colors.transparent,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    l10n.left,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          selectedSide == 'left'
+                                                          ? Colors.white
+                                                          : isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.7,
+                                                                )
+                                                          : const Color(
+                                                              0xFF7A749E,
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () => setState(
+                                                  () => selectedSide = 'right',
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 8,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        selectedSide == 'right'
+                                                        ? const Color(
+                                                            0xFFFF998A,
+                                                          )
+                                                        : Colors.transparent,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    l10n.right,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color:
+                                                          selectedSide ==
+                                                              'right'
+                                                          ? Colors.white
+                                                          : isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.7,
+                                                                )
+                                                          : const Color(
+                                                              0xFF7A749E,
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 16),
+                                // Duration picker (Cupertino style)
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context)!;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          l10n.duration.toUpperCase(),
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.6,
+                                                  )
+                                                : const Color(0xFF4A3F3F),
+                                            letterSpacing: 2.0,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            final picked =
+                                                await _showCupertinoDurationPicker(
+                                                  Duration(minutes: minutes),
+                                                );
+                                            if (picked != null) {
+                                              setState(
+                                                () =>
+                                                    minutes = picked.inMinutes,
+                                              );
+                                            }
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 20,
+                                              vertical: 14,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: surfaceColor,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              boxShadow: isDark
+                                                  ? null
+                                                  : const [
+                                                      BoxShadow(
+                                                        color: Colors.black12,
+                                                        blurRadius: 4,
+                                                        offset: Offset(0, 2),
+                                                      ),
+                                                    ],
+                                              border: isDark
+                                                  ? Border.all(
+                                                      color: Colors.white
+                                                          .withValues(
+                                                            alpha: 0.15,
+                                                          ),
+                                                    )
+                                                  : null,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: 40,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    color: isDark
+                                                        ? Colors.white
+                                                              .withValues(
+                                                                alpha: 0.08,
+                                                              )
+                                                        : const Color(
+                                                            0xFFF4EDF9,
+                                                          ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  child: const Center(
+                                                    child: Icon(
+                                                      Icons.timer_outlined,
+                                                      size: 24,
+                                                      color: Color(0xFFFF998A),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                Expanded(
+                                                  child: Text(
+                                                    minutes > 0
+                                                        ? '$minutes ${l10n.minAbbrev}'
+                                                        : l10n.tapToSetTime,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: minutes > 0
+                                                          ? (isDark
+                                                                ? AppColors
+                                                                      .textPrimaryDark
+                                                                : const Color(
+                                                                    0xFF4A3F3F,
+                                                                  ))
+                                                          : (isDark
+                                                                ? Colors.white
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.5,
+                                                                      )
+                                                                : const Color(
+                                                                    0xFF7A749E,
+                                                                  )),
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Icon(
+                                                  Icons.access_time,
+                                                  color: isDark
+                                                      ? Colors.white.withValues(
+                                                          alpha: 0.5,
+                                                        )
+                                                      : const Color(0xFF7A749E),
+                                                  size: 20,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ],
+                              if (selectedActivity == 'bottle') ...[
+                                // Category selector (Milk/Solid)
+                                Text(
+                                  l10n.category,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : const Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
-                                    color: surfaceColor,
+                                    color: surfaceColor.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: isDark
-                                        ? null
-                                        : const [
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () => setState(
+                                            () => feedingCategory = 'Milk',
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: feedingCategory == 'Milk'
+                                                  ? surfaceColor
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              boxShadow:
+                                                  feedingCategory == 'Milk'
+                                                  ? const [
+                                                      BoxShadow(
+                                                        color: Colors.black12,
+                                                        blurRadius: 4,
+                                                        offset: Offset(0, 2),
+                                                      ),
+                                                    ]
+                                                  : [],
+                                            ),
+                                            child: Text(
+                                              l10n.milk,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: feedingCategory == 'Milk'
+                                                    ? const Color(0xFFFF998A)
+                                                    : isDark
+                                                    ? Colors.white.withValues(
+                                                        alpha: 0.7,
+                                                      )
+                                                    : const Color(
+                                                        0xFF4A3F3F,
+                                                      ).withValues(alpha: 0.6),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () => setState(
+                                            () => feedingCategory = 'Solid',
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 12,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: feedingCategory == 'Solid'
+                                                  ? surfaceColor
+                                                  : Colors.transparent,
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              boxShadow:
+                                                  feedingCategory == 'Solid'
+                                                  ? const [
+                                                      BoxShadow(
+                                                        color: Colors.black12,
+                                                        blurRadius: 4,
+                                                        offset: Offset(0, 2),
+                                                      ),
+                                                    ]
+                                                  : [],
+                                            ),
+                                            child: Text(
+                                              l10n.solid,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    feedingCategory == 'Solid'
+                                                    ? const Color(0xFFFF998A)
+                                                    : isDark
+                                                    ? Colors.white.withValues(
+                                                        alpha: 0.7,
+                                                      )
+                                                    : const Color(
+                                                        0xFF4A3F3F,
+                                                      ).withValues(alpha: 0.6),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Show different content based on category
+                                if (feedingCategory == 'Solid') ...[
+                                  // Solid food description
+                                  Text(
+                                    l10n.whatWasGiven,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.6)
+                                          : const Color(0xFF4A3F3F),
+                                      letterSpacing: 2.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Material(
+                                    color: isDark
+                                        ? AppColors.bgDarkCard
+                                        : const Color(0xFFFDFCFB),
+                                    borderRadius: BorderRadius.circular(24),
+                                    child: TextField(
+                                      controller: _solidFoodController,
+                                      maxLines: 2,
+                                      decoration: InputDecoration(
+                                        hintText: l10n.solidFoodHint,
+                                        hintStyle: TextStyle(
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.3,
+                                                )
+                                              : const Color(
+                                                  0xFF4A3F3F,
+                                                ).withValues(alpha: 0.3),
+                                          fontSize: 14,
+                                        ),
+                                        border: InputBorder.none,
+                                        contentPadding: const EdgeInsets.all(
+                                          20,
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: isDark
+                                            ? Colors.white.withValues(
+                                                alpha: 0.8,
+                                              )
+                                            : const Color(
+                                                0xFF4A3F3F,
+                                              ).withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ),
+                                ] else ...[
+                                  // Amount section (for Milk)
+                                  Center(
+                                    child: Text(
+                                      l10n.amount,
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark
+                                            ? Colors.white.withValues(
+                                                alpha: 0.6,
+                                              )
+                                            : const Color(0xFF4A3F3F),
+                                        letterSpacing: 2.0,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  // Amount display with icon and +/- buttons
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      // Minus button
+                                      GestureDetector(
+                                        onTap: () => setState(() {
+                                          if (bottleAmount >= 10) {
+                                            bottleAmount -= 10;
+                                          }
+                                        }),
+                                        child: Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: surfaceColor,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.remove,
+                                              color: isDark
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.7,
+                                                    )
+                                                  : const Color(0xFF7A749E),
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16),
+                                      // Bottle icon
+                                      Container(
+                                        width: 48,
+                                        height: 48,
+                                        decoration: BoxDecoration(
+                                          color: surfaceColor,
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          boxShadow: const [
                                             BoxShadow(
                                               color: Colors.black12,
                                               blurRadius: 4,
                                               offset: Offset(0, 2),
                                             ),
                                           ],
-                                    border: isDark
-                                        ? Border.all(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.15,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.08,
-                                                )
-                                              : const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
                                         ),
                                         child: const Center(
                                           child: Icon(
-                                            Icons.access_time,
-                                            size: 24,
+                                            Icons.local_drink_outlined,
+                                            size: 28,
                                             color: Color(0xFFFF998A),
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 16),
-                                      Text(
-                                        _formatTime(_feedingDateTime),
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? AppColors.textPrimaryDark
-                                              : const Color(0xFF4A3F3F),
-                                        ),
+                                      const SizedBox(width: 12),
+                                      // Amount value
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.baseline,
+                                        textBaseline: TextBaseline.alphabetic,
+                                        children: [
+                                          Text(
+                                            bottleAmount.toString(),
+                                            style: TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark
+                                                  ? AppColors.textPrimaryDark
+                                                  : const Color(0xFF4A3F3F),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            l10n.mlAbbrev,
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: isDark
+                                                  ? Colors.white.withValues(
+                                                      alpha: 0.4,
+                                                    )
+                                                  : const Color(
+                                                      0xFF4A3F3F,
+                                                    ).withValues(alpha: 0.4),
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const Spacer(),
-                                      Icon(
-                                        Icons.edit_outlined,
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.5,
-                                              )
-                                            : const Color(0xFF7A749E),
-                                        size: 20,
+                                      const SizedBox(width: 16),
+                                      // Plus button
+                                      GestureDetector(
+                                        onTap: () => setState(() {
+                                          bottleAmount += 10;
+                                        }),
+                                        child: Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: surfaceColor,
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                            boxShadow: const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.add,
+                                              color: Color(0xFFFF998A),
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                            if (selectedActivity == 'breastfeeding') ...[
-                              // Compact side selector
-                              Builder(
-                                builder: (context) {
-                                  final l10n = AppLocalizations.of(context)!;
-                                  return Row(
-                                    children: [
-                                      Text(
-                                        l10n.side,
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.6,
-                                                )
-                                              : const Color(0xFF7A749E),
-                                        ),
+                                  const SizedBox(height: 24),
+                                  // Milk type selector
+                                  Text(
+                                    l10n.milkType,
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.6)
+                                          : const Color(0xFF4A3F3F),
+                                      letterSpacing: 2.0,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor.withValues(
+                                        alpha: 0.5,
                                       ),
-                                      const Spacer(),
-                                      Container(
-                                        padding: const EdgeInsets.all(3),
-                                        decoration: BoxDecoration(
-                                          color: surfaceColor,
-                                          borderRadius: BorderRadius.circular(
-                                            10,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () => setState(
+                                              () => milkType = 'breast',
+                                            ),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: milkType == 'breast'
+                                                    ? surfaceColor
+                                                    : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                boxShadow: milkType == 'breast'
+                                                    ? const [
+                                                        BoxShadow(
+                                                          color: Colors.black12,
+                                                          blurRadius: 4,
+                                                          offset: Offset(0, 2),
+                                                        ),
+                                                      ]
+                                                    : [],
+                                              ),
+                                              child: Text(
+                                                l10n.breastMilk,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: milkType == 'breast'
+                                                      ? const Color(0xFFFF998A)
+                                                      : isDark
+                                                      ? Colors.white.withValues(
+                                                          alpha: 0.7,
+                                                        )
+                                                      : const Color(
+                                                          0xFF4A3F3F,
+                                                        ).withValues(
+                                                          alpha: 0.6,
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () => setState(
-                                                () => selectedSide = 'left',
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: GestureDetector(
+                                            onTap: () => setState(
+                                              () => milkType = 'formula',
+                                            ),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: milkType == 'formula'
+                                                    ? surfaceColor
+                                                    : Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                                boxShadow: milkType == 'formula'
+                                                    ? const [
+                                                        BoxShadow(
+                                                          color: Colors.black12,
+                                                          blurRadius: 4,
+                                                          offset: Offset(0, 2),
+                                                        ),
+                                                      ]
+                                                    : [],
                                               ),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 8,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: selectedSide == 'left'
+                                              child: Text(
+                                                l10n.formula,
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: milkType == 'formula'
                                                       ? const Color(0xFFFF998A)
-                                                      : Colors.transparent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
+                                                      : isDark
+                                                      ? Colors.white.withValues(
+                                                          alpha: 0.7,
+                                                        )
+                                                      : const Color(
+                                                          0xFF4A3F3F,
+                                                        ).withValues(
+                                                          alpha: 0.6,
+                                                        ),
                                                 ),
-                                                child: Text(
-                                                  l10n.left,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                    color:
-                                                        selectedSide == 'left'
-                                                        ? Colors.white
-                                                        : isDark
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ], // end of else (Milk category)
+                              ],
+                              if (selectedActivity == 'sleep') ...[
+                                // Sleep started at
+                                Text(
+                                  l10n.sleepStartedAt,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : const Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await _pickEventDateTime(
+                                      _sleepStartDateTime,
+                                    );
+                                    if (picked != null) {
+                                      setState(
+                                        () => _sleepStartDateTime = picked,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: isDark
+                                          ? null
+                                          : const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                      border: isDark
+                                          ? Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.15,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.08,
+                                                  )
+                                                : const Color(0xFFF4EDF9),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.bedtime_outlined,
+                                              size: 24,
+                                              color: Color(0xFFFF998A),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Text(
+                                          _formatTime(_sleepStartDateTime),
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? AppColors.textPrimaryDark
+                                                : const Color(0xFF4A3F3F),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Icon(
+                                          Icons.access_time,
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                              : const Color(0xFF7A749E),
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Woke up at
+                                Text(
+                                  l10n.wokeUpAt,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : const Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await _pickEventDateTime(
+                                      _sleepEndDateTime ?? DateTime.now(),
+                                    );
+                                    if (picked != null) {
+                                      setState(
+                                        () => _sleepEndDateTime = picked,
+                                      );
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: isDark
+                                          ? null
+                                          : const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
+                                              ),
+                                            ],
+                                      border: isDark
+                                          ? Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.15,
+                                              ),
+                                            )
+                                          : null,
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.08,
+                                                  )
+                                                : const Color(0xFFF4EDF9),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.wb_sunny_outlined,
+                                              color: Color(0xFFFF998A),
+                                              size: 24,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Text(
+                                            _sleepEndDateTime != null
+                                                ? _formatTime(
+                                                    _sleepEndDateTime!,
+                                                  )
+                                                : l10n.tapToSetTime,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: _sleepEndDateTime != null
+                                                  ? (isDark
+                                                        ? AppColors
+                                                              .textPrimaryDark
+                                                        : const Color(
+                                                            0xFF4A3F3F,
+                                                          ))
+                                                  : (isDark
                                                         ? Colors.white
                                                               .withValues(
-                                                                alpha: 0.7,
+                                                                alpha: 0.5,
                                                               )
                                                         : const Color(
                                                             0xFF7A749E,
+                                                          )),
+                                            ),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Icon(
+                                          Icons.access_time,
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.5,
+                                                )
+                                              : const Color(0xFF7A749E),
+                                          size: 20,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                // Duration display (calculated)
+                                if (_sleepEndDateTime != null) ...[
+                                  Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFFFF998A,
+                                      ).withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(
+                                          0xFFFF998A,
+                                        ).withValues(alpha: 0.3),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.timer_outlined,
+                                          color: Color(0xFFFF998A),
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          l10n.totalSleep(
+                                            _calculateSleepDuration(),
+                                          ),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? AppColors.textPrimaryDark
+                                                : const Color(0xFF4A3F3F),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ],
+                              if (selectedActivity == 'diaper') ...[
+                                // Diaper type selector
+                                Builder(
+                                  builder: (context) {
+                                    final l10n = AppLocalizations.of(context)!;
+                                    return Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          l10n.healthType,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? Colors.white.withValues(
+                                                    alpha: 0.6,
+                                                  )
+                                                : const Color(0xFF4A3F3F),
+                                            letterSpacing: 2.0,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          children: [
+                                            // Wet button
+                                            Expanded(
+                                              child: GestureDetector(
+                                                onTap: () => setState(
+                                                  () => _diaperType = 'wet',
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 16,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: _diaperType == 'wet'
+                                                        ? const Color(
+                                                            0xFFFF998A,
+                                                          )
+                                                        : surfaceColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                    border: Border.all(
+                                                      color:
+                                                          _diaperType == 'wet'
+                                                          ? const Color(
+                                                              0xFFFF998A,
+                                                            )
+                                                          : isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.15,
+                                                                )
+                                                          : Colors.transparent,
+                                                      width: 2,
+                                                    ),
+                                                    boxShadow:
+                                                        _diaperType == 'wet'
+                                                        ? [
+                                                            BoxShadow(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFFF998A,
+                                                                  ).withValues(
+                                                                    alpha: 0.2,
+                                                                  ),
+                                                              blurRadius: 12,
+                                                              offset:
+                                                                  const Offset(
+                                                                    0,
+                                                                    4,
+                                                                  ),
+                                                            ),
+                                                          ]
+                                                        : [],
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        width: 32,
+                                                        height: 32,
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              _diaperType ==
+                                                                  'wet'
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.3,
+                                                                    )
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.08,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFFF4EDF9,
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                8,
+                                                              ),
+                                                        ),
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons
+                                                                .water_drop_outlined,
+                                                            size: 24,
+                                                            color:
+                                                                _diaperType ==
+                                                                    'wet'
+                                                                ? Colors.white
+                                                                : isDark
+                                                                ? Colors.white
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.7,
+                                                                      )
+                                                                : const Color(
+                                                                    0xFF7A749E,
+                                                                  ),
                                                           ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        l10n.wet,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              _diaperType ==
+                                                                  'wet'
+                                                              ? Colors.white
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.7,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFF4A3F3F,
+                                                                ).withValues(
+                                                                  alpha: 0.6,
+                                                                ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            GestureDetector(
-                                              onTap: () => setState(
-                                                () => selectedSide = 'right',
-                                              ),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 20,
-                                                      vertical: 8,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: selectedSide == 'right'
-                                                      ? const Color(0xFFFF998A)
-                                                      : Colors.transparent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(8),
+                                            const SizedBox(width: 8),
+                                            // Dirty button
+                                            Expanded(
+                                              child: GestureDetector(
+                                                onTap: () => setState(
+                                                  () => _diaperType = 'dirty',
                                                 ),
-                                                child: Text(
-                                                  l10n.right,
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 16,
+                                                      ),
+                                                  decoration: BoxDecoration(
                                                     color:
-                                                        selectedSide == 'right'
-                                                        ? Colors.white
-                                                        : isDark
-                                                        ? Colors.white
-                                                              .withValues(
-                                                                alpha: 0.7,
-                                                              )
-                                                        : const Color(
-                                                            0xFF7A749E,
+                                                        _diaperType == 'dirty'
+                                                        ? const Color(
+                                                            0xFFFF998A,
+                                                          )
+                                                        : surfaceColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                    border: Border.all(
+                                                      color:
+                                                          _diaperType == 'dirty'
+                                                          ? const Color(
+                                                              0xFFFF998A,
+                                                            )
+                                                          : isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.15,
+                                                                )
+                                                          : Colors.transparent,
+                                                      width: 2,
+                                                    ),
+                                                    boxShadow:
+                                                        _diaperType == 'dirty'
+                                                        ? [
+                                                            BoxShadow(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFFF998A,
+                                                                  ).withValues(
+                                                                    alpha: 0.2,
+                                                                  ),
+                                                              blurRadius: 12,
+                                                              offset:
+                                                                  const Offset(
+                                                                    0,
+                                                                    4,
+                                                                  ),
+                                                            ),
+                                                          ]
+                                                        : [],
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        width: 32,
+                                                        height: 32,
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              _diaperType ==
+                                                                  'dirty'
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.3,
+                                                                    )
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.08,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFFF4EDF9,
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                8,
+                                                              ),
+                                                        ),
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons
+                                                                .cloud_outlined,
+                                                            size: 24,
+                                                            color:
+                                                                _diaperType ==
+                                                                    'dirty'
+                                                                ? Colors.white
+                                                                : isDark
+                                                                ? Colors.white
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.7,
+                                                                      )
+                                                                : const Color(
+                                                                    0xFF7A749E,
+                                                                  ),
                                                           ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        l10n.dirty,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              _diaperType ==
+                                                                  'dirty'
+                                                              ? Colors.white
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.7,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFF4A3F3F,
+                                                                ).withValues(
+                                                                  alpha: 0.6,
+                                                                ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            // Both button
+                                            Expanded(
+                                              child: GestureDetector(
+                                                onTap: () => setState(
+                                                  () => _diaperType = 'both',
+                                                ),
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        vertical: 16,
+                                                      ),
+                                                  decoration: BoxDecoration(
+                                                    color: _diaperType == 'both'
+                                                        ? const Color(
+                                                            0xFFFF998A,
+                                                          )
+                                                        : surfaceColor,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                    border: Border.all(
+                                                      color:
+                                                          _diaperType == 'both'
+                                                          ? const Color(
+                                                              0xFFFF998A,
+                                                            )
+                                                          : isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.15,
+                                                                )
+                                                          : Colors.transparent,
+                                                      width: 2,
+                                                    ),
+                                                    boxShadow:
+                                                        _diaperType == 'both'
+                                                        ? [
+                                                            BoxShadow(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFFF998A,
+                                                                  ).withValues(
+                                                                    alpha: 0.2,
+                                                                  ),
+                                                              blurRadius: 12,
+                                                              offset:
+                                                                  const Offset(
+                                                                    0,
+                                                                    4,
+                                                                  ),
+                                                            ),
+                                                          ]
+                                                        : [],
+                                                  ),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        width: 32,
+                                                        height: 32,
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              _diaperType ==
+                                                                  'both'
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.3,
+                                                                    )
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.08,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFFF4EDF9,
+                                                                ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                8,
+                                                              ),
+                                                        ),
+                                                        child: Center(
+                                                          child: Icon(
+                                                            Icons
+                                                                .baby_changing_station_outlined,
+                                                            size: 24,
+                                                            color:
+                                                                _diaperType ==
+                                                                    'both'
+                                                                ? Colors.white
+                                                                : isDark
+                                                                ? Colors.white
+                                                                      .withValues(
+                                                                        alpha:
+                                                                            0.7,
+                                                                      )
+                                                                : const Color(
+                                                                    0xFF7A749E,
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        l10n.both,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color:
+                                                              _diaperType ==
+                                                                  'both'
+                                                              ? Colors.white
+                                                              : isDark
+                                                              ? Colors.white
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.7,
+                                                                    )
+                                                              : const Color(
+                                                                  0xFF4A3F3F,
+                                                                ).withValues(
+                                                                  alpha: 0.6,
+                                                                ),
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              // Duration picker (Cupertino style)
-                              Builder(
-                                builder: (context) {
-                                  final l10n = AppLocalizations.of(context)!;
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        l10n.duration.toUpperCase(),
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.6,
-                                                )
-                                              : const Color(0xFF4A3F3F),
-                                          letterSpacing: 2.0,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      GestureDetector(
-                                        onTap: () async {
-                                          final picked =
-                                              await _showCupertinoDurationPicker(
-                                                Duration(minutes: minutes),
-                                              );
-                                          if (picked != null) {
-                                            setState(
-                                              () => minutes = picked.inMinutes,
-                                            );
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 20,
-                                            vertical: 14,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: surfaceColor,
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                            boxShadow: isDark
-                                                ? null
-                                                : const [
-                                                    BoxShadow(
-                                                      color: Colors.black12,
-                                                      blurRadius: 4,
-                                                      offset: Offset(0, 2),
-                                                    ),
-                                                  ],
-                                            border: isDark
-                                                ? Border.all(
-                                                    color: Colors.white
-                                                        .withValues(
-                                                          alpha: 0.15,
-                                                        ),
-                                                  )
-                                                : null,
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: 40,
-                                                height: 40,
-                                                decoration: BoxDecoration(
-                                                  color: isDark
-                                                      ? Colors.white.withValues(
-                                                          alpha: 0.08,
-                                                        )
-                                                      : const Color(0xFFF4EDF9),
-                                                  borderRadius:
-                                                      BorderRadius.circular(12),
-                                                ),
-                                                child: const Center(
-                                                  child: Icon(
-                                                    Icons.timer_outlined,
-                                                    size: 24,
-                                                    color: Color(0xFFFF998A),
-                                                  ),
-                                                ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                                const SizedBox(height: 24),
+                                // Time picker
+                                Text(
+                                  l10n.healthTime,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : const Color(0xFF4A3F3F),
+                                    letterSpacing: 2.0,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final picked = await _pickEventDateTime(
+                                      _diaperDateTime,
+                                    );
+                                    if (picked != null) {
+                                      setState(() => _diaperDateTime = picked);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 14,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: surfaceColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: isDark
+                                          ? Border.all(
+                                              color: Colors.white.withValues(
+                                                alpha: 0.1,
                                               ),
-                                              const SizedBox(width: 16),
-                                              Expanded(
-                                                child: Text(
-                                                  minutes > 0
-                                                      ? '$minutes ${l10n.minAbbrev}'
-                                                      : l10n.tapToSetTime,
-                                                  maxLines: 1,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontSize: 24,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: minutes > 0
-                                                        ? (isDark
-                                                              ? AppColors
-                                                                    .textPrimaryDark
-                                                              : const Color(
-                                                                  0xFF4A3F3F,
-                                                                ))
-                                                        : (isDark
-                                                              ? Colors.white
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.5,
-                                                                    )
-                                                              : const Color(
-                                                                  0xFF7A749E,
-                                                                )),
-                                                  ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Icon(
-                                                Icons.access_time,
-                                                color: isDark
-                                                    ? Colors.white.withValues(
-                                                        alpha: 0.5,
-                                                      )
-                                                    : const Color(0xFF7A749E),
-                                                size: 20,
+                                            )
+                                          : null,
+                                      boxShadow: isDark
+                                          ? []
+                                          : const [
+                                              BoxShadow(
+                                                color: Colors.black12,
+                                                blurRadius: 4,
+                                                offset: Offset(0, 2),
                                               ),
                                             ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                            ],
-                            if (selectedActivity == 'bottle') ...[
-                              // Category selector (Milk/Solid)
-                              Text(
-                                l10n.category,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: surfaceColor.withValues(alpha: 0.5),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () => setState(
-                                          () => feedingCategory = 'Milk',
-                                        ),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                          ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 40,
                                           decoration: BoxDecoration(
-                                            color: feedingCategory == 'Milk'
-                                                ? surfaceColor
-                                                : Colors.transparent,
+                                            color: const Color(0xFFF4EDF9),
                                             borderRadius: BorderRadius.circular(
                                               12,
                                             ),
-                                            boxShadow: feedingCategory == 'Milk'
-                                                ? const [
-                                                    BoxShadow(
-                                                      color: Colors.black12,
-                                                      blurRadius: 4,
-                                                      offset: Offset(0, 2),
-                                                    ),
-                                                  ]
-                                                : [],
                                           ),
-                                          child: Text(
-                                            l10n.milk,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: feedingCategory == 'Milk'
-                                                  ? const Color(0xFFFF998A)
-                                                  : isDark
-                                                  ? Colors.white.withValues(
-                                                      alpha: 0.7,
-                                                    )
-                                                  : const Color(
-                                                      0xFF4A3F3F,
-                                                    ).withValues(alpha: 0.6),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.access_time,
+                                              size: 24,
+                                              color: Color(0xFFFF998A),
                                             ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 16),
+                                        Text(
+                                          _formatTime(_diaperDateTime),
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: isDark
+                                                ? AppColors.textPrimaryDark
+                                                : const Color(0xFF4A3F3F),
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Icon(
+                                          Icons.access_time,
+                                          color: isDark
+                                              ? Colors.white.withValues(
+                                                  alpha: 0.4,
+                                                )
+                                              : const Color(0xFF7A749E),
+                                          size: 20,
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: GestureDetector(
-                                        onTap: () => setState(
-                                          () => feedingCategory = 'Solid',
-                                        ),
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 12,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: feedingCategory == 'Solid'
-                                                ? surfaceColor
-                                                : Colors.transparent,
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                            boxShadow:
-                                                feedingCategory == 'Solid'
-                                                ? const [
-                                                    BoxShadow(
-                                                      color: Colors.black12,
-                                                      blurRadius: 4,
-                                                      offset: Offset(0, 2),
-                                                    ),
-                                                  ]
-                                                : [],
-                                          ),
-                                          child: Text(
-                                            l10n.solid,
-                                            textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: feedingCategory == 'Solid'
-                                                  ? const Color(0xFFFF998A)
-                                                  : isDark
-                                                  ? Colors.white.withValues(
-                                                      alpha: 0.7,
-                                                    )
-                                                  : const Color(
-                                                      0xFF4A3F3F,
-                                                    ).withValues(alpha: 0.6),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              // Show different content based on category
-                              if (feedingCategory == 'Solid') ...[
-                                // Solid food description
+                                const SizedBox(height: 24),
+                                // Optional notes
                                 Text(
-                                  l10n.whatWasGiven,
+                                  l10n.optionalNotes,
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.bold,
@@ -986,10 +2251,10 @@ class _AddScreenState extends State<AddScreen> {
                                       : const Color(0xFFFDFCFB),
                                   borderRadius: BorderRadius.circular(24),
                                   child: TextField(
-                                    controller: _solidFoodController,
-                                    maxLines: 2,
+                                    controller: _diaperNotesController,
+                                    maxLines: 3,
                                     decoration: InputDecoration(
-                                      hintText: l10n.solidFoodHint,
+                                      hintText: l10n.diaperNoteHint,
                                       hintStyle: TextStyle(
                                         color: isDark
                                             ? Colors.white.withValues(
@@ -1013,1155 +2278,96 @@ class _AddScreenState extends State<AddScreen> {
                                     ),
                                   ),
                                 ),
-                              ] else ...[
-                                // Amount section (for Milk)
-                                Center(
-                                  child: Text(
-                                    l10n.amount,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.6)
-                                          : const Color(0xFF4A3F3F),
-                                      letterSpacing: 2.0,
-                                    ),
-                                  ),
-                                ),
+                              ],
+                              // Inline validation error
+                              if (_errorMessage != null) ...[
                                 const SizedBox(height: 16),
-                                // Amount display with icon and +/- buttons
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    // Minus button
-                                    GestureDetector(
-                                      onTap: () => setState(() {
-                                        if (bottleAmount >= 10) {
-                                          bottleAmount -= 10;
-                                        }
-                                      }),
-                                      child: Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          color: surfaceColor,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.remove,
-                                            color: isDark
-                                                ? Colors.white.withValues(
-                                                    alpha: 0.7,
-                                                  )
-                                                : const Color(0xFF7A749E),
-                                            size: 24,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    // Bottle icon
-                                    Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: surfaceColor,
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.black12,
-                                            blurRadius: 4,
-                                            offset: Offset(0, 2),
-                                          ),
-                                        ],
-                                      ),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.local_drink_outlined,
-                                          size: 28,
-                                          color: Color(0xFFFF998A),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    // Amount value
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.baseline,
-                                      textBaseline: TextBaseline.alphabetic,
-                                      children: [
-                                        Text(
-                                          bottleAmount.toString(),
-                                          style: TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? AppColors.textPrimaryDark
-                                                : const Color(0xFF4A3F3F),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          l10n.mlAbbrev,
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? Colors.white.withValues(
-                                                    alpha: 0.4,
-                                                  )
-                                                : const Color(
-                                                    0xFF4A3F3F,
-                                                  ).withValues(alpha: 0.4),
-                                            fontStyle: FontStyle.italic,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 16),
-                                    // Plus button
-                                    GestureDetector(
-                                      onTap: () => setState(() {
-                                        bottleAmount += 10;
-                                      }),
-                                      child: Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          color: surfaceColor,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.add,
-                                            color: Color(0xFFFF998A),
-                                            size: 24,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 24),
-                                // Milk type selector
-                                Text(
-                                  l10n.milkType,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.6)
-                                        : const Color(0xFF4A3F3F),
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
                                 Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: surfaceColor.withValues(alpha: 0.5),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () => setState(
-                                            () => milkType = 'breast',
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: milkType == 'breast'
-                                                  ? surfaceColor
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              boxShadow: milkType == 'breast'
-                                                  ? const [
-                                                      BoxShadow(
-                                                        color: Colors.black12,
-                                                        blurRadius: 4,
-                                                        offset: Offset(0, 2),
-                                                      ),
-                                                    ]
-                                                  : [],
-                                            ),
-                                            child: Text(
-                                              l10n.breastMilk,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: milkType == 'breast'
-                                                    ? const Color(0xFFFF998A)
-                                                    : isDark
-                                                    ? Colors.white.withValues(
-                                                        alpha: 0.7,
-                                                      )
-                                                    : const Color(
-                                                        0xFF4A3F3F,
-                                                      ).withValues(alpha: 0.6),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                        child: GestureDetector(
-                                          onTap: () => setState(
-                                            () => milkType = 'formula',
-                                          ),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: milkType == 'formula'
-                                                  ? surfaceColor
-                                                  : Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              boxShadow: milkType == 'formula'
-                                                  ? const [
-                                                      BoxShadow(
-                                                        color: Colors.black12,
-                                                        blurRadius: 4,
-                                                        offset: Offset(0, 2),
-                                                      ),
-                                                    ]
-                                                  : [],
-                                            ),
-                                            child: Text(
-                                              l10n.formula,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color: milkType == 'formula'
-                                                    ? const Color(0xFFFF998A)
-                                                    : isDark
-                                                    ? Colors.white.withValues(
-                                                        alpha: 0.7,
-                                                      )
-                                                    : const Color(
-                                                        0xFF4A3F3F,
-                                                      ).withValues(alpha: 0.6),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ], // end of else (Milk category)
-                            ],
-                            if (selectedActivity == 'sleep') ...[
-                              // Sleep started at
-                              Text(
-                                l10n.sleepStartedAt,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              GestureDetector(
-                                onTap: () async {
-                                  final picked = await _pickEventDateTime(
-                                    _sleepStartDateTime,
-                                  );
-                                  if (picked != null) {
-                                    setState(
-                                      () => _sleepStartDateTime = picked,
-                                    );
-                                  }
-                                },
-                                child: Container(
+                                  width: double.infinity,
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 14,
+                                    horizontal: 14,
+                                    vertical: 10,
                                   ),
-                                  decoration: BoxDecoration(
-                                    color: surfaceColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: isDark
-                                        ? null
-                                        : const [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
-                                    border: isDark
-                                        ? Border.all(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.15,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.08,
-                                                )
-                                              : const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.bedtime_outlined,
-                                            size: 24,
-                                            color: Color(0xFFFF998A),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Text(
-                                        _formatTime(_sleepStartDateTime),
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? AppColors.textPrimaryDark
-                                              : const Color(0xFF4A3F3F),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Icon(
-                                        Icons.access_time,
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.5,
-                                              )
-                                            : const Color(0xFF7A749E),
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              // Woke up at
-                              Text(
-                                l10n.wokeUpAt,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              GestureDetector(
-                                onTap: () async {
-                                  final picked = await _pickEventDateTime(
-                                    _sleepEndDateTime ?? DateTime.now(),
-                                  );
-                                  if (picked != null) {
-                                    setState(() => _sleepEndDateTime = picked);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: surfaceColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow: isDark
-                                        ? null
-                                        : const [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
-                                    border: isDark
-                                        ? Border.all(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.15,
-                                            ),
-                                          )
-                                        : null,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.08,
-                                                )
-                                              : const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.wb_sunny_outlined,
-                                            color: Color(0xFFFF998A),
-                                            size: 24,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Text(
-                                          _sleepEndDateTime != null
-                                              ? _formatTime(_sleepEndDateTime!)
-                                              : l10n.tapToSetTime,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: _sleepEndDateTime != null
-                                                ? (isDark
-                                                      ? AppColors
-                                                            .textPrimaryDark
-                                                      : const Color(0xFF4A3F3F))
-                                                : (isDark
-                                                      ? Colors.white.withValues(
-                                                          alpha: 0.5,
-                                                        )
-                                                      : const Color(
-                                                          0xFF7A749E,
-                                                        )),
-                                          ),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Icon(
-                                        Icons.access_time,
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.5,
-                                              )
-                                            : const Color(0xFF7A749E),
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              // Duration display (calculated)
-                              if (_sleepEndDateTime != null) ...[
-                                Container(
-                                  padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: const Color(
-                                      0xFFFF998A,
+                                      0xFFFF6B6B,
                                     ).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(16),
+                                    borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: const Color(
-                                        0xFFFF998A,
+                                        0xFFFF6B6B,
                                       ).withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       const Icon(
-                                        Icons.timer_outlined,
-                                        color: Color(0xFFFF998A),
-                                        size: 20,
+                                        Icons.info_outline,
+                                        color: Color(0xFFFF6B6B),
+                                        size: 18,
                                       ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        l10n.totalSleep(
-                                          _calculateSleepDuration(),
-                                        ),
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? AppColors.textPrimaryDark
-                                              : const Color(0xFF4A3F3F),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          _errorMessage!,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: Color(0xFFFF6B6B),
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ],
-                            ],
-                            if (selectedActivity == 'diaper') ...[
-                              // Diaper type selector
-                              Builder(
-                                builder: (context) {
-                                  final l10n = AppLocalizations.of(context)!;
-                                  return Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        l10n.healthType,
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.6,
-                                                )
-                                              : const Color(0xFF4A3F3F),
-                                          letterSpacing: 2.0,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Row(
-                                        children: [
-                                          // Wet button
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () => setState(
-                                                () => _diaperType = 'wet',
-                                              ),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 16,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: _diaperType == 'wet'
-                                                      ? const Color(0xFFFF998A)
-                                                      : surfaceColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(24),
-                                                  border: Border.all(
-                                                    color: _diaperType == 'wet'
-                                                        ? const Color(
-                                                            0xFFFF998A,
-                                                          )
-                                                        : isDark
-                                                        ? Colors.white
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                        : Colors.transparent,
-                                                    width: 2,
-                                                  ),
-                                                  boxShadow:
-                                                      _diaperType == 'wet'
-                                                      ? [
-                                                          BoxShadow(
-                                                            color:
-                                                                const Color(
-                                                                  0xFFFF998A,
-                                                                ).withValues(
-                                                                  alpha: 0.2,
-                                                                ),
-                                                            blurRadius: 12,
-                                                            offset:
-                                                                const Offset(
-                                                                  0,
-                                                                  4,
-                                                                ),
-                                                          ),
-                                                        ]
-                                                      : [],
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      width: 32,
-                                                      height: 32,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            _diaperType == 'wet'
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.3,
-                                                                  )
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.08,
-                                                                  )
-                                                            : const Color(
-                                                                0xFFF4EDF9,
-                                                              ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              8,
-                                                            ),
-                                                      ),
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons
-                                                              .water_drop_outlined,
-                                                          size: 24,
-                                                          color:
-                                                              _diaperType ==
-                                                                  'wet'
-                                                              ? Colors.white
-                                                              : isDark
-                                                              ? Colors.white
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.7,
-                                                                    )
-                                                              : const Color(
-                                                                  0xFF7A749E,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      l10n.wet,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            _diaperType == 'wet'
-                                                            ? Colors.white
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.7,
-                                                                  )
-                                                            : const Color(
-                                                                0xFF4A3F3F,
-                                                              ).withValues(
-                                                                alpha: 0.6,
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          // Dirty button
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () => setState(
-                                                () => _diaperType = 'dirty',
-                                              ),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 16,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: _diaperType == 'dirty'
-                                                      ? const Color(0xFFFF998A)
-                                                      : surfaceColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(24),
-                                                  border: Border.all(
-                                                    color:
-                                                        _diaperType == 'dirty'
-                                                        ? const Color(
-                                                            0xFFFF998A,
-                                                          )
-                                                        : isDark
-                                                        ? Colors.white
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                        : Colors.transparent,
-                                                    width: 2,
-                                                  ),
-                                                  boxShadow:
-                                                      _diaperType == 'dirty'
-                                                      ? [
-                                                          BoxShadow(
-                                                            color:
-                                                                const Color(
-                                                                  0xFFFF998A,
-                                                                ).withValues(
-                                                                  alpha: 0.2,
-                                                                ),
-                                                            blurRadius: 12,
-                                                            offset:
-                                                                const Offset(
-                                                                  0,
-                                                                  4,
-                                                                ),
-                                                          ),
-                                                        ]
-                                                      : [],
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      width: 32,
-                                                      height: 32,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            _diaperType ==
-                                                                'dirty'
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.3,
-                                                                  )
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.08,
-                                                                  )
-                                                            : const Color(
-                                                                0xFFF4EDF9,
-                                                              ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              8,
-                                                            ),
-                                                      ),
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons.cloud_outlined,
-                                                          size: 24,
-                                                          color:
-                                                              _diaperType ==
-                                                                  'dirty'
-                                                              ? Colors.white
-                                                              : isDark
-                                                              ? Colors.white
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.7,
-                                                                    )
-                                                              : const Color(
-                                                                  0xFF7A749E,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      l10n.dirty,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            _diaperType ==
-                                                                'dirty'
-                                                            ? Colors.white
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.7,
-                                                                  )
-                                                            : const Color(
-                                                                0xFF4A3F3F,
-                                                              ).withValues(
-                                                                alpha: 0.6,
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          // Both button
-                                          Expanded(
-                                            child: GestureDetector(
-                                              onTap: () => setState(
-                                                () => _diaperType = 'both',
-                                              ),
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      vertical: 16,
-                                                    ),
-                                                decoration: BoxDecoration(
-                                                  color: _diaperType == 'both'
-                                                      ? const Color(0xFFFF998A)
-                                                      : surfaceColor,
-                                                  borderRadius:
-                                                      BorderRadius.circular(24),
-                                                  border: Border.all(
-                                                    color: _diaperType == 'both'
-                                                        ? const Color(
-                                                            0xFFFF998A,
-                                                          )
-                                                        : isDark
-                                                        ? Colors.white
-                                                              .withValues(
-                                                                alpha: 0.15,
-                                                              )
-                                                        : Colors.transparent,
-                                                    width: 2,
-                                                  ),
-                                                  boxShadow:
-                                                      _diaperType == 'both'
-                                                      ? [
-                                                          BoxShadow(
-                                                            color:
-                                                                const Color(
-                                                                  0xFFFF998A,
-                                                                ).withValues(
-                                                                  alpha: 0.2,
-                                                                ),
-                                                            blurRadius: 12,
-                                                            offset:
-                                                                const Offset(
-                                                                  0,
-                                                                  4,
-                                                                ),
-                                                          ),
-                                                        ]
-                                                      : [],
-                                                ),
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      width: 32,
-                                                      height: 32,
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            _diaperType ==
-                                                                'both'
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.3,
-                                                                  )
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.08,
-                                                                  )
-                                                            : const Color(
-                                                                0xFFF4EDF9,
-                                                              ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              8,
-                                                            ),
-                                                      ),
-                                                      child: Center(
-                                                        child: Icon(
-                                                          Icons
-                                                              .baby_changing_station_outlined,
-                                                          size: 24,
-                                                          color:
-                                                              _diaperType ==
-                                                                  'both'
-                                                              ? Colors.white
-                                                              : isDark
-                                                              ? Colors.white
-                                                                    .withValues(
-                                                                      alpha:
-                                                                          0.7,
-                                                                    )
-                                                              : const Color(
-                                                                  0xFF7A749E,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Text(
-                                                      l10n.both,
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color:
-                                                            _diaperType ==
-                                                                'both'
-                                                            ? Colors.white
-                                                            : isDark
-                                                            ? Colors.white
-                                                                  .withValues(
-                                                                    alpha: 0.7,
-                                                                  )
-                                                            : const Color(
-                                                                0xFF4A3F3F,
-                                                              ).withValues(
-                                                                alpha: 0.6,
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 24),
-                              // Time picker
-                              Text(
-                                l10n.healthTime,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
+                              // Save button - calm style
+                              const SizedBox(height: 16),
                               GestureDetector(
-                                onTap: () async {
-                                  final picked = await _pickEventDateTime(
-                                    _diaperDateTime,
-                                  );
-                                  if (picked != null) {
-                                    setState(() => _diaperDateTime = picked);
-                                  }
-                                },
+                                onTap: _isSaving ? null : _saveActivity,
                                 child: Container(
+                                  width: double.infinity,
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
                                     vertical: 14,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: surfaceColor,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: isDark
-                                        ? Border.all(
-                                            color: Colors.white.withValues(
-                                              alpha: 0.1,
-                                            ),
-                                          )
-                                        : null,
-                                    boxShadow: isDark
-                                        ? []
-                                        : const [
-                                            BoxShadow(
-                                              color: Colors.black12,
-                                              blurRadius: 4,
-                                              offset: Offset(0, 2),
-                                            ),
-                                          ],
+                                    color: const Color(0xFFFF998A),
+                                    borderRadius: BorderRadius.circular(14),
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFF4EDF9),
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                  child: _isSaving
+                                      ? const SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            valueColor:
+                                                AlwaysStoppedAnimation<Color>(
+                                                  Colors.white,
+                                                ),
+                                          ),
+                                        )
+                                      : Text(
+                                          l10n.save,
+                                          textAlign: TextAlign.center,
+                                          style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
                                           ),
                                         ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.access_time,
-                                            size: 24,
-                                            color: Color(0xFFFF998A),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Text(
-                                        _formatTime(_diaperDateTime),
-                                        style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: isDark
-                                              ? AppColors.textPrimaryDark
-                                              : const Color(0xFF4A3F3F),
-                                        ),
-                                      ),
-                                      const Spacer(),
-                                      Icon(
-                                        Icons.access_time,
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.4,
-                                              )
-                                            : const Color(0xFF7A749E),
-                                        size: 20,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              // Optional notes
-                              Text(
-                                l10n.optionalNotes,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.6)
-                                      : const Color(0xFF4A3F3F),
-                                  letterSpacing: 2.0,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Material(
-                                color: isDark
-                                    ? AppColors.bgDarkCard
-                                    : const Color(0xFFFDFCFB),
-                                borderRadius: BorderRadius.circular(24),
-                                child: TextField(
-                                  controller: _diaperNotesController,
-                                  maxLines: 3,
-                                  decoration: InputDecoration(
-                                    hintText: l10n.diaperNoteHint,
-                                    hintStyle: TextStyle(
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.3)
-                                          : const Color(
-                                              0xFF4A3F3F,
-                                            ).withValues(alpha: 0.3),
-                                      fontSize: 14,
-                                    ),
-                                    border: InputBorder.none,
-                                    contentPadding: const EdgeInsets.all(20),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.8)
-                                        : const Color(
-                                            0xFF4A3F3F,
-                                          ).withValues(alpha: 0.8),
-                                  ),
                                 ),
                               ),
                             ],
-                            // Inline validation error
-                            if (_errorMessage != null) ...[
-                              const SizedBox(height: 16),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFFFF6B6B,
-                                  ).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFFFF6B6B,
-                                    ).withValues(alpha: 0.3),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.info_outline,
-                                      color: Color(0xFFFF6B6B),
-                                      size: 18,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        _errorMessage!,
-                                        style: const TextStyle(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: Color(0xFFFF6B6B),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            // Save button - calm style
-                            const SizedBox(height: 16),
-                            GestureDetector(
-                              onTap: _isSaving ? null : _saveActivity,
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 14,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFF998A),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: _isSaving
-                                    ? const SizedBox(
-                                        height: 18,
-                                        width: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                        ),
-                                      )
-                                    : Text(
-                                        l10n.save,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -2229,7 +2435,7 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  void _saveActivity() async {
+  Future<void> _saveActivity() async {
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
@@ -2282,9 +2488,10 @@ class _AddScreenState extends State<AddScreen> {
         await VeriYonetici.saveMamaKayitlari(kayitlar);
         await _scheduleFeedingReminderIfEnabled();
         HapticFeedback.lightImpact();
+        _initialSnapshot = _captureSnapshot();
         widget.onSaved?.call();
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
       } else if (selectedActivity == 'bottle') {
         final kayitlar = VeriYonetici.getMamaKayitlari();
@@ -2316,9 +2523,10 @@ class _AddScreenState extends State<AddScreen> {
         await VeriYonetici.saveMamaKayitlari(kayitlar);
         await _scheduleFeedingReminderIfEnabled();
         HapticFeedback.lightImpact();
+        _initialSnapshot = _captureSnapshot();
         widget.onSaved?.call();
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
       } else if (selectedActivity == 'sleep') {
         if (_sleepEndDateTime == null) return;
@@ -2342,9 +2550,10 @@ class _AddScreenState extends State<AddScreen> {
 
         await VeriYonetici.saveUykuKayitlari(kayitlar);
         HapticFeedback.lightImpact();
+        _initialSnapshot = _captureSnapshot();
         widget.onSaved?.call();
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
       } else if (selectedActivity == 'diaper') {
         final kayitlar = VeriYonetici.getKakaKayitlari();
@@ -2361,10 +2570,15 @@ class _AddScreenState extends State<AddScreen> {
         await VeriYonetici.saveKakaKayitlari(kayitlar);
         await _scheduleDiaperReminderIfEnabled();
         HapticFeedback.lightImpact();
+        _initialSnapshot = _captureSnapshot();
         widget.onSaved?.call();
         if (mounted) {
-          Navigator.pop(context);
+          Navigator.pop(context, true);
         }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showValidationError(l10n.errorWithMessage(e.toString()));
       }
     } finally {
       if (mounted) {

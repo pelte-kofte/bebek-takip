@@ -29,7 +29,7 @@ class HealthScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppColors.bgDarkCard
-                          : Colors.white.withOpacity(0.8),
+                          : Colors.white.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TabBar(
@@ -62,10 +62,7 @@ class HealthScreen extends StatelessWidget {
                 // TabBarView
                 const Expanded(
                   child: TabBarView(
-                    children: [
-                      VaccinesScreen(embedded: true),
-                      IlaclarScreen(),
-                    ],
+                    children: [VaccinesScreen(embedded: true), IlaclarScreen()],
                   ),
                 ),
               ],

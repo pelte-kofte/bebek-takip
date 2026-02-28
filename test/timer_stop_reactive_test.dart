@@ -22,11 +22,19 @@ void main() {
 
       // Manually increment (mirrors what _notifyDataChanged does)
       notifier.value = initialValue + 1;
-      expect(callCount, 1, reason: 'listener must be called after first increment');
+      expect(
+        callCount,
+        1,
+        reason: 'listener must be called after first increment',
+      );
       expect(notifier.value, initialValue + 1);
 
       notifier.value = initialValue + 2;
-      expect(callCount, 2, reason: 'listener must be called after second increment');
+      expect(
+        callCount,
+        2,
+        reason: 'listener must be called after second increment',
+      );
 
       notifier.removeListener(listener);
 

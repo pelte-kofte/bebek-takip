@@ -1805,12 +1805,12 @@ class _SharePreviewSheet extends StatelessWidget {
                           child: buildPlatformImage(
                             photoPath,
                             fit: BoxFit.cover,
-                            errorBuilder:
-                                (context, error, stackTrace) => const Icon(
-                              Icons.star,
-                              color: Color(0xFFFFB4A2),
-                              size: 28,
-                            ),
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(
+                                  Icons.star,
+                                  color: Color(0xFFFFB4A2),
+                                  size: 28,
+                                ),
                           ),
                         )
                       : const Icon(

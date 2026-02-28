@@ -280,7 +280,7 @@ class _RaporScreenState extends State<RaporScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         border: Border(
-          bottom: BorderSide(color: Colors.black.withOpacity(0.05)),
+          bottom: BorderSide(color: Colors.black.withValues(alpha: 0.05)),
         ),
       ),
       child: Column(
@@ -393,7 +393,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         boxShadow: _isWeekly
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
+                                  color: Colors.black.withValues(alpha: 0.08),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -432,7 +432,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         boxShadow: !_isWeekly
                             ? [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.08),
+                                  color: Colors.black.withValues(alpha: 0.08),
                                   blurRadius: 8,
                                   offset: const Offset(0, 2),
                                 ),
@@ -475,7 +475,7 @@ class _RaporScreenState extends State<RaporScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -510,7 +510,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -579,7 +579,7 @@ class _RaporScreenState extends State<RaporScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFFB3D9).withOpacity(0.1),
+                    color: const Color(0xFFFFB3D9).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -616,7 +616,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       Container(
                         width: 1,
                         height: 40,
-                        color: const Color(0xFFFF8AC1).withOpacity(0.2),
+                        color: const Color(0xFFFF8AC1).withValues(alpha: 0.2),
                       ),
                       Expanded(
                         child: Column(
@@ -658,7 +658,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFB3D9).withOpacity(0.1),
+                          color: const Color(0xFFFFB3D9).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -688,7 +688,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFB3D9).withOpacity(0.1),
+                          color: const Color(0xFFFFB3D9).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -718,7 +718,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFB3D9).withOpacity(0.1),
+                          color: const Color(0xFFFFB3D9).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -767,7 +767,7 @@ class _RaporScreenState extends State<RaporScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -800,7 +800,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -849,7 +849,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB3D9FF).withOpacity(0.1),
+                          color: const Color(0xFFB3D9FF).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -880,7 +880,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB3D9FF).withOpacity(0.1),
+                          color: const Color(0xFFB3D9FF).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -911,7 +911,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB3D9FF).withOpacity(0.1),
+                          color: const Color(0xFFB3D9FF).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -961,7 +961,7 @@ class _RaporScreenState extends State<RaporScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -994,7 +994,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -1087,7 +1087,7 @@ class _RaporScreenState extends State<RaporScreen> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -1120,7 +1120,7 @@ class _RaporScreenState extends State<RaporScreen> {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -1146,7 +1146,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB3FFD9).withOpacity(0.1),
+                          color: const Color(0xFFB3FFD9).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -1185,7 +1185,7 @@ class _RaporScreenState extends State<RaporScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFB3FFD9).withOpacity(0.1),
+                          color: const Color(0xFFB3FFD9).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Column(
@@ -1274,7 +1274,7 @@ class _RaporScreenState extends State<RaporScreen> {
           colors: [
             Colors.transparent,
             (isDark ? const Color(0xFF1A1625) : const Color(0xFFFFF9F5))
-                .withOpacity(0.95),
+                .withValues(alpha: 0.95),
           ],
           stops: const [0.0, 0.2],
         ),
@@ -1291,7 +1291,7 @@ class _RaporScreenState extends State<RaporScreen> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFF8AC1).withOpacity(0.4),
+                  color: const Color(0xFFFF8AC1).withValues(alpha: 0.4),
                   blurRadius: 24,
                   offset: const Offset(0, 6),
                 ),
@@ -1587,7 +1587,9 @@ class _RaporScreenState extends State<RaporScreen> {
       );
       await file.writeAsBytes(bytes);
 
-      await Share.shareXFiles([XFile(file.path)], text: l10n.babyTrackerReport);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(file.path)], text: l10n.babyTrackerReport),
+      );
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1648,9 +1650,12 @@ class _RaporScreenState extends State<RaporScreen> {
       await file.writeAsBytes(bytes);
 
       // Open share sheet
-      await Share.shareXFiles([
-        XFile(file.path),
-      ], text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
+        ),
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

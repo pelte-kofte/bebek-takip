@@ -360,11 +360,11 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
               color: isDark ? AppColors.bgDarkCard : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFFFFB4A2).withOpacity(0.1),
+                color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -411,13 +411,15 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         Container(
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.bgDarkCard.withOpacity(0.9)
-                : Colors.white.withOpacity(0.9),
+                ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                : Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.1)),
+            border: Border.all(
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFFB4A2).withOpacity(0.05),
+                color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -459,18 +461,18 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
               color: isSelected
                   ? const Color(0xFFFFB4A2)
                   : (isDark
-                        ? AppColors.bgDarkCard.withOpacity(0.9)
-                        : Colors.white.withOpacity(0.9)),
+                        ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                        : Colors.white.withValues(alpha: 0.9)),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected
                     ? const Color(0xFFFFB4A2)
-                    : const Color(0xFFFFB4A2).withOpacity(0.1),
+                    : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
               ),
               boxShadow: [
                 if (isSelected)
                   BoxShadow(
-                    color: const Color(0xFFFFB4A2).withOpacity(0.3),
+                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -610,18 +612,18 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     color: _selectedStatus == 'bekleniyor'
                         ? const Color(0xFFE5E0F7)
                         : (isDark
-                              ? AppColors.bgDarkCard.withOpacity(0.9)
-                              : Colors.white.withOpacity(0.9)),
+                              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                              : Colors.white.withValues(alpha: 0.9)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedStatus == 'bekleniyor'
                           ? const Color(0xFFE5E0F7)
-                          : const Color(0xFFFFB4A2).withOpacity(0.1),
+                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
                     ),
                     boxShadow: [
                       if (_selectedStatus == 'bekleniyor')
                         BoxShadow(
-                          color: const Color(0xFFE5E0F7).withOpacity(0.3),
+                          color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -658,18 +660,18 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     color: _selectedStatus == 'uygulandi'
                         ? const Color(0xFF81C784)
                         : (isDark
-                              ? AppColors.bgDarkCard.withOpacity(0.9)
-                              : Colors.white.withOpacity(0.9)),
+                              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                              : Colors.white.withValues(alpha: 0.9)),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: _selectedStatus == 'uygulandi'
                           ? const Color(0xFF81C784)
-                          : const Color(0xFFFFB4A2).withOpacity(0.1),
+                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
                     ),
                     boxShadow: [
                       if (_selectedStatus == 'uygulandi')
                         BoxShadow(
-                          color: const Color(0xFF81C784).withOpacity(0.3),
+                          color: const Color(0xFF81C784).withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -725,15 +727,15 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.bgDarkCard.withOpacity(0.9)
-                  : Colors.white.withOpacity(0.9),
+                  ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                  : Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: const Color(0xFFFFB4A2).withOpacity(0.1),
+                color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFFFB4A2).withOpacity(0.05),
+                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -782,13 +784,15 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         Container(
           decoration: BoxDecoration(
             color: isDark
-                ? AppColors.bgDarkCard.withOpacity(0.9)
-                : Colors.white.withOpacity(0.9),
+                ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+                : Colors.white.withValues(alpha: 0.9),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.1)),
+            border: Border.all(
+              color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
+            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFFFB4A2).withOpacity(0.05),
+                color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -817,7 +821,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFB4A2).withOpacity(0.2),
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

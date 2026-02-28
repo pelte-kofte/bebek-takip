@@ -202,7 +202,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (data == null) {
-      if (kDebugMode) debugPrint('[HomeScreen] stopEmzirme returned null, skipping save');
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] stopEmzirme returned null, skipping save');
+      }
       setState(() {
         _solAktif = false;
         _sagAktif = false;
@@ -224,7 +226,9 @@ class _HomeScreenState extends State<HomeScreen> {
       // should not happen after the TimerYonetici fix (null taraf → sol),
       // but guard here so we at least log rather than silently drop.
       if (kDebugMode) {
-        debugPrint('[HomeScreen] WARNING: both sides 0 after stop, skipping save');
+        debugPrint(
+          '[HomeScreen] WARNING: both sides 0 after stop, skipping save',
+        );
       }
       setState(() {
         _solAktif = false;
@@ -261,7 +265,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[HomeScreen] ERROR saving nursing record: $e\n$st');
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] ERROR saving nursing record: $e\n$st');
+      }
     }
 
     // ── 3. Schedule reminder ───────────────────────────────────────────────────
@@ -277,7 +283,9 @@ class _HomeScreenState extends State<HomeScreen> {
         await reminderService.initialize();
         await reminderService.scheduleFeedingReminderAt(scheduledAt);
       } catch (e, st) {
-        if (kDebugMode) debugPrint('[HomeScreen] reminder schedule error: $e\n$st');
+        if (kDebugMode) {
+          debugPrint('[HomeScreen] reminder schedule error: $e\n$st');
+        }
       }
     }
 
@@ -313,7 +321,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (data == null) {
-      if (kDebugMode) debugPrint('[HomeScreen] stopUyku returned null, skipping save');
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] stopUyku returned null, skipping save');
+      }
       setState(() => _uykuSaniye = 0);
       return;
     }
@@ -323,7 +333,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final duration = bitis.difference(baslangic);
 
     if (kDebugMode) {
-      debugPrint('[HomeScreen] sleep stop data: elapsed=${duration.inSeconds}s');
+      debugPrint(
+        '[HomeScreen] sleep stop data: elapsed=${duration.inSeconds}s',
+      );
     }
 
     if (duration.inMinutes < 1) {
@@ -353,7 +365,9 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }
     } catch (e, st) {
-      if (kDebugMode) debugPrint('[HomeScreen] ERROR saving sleep record: $e\n$st');
+      if (kDebugMode) {
+        debugPrint('[HomeScreen] ERROR saving sleep record: $e\n$st');
+      }
     }
 
     setState(() => _uykuSaniye = 0);

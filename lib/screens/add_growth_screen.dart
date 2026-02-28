@@ -49,7 +49,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -144,7 +144,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
+                              color: Colors.black.withValues(alpha: 0.05),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -203,7 +203,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -262,7 +262,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -321,7 +321,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -335,7 +335,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                             context,
                           )!.growthNotesHint,
                           hintStyle: TextStyle(
-                            color: const Color(0xFF7A749E).withOpacity(0.6),
+                            color: const Color(
+                              0xFF7A749E,
+                            ).withValues(alpha: 0.6),
                             fontSize: 14,
                           ),
                           border: InputBorder.none,
@@ -360,7 +362,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           borderRadius: BorderRadius.circular(100),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFFB4A2).withOpacity(0.3),
+                              color: const Color(
+                                0xFFFFB4A2,
+                              ).withValues(alpha: 0.3),
                               blurRadius: 16,
                               offset: const Offset(0, 8),
                             ),

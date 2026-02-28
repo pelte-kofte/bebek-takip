@@ -80,6 +80,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _openInAppUrl(String url) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final uri = Uri.parse(url);
     final inAppLaunched = await launchUrl(
       uri,
@@ -94,10 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       mode: LaunchMode.externalApplication,
     );
     if (!externalLaunched && mounted) {
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.pageCouldNotOpen)));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.pageCouldNotOpen)));
     }
   }
 
@@ -126,11 +125,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _toggleMedicationReminder(bool value) async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _medicationReminderEnabled = value);
     await VeriYonetici.setMedicationReminderEnabled(value);
     await _reminderService.initialize();
-
-    final messenger = ScaffoldMessenger.of(context);
     final meds = VeriYonetici.getIlacKayitlari();
     if (!value) {
       for (final med in meds) {
@@ -159,7 +158,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       return;
     }
 
-    final l10n = AppLocalizations.of(context)!;
     for (final med in meds) {
       if (med['isActive'] != true || med['remindersEnabled'] != true) continue;
       final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
@@ -302,7 +300,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? AppColors.bgDark : const Color(0xFFFFFBF5);
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
     final textColor = isDark
         ? AppColors.textPrimaryDark
@@ -744,6 +741,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 textColor: textColor,
                                 subtitleColor: subtitleColor,
                                 onTap: () async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
+                                  final message = AppLocalizations.of(
+                                    context,
+                                  )!.notificationSleepFired;
                                   final svc = SleepNotificationService();
                                   await svc.initialize();
                                   await svc.requestPermissions();
@@ -751,14 +754,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     DateTime.now(),
                                   );
                                   if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.notificationSleepFired,
+                                        content: Text(message),
+                                        backgroundColor: const Color(
+                                          0xFFFFB4A2,
                                         ),
-                                        backgroundColor: Color(0xFFFFB4A2),
                                       ),
                                     );
                                   }
@@ -777,6 +778,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 textColor: textColor,
                                 subtitleColor: subtitleColor,
                                 onTap: () async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
+                                  final message = AppLocalizations.of(
+                                    context,
+                                  )!.notificationNursingFired;
                                   final svc = SleepNotificationService();
                                   await svc.initialize();
                                   await svc.requestPermissions();
@@ -785,14 +792,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     'sol',
                                   );
                                   if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       SnackBar(
-                                        content: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.notificationNursingFired,
+                                        content: Text(message),
+                                        backgroundColor: const Color(
+                                          0xFFE5E0F7,
                                         ),
-                                        backgroundColor: Color(0xFFE5E0F7),
                                       ),
                                     );
                                   }

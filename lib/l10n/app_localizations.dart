@@ -104,205 +104,205 @@ abstract class AppLocalizations {
     Locale('uk'),
   ];
 
-  /// No description provided for @appName.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Nilico'**
   String get appName;
 
-  /// No description provided for @tagline.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Parenting made simple & memorable.'**
   String get tagline;
 
-  /// No description provided for @freeForever.
+  /// UI text
   ///
   /// In en, this message translates to:
-  /// **'Free Forever'**
+  /// **'Offline First'**
   String get freeForever;
 
-  /// No description provided for @securePrivate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Secure & Private'**
   String get securePrivate;
 
-  /// No description provided for @tapToStart.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Tap to start'**
   String get tapToStart;
 
-  /// No description provided for @feedingTracker.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Feeding Tracker'**
   String get feedingTracker;
 
-  /// No description provided for @feedingTrackerDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Log nursing, bottles, and solids with ease. Spot patterns naturally.'**
   String get feedingTrackerDesc;
 
-  /// No description provided for @sleepPatterns.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sleep Patterns'**
   String get sleepPatterns;
 
-  /// No description provided for @sleepPatternsDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Understand your baby\'s rhythm and improve sleep quality for everyone.'**
   String get sleepPatternsDesc;
 
-  /// No description provided for @growthCharts.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Growth Charts'**
   String get growthCharts;
 
-  /// No description provided for @growthChartsDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Visualize height and weight changes over time with beautiful charts.'**
   String get growthChartsDesc;
 
-  /// No description provided for @preciousMemories.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Precious Memories'**
   String get preciousMemories;
 
-  /// No description provided for @preciousMemoriesDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Save milestones and funny moments. They grow up so fast!'**
   String get preciousMemoriesDesc;
 
-  /// No description provided for @dailyRhythm.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Daily Rhythm'**
   String get dailyRhythm;
 
-  /// No description provided for @dailyRhythmDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Gentle routines bring calm days and peaceful nights.'**
   String get dailyRhythmDesc;
 
-  /// No description provided for @skip.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Skip'**
   String get skip;
 
-  /// No description provided for @startYourJourney.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Start Your Journey'**
   String get startYourJourney;
 
-  /// No description provided for @continueBtn.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Continue'**
   String get continueBtn;
 
-  /// No description provided for @save.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
 
-  /// No description provided for @update.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Update'**
   String get update;
 
-  /// No description provided for @cancel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
 
-  /// No description provided for @delete.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get delete;
 
-  /// No description provided for @edit.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit'**
   String get edit;
 
-  /// No description provided for @ok.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
 
-  /// No description provided for @add.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add'**
   String get add;
 
-  /// No description provided for @yes.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Yes'**
   String get yes;
 
-  /// No description provided for @no.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No'**
   String get no;
 
-  /// No description provided for @share.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Share'**
   String get share;
 
-  /// No description provided for @mlAbbrev.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'ml'**
   String get mlAbbrev;
 
-  /// No description provided for @selectTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select time'**
   String get selectTime;
 
-  /// No description provided for @tapToSetTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Set time'**
   String get tapToSetTime;
 
-  /// No description provided for @notificationSleepFired.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sleep notification fired'**
   String get notificationSleepFired;
 
-  /// No description provided for @notificationNursingFired.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Nursing notification fired'**
   String get notificationNursingFired;
 
-  /// No description provided for @signedOutSuccessfully.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Signed out successfully'**
@@ -314,7 +314,7 @@ abstract class AppLocalizations {
   /// **'Error: {message}'**
   String errorWithMessage(String message);
 
-  /// No description provided for @allDataDeleted.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'All data deleted'**
@@ -332,7 +332,7 @@ abstract class AppLocalizations {
   /// **'Sign in failed: {error}'**
   String signInFailed(String error);
 
-  /// No description provided for @webPhotoUploadUnsupported.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Photo upload is not supported on web'**
@@ -344,247 +344,247 @@ abstract class AppLocalizations {
   /// **'{name} data deleted'**
   String babyDataDeleted(String name);
 
-  /// No description provided for @babyNameHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Baby name'**
   String get babyNameHint;
 
-  /// No description provided for @babyNotesHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Allergies, preferences, notes...'**
   String get babyNotesHint;
 
-  /// No description provided for @vaccineNameHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'e.g. Hepatitis B, BCG, combo vaccine'**
   String get vaccineNameHint;
 
-  /// No description provided for @vaccineDoseHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'e.g. Dose 1, DTaP-IPV-Hib'**
   String get vaccineDoseHint;
 
-  /// No description provided for @vaccineNameCannotBeEmpty.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccine name cannot be empty'**
   String get vaccineNameCannotBeEmpty;
 
-  /// No description provided for @growthWeightHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'e.g. 7.5'**
   String get growthWeightHint;
 
-  /// No description provided for @growthHeightHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'e.g. 68.5'**
   String get growthHeightHint;
 
-  /// No description provided for @growthNotesHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Doctor visit, vaccine day, etc.'**
   String get growthNotesHint;
 
-  /// No description provided for @pleaseEnterWeightHeight.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Please enter weight and height'**
   String get pleaseEnterWeightHeight;
 
-  /// No description provided for @memoryTitleHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'e.g. First steps'**
   String get memoryTitleHint;
 
-  /// No description provided for @memoryNoteHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Write down the memory...'**
   String get memoryNoteHint;
 
-  /// No description provided for @home.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
 
-  /// No description provided for @activities.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Care'**
   String get activities;
 
-  /// No description provided for @vaccines.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccines'**
   String get vaccines;
 
-  /// No description provided for @development.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Development'**
   String get development;
 
-  /// No description provided for @memories.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Memories'**
   String get memories;
 
-  /// No description provided for @settings.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @addActivity.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add Activity'**
   String get addActivity;
 
-  /// No description provided for @whatHappened.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'What happened?'**
   String get whatHappened;
 
-  /// No description provided for @nursing.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Nursing'**
   String get nursing;
 
-  /// No description provided for @bottle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Feeding'**
   String get bottle;
 
-  /// No description provided for @sleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sleep'**
   String get sleep;
 
-  /// No description provided for @diaper.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Diaper'**
   String get diaper;
 
-  /// No description provided for @side.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Side'**
   String get side;
 
-  /// No description provided for @left.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Left'**
   String get left;
 
-  /// No description provided for @right.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Right'**
   String get right;
 
-  /// No description provided for @duration.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Duration'**
   String get duration;
 
-  /// No description provided for @minAbbrev.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'min'**
   String get minAbbrev;
 
-  /// No description provided for @hourAbbrev.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'h'**
   String get hourAbbrev;
 
-  /// No description provided for @category.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Category'**
   String get category;
 
-  /// No description provided for @milk.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Milk'**
   String get milk;
 
-  /// No description provided for @solid.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Solid'**
   String get solid;
 
-  /// No description provided for @whatWasGiven.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'WHAT WAS GIVEN?'**
   String get whatWasGiven;
 
-  /// No description provided for @solidFoodHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'E.g.: Banana puree, carrot...'**
   String get solidFoodHint;
 
-  /// No description provided for @amount.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Amount'**
   String get amount;
 
-  /// No description provided for @milkType.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Milk Type'**
   String get milkType;
 
-  /// No description provided for @breastMilk.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Breast milk'**
   String get breastMilk;
 
-  /// No description provided for @formula.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Formula'**
   String get formula;
 
-  /// No description provided for @sleepStartedAt.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'SLEEP STARTED AT'**
   String get sleepStartedAt;
 
-  /// No description provided for @wokeUpAt.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'WOKE UP AT'**
   String get wokeUpAt;
 
-  /// No description provided for @tapToSet.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Set time'**
@@ -596,265 +596,265 @@ abstract class AppLocalizations {
   /// **'Total sleep: {duration}'**
   String totalSleep(String duration);
 
-  /// No description provided for @type.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Type'**
   String get type;
 
-  /// No description provided for @healthType.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Type'**
   String get healthType;
 
-  /// No description provided for @healthTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Time'**
   String get healthTime;
 
-  /// No description provided for @wet.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Wet'**
   String get wet;
 
-  /// No description provided for @dirty.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Dirty'**
   String get dirty;
 
-  /// No description provided for @both.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Both'**
   String get both;
 
-  /// No description provided for @optionalNotes.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Optional notes'**
   String get optionalNotes;
 
-  /// No description provided for @diaperNoteHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add a note about the diaper change...'**
   String get diaperNoteHint;
 
-  /// No description provided for @pleaseSetDuration.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Please set a duration'**
   String get pleaseSetDuration;
 
-  /// No description provided for @pleaseSetAmount.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Please set an amount'**
   String get pleaseSetAmount;
 
-  /// No description provided for @pleaseSetWakeUpTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Please set wake up time'**
   String get pleaseSetWakeUpTime;
 
-  /// No description provided for @sleepDurationMustBeGreater.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sleep duration must be greater than 0'**
   String get sleepDurationMustBeGreater;
 
-  /// No description provided for @today.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Today'**
   String get today;
 
-  /// No description provided for @summary.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'SUMMARY'**
   String get summary;
 
-  /// No description provided for @recentActivities.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'RECENT CARE RECORDS'**
   String get recentActivities;
 
-  /// No description provided for @record.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'record'**
   String get record;
 
-  /// No description provided for @records.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'records'**
   String get records;
 
-  /// No description provided for @breastfeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Nursing'**
   String get breastfeeding;
 
-  /// No description provided for @bottleBreastMilk.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Bottle (Breast milk)'**
   String get bottleBreastMilk;
 
-  /// No description provided for @total.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Total'**
   String get total;
 
-  /// No description provided for @diaperChange.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Diaper change'**
   String get diaperChange;
 
-  /// No description provided for @firstFeedingTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'First feeding time?'**
   String get firstFeedingTime;
 
-  /// No description provided for @trackBabyFeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Track your baby\'s feeding'**
   String get trackBabyFeeding;
 
-  /// No description provided for @diaperChangeTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Diaper change time!'**
   String get diaperChangeTime;
 
-  /// No description provided for @trackHygiene.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Track hygiene here'**
   String get trackHygiene;
 
-  /// No description provided for @sweetDreams.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sweet dreams...'**
   String get sweetDreams;
 
-  /// No description provided for @trackSleepPattern.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Track sleep pattern here'**
   String get trackSleepPattern;
 
-  /// No description provided for @selectAnotherDate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select another date'**
   String get selectAnotherDate;
 
-  /// No description provided for @editFeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Feeding'**
   String get editFeeding;
 
-  /// No description provided for @editDiaper.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Diaper'**
   String get editDiaper;
 
-  /// No description provided for @editSleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Sleep'**
   String get editSleep;
 
-  /// No description provided for @start.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Start'**
   String get start;
 
-  /// No description provided for @end.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'End'**
   String get end;
 
-  /// No description provided for @attention.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Attention'**
   String get attention;
 
-  /// No description provided for @deleteConfirm.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this record?'**
   String get deleteConfirm;
 
-  /// No description provided for @myVaccines.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'My Vaccines'**
   String get myVaccines;
 
-  /// No description provided for @addVaccine.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add Vaccine'**
   String get addVaccine;
 
-  /// No description provided for @applied.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Applied'**
   String get applied;
 
-  /// No description provided for @pending.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Pending'**
   String get pending;
 
-  /// No description provided for @upcomingVaccines.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Upcoming Vaccines'**
   String get upcomingVaccines;
 
-  /// No description provided for @completedVaccines.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Completed Vaccines'**
   String get completedVaccines;
 
-  /// No description provided for @selectDate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select date'**
   String get selectDate;
 
-  /// No description provided for @calendar.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Calendar'**
   String get calendar;
 
-  /// No description provided for @turkishVaccineCalendar.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Turkish Vaccine Calendar'**
@@ -866,19 +866,19 @@ abstract class AppLocalizations {
   /// **'{count} vaccines available'**
   String vaccinesAvailable(int count);
 
-  /// No description provided for @selectAll.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select All'**
   String get selectAll;
 
-  /// No description provided for @clear.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Clear'**
   String get clear;
 
-  /// No description provided for @alreadyAdded.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Already added'**
@@ -890,7 +890,7 @@ abstract class AppLocalizations {
   /// **'Add {count} Vaccines'**
   String addVaccines(int count);
 
-  /// No description provided for @selectVaccine.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select Vaccine'**
@@ -902,31 +902,31 @@ abstract class AppLocalizations {
   /// **'{count} vaccines added'**
   String vaccinesAdded(int count);
 
-  /// No description provided for @noVaccineRecords.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No vaccine records yet'**
   String get noVaccineRecords;
 
-  /// No description provided for @loadTurkishCalendar.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Load Turkish vaccine calendar or add manually'**
   String get loadTurkishCalendar;
 
-  /// No description provided for @loadTurkishVaccineCalendar.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Load Turkish Vaccine Calendar'**
   String get loadTurkishVaccineCalendar;
 
-  /// No description provided for @loadCalendarTitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Load Turkish Vaccine Calendar'**
   String get loadCalendarTitle;
 
-  /// No description provided for @loadCalendarDesc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'The standard Turkish vaccine calendar will be loaded. Existing vaccines won\'t be deleted.'**
@@ -956,283 +956,283 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} day old} other{{count} days old}}'**
   String ageDays(int count);
 
-  /// No description provided for @weeklyReport.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Weekly Report'**
   String get weeklyReport;
 
-  /// No description provided for @monthlyReport.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Monthly Report'**
   String get monthlyReport;
 
-  /// No description provided for @weekly.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Weekly'**
   String get weekly;
 
-  /// No description provided for @monthly.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Monthly'**
   String get monthly;
 
-  /// No description provided for @feeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Feeding'**
   String get feeding;
 
-  /// No description provided for @totalBreastfeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Total Breastfeeding'**
   String get totalBreastfeeding;
 
-  /// No description provided for @totalDuration.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Total Duration'**
   String get totalDuration;
 
-  /// No description provided for @dailyAvg.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Daily Avg.'**
   String get dailyAvg;
 
-  /// No description provided for @avgDuration.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Avg. Duration'**
   String get avgDuration;
 
-  /// No description provided for @leftBreast.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Left Breast'**
   String get leftBreast;
 
-  /// No description provided for @rightBreast.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Right Breast'**
   String get rightBreast;
 
-  /// No description provided for @solidFood.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Solid Food'**
   String get solidFood;
 
-  /// No description provided for @diaperChanges.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Diaper Changes'**
   String get diaperChanges;
 
-  /// No description provided for @longestSleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Longest Sleep'**
   String get longestSleep;
 
-  /// No description provided for @sleepCount.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sleep Count'**
   String get sleepCount;
 
-  /// No description provided for @growth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Growth'**
   String get growth;
 
-  /// No description provided for @height.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Height'**
   String get height;
 
-  /// No description provided for @weight.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Weight'**
   String get weight;
 
-  /// No description provided for @saveAsPdf.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Save as PDF'**
   String get saveAsPdf;
 
-  /// No description provided for @pdfMobileOnly.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'PDF sharing is available on mobile'**
   String get pdfMobileOnly;
 
-  /// No description provided for @sharingMobileOnly.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sharing is available on mobile'**
   String get sharingMobileOnly;
 
-  /// No description provided for @pdfSaved.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'PDF saved successfully!'**
   String get pdfSaved;
 
-  /// No description provided for @babyTrackerReport.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Baby Tracker Report'**
   String get babyTrackerReport;
 
-  /// No description provided for @generatedWith.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Generated with Baby Tracker App'**
   String get generatedWith;
 
-  /// No description provided for @months.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'months'**
   String get months;
 
-  /// No description provided for @january.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'January'**
   String get january;
 
-  /// No description provided for @february.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'February'**
   String get february;
 
-  /// No description provided for @march.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'March'**
   String get march;
 
-  /// No description provided for @april.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'April'**
   String get april;
 
-  /// No description provided for @may.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'May'**
   String get may;
 
-  /// No description provided for @june.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'June'**
   String get june;
 
-  /// No description provided for @july.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'July'**
   String get july;
 
-  /// No description provided for @august.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'August'**
   String get august;
 
-  /// No description provided for @september.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'September'**
   String get september;
 
-  /// No description provided for @october.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'October'**
   String get october;
 
-  /// No description provided for @november.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'November'**
   String get november;
 
-  /// No description provided for @december.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'December'**
   String get december;
 
-  /// No description provided for @addOptionalNote.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add note (optional)'**
   String get addOptionalNote;
 
-  /// No description provided for @times.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'times'**
   String get times;
 
-  /// No description provided for @feeding_tab.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'FEEDING'**
   String get feeding_tab;
 
-  /// No description provided for @diaper_tab.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'DIAPER'**
   String get diaper_tab;
 
-  /// No description provided for @sleep_tab.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'SLEEP'**
   String get sleep_tab;
 
-  /// No description provided for @list.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'List'**
   String get list;
 
-  /// No description provided for @chart.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Chart'**
   String get chart;
 
-  /// No description provided for @noMeasurements.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No measurements yet'**
   String get noMeasurements;
 
-  /// No description provided for @addMeasurements.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add height and weight measurements'**
   String get addMeasurements;
 
-  /// No description provided for @moreDataNeeded.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'More data needed for chart'**
@@ -1244,109 +1244,109 @@ abstract class AppLocalizations {
   /// **'Add {count} more measurements'**
   String addMoreMeasurements(int count);
 
-  /// No description provided for @atLeast2Measurements.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'At least 2 measurements needed for chart'**
   String get atLeast2Measurements;
 
-  /// No description provided for @growthTracking.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Growth Tracking'**
   String get growthTracking;
 
-  /// No description provided for @feedingTimer.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'NURSING'**
   String get feedingTimer;
 
-  /// No description provided for @sleepingTimer.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'SLEEPING'**
   String get sleepingTimer;
 
-  /// No description provided for @stopAndSave.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'STOP & SAVE'**
   String get stopAndSave;
 
-  /// No description provided for @activeTimer.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'ACTIVE'**
   String get activeTimer;
 
-  /// No description provided for @lastFed.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'LAST FED'**
   String get lastFed;
 
-  /// No description provided for @lastDiaper.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'LAST DIAPER'**
   String get lastDiaper;
 
-  /// No description provided for @lastSleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'LAST SLEEP'**
   String get lastSleep;
 
-  /// No description provided for @recentActivity.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'RECENT CARE RECORDS'**
   String get recentActivity;
 
-  /// No description provided for @seeHistory.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'SEE HISTORY'**
   String get seeHistory;
 
-  /// No description provided for @noActivitiesLast24h.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No activities in the last 24 hours'**
   String get noActivitiesLast24h;
 
-  /// No description provided for @bottleFeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Feeding'**
   String get bottleFeeding;
 
-  /// No description provided for @trackYourBabyGrowth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Track your baby\'s growth'**
   String get trackYourBabyGrowth;
 
-  /// No description provided for @addHeightWeightMeasurements.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add weight and height measurements'**
   String get addHeightWeightMeasurements;
 
-  /// No description provided for @addFirstMeasurement.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add first measurement'**
   String get addFirstMeasurement;
 
-  /// No description provided for @lastUpdatedToday.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Last updated today'**
   String get lastUpdatedToday;
 
-  /// No description provided for @lastUpdated1Day.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Last updated 1 day ago'**
@@ -1358,19 +1358,19 @@ abstract class AppLocalizations {
   /// **'Last updated {days} days ago'**
   String lastUpdatedDays(int days);
 
-  /// No description provided for @viewGrowthCharts.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'VIEW GROWTH CHARTS'**
   String get viewGrowthCharts;
 
-  /// No description provided for @weightLabel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'WEIGHT'**
   String get weightLabel;
 
-  /// No description provided for @heightLabel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'HEIGHT'**
@@ -1394,25 +1394,25 @@ abstract class AppLocalizations {
   /// **'{days}d ago'**
   String dAgo(int days);
 
-  /// No description provided for @noRecordsYet.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No records yet'**
   String get noRecordsYet;
 
-  /// No description provided for @dailyTip.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'DAILY TIP'**
   String get dailyTip;
 
-  /// No description provided for @allTips.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'All tips'**
   String get allTips;
 
-  /// No description provided for @upcomingVaccine.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'UPCOMING VACCINE'**
@@ -1442,7 +1442,7 @@ abstract class AppLocalizations {
   /// **'✅ Sleep saved: {duration}'**
   String sleepSavedSnack(String duration);
 
-  /// No description provided for @sleepTooShort.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'⚠️ Sleep under 1 minute, not saved'**
@@ -1460,13 +1460,13 @@ abstract class AppLocalizations {
   /// **'+{value}cm this month'**
   String cmThisMonth(String value);
 
-  /// No description provided for @noSleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No sleep'**
   String get noSleep;
 
-  /// No description provided for @justNow.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'just now'**
@@ -1490,61 +1490,61 @@ abstract class AppLocalizations {
   /// **'{count}d ago'**
   String daysAgo(int count);
 
-  /// No description provided for @welcomeToNilico.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Welcome to Nilico'**
   String get welcomeToNilico;
 
-  /// No description provided for @createYourAccount.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Create your account'**
   String get createYourAccount;
 
-  /// No description provided for @loginBenefitText.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.'**
   String get loginBenefitText;
 
-  /// No description provided for @signInWithApple.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign in with Apple'**
   String get signInWithApple;
 
-  /// No description provided for @signInWithGoogle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign in with Google'**
   String get signInWithGoogle;
 
-  /// No description provided for @continueWithoutLogin.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Continue without login'**
   String get continueWithoutLogin;
 
-  /// No description provided for @loginOptionalNote.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Login is optional. All features work without an account.'**
   String get loginOptionalNote;
 
-  /// No description provided for @account.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Account'**
   String get account;
 
-  /// No description provided for @signIn.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign In'**
   String get signIn;
 
-  /// No description provided for @signOut.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign Out'**
@@ -1556,533 +1556,533 @@ abstract class AppLocalizations {
   /// **'Signed in as {email}'**
   String signedInAs(String email);
 
-  /// No description provided for @guestMode.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Guest Mode'**
   String get guestMode;
 
-  /// No description provided for @signInToProtectData.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sign in to protect your data'**
   String get signInToProtectData;
 
-  /// No description provided for @backupSyncComingSoon.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Backup & sync coming soon'**
   String get backupSyncComingSoon;
 
-  /// No description provided for @privacyPolicy.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get privacyPolicy;
 
-  /// No description provided for @privacyPolicySubtitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'View privacy policy'**
   String get privacyPolicySubtitle;
 
-  /// No description provided for @termsOfUse.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Terms of Use'**
   String get termsOfUse;
 
-  /// No description provided for @termsOfUseSubtitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'View terms and conditions'**
   String get termsOfUseSubtitle;
 
-  /// No description provided for @pageCouldNotOpen.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Could not open page'**
   String get pageCouldNotOpen;
 
-  /// No description provided for @health.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Health'**
   String get health;
 
-  /// No description provided for @medications.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Medications'**
   String get medications;
 
-  /// No description provided for @noMedications.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No medications/supplements yet'**
   String get noMedications;
 
-  /// No description provided for @medication.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Medication'**
   String get medication;
 
-  /// No description provided for @supplement.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Supplement'**
   String get supplement;
 
-  /// No description provided for @addMedication.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add Medication'**
   String get addMedication;
 
-  /// No description provided for @editMedication.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Medication'**
   String get editMedication;
 
-  /// No description provided for @medicationName.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Name'**
   String get medicationName;
 
-  /// No description provided for @medicationNameRequired.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Please enter a name'**
   String get medicationNameRequired;
 
-  /// No description provided for @dosage.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Dosage'**
   String get dosage;
 
-  /// No description provided for @schedule.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Schedule'**
   String get schedule;
 
-  /// No description provided for @notes.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Notes'**
   String get notes;
 
-  /// No description provided for @language.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
 
-  /// No description provided for @systemDefault.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'System'**
   String get systemDefault;
 
-  /// No description provided for @turkish.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Türkçe'**
   String get turkish;
 
-  /// No description provided for @english.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'English'**
   String get english;
 
-  /// No description provided for @russian.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Русский'**
   String get russian;
 
-  /// No description provided for @ukrainian.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Українська'**
   String get ukrainian;
 
-  /// No description provided for @spanish.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Español'**
   String get spanish;
 
-  /// No description provided for @languageUpdated.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Language updated'**
   String get languageUpdated;
 
-  /// No description provided for @tip_siyah_mekonyum_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'First Poop'**
   String get tip_siyah_mekonyum_title;
 
-  /// No description provided for @tip_siyah_mekonyum_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'In the first 2-4 days, this is normal whether your baby takes breast milk or formula. No need to worry.'**
   String get tip_siyah_mekonyum_desc;
 
-  /// No description provided for @tip_eye_tracking_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Eye Tracking'**
   String get tip_eye_tracking_title;
 
-  /// No description provided for @tip_eye_tracking_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Your baby can clearly see only about 25-30 cm for now. Move your face slowly and let your baby follow with their eyes.'**
   String get tip_eye_tracking_desc;
 
-  /// No description provided for @tip_neck_support_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Neck Support'**
   String get tip_neck_support_title;
 
-  /// No description provided for @tip_neck_support_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Always support your baby\'s head and neck when holding them. Neck muscles are still very weak.'**
   String get tip_neck_support_desc;
 
-  /// No description provided for @tip_reflex_stepping_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Stepping Reflex'**
   String get tip_reflex_stepping_title;
 
-  /// No description provided for @tip_reflex_stepping_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Hold your baby upright and let their feet touch a flat surface. You may see stepping reflexes.'**
   String get tip_reflex_stepping_desc;
 
-  /// No description provided for @tip_sound_interest_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Interest in Sounds'**
   String get tip_sound_interest_title;
 
-  /// No description provided for @tip_sound_interest_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Your baby is very sensitive to sounds. Try getting attention with a soft rattle or gentle music box.'**
   String get tip_sound_interest_desc;
 
-  /// No description provided for @tip_parent_interaction_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Parent Interaction'**
   String get tip_parent_interaction_title;
 
-  /// No description provided for @tip_parent_interaction_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Make eye contact and talk softly. Your baby recognizes your voice and feels secure with it.'**
   String get tip_parent_interaction_desc;
 
-  /// No description provided for @tip_color_worlds_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'World of Colors'**
   String get tip_color_worlds_title;
 
-  /// No description provided for @tip_color_worlds_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Newborns see high-contrast black and white patterns best. Try showing black-and-white cards.'**
   String get tip_color_worlds_desc;
 
-  /// No description provided for @tip_mini_athlete_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Mini Athlete'**
   String get tip_mini_athlete_title;
 
-  /// No description provided for @tip_mini_athlete_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Tummy time strengthens neck and back muscles. Try a few minutes each day.'**
   String get tip_mini_athlete_desc;
 
-  /// No description provided for @tip_sound_hunter_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sound Hunter'**
   String get tip_sound_hunter_title;
 
-  /// No description provided for @tip_sound_hunter_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Snap softly near your baby\'s ear. They may try turning toward the sound.'**
   String get tip_sound_hunter_desc;
 
-  /// No description provided for @tip_touch_explore_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Touch Exploration'**
   String get tip_touch_explore_title;
 
-  /// No description provided for @tip_touch_explore_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Let your baby feel different textures on hands and feet: soft, rough, and cool surfaces.'**
   String get tip_touch_explore_desc;
 
-  /// No description provided for @tip_tip_agu_conversation_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Baby Talk Chats'**
-  String get tip_tip_agu_conversation_1_2_title;
+  String get tip_agu_conversation_1_2_title;
 
-  /// No description provided for @tip_tip_agu_conversation_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.'**
-  String get tip_tip_agu_conversation_1_2_desc;
+  String get tip_agu_conversation_1_2_desc;
 
-  /// No description provided for @tip_tip_tummy_time_strength_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Strong Shoulders (Tummy Time)'**
-  String get tip_tip_tummy_time_strength_1_2_title;
+  String get tip_tummy_time_strength_1_2_title;
 
-  /// No description provided for @tip_tip_tummy_time_strength_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.'**
-  String get tip_tip_tummy_time_strength_1_2_desc;
+  String get tip_tummy_time_strength_1_2_desc;
 
-  /// No description provided for @tip_tip_baby_massage_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Soothing Massage'**
-  String get tip_tip_baby_massage_1_2_title;
+  String get tip_baby_massage_1_2_title;
 
-  /// No description provided for @tip_tip_baby_massage_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.'**
-  String get tip_tip_baby_massage_1_2_desc;
+  String get tip_baby_massage_1_2_desc;
 
-  /// No description provided for @tip_tip_gesture_speech_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Gesture-Based Talking'**
-  String get tip_tip_gesture_speech_1_2_title;
+  String get tip_gesture_speech_1_2_title;
 
-  /// No description provided for @tip_tip_gesture_speech_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Use gestures while talking. Wave for \"we\'re going\" and rub hands for \"all done\". This supports visual memory.'**
-  String get tip_tip_gesture_speech_1_2_desc;
+  String get tip_gesture_speech_1_2_desc;
 
-  /// No description provided for @tip_tip_open_hands_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Free Fingers'**
-  String get tip_tip_open_hands_1_2_title;
+  String get tip_open_hands_1_2_title;
 
-  /// No description provided for @tip_tip_open_hands_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Hands are opening more now. Offer soft toys to practice grasping and releasing.'**
-  String get tip_tip_open_hands_1_2_desc;
+  String get tip_open_hands_1_2_desc;
 
-  /// No description provided for @tip_tip_side_by_side_bonding_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Side-by-Side Bonding'**
-  String get tip_tip_side_by_side_bonding_1_2_title;
+  String get tip_side_by_side_bonding_1_2_title;
 
-  /// No description provided for @tip_tip_side_by_side_bonding_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.'**
-  String get tip_tip_side_by_side_bonding_1_2_desc;
+  String get tip_side_by_side_bonding_1_2_desc;
 
-  /// No description provided for @tip_tip_sound_hunter_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sound Hunter'**
-  String get tip_tip_sound_hunter_title;
+  String get tip_sound_hunter_listening_title;
 
-  /// No description provided for @tip_tip_sound_hunter_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Shake a rattle softly where your baby cannot see it. Turning toward sound builds hearing and focus.'**
-  String get tip_tip_sound_hunter_desc;
+  String get tip_sound_hunter_listening_desc;
 
-  /// No description provided for @tip_tip_sound_hunter_level2_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Sound Hunter (Level 2)'**
-  String get tip_tip_sound_hunter_level2_1_2_title;
+  String get tip_sound_hunter_level2_1_2_title;
 
-  /// No description provided for @tip_tip_sound_hunter_level2_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Make different sounds from left and right. Finding the source strengthens attention skills.'**
-  String get tip_tip_sound_hunter_level2_1_2_desc;
+  String get tip_sound_hunter_level2_1_2_desc;
 
-  /// No description provided for @tip_tip_texture_discovery_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Touch and Discover'**
-  String get tip_tip_texture_discovery_1_2_title;
+  String get tip_texture_discovery_1_2_title;
 
-  /// No description provided for @tip_tip_texture_discovery_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Offer objects with different textures. Each new feeling is a new discovery for your baby.'**
-  String get tip_tip_texture_discovery_1_2_desc;
+  String get tip_texture_discovery_1_2_desc;
 
-  /// No description provided for @tip_tip_outdoor_explorer_4_5_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Outdoor Explorer'**
-  String get tip_tip_outdoor_explorer_4_5_title;
+  String get tip_outdoor_explorer_4_5_title;
 
-  /// No description provided for @tip_tip_outdoor_explorer_4_5_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Show trees and animals outside. Let your baby touch and explore while hearing your voice.'**
-  String get tip_tip_outdoor_explorer_4_5_desc;
+  String get tip_outdoor_explorer_4_5_desc;
 
-  /// No description provided for @tip_tip_reaching_exercise_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Reaching Practice'**
-  String get tip_tip_reaching_exercise_1_2_title;
+  String get tip_reaching_exercise_1_2_title;
 
-  /// No description provided for @tip_tip_reaching_exercise_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Place toys within reach. Even attempts to grab them help strengthen muscles.'**
-  String get tip_tip_reaching_exercise_1_2_desc;
+  String get tip_reaching_exercise_1_2_desc;
 
-  /// No description provided for @tip_tip_supported_bounce_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Supported Bouncing'**
-  String get tip_tip_supported_bounce_1_2_title;
+  String get tip_supported_bounce_1_2_title;
 
-  /// No description provided for @tip_tip_supported_bounce_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.'**
-  String get tip_tip_supported_bounce_1_2_desc;
+  String get tip_supported_bounce_1_2_desc;
 
-  /// No description provided for @tip_tip_visual_tracking_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Visual Tracking'**
-  String get tip_tip_visual_tracking_1_2_title;
+  String get tip_visual_tracking_1_2_title;
 
-  /// No description provided for @tip_tip_visual_tracking_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.'**
-  String get tip_tip_visual_tracking_1_2_desc;
+  String get tip_visual_tracking_1_2_desc;
 
-  /// No description provided for @tip_tip_face_play_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Face Play'**
-  String get tip_tip_face_play_1_2_title;
+  String get tip_face_play_1_2_title;
 
-  /// No description provided for @tip_tip_face_play_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby\'s favorite toys.'**
-  String get tip_tip_face_play_1_2_desc;
+  String get tip_face_play_1_2_desc;
 
-  /// No description provided for @tip_tip_emotion_labeling_1_2_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Emotion Naming'**
-  String get tip_tip_emotion_labeling_1_2_title;
+  String get tip_emotion_labeling_1_2_title;
 
-  /// No description provided for @tip_tip_emotion_labeling_1_2_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.'**
-  String get tip_tip_emotion_labeling_1_2_desc;
+  String get tip_emotion_labeling_1_2_desc;
 
-  /// No description provided for @tip_tip_first_meal_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'First Tasting'**
-  String get tip_tip_first_meal_title;
+  String get tip_first_meal_title;
 
-  /// No description provided for @tip_tip_first_meal_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Start solids based on your doctor\'s advice. Spoon feeding can be fun, but stay alert for allergy signs.'**
-  String get tip_tip_first_meal_desc;
+  String get tip_first_meal_desc;
 
-  /// No description provided for @tip_tip_hand_to_hand_transfer_4_5_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Active Hands'**
-  String get tip_tip_hand_to_hand_transfer_4_5_title;
+  String get tip_hand_to_hand_transfer_4_5_title;
 
-  /// No description provided for @tip_tip_hand_to_hand_transfer_4_5_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.'**
-  String get tip_tip_hand_to_hand_transfer_4_5_desc;
+  String get tip_hand_to_hand_transfer_4_5_desc;
 
-  /// No description provided for @tip_tip_supported_sitting_4_5_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Supported Sitting'**
-  String get tip_tip_supported_sitting_4_5_title;
+  String get tip_supported_sitting_4_5_title;
 
-  /// No description provided for @tip_tip_supported_sitting_4_5_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.'**
-  String get tip_tip_supported_sitting_4_5_desc;
+  String get tip_supported_sitting_4_5_desc;
 
-  /// No description provided for @tip_tip_feet_discovery_4_5_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Discovering Feet'**
-  String get tip_tip_feet_discovery_4_5_title;
+  String get tip_feet_discovery_4_5_title;
 
-  /// No description provided for @tip_tip_feet_discovery_4_5_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.'**
-  String get tip_tip_feet_discovery_4_5_desc;
+  String get tip_feet_discovery_4_5_desc;
 
-  /// No description provided for @tip_tip_independent_play_4_5_title.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Independent Play'**
-  String get tip_tip_independent_play_4_5_title;
+  String get tip_independent_play_4_5_title;
 
-  /// No description provided for @tip_tip_independent_play_4_5_desc.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Place a few textured toys nearby and step back a little. Independent play supports confidence.'**
-  String get tip_tip_independent_play_4_5_desc;
+  String get tip_independent_play_4_5_desc;
 
   /// No description provided for @ageMonths.
   ///
@@ -2090,241 +2090,241 @@ abstract class AppLocalizations {
   /// **'{count, plural, one{{count} month old} other{{count} months old}}'**
   String ageMonths(int count);
 
-  /// No description provided for @appPreferences.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'App preferences'**
   String get appPreferences;
 
-  /// No description provided for @appearance.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Appearance'**
   String get appearance;
 
-  /// No description provided for @darkMode.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Dark mode'**
   String get darkMode;
 
-  /// No description provided for @darkModeSubtitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Comfortable low-light theme'**
   String get darkModeSubtitle;
 
-  /// No description provided for @notifications.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Notifications'**
   String get notifications;
 
-  /// No description provided for @feedingReminder.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Feeding Reminder'**
   String get feedingReminder;
 
-  /// No description provided for @diaperReminder.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Diaper Reminder'**
   String get diaperReminder;
 
-  /// No description provided for @off.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Off'**
   String get off;
 
-  /// No description provided for @reminderTime.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Reminder time'**
   String get reminderTime;
 
-  /// No description provided for @dataManagement.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Data management'**
   String get dataManagement;
 
-  /// No description provided for @createReport.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Create report'**
   String get createReport;
 
-  /// No description provided for @weeklyMonthlyStats.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Weekly/Monthly insights'**
   String get weeklyMonthlyStats;
 
-  /// No description provided for @deleteAllDataTitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Delete all data'**
   String get deleteAllDataTitle;
 
-  /// No description provided for @deleteAllDataSubtitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Permanently delete all records'**
   String get deleteAllDataSubtitle;
 
-  /// No description provided for @about.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'About'**
   String get about;
 
-  /// No description provided for @version.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Version'**
   String get version;
 
-  /// No description provided for @developer.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Developer'**
   String get developer;
 
-  /// No description provided for @deleteAllDataWarning.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'This action permanently deletes all records. This cannot be undone.'**
   String get deleteAllDataWarning;
 
-  /// No description provided for @debug.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Debug'**
   String get debug;
 
-  /// No description provided for @testSleepNotification.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Test Sleep Notification'**
   String get testSleepNotification;
 
-  /// No description provided for @fireSleepNotificationNow.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Fire sleep notification now'**
   String get fireSleepNotificationNow;
 
-  /// No description provided for @testNursingNotification.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Test Nursing Notification'**
   String get testNursingNotification;
 
-  /// No description provided for @fireNursingNotificationNow.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Fire nursing notification now'**
   String get fireNursingNotificationNow;
 
-  /// No description provided for @user.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'User'**
   String get user;
 
-  /// No description provided for @selectBaby.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select Baby'**
   String get selectBaby;
 
-  /// No description provided for @newBabyAdd.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add New Baby'**
   String get newBabyAdd;
 
-  /// No description provided for @babyProfileTitle.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Baby Profile'**
   String get babyProfileTitle;
 
-  /// No description provided for @babyInformation.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Baby Information'**
   String get babyInformation;
 
-  /// No description provided for @addPhoto.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add photo'**
   String get addPhoto;
 
-  /// No description provided for @changePhoto.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Change photo'**
   String get changePhoto;
 
-  /// No description provided for @removePhoto.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Remove photo'**
   String get removePhoto;
 
-  /// No description provided for @birthDateLabel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Birth Date'**
   String get birthDateLabel;
 
-  /// No description provided for @notesOptional.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Notes (optional)'**
   String get notesOptional;
 
-  /// No description provided for @growthRecords.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Growth Records'**
   String get growthRecords;
 
-  /// No description provided for @deleteThisBabyData.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Delete this baby\'s data'**
   String get deleteThisBabyData;
 
-  /// No description provided for @otherBabiesUnaffected.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Other babies are not affected'**
   String get otherBabiesUnaffected;
 
-  /// No description provided for @onlyThisBabyPrefix.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Only '**
   String get onlyThisBabyPrefix;
 
-  /// No description provided for @allRecordsWillBeDeleted.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **' baby\'s records will be deleted.'**
   String get allRecordsWillBeDeleted;
 
-  /// No description provided for @deleteActionIrreversible.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Other babies are not affected. This action cannot be undone.'**
   String get deleteActionIrreversible;
 
-  /// No description provided for @birth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Birth'**
@@ -2336,85 +2336,85 @@ abstract class AppLocalizations {
   /// **'{month}. Month'**
   String monthNumber(int month);
 
-  /// No description provided for @selectMonth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Select month'**
   String get selectMonth;
 
-  /// No description provided for @otherMonth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Other month'**
   String get otherMonth;
 
-  /// No description provided for @period.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Period'**
   String get period;
 
-  /// No description provided for @status.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Status'**
   String get status;
 
-  /// No description provided for @scheduledDate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Scheduled Date'**
   String get scheduledDate;
 
-  /// No description provided for @editVaccine.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Vaccine'**
   String get editVaccine;
 
-  /// No description provided for @vaccineName.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccine Name'**
   String get vaccineName;
 
-  /// No description provided for @allLabel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'All'**
   String get allLabel;
 
-  /// No description provided for @routineFilter.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Routine'**
   String get routineFilter;
 
-  /// No description provided for @asNeededFilter.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'As-needed'**
   String get asNeededFilter;
 
-  /// No description provided for @vaccineProtocolsFilter.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccine protocols'**
   String get vaccineProtocolsFilter;
 
-  /// No description provided for @everyDay.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Every day'**
   String get everyDay;
 
-  /// No description provided for @asNeeded.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'As needed'**
   String get asNeeded;
 
-  /// No description provided for @vaccineProtocolLabel.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccine protocol'**
@@ -2426,7 +2426,7 @@ abstract class AppLocalizations {
   /// **'linked to {vaccine}'**
   String linkedToVaccine(String vaccine);
 
-  /// No description provided for @noVaccineLink.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No linked vaccine'**
@@ -2438,61 +2438,61 @@ abstract class AppLocalizations {
   /// **'Doses logged: {count}'**
   String doseCountLabel(int count);
 
-  /// No description provided for @logGivenNow.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Log given now'**
   String get logGivenNow;
 
-  /// No description provided for @medicationDoseLogged.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Dose logged'**
   String get medicationDoseLogged;
 
-  /// No description provided for @scheduleType.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Schedule type'**
   String get scheduleType;
 
-  /// No description provided for @dailySchedule.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Daily'**
   String get dailySchedule;
 
-  /// No description provided for @prnSchedule.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'As-needed'**
   String get prnSchedule;
 
-  /// No description provided for @dailyTimeRequired.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add at least one daily time'**
   String get dailyTimeRequired;
 
-  /// No description provided for @activate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Activate'**
   String get activate;
 
-  /// No description provided for @deactivate.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Deactivate'**
   String get deactivate;
 
-  /// No description provided for @active.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Active'**
   String get active;
 
-  /// No description provided for @inactive.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Inactive'**
@@ -2504,7 +2504,7 @@ abstract class AppLocalizations {
   /// **'{name} reminder'**
   String medicationReminderTitle(String name);
 
-  /// No description provided for @medicationReminderBody.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Time to give this medication'**
@@ -2516,25 +2516,25 @@ abstract class AppLocalizations {
   /// **'Dose: {dose}'**
   String medicationReminderBodyWithDose(String dose);
 
-  /// No description provided for @addVaccineProtocol.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Add vaccine protocol'**
   String get addVaccineProtocol;
 
-  /// No description provided for @createNew.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Create new'**
   String get createNew;
 
-  /// No description provided for @chooseExistingMedication.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Choose existing medication'**
   String get chooseExistingMedication;
 
-  /// No description provided for @feverReducerHint.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Fever reducer'**
@@ -2552,103 +2552,103 @@ abstract class AppLocalizations {
   /// **'After: {hours}h'**
   String afterHours(int hours);
 
-  /// No description provided for @vaccineProtocolAdded.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Vaccine protocol added'**
   String get vaccineProtocolAdded;
 
-  /// No description provided for @time.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Time'**
   String get time;
 
-  /// No description provided for @diaperWet.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Wet'**
   String get diaperWet;
 
-  /// No description provided for @diaperDirty.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Dirty'**
   String get diaperDirty;
 
-  /// No description provided for @diaperBoth.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Both'**
   String get diaperBoth;
 
-  /// No description provided for @eventTimeTooOld.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Selected time must be within the last 48 hours'**
   String get eventTimeTooOld;
 
-  /// No description provided for @editTitleFeeding.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Feeding'**
   String get editTitleFeeding;
 
-  /// No description provided for @editTitleDiaper.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Diaper'**
   String get editTitleDiaper;
 
-  /// No description provided for @editTitleSleep.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Sleep'**
   String get editTitleSleep;
 
-  /// No description provided for @editTitleNursing.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Edit Nursing'**
   String get editTitleNursing;
 
-  /// No description provided for @savedMessage.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Saved'**
   String get savedMessage;
 
-  /// No description provided for @alreadySavedRecently.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Already saved a moment ago'**
   String get alreadySavedRecently;
 
-  /// No description provided for @undo.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Undo'**
   String get undo;
 
-  /// No description provided for @yesterday.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get yesterday;
 
-  /// No description provided for @notGivenYet.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'Not given yet'**
   String get notGivenYet;
 
-  /// No description provided for @viewHistory.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'View history'**
   String get viewHistory;
 
-  /// No description provided for @noMedicationHistory.
+  /// UI text
   ///
   /// In en, this message translates to:
   /// **'No given history'**

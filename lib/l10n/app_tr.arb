@@ -2,7 +2,7 @@
   "@@locale": "tr",
   "appName": "Nilico",
   "tagline": "Ebeveynlik artik daha kolay ve unutulmaz.",
-  "freeForever": "Tamamen Ücretsiz",
+  "freeForever": "Önce Offline",
   "securePrivate": "Güvenli ve Gizli",
   "tapToStart": "Başlamak için dokun",
   "feedingTracker": "Beslenme Takibi",
@@ -318,46 +318,46 @@
   "tip_sound_hunter_desc": "Bebeğin kulağının yanında yavaşça parmak şıklat. Başını sese doğru çevirmeye çalışacaktır.",
   "tip_touch_explore_title": "Dokunma Keşfi",
   "tip_touch_explore_desc": "Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.",
-  "tip_tip_agu_conversation_1_2_title": "Agu Sohbetleri",
-  "tip_tip_agu_conversation_1_2_desc": "Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.",
-  "tip_tip_tummy_time_strength_1_2_title": "Güçlü Omuzlar (Tummy Time)",
-  "tip_tip_tummy_time_strength_1_2_desc": "Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.",
-  "tip_tip_baby_massage_1_2_title": "Huzur Masajı",
-  "tip_tip_baby_massage_1_2_desc": "Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.",
-  "tip_tip_gesture_speech_1_2_title": "İşaretli Konuşma",
-  "tip_tip_gesture_speech_1_2_desc": "Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir",
-  "tip_tip_open_hands_1_2_title": "Özgür Parmaklar",
-  "tip_tip_open_hands_1_2_desc": "Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.",
-  "tip_tip_side_by_side_bonding_1_2_title": "Yan Yana Keyif",
-  "tip_tip_side_by_side_bonding_1_2_desc": "Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.",
-  "tip_tip_sound_hunter_title": "Ses Avcısı",
-  "tip_tip_sound_hunter_desc": "Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.",
-  "tip_tip_sound_hunter_level2_1_2_title": "Ses Avcısı (Seviye 2)",
-  "tip_tip_sound_hunter_level2_1_2_desc": "Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.",
-  "tip_tip_texture_discovery_1_2_title": "Dokun ve Keşfet",
-  "tip_tip_texture_discovery_1_2_desc": "Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.",
-  "tip_tip_outdoor_explorer_4_5_title": "Dış Dünya Kaşifi",
-  "tip_tip_outdoor_explorer_4_5_desc": "Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.",
-  "tip_tip_reaching_exercise_1_2_title": "Uzanma Antrenmanı",
-  "tip_tip_reaching_exercise_1_2_desc": "Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.",
-  "tip_tip_supported_bounce_1_2_title": "Diz Üstü Yaylanma",
-  "tip_tip_supported_bounce_1_2_desc": "Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.",
-  "tip_tip_visual_tracking_1_2_title": "Görsel Takip",
-  "tip_tip_visual_tracking_1_2_desc": "Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.",
-  "tip_tip_face_play_1_2_title": "Mimik Dansı",
-  "tip_tip_face_play_1_2_desc": "Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.",
-  "tip_tip_emotion_labeling_1_2_title": "Duygu",
-  "tip_tip_emotion_labeling_1_2_desc": "Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.",
-  "tip_tip_first_meal_title": "İlk Tadım",
-  "tip_tip_first_meal_desc": "Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun",
-  "tip_tip_hand_to_hand_transfer_4_5_title": "Aktif Eller",
-  "tip_tip_hand_to_hand_transfer_4_5_desc": "4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.",
-  "tip_tip_supported_sitting_4_5_title": "Destekli Oturma",
-  "tip_tip_supported_sitting_4_5_desc": "Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.",
-  "tip_tip_feet_discovery_4_5_title": "Ayaklarla Tanışma",
-  "tip_tip_feet_discovery_4_5_desc": "Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.",
-  "tip_tip_independent_play_4_5_title": "Kendi Başına Oyun",
-  "tip_tip_independent_play_4_5_desc": "Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.",
+  "tip_agu_conversation_1_2_title": "Agu Sohbetleri",
+  "tip_agu_conversation_1_2_desc": "Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.",
+  "tip_tummy_time_strength_1_2_title": "Güçlü Omuzlar (Tummy Time)",
+  "tip_tummy_time_strength_1_2_desc": "Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.",
+  "tip_baby_massage_1_2_title": "Huzur Masajı",
+  "tip_baby_massage_1_2_desc": "Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.",
+  "tip_gesture_speech_1_2_title": "İşaretli Konuşma",
+  "tip_gesture_speech_1_2_desc": "Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir",
+  "tip_open_hands_1_2_title": "Özgür Parmaklar",
+  "tip_open_hands_1_2_desc": "Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.",
+  "tip_side_by_side_bonding_1_2_title": "Yan Yana Keyif",
+  "tip_side_by_side_bonding_1_2_desc": "Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.",
+  "tip_sound_hunter_listening_title": "Ses Avcısı",
+  "tip_sound_hunter_listening_desc": "Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.",
+  "tip_sound_hunter_level2_1_2_title": "Ses Avcısı (Seviye 2)",
+  "tip_sound_hunter_level2_1_2_desc": "Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.",
+  "tip_texture_discovery_1_2_title": "Dokun ve Keşfet",
+  "tip_texture_discovery_1_2_desc": "Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.",
+  "tip_outdoor_explorer_4_5_title": "Dış Dünya Kaşifi",
+  "tip_outdoor_explorer_4_5_desc": "Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.",
+  "tip_reaching_exercise_1_2_title": "Uzanma Antrenmanı",
+  "tip_reaching_exercise_1_2_desc": "Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.",
+  "tip_supported_bounce_1_2_title": "Diz Üstü Yaylanma",
+  "tip_supported_bounce_1_2_desc": "Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.",
+  "tip_visual_tracking_1_2_title": "Görsel Takip",
+  "tip_visual_tracking_1_2_desc": "Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.",
+  "tip_face_play_1_2_title": "Mimik Dansı",
+  "tip_face_play_1_2_desc": "Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.",
+  "tip_emotion_labeling_1_2_title": "Duygu",
+  "tip_emotion_labeling_1_2_desc": "Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.",
+  "tip_first_meal_title": "İlk Tadım",
+  "tip_first_meal_desc": "Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun",
+  "tip_hand_to_hand_transfer_4_5_title": "Aktif Eller",
+  "tip_hand_to_hand_transfer_4_5_desc": "4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.",
+  "tip_supported_sitting_4_5_title": "Destekli Oturma",
+  "tip_supported_sitting_4_5_desc": "Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.",
+  "tip_feet_discovery_4_5_title": "Ayaklarla Tanışma",
+  "tip_feet_discovery_4_5_desc": "Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.",
+  "tip_independent_play_4_5_title": "Kendi Başına Oyun",
+  "tip_independent_play_4_5_desc": "Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.",
   "@ageYears": {
     "placeholders": {
       "count": {
@@ -530,5 +530,1238 @@
         "type": "String"
       }
     }
+  },
+  "@appName": {
+    "description": "UI text"
+  },
+  "@tagline": {
+    "description": "UI text"
+  },
+  "@freeForever": {
+    "description": "UI text"
+  },
+  "@securePrivate": {
+    "description": "UI text"
+  },
+  "@tapToStart": {
+    "description": "UI text"
+  },
+  "@feedingTracker": {
+    "description": "UI text"
+  },
+  "@feedingTrackerDesc": {
+    "description": "UI text"
+  },
+  "@sleepPatterns": {
+    "description": "UI text"
+  },
+  "@sleepPatternsDesc": {
+    "description": "UI text"
+  },
+  "@growthCharts": {
+    "description": "UI text"
+  },
+  "@growthChartsDesc": {
+    "description": "UI text"
+  },
+  "@preciousMemories": {
+    "description": "UI text"
+  },
+  "@preciousMemoriesDesc": {
+    "description": "UI text"
+  },
+  "@dailyRhythm": {
+    "description": "UI text"
+  },
+  "@dailyRhythmDesc": {
+    "description": "UI text"
+  },
+  "@skip": {
+    "description": "UI text"
+  },
+  "@startYourJourney": {
+    "description": "UI text"
+  },
+  "@continueBtn": {
+    "description": "UI text"
+  },
+  "@save": {
+    "description": "UI text"
+  },
+  "@update": {
+    "description": "UI text"
+  },
+  "@cancel": {
+    "description": "UI text"
+  },
+  "@delete": {
+    "description": "UI text"
+  },
+  "@edit": {
+    "description": "UI text"
+  },
+  "@ok": {
+    "description": "UI text"
+  },
+  "@add": {
+    "description": "UI text"
+  },
+  "@yes": {
+    "description": "UI text"
+  },
+  "@no": {
+    "description": "UI text"
+  },
+  "@share": {
+    "description": "UI text"
+  },
+  "@mlAbbrev": {
+    "description": "UI text"
+  },
+  "@selectTime": {
+    "description": "UI text"
+  },
+  "@tapToSetTime": {
+    "description": "UI text"
+  },
+  "@notificationSleepFired": {
+    "description": "UI text"
+  },
+  "@notificationNursingFired": {
+    "description": "UI text"
+  },
+  "@signedOutSuccessfully": {
+    "description": "UI text"
+  },
+  "@allDataDeleted": {
+    "description": "UI text"
+  },
+  "@webPhotoUploadUnsupported": {
+    "description": "UI text"
+  },
+  "@babyNameHint": {
+    "description": "UI text"
+  },
+  "@babyNotesHint": {
+    "description": "UI text"
+  },
+  "@vaccineNameHint": {
+    "description": "UI text"
+  },
+  "@vaccineDoseHint": {
+    "description": "UI text"
+  },
+  "@vaccineNameCannotBeEmpty": {
+    "description": "UI text"
+  },
+  "@growthWeightHint": {
+    "description": "UI text"
+  },
+  "@growthHeightHint": {
+    "description": "UI text"
+  },
+  "@growthNotesHint": {
+    "description": "UI text"
+  },
+  "@pleaseEnterWeightHeight": {
+    "description": "UI text"
+  },
+  "@memoryTitleHint": {
+    "description": "UI text"
+  },
+  "@memoryNoteHint": {
+    "description": "UI text"
+  },
+  "@home": {
+    "description": "UI text"
+  },
+  "@activities": {
+    "description": "UI text"
+  },
+  "@vaccines": {
+    "description": "UI text"
+  },
+  "@development": {
+    "description": "UI text"
+  },
+  "@memories": {
+    "description": "UI text"
+  },
+  "@settings": {
+    "description": "UI text"
+  },
+  "@addActivity": {
+    "description": "UI text"
+  },
+  "@whatHappened": {
+    "description": "UI text"
+  },
+  "@nursing": {
+    "description": "UI text"
+  },
+  "@bottle": {
+    "description": "UI text"
+  },
+  "@sleep": {
+    "description": "UI text"
+  },
+  "@diaper": {
+    "description": "UI text"
+  },
+  "@side": {
+    "description": "UI text"
+  },
+  "@left": {
+    "description": "UI text"
+  },
+  "@right": {
+    "description": "UI text"
+  },
+  "@duration": {
+    "description": "UI text"
+  },
+  "@minAbbrev": {
+    "description": "UI text"
+  },
+  "@hourAbbrev": {
+    "description": "UI text"
+  },
+  "@category": {
+    "description": "UI text"
+  },
+  "@milk": {
+    "description": "UI text"
+  },
+  "@solid": {
+    "description": "UI text"
+  },
+  "@whatWasGiven": {
+    "description": "UI text"
+  },
+  "@solidFoodHint": {
+    "description": "UI text"
+  },
+  "@amount": {
+    "description": "UI text"
+  },
+  "@milkType": {
+    "description": "UI text"
+  },
+  "@breastMilk": {
+    "description": "UI text"
+  },
+  "@formula": {
+    "description": "UI text"
+  },
+  "@sleepStartedAt": {
+    "description": "UI text"
+  },
+  "@wokeUpAt": {
+    "description": "UI text"
+  },
+  "@tapToSet": {
+    "description": "UI text"
+  },
+  "@totalSleep": {
+    "description": "UI text"
+  },
+  "@type": {
+    "description": "UI text"
+  },
+  "@healthType": {
+    "description": "UI text"
+  },
+  "@healthTime": {
+    "description": "UI text"
+  },
+  "@wet": {
+    "description": "UI text"
+  },
+  "@dirty": {
+    "description": "UI text"
+  },
+  "@both": {
+    "description": "UI text"
+  },
+  "@optionalNotes": {
+    "description": "UI text"
+  },
+  "@diaperNoteHint": {
+    "description": "UI text"
+  },
+  "@pleaseSetDuration": {
+    "description": "UI text"
+  },
+  "@pleaseSetAmount": {
+    "description": "UI text"
+  },
+  "@pleaseSetWakeUpTime": {
+    "description": "UI text"
+  },
+  "@sleepDurationMustBeGreater": {
+    "description": "UI text"
+  },
+  "@today": {
+    "description": "UI text"
+  },
+  "@summary": {
+    "description": "UI text"
+  },
+  "@recentActivities": {
+    "description": "UI text"
+  },
+  "@record": {
+    "description": "UI text"
+  },
+  "@records": {
+    "description": "UI text"
+  },
+  "@breastfeeding": {
+    "description": "UI text"
+  },
+  "@bottleBreastMilk": {
+    "description": "UI text"
+  },
+  "@total": {
+    "description": "UI text"
+  },
+  "@diaperChange": {
+    "description": "UI text"
+  },
+  "@firstFeedingTime": {
+    "description": "UI text"
+  },
+  "@trackBabyFeeding": {
+    "description": "UI text"
+  },
+  "@diaperChangeTime": {
+    "description": "UI text"
+  },
+  "@trackHygiene": {
+    "description": "UI text"
+  },
+  "@sweetDreams": {
+    "description": "UI text"
+  },
+  "@trackSleepPattern": {
+    "description": "UI text"
+  },
+  "@selectAnotherDate": {
+    "description": "UI text"
+  },
+  "@editFeeding": {
+    "description": "UI text"
+  },
+  "@editDiaper": {
+    "description": "UI text"
+  },
+  "@editSleep": {
+    "description": "UI text"
+  },
+  "@start": {
+    "description": "UI text"
+  },
+  "@end": {
+    "description": "UI text"
+  },
+  "@attention": {
+    "description": "UI text"
+  },
+  "@deleteConfirm": {
+    "description": "UI text"
+  },
+  "@myVaccines": {
+    "description": "UI text"
+  },
+  "@addVaccine": {
+    "description": "UI text"
+  },
+  "@applied": {
+    "description": "UI text"
+  },
+  "@pending": {
+    "description": "UI text"
+  },
+  "@upcomingVaccines": {
+    "description": "UI text"
+  },
+  "@completedVaccines": {
+    "description": "UI text"
+  },
+  "@selectDate": {
+    "description": "UI text"
+  },
+  "@calendar": {
+    "description": "UI text"
+  },
+  "@turkishVaccineCalendar": {
+    "description": "UI text"
+  },
+  "@vaccinesAvailable": {
+    "description": "UI text"
+  },
+  "@selectAll": {
+    "description": "UI text"
+  },
+  "@clear": {
+    "description": "UI text"
+  },
+  "@alreadyAdded": {
+    "description": "UI text"
+  },
+  "@addVaccines": {
+    "description": "UI text"
+  },
+  "@selectVaccine": {
+    "description": "UI text"
+  },
+  "@vaccinesAdded": {
+    "description": "UI text"
+  },
+  "@noVaccineRecords": {
+    "description": "UI text"
+  },
+  "@loadTurkishCalendar": {
+    "description": "UI text"
+  },
+  "@loadTurkishVaccineCalendar": {
+    "description": "UI text"
+  },
+  "@loadCalendarTitle": {
+    "description": "UI text"
+  },
+  "@loadCalendarDesc": {
+    "description": "UI text"
+  },
+  "@ageYearsMonths": {
+    "description": "UI text"
+  },
+  "@ageMonthsDays": {
+    "description": "UI text"
+  },
+  "@weeklyReport": {
+    "description": "UI text"
+  },
+  "@monthlyReport": {
+    "description": "UI text"
+  },
+  "@weekly": {
+    "description": "UI text"
+  },
+  "@monthly": {
+    "description": "UI text"
+  },
+  "@feeding": {
+    "description": "UI text"
+  },
+  "@totalBreastfeeding": {
+    "description": "UI text"
+  },
+  "@totalDuration": {
+    "description": "UI text"
+  },
+  "@dailyAvg": {
+    "description": "UI text"
+  },
+  "@avgDuration": {
+    "description": "UI text"
+  },
+  "@leftBreast": {
+    "description": "UI text"
+  },
+  "@rightBreast": {
+    "description": "UI text"
+  },
+  "@solidFood": {
+    "description": "UI text"
+  },
+  "@diaperChanges": {
+    "description": "UI text"
+  },
+  "@longestSleep": {
+    "description": "UI text"
+  },
+  "@sleepCount": {
+    "description": "UI text"
+  },
+  "@growth": {
+    "description": "UI text"
+  },
+  "@height": {
+    "description": "UI text"
+  },
+  "@weight": {
+    "description": "UI text"
+  },
+  "@saveAsPdf": {
+    "description": "UI text"
+  },
+  "@pdfMobileOnly": {
+    "description": "UI text"
+  },
+  "@sharingMobileOnly": {
+    "description": "UI text"
+  },
+  "@pdfSaved": {
+    "description": "UI text"
+  },
+  "@babyTrackerReport": {
+    "description": "UI text"
+  },
+  "@generatedWith": {
+    "description": "UI text"
+  },
+  "@months": {
+    "description": "UI text"
+  },
+  "@january": {
+    "description": "UI text"
+  },
+  "@february": {
+    "description": "UI text"
+  },
+  "@march": {
+    "description": "UI text"
+  },
+  "@april": {
+    "description": "UI text"
+  },
+  "@may": {
+    "description": "UI text"
+  },
+  "@june": {
+    "description": "UI text"
+  },
+  "@july": {
+    "description": "UI text"
+  },
+  "@august": {
+    "description": "UI text"
+  },
+  "@september": {
+    "description": "UI text"
+  },
+  "@october": {
+    "description": "UI text"
+  },
+  "@november": {
+    "description": "UI text"
+  },
+  "@december": {
+    "description": "UI text"
+  },
+  "@addOptionalNote": {
+    "description": "UI text"
+  },
+  "@times": {
+    "description": "UI text"
+  },
+  "@feeding_tab": {
+    "description": "UI text"
+  },
+  "@diaper_tab": {
+    "description": "UI text"
+  },
+  "@sleep_tab": {
+    "description": "UI text"
+  },
+  "@list": {
+    "description": "UI text"
+  },
+  "@chart": {
+    "description": "UI text"
+  },
+  "@noMeasurements": {
+    "description": "UI text"
+  },
+  "@addMeasurements": {
+    "description": "UI text"
+  },
+  "@moreDataNeeded": {
+    "description": "UI text"
+  },
+  "@addMoreMeasurements": {
+    "description": "UI text"
+  },
+  "@atLeast2Measurements": {
+    "description": "UI text"
+  },
+  "@growthTracking": {
+    "description": "UI text"
+  },
+  "@feedingTimer": {
+    "description": "UI text"
+  },
+  "@sleepingTimer": {
+    "description": "UI text"
+  },
+  "@stopAndSave": {
+    "description": "UI text"
+  },
+  "@activeTimer": {
+    "description": "UI text"
+  },
+  "@lastFed": {
+    "description": "UI text"
+  },
+  "@lastDiaper": {
+    "description": "UI text"
+  },
+  "@lastSleep": {
+    "description": "UI text"
+  },
+  "@recentActivity": {
+    "description": "UI text"
+  },
+  "@seeHistory": {
+    "description": "UI text"
+  },
+  "@noActivitiesLast24h": {
+    "description": "UI text"
+  },
+  "@bottleFeeding": {
+    "description": "UI text"
+  },
+  "@trackYourBabyGrowth": {
+    "description": "UI text"
+  },
+  "@addHeightWeightMeasurements": {
+    "description": "UI text"
+  },
+  "@addFirstMeasurement": {
+    "description": "UI text"
+  },
+  "@lastUpdatedToday": {
+    "description": "UI text"
+  },
+  "@lastUpdated1Day": {
+    "description": "UI text"
+  },
+  "@lastUpdatedDays": {
+    "description": "UI text"
+  },
+  "@viewGrowthCharts": {
+    "description": "UI text"
+  },
+  "@weightLabel": {
+    "description": "UI text"
+  },
+  "@heightLabel": {
+    "description": "UI text"
+  },
+  "@mAgo": {
+    "description": "UI text"
+  },
+  "@hmAgo": {
+    "description": "UI text"
+  },
+  "@dAgo": {
+    "description": "UI text"
+  },
+  "@noRecordsYet": {
+    "description": "UI text"
+  },
+  "@dailyTip": {
+    "description": "UI text"
+  },
+  "@allTips": {
+    "description": "UI text"
+  },
+  "@upcomingVaccine": {
+    "description": "UI text"
+  },
+  "@nextVaccineLabel": {
+    "description": "UI text"
+  },
+  "@leftMinRightMin": {
+    "description": "UI text"
+  },
+  "@breastfeedingSavedSnack": {
+    "description": "UI text"
+  },
+  "@sleepSavedSnack": {
+    "description": "UI text"
+  },
+  "@sleepTooShort": {
+    "description": "UI text"
+  },
+  "@kgThisMonth": {
+    "description": "UI text"
+  },
+  "@cmThisMonth": {
+    "description": "UI text"
+  },
+  "@noSleep": {
+    "description": "UI text"
+  },
+  "@justNow": {
+    "description": "UI text"
+  },
+  "@minutesAgo": {
+    "description": "UI text"
+  },
+  "@hoursAgo": {
+    "description": "UI text"
+  },
+  "@daysAgo": {
+    "description": "UI text"
+  },
+  "@welcomeToNilico": {
+    "description": "UI text"
+  },
+  "@createYourAccount": {
+    "description": "UI text"
+  },
+  "@loginBenefitText": {
+    "description": "UI text"
+  },
+  "@signInWithApple": {
+    "description": "UI text"
+  },
+  "@signInWithGoogle": {
+    "description": "UI text"
+  },
+  "@continueWithoutLogin": {
+    "description": "UI text"
+  },
+  "@loginOptionalNote": {
+    "description": "UI text"
+  },
+  "@account": {
+    "description": "UI text"
+  },
+  "@signIn": {
+    "description": "UI text"
+  },
+  "@signOut": {
+    "description": "UI text"
+  },
+  "@signedInAs": {
+    "description": "UI text"
+  },
+  "@guestMode": {
+    "description": "UI text"
+  },
+  "@signInToProtectData": {
+    "description": "UI text"
+  },
+  "@backupSyncComingSoon": {
+    "description": "UI text"
+  },
+  "@privacyPolicy": {
+    "description": "UI text"
+  },
+  "@privacyPolicySubtitle": {
+    "description": "UI text"
+  },
+  "@termsOfUse": {
+    "description": "UI text"
+  },
+  "@termsOfUseSubtitle": {
+    "description": "UI text"
+  },
+  "@pageCouldNotOpen": {
+    "description": "UI text"
+  },
+  "@health": {
+    "description": "UI text"
+  },
+  "@medications": {
+    "description": "UI text"
+  },
+  "@noMedications": {
+    "description": "UI text"
+  },
+  "@medication": {
+    "description": "UI text"
+  },
+  "@supplement": {
+    "description": "UI text"
+  },
+  "@addMedication": {
+    "description": "UI text"
+  },
+  "@editMedication": {
+    "description": "UI text"
+  },
+  "@medicationName": {
+    "description": "UI text"
+  },
+  "@medicationNameRequired": {
+    "description": "UI text"
+  },
+  "@dosage": {
+    "description": "UI text"
+  },
+  "@schedule": {
+    "description": "UI text"
+  },
+  "@notes": {
+    "description": "UI text"
+  },
+  "@language": {
+    "description": "UI text"
+  },
+  "@systemDefault": {
+    "description": "UI text"
+  },
+  "@turkish": {
+    "description": "UI text"
+  },
+  "@english": {
+    "description": "UI text"
+  },
+  "@russian": {
+    "description": "UI text"
+  },
+  "@ukrainian": {
+    "description": "UI text"
+  },
+  "@spanish": {
+    "description": "UI text"
+  },
+  "@languageUpdated": {
+    "description": "UI text"
+  },
+  "@tip_siyah_mekonyum_title": {
+    "description": "UI text"
+  },
+  "@tip_siyah_mekonyum_desc": {
+    "description": "UI text"
+  },
+  "@tip_eye_tracking_title": {
+    "description": "UI text"
+  },
+  "@tip_eye_tracking_desc": {
+    "description": "UI text"
+  },
+  "@tip_neck_support_title": {
+    "description": "UI text"
+  },
+  "@tip_neck_support_desc": {
+    "description": "UI text"
+  },
+  "@tip_reflex_stepping_title": {
+    "description": "UI text"
+  },
+  "@tip_reflex_stepping_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_interest_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_interest_desc": {
+    "description": "UI text"
+  },
+  "@tip_parent_interaction_title": {
+    "description": "UI text"
+  },
+  "@tip_parent_interaction_desc": {
+    "description": "UI text"
+  },
+  "@tip_color_worlds_title": {
+    "description": "UI text"
+  },
+  "@tip_color_worlds_desc": {
+    "description": "UI text"
+  },
+  "@tip_mini_athlete_title": {
+    "description": "UI text"
+  },
+  "@tip_mini_athlete_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_desc": {
+    "description": "UI text"
+  },
+  "@tip_touch_explore_title": {
+    "description": "UI text"
+  },
+  "@tip_touch_explore_desc": {
+    "description": "UI text"
+  },
+  "@tip_agu_conversation_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_agu_conversation_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_tummy_time_strength_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_tummy_time_strength_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_baby_massage_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_baby_massage_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_gesture_speech_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_gesture_speech_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_open_hands_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_open_hands_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_side_by_side_bonding_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_side_by_side_bonding_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_listening_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_listening_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_level2_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_level2_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_texture_discovery_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_texture_discovery_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_outdoor_explorer_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_outdoor_explorer_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_reaching_exercise_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_reaching_exercise_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_supported_bounce_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_supported_bounce_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_visual_tracking_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_visual_tracking_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_face_play_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_face_play_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_emotion_labeling_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_emotion_labeling_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_first_meal_title": {
+    "description": "UI text"
+  },
+  "@tip_first_meal_desc": {
+    "description": "UI text"
+  },
+  "@tip_hand_to_hand_transfer_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_hand_to_hand_transfer_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_supported_sitting_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_supported_sitting_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_feet_discovery_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_feet_discovery_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_independent_play_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_independent_play_4_5_desc": {
+    "description": "UI text"
+  },
+  "@appPreferences": {
+    "description": "UI text"
+  },
+  "@appearance": {
+    "description": "UI text"
+  },
+  "@darkMode": {
+    "description": "UI text"
+  },
+  "@darkModeSubtitle": {
+    "description": "UI text"
+  },
+  "@notifications": {
+    "description": "UI text"
+  },
+  "@feedingReminder": {
+    "description": "UI text"
+  },
+  "@diaperReminder": {
+    "description": "UI text"
+  },
+  "@off": {
+    "description": "UI text"
+  },
+  "@reminderTime": {
+    "description": "UI text"
+  },
+  "@dataManagement": {
+    "description": "UI text"
+  },
+  "@createReport": {
+    "description": "UI text"
+  },
+  "@weeklyMonthlyStats": {
+    "description": "UI text"
+  },
+  "@deleteAllDataTitle": {
+    "description": "UI text"
+  },
+  "@deleteAllDataSubtitle": {
+    "description": "UI text"
+  },
+  "@about": {
+    "description": "UI text"
+  },
+  "@version": {
+    "description": "UI text"
+  },
+  "@developer": {
+    "description": "UI text"
+  },
+  "@deleteAllDataWarning": {
+    "description": "UI text"
+  },
+  "@debug": {
+    "description": "UI text"
+  },
+  "@testSleepNotification": {
+    "description": "UI text"
+  },
+  "@fireSleepNotificationNow": {
+    "description": "UI text"
+  },
+  "@testNursingNotification": {
+    "description": "UI text"
+  },
+  "@fireNursingNotificationNow": {
+    "description": "UI text"
+  },
+  "@user": {
+    "description": "UI text"
+  },
+  "@selectBaby": {
+    "description": "UI text"
+  },
+  "@newBabyAdd": {
+    "description": "UI text"
+  },
+  "@babyProfileTitle": {
+    "description": "UI text"
+  },
+  "@babyInformation": {
+    "description": "UI text"
+  },
+  "@addPhoto": {
+    "description": "UI text"
+  },
+  "@changePhoto": {
+    "description": "UI text"
+  },
+  "@removePhoto": {
+    "description": "UI text"
+  },
+  "@birthDateLabel": {
+    "description": "UI text"
+  },
+  "@notesOptional": {
+    "description": "UI text"
+  },
+  "@growthRecords": {
+    "description": "UI text"
+  },
+  "@deleteThisBabyData": {
+    "description": "UI text"
+  },
+  "@otherBabiesUnaffected": {
+    "description": "UI text"
+  },
+  "@onlyThisBabyPrefix": {
+    "description": "UI text"
+  },
+  "@allRecordsWillBeDeleted": {
+    "description": "UI text"
+  },
+  "@deleteActionIrreversible": {
+    "description": "UI text"
+  },
+  "@birth": {
+    "description": "UI text"
+  },
+  "@selectMonth": {
+    "description": "UI text"
+  },
+  "@otherMonth": {
+    "description": "UI text"
+  },
+  "@period": {
+    "description": "UI text"
+  },
+  "@status": {
+    "description": "UI text"
+  },
+  "@scheduledDate": {
+    "description": "UI text"
+  },
+  "@editVaccine": {
+    "description": "UI text"
+  },
+  "@vaccineName": {
+    "description": "UI text"
+  },
+  "@allLabel": {
+    "description": "UI text"
+  },
+  "@routineFilter": {
+    "description": "UI text"
+  },
+  "@asNeededFilter": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolsFilter": {
+    "description": "UI text"
+  },
+  "@everyDay": {
+    "description": "UI text"
+  },
+  "@asNeeded": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolLabel": {
+    "description": "UI text"
+  },
+  "@noVaccineLink": {
+    "description": "UI text"
+  },
+  "@logGivenNow": {
+    "description": "UI text"
+  },
+  "@medicationDoseLogged": {
+    "description": "UI text"
+  },
+  "@scheduleType": {
+    "description": "UI text"
+  },
+  "@dailySchedule": {
+    "description": "UI text"
+  },
+  "@prnSchedule": {
+    "description": "UI text"
+  },
+  "@dailyTimeRequired": {
+    "description": "UI text"
+  },
+  "@activate": {
+    "description": "UI text"
+  },
+  "@deactivate": {
+    "description": "UI text"
+  },
+  "@active": {
+    "description": "UI text"
+  },
+  "@inactive": {
+    "description": "UI text"
+  },
+  "@medicationReminderBody": {
+    "description": "UI text"
+  },
+  "@addVaccineProtocol": {
+    "description": "UI text"
+  },
+  "@createNew": {
+    "description": "UI text"
+  },
+  "@chooseExistingMedication": {
+    "description": "UI text"
+  },
+  "@feverReducerHint": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolAdded": {
+    "description": "UI text"
+  },
+  "@time": {
+    "description": "UI text"
+  },
+  "@diaperWet": {
+    "description": "UI text"
+  },
+  "@diaperDirty": {
+    "description": "UI text"
+  },
+  "@diaperBoth": {
+    "description": "UI text"
+  },
+  "@eventTimeTooOld": {
+    "description": "UI text"
+  },
+  "@editTitleFeeding": {
+    "description": "UI text"
+  },
+  "@editTitleDiaper": {
+    "description": "UI text"
+  },
+  "@editTitleSleep": {
+    "description": "UI text"
+  },
+  "@editTitleNursing": {
+    "description": "UI text"
+  },
+  "@savedMessage": {
+    "description": "UI text"
+  },
+  "@alreadySavedRecently": {
+    "description": "UI text"
+  },
+  "@undo": {
+    "description": "UI text"
+  },
+  "@yesterday": {
+    "description": "UI text"
+  },
+  "@notGivenYet": {
+    "description": "UI text"
+  },
+  "@viewHistory": {
+    "description": "UI text"
+  },
+  "@noMedicationHistory": {
+    "description": "UI text"
   }
 }

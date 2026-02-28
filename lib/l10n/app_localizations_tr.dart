@@ -15,7 +15,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tagline => 'Ebeveynlik artik daha kolay ve unutulmaz.';
 
   @override
-  String get freeForever => 'Tamamen Ücretsiz';
+  String get freeForever => 'Önce Offline';
 
   @override
   String get securePrivate => 'Güvenli ve Gizli';
@@ -963,144 +963,143 @@ class AppLocalizationsTr extends AppLocalizations {
       'Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.';
 
   @override
-  String get tip_tip_agu_conversation_1_2_title => 'Agu Sohbetleri';
+  String get tip_agu_conversation_1_2_title => 'Agu Sohbetleri';
 
   @override
-  String get tip_tip_agu_conversation_1_2_desc =>
+  String get tip_agu_conversation_1_2_desc =>
       'Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_title =>
-      'Güçlü Omuzlar (Tummy Time)';
+  String get tip_tummy_time_strength_1_2_title => 'Güçlü Omuzlar (Tummy Time)';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_desc =>
+  String get tip_tummy_time_strength_1_2_desc =>
       'Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.';
 
   @override
-  String get tip_tip_baby_massage_1_2_title => 'Huzur Masajı';
+  String get tip_baby_massage_1_2_title => 'Huzur Masajı';
 
   @override
-  String get tip_tip_baby_massage_1_2_desc =>
+  String get tip_baby_massage_1_2_desc =>
       'Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.';
 
   @override
-  String get tip_tip_gesture_speech_1_2_title => 'İşaretli Konuşma';
+  String get tip_gesture_speech_1_2_title => 'İşaretli Konuşma';
 
   @override
-  String get tip_tip_gesture_speech_1_2_desc =>
+  String get tip_gesture_speech_1_2_desc =>
       'Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir';
 
   @override
-  String get tip_tip_open_hands_1_2_title => 'Özgür Parmaklar';
+  String get tip_open_hands_1_2_title => 'Özgür Parmaklar';
 
   @override
-  String get tip_tip_open_hands_1_2_desc =>
+  String get tip_open_hands_1_2_desc =>
       'Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_title => 'Yan Yana Keyif';
+  String get tip_side_by_side_bonding_1_2_title => 'Yan Yana Keyif';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_desc =>
+  String get tip_side_by_side_bonding_1_2_desc =>
       'Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.';
 
   @override
-  String get tip_tip_sound_hunter_title => 'Ses Avcısı';
+  String get tip_sound_hunter_listening_title => 'Ses Avcısı';
 
   @override
-  String get tip_tip_sound_hunter_desc =>
+  String get tip_sound_hunter_listening_desc =>
       'Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_title => 'Ses Avcısı (Seviye 2)';
+  String get tip_sound_hunter_level2_1_2_title => 'Ses Avcısı (Seviye 2)';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_desc =>
+  String get tip_sound_hunter_level2_1_2_desc =>
       'Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.';
 
   @override
-  String get tip_tip_texture_discovery_1_2_title => 'Dokun ve Keşfet';
+  String get tip_texture_discovery_1_2_title => 'Dokun ve Keşfet';
 
   @override
-  String get tip_tip_texture_discovery_1_2_desc =>
+  String get tip_texture_discovery_1_2_desc =>
       'Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_title => 'Dış Dünya Kaşifi';
+  String get tip_outdoor_explorer_4_5_title => 'Dış Dünya Kaşifi';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_desc =>
+  String get tip_outdoor_explorer_4_5_desc =>
       'Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_title => 'Uzanma Antrenmanı';
+  String get tip_reaching_exercise_1_2_title => 'Uzanma Antrenmanı';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_desc =>
+  String get tip_reaching_exercise_1_2_desc =>
       'Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.';
 
   @override
-  String get tip_tip_supported_bounce_1_2_title => 'Diz Üstü Yaylanma';
+  String get tip_supported_bounce_1_2_title => 'Diz Üstü Yaylanma';
 
   @override
-  String get tip_tip_supported_bounce_1_2_desc =>
+  String get tip_supported_bounce_1_2_desc =>
       'Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.';
 
   @override
-  String get tip_tip_visual_tracking_1_2_title => 'Görsel Takip';
+  String get tip_visual_tracking_1_2_title => 'Görsel Takip';
 
   @override
-  String get tip_tip_visual_tracking_1_2_desc =>
+  String get tip_visual_tracking_1_2_desc =>
       'Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.';
 
   @override
-  String get tip_tip_face_play_1_2_title => 'Mimik Dansı';
+  String get tip_face_play_1_2_title => 'Mimik Dansı';
 
   @override
-  String get tip_tip_face_play_1_2_desc =>
+  String get tip_face_play_1_2_desc =>
       'Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_title => 'Duygu';
+  String get tip_emotion_labeling_1_2_title => 'Duygu';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_desc =>
+  String get tip_emotion_labeling_1_2_desc =>
       'Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.';
 
   @override
-  String get tip_tip_first_meal_title => 'İlk Tadım';
+  String get tip_first_meal_title => 'İlk Tadım';
 
   @override
-  String get tip_tip_first_meal_desc =>
+  String get tip_first_meal_desc =>
       'Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Aktif Eller';
+  String get tip_hand_to_hand_transfer_4_5_title => 'Aktif Eller';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
+  String get tip_hand_to_hand_transfer_4_5_desc =>
       '4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.';
 
   @override
-  String get tip_tip_supported_sitting_4_5_title => 'Destekli Oturma';
+  String get tip_supported_sitting_4_5_title => 'Destekli Oturma';
 
   @override
-  String get tip_tip_supported_sitting_4_5_desc =>
+  String get tip_supported_sitting_4_5_desc =>
       'Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.';
 
   @override
-  String get tip_tip_feet_discovery_4_5_title => 'Ayaklarla Tanışma';
+  String get tip_feet_discovery_4_5_title => 'Ayaklarla Tanışma';
 
   @override
-  String get tip_tip_feet_discovery_4_5_desc =>
+  String get tip_feet_discovery_4_5_desc =>
       'Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.';
 
   @override
-  String get tip_tip_independent_play_4_5_title => 'Kendi Başına Oyun';
+  String get tip_independent_play_4_5_title => 'Kendi Başına Oyun';
 
   @override
-  String get tip_tip_independent_play_4_5_desc =>
+  String get tip_independent_play_4_5_desc =>
       'Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.';
 
   @override

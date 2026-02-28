@@ -123,7 +123,8 @@ class Dil {
 
   static const String tumVerileriSil = 'Tüm Verileri Sil';
   static const String dikkat = 'Dikkat';
-  static const String silmeUyarisi = 'Tüm veriler silinecek. Bu işlem geri alınamaz!';
+  static const String silmeUyarisi =
+      'Tüm veriler silinecek. Bu işlem geri alınamaz!';
   static const String hakkinda = 'Hakkında';
   static const String versiyon = 'Versiyon';
   static const String gelistirici = 'Geliştirici';
@@ -174,6 +175,6 @@ class Dil {
     'Eylül',
     'Ekim',
     'Kasım',
-    'Aralık'
+    'Aralık',
   ];
 }

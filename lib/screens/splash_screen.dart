@@ -341,7 +341,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         decoration: BoxDecoration(
                           color: _currentPage == index
                               ? pages[_currentPage].color
-                              : pages[_currentPage].color.withOpacity(0.3),
+                              : pages[_currentPage].color.withValues(
+                                  alpha: 0.3,
+                                ),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -395,7 +397,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     elevation: 8,
-                    shadowColor: Colors.black.withOpacity(0.2),
+                    shadowColor: Colors.black.withValues(alpha: 0.2),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -437,7 +439,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               borderRadius: BorderRadius.circular(50),
               boxShadow: [
                 BoxShadow(
-                  color: data.color.withOpacity(0.15),
+                  color: data.color.withValues(alpha: 0.15),
                   blurRadius: 60,
                   spreadRadius: 10,
                   offset: const Offset(0, 20),

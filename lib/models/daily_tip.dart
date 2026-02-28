@@ -71,86 +71,86 @@ class DailyTip {
         return l10n.tip_touch_explore_title;
       case 'tip_touch_explore_desc':
         return l10n.tip_touch_explore_desc;
-      case 'tip_tip_agu_conversation_1_2_title':
-        return l10n.tip_tip_agu_conversation_1_2_title;
-      case 'tip_tip_agu_conversation_1_2_desc':
-        return l10n.tip_tip_agu_conversation_1_2_desc;
-      case 'tip_tip_tummy_time_strength_1_2_title':
-        return l10n.tip_tip_tummy_time_strength_1_2_title;
-      case 'tip_tip_tummy_time_strength_1_2_desc':
-        return l10n.tip_tip_tummy_time_strength_1_2_desc;
-      case 'tip_tip_baby_massage_1_2_title':
-        return l10n.tip_tip_baby_massage_1_2_title;
-      case 'tip_tip_baby_massage_1_2_desc':
-        return l10n.tip_tip_baby_massage_1_2_desc;
-      case 'tip_tip_gesture_speech_1_2_title':
-        return l10n.tip_tip_gesture_speech_1_2_title;
-      case 'tip_tip_gesture_speech_1_2_desc':
-        return l10n.tip_tip_gesture_speech_1_2_desc;
-      case 'tip_tip_open_hands_1_2_title':
-        return l10n.tip_tip_open_hands_1_2_title;
-      case 'tip_tip_open_hands_1_2_desc':
-        return l10n.tip_tip_open_hands_1_2_desc;
-      case 'tip_tip_side_by_side_bonding_1_2_title':
-        return l10n.tip_tip_side_by_side_bonding_1_2_title;
-      case 'tip_tip_side_by_side_bonding_1_2_desc':
-        return l10n.tip_tip_side_by_side_bonding_1_2_desc;
-      case 'tip_tip_sound_hunter_title':
-        return l10n.tip_tip_sound_hunter_title;
-      case 'tip_tip_sound_hunter_desc':
-        return l10n.tip_tip_sound_hunter_desc;
-      case 'tip_tip_sound_hunter_level2_1_2_title':
-        return l10n.tip_tip_sound_hunter_level2_1_2_title;
-      case 'tip_tip_sound_hunter_level2_1_2_desc':
-        return l10n.tip_tip_sound_hunter_level2_1_2_desc;
-      case 'tip_tip_texture_discovery_1_2_title':
-        return l10n.tip_tip_texture_discovery_1_2_title;
-      case 'tip_tip_texture_discovery_1_2_desc':
-        return l10n.tip_tip_texture_discovery_1_2_desc;
-      case 'tip_tip_outdoor_explorer_4_5_title':
-        return l10n.tip_tip_outdoor_explorer_4_5_title;
-      case 'tip_tip_outdoor_explorer_4_5_desc':
-        return l10n.tip_tip_outdoor_explorer_4_5_desc;
-      case 'tip_tip_reaching_exercise_1_2_title':
-        return l10n.tip_tip_reaching_exercise_1_2_title;
-      case 'tip_tip_reaching_exercise_1_2_desc':
-        return l10n.tip_tip_reaching_exercise_1_2_desc;
-      case 'tip_tip_supported_bounce_1_2_title':
-        return l10n.tip_tip_supported_bounce_1_2_title;
-      case 'tip_tip_supported_bounce_1_2_desc':
-        return l10n.tip_tip_supported_bounce_1_2_desc;
-      case 'tip_tip_visual_tracking_1_2_title':
-        return l10n.tip_tip_visual_tracking_1_2_title;
-      case 'tip_tip_visual_tracking_1_2_desc':
-        return l10n.tip_tip_visual_tracking_1_2_desc;
-      case 'tip_tip_face_play_1_2_title':
-        return l10n.tip_tip_face_play_1_2_title;
-      case 'tip_tip_face_play_1_2_desc':
-        return l10n.tip_tip_face_play_1_2_desc;
-      case 'tip_tip_emotion_labeling_1_2_title':
-        return l10n.tip_tip_emotion_labeling_1_2_title;
-      case 'tip_tip_emotion_labeling_1_2_desc':
-        return l10n.tip_tip_emotion_labeling_1_2_desc;
-      case 'tip_tip_first_meal_title':
-        return l10n.tip_tip_first_meal_title;
-      case 'tip_tip_first_meal_desc':
-        return l10n.tip_tip_first_meal_desc;
-      case 'tip_tip_hand_to_hand_transfer_4_5_title':
-        return l10n.tip_tip_hand_to_hand_transfer_4_5_title;
-      case 'tip_tip_hand_to_hand_transfer_4_5_desc':
-        return l10n.tip_tip_hand_to_hand_transfer_4_5_desc;
-      case 'tip_tip_supported_sitting_4_5_title':
-        return l10n.tip_tip_supported_sitting_4_5_title;
-      case 'tip_tip_supported_sitting_4_5_desc':
-        return l10n.tip_tip_supported_sitting_4_5_desc;
-      case 'tip_tip_feet_discovery_4_5_title':
-        return l10n.tip_tip_feet_discovery_4_5_title;
-      case 'tip_tip_feet_discovery_4_5_desc':
-        return l10n.tip_tip_feet_discovery_4_5_desc;
-      case 'tip_tip_independent_play_4_5_title':
-        return l10n.tip_tip_independent_play_4_5_title;
-      case 'tip_tip_independent_play_4_5_desc':
-        return l10n.tip_tip_independent_play_4_5_desc;
+      case 'tip_agu_conversation_1_2_title':
+        return l10n.tip_agu_conversation_1_2_title;
+      case 'tip_agu_conversation_1_2_desc':
+        return l10n.tip_agu_conversation_1_2_desc;
+      case 'tip_tummy_time_strength_1_2_title':
+        return l10n.tip_tummy_time_strength_1_2_title;
+      case 'tip_tummy_time_strength_1_2_desc':
+        return l10n.tip_tummy_time_strength_1_2_desc;
+      case 'tip_baby_massage_1_2_title':
+        return l10n.tip_baby_massage_1_2_title;
+      case 'tip_baby_massage_1_2_desc':
+        return l10n.tip_baby_massage_1_2_desc;
+      case 'tip_gesture_speech_1_2_title':
+        return l10n.tip_gesture_speech_1_2_title;
+      case 'tip_gesture_speech_1_2_desc':
+        return l10n.tip_gesture_speech_1_2_desc;
+      case 'tip_open_hands_1_2_title':
+        return l10n.tip_open_hands_1_2_title;
+      case 'tip_open_hands_1_2_desc':
+        return l10n.tip_open_hands_1_2_desc;
+      case 'tip_side_by_side_bonding_1_2_title':
+        return l10n.tip_side_by_side_bonding_1_2_title;
+      case 'tip_side_by_side_bonding_1_2_desc':
+        return l10n.tip_side_by_side_bonding_1_2_desc;
+      case 'tip_sound_hunter_listening_title':
+        return l10n.tip_sound_hunter_listening_title;
+      case 'tip_sound_hunter_listening_desc':
+        return l10n.tip_sound_hunter_listening_desc;
+      case 'tip_sound_hunter_level2_1_2_title':
+        return l10n.tip_sound_hunter_level2_1_2_title;
+      case 'tip_sound_hunter_level2_1_2_desc':
+        return l10n.tip_sound_hunter_level2_1_2_desc;
+      case 'tip_texture_discovery_1_2_title':
+        return l10n.tip_texture_discovery_1_2_title;
+      case 'tip_texture_discovery_1_2_desc':
+        return l10n.tip_texture_discovery_1_2_desc;
+      case 'tip_outdoor_explorer_4_5_title':
+        return l10n.tip_outdoor_explorer_4_5_title;
+      case 'tip_outdoor_explorer_4_5_desc':
+        return l10n.tip_outdoor_explorer_4_5_desc;
+      case 'tip_reaching_exercise_1_2_title':
+        return l10n.tip_reaching_exercise_1_2_title;
+      case 'tip_reaching_exercise_1_2_desc':
+        return l10n.tip_reaching_exercise_1_2_desc;
+      case 'tip_supported_bounce_1_2_title':
+        return l10n.tip_supported_bounce_1_2_title;
+      case 'tip_supported_bounce_1_2_desc':
+        return l10n.tip_supported_bounce_1_2_desc;
+      case 'tip_visual_tracking_1_2_title':
+        return l10n.tip_visual_tracking_1_2_title;
+      case 'tip_visual_tracking_1_2_desc':
+        return l10n.tip_visual_tracking_1_2_desc;
+      case 'tip_face_play_1_2_title':
+        return l10n.tip_face_play_1_2_title;
+      case 'tip_face_play_1_2_desc':
+        return l10n.tip_face_play_1_2_desc;
+      case 'tip_emotion_labeling_1_2_title':
+        return l10n.tip_emotion_labeling_1_2_title;
+      case 'tip_emotion_labeling_1_2_desc':
+        return l10n.tip_emotion_labeling_1_2_desc;
+      case 'tip_first_meal_title':
+        return l10n.tip_first_meal_title;
+      case 'tip_first_meal_desc':
+        return l10n.tip_first_meal_desc;
+      case 'tip_hand_to_hand_transfer_4_5_title':
+        return l10n.tip_hand_to_hand_transfer_4_5_title;
+      case 'tip_hand_to_hand_transfer_4_5_desc':
+        return l10n.tip_hand_to_hand_transfer_4_5_desc;
+      case 'tip_supported_sitting_4_5_title':
+        return l10n.tip_supported_sitting_4_5_title;
+      case 'tip_supported_sitting_4_5_desc':
+        return l10n.tip_supported_sitting_4_5_desc;
+      case 'tip_feet_discovery_4_5_title':
+        return l10n.tip_feet_discovery_4_5_title;
+      case 'tip_feet_discovery_4_5_desc':
+        return l10n.tip_feet_discovery_4_5_desc;
+      case 'tip_independent_play_4_5_title':
+        return l10n.tip_independent_play_4_5_title;
+      case 'tip_independent_play_4_5_desc':
+        return l10n.tip_independent_play_4_5_desc;
       default:
         return key;
     }
@@ -238,172 +238,172 @@ class DailyTip {
       maxMonth: 3,
     ),
     DailyTip(
-      id: 'tip_agu_conversation_1_2',
-      titleKey: 'tip_tip_agu_conversation_1_2_title',
-      descriptionKey: 'tip_tip_agu_conversation_1_2_desc',
+      id: 'agu_conversation_1_2',
+      titleKey: 'tip_agu_conversation_1_2_title',
+      descriptionKey: 'tip_agu_conversation_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_agu_conversation_1_2.png',
       minMonth: 1,
       maxMonth: 3,
     ),
     DailyTip(
-      id: 'tip_tummy_time_strength_1_2',
-      titleKey: 'tip_tip_tummy_time_strength_1_2_title',
-      descriptionKey: 'tip_tip_tummy_time_strength_1_2_desc',
+      id: 'tummy_time_strength_1_2',
+      titleKey: 'tip_tummy_time_strength_1_2_title',
+      descriptionKey: 'tip_tummy_time_strength_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_tummy_time_strength_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_baby_massage_1_2',
-      titleKey: 'tip_tip_baby_massage_1_2_title',
-      descriptionKey: 'tip_tip_baby_massage_1_2_desc',
+      id: 'baby_massage_1_2',
+      titleKey: 'tip_baby_massage_1_2_title',
+      descriptionKey: 'tip_baby_massage_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_baby_massage_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_gesture_speech_1_2',
-      titleKey: 'tip_tip_gesture_speech_1_2_title',
-      descriptionKey: 'tip_tip_gesture_speech_1_2_desc',
+      id: 'gesture_speech_1_2',
+      titleKey: 'tip_gesture_speech_1_2_title',
+      descriptionKey: 'tip_gesture_speech_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_gesture_speech_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_open_hands_1_2',
-      titleKey: 'tip_tip_open_hands_1_2_title',
-      descriptionKey: 'tip_tip_open_hands_1_2_desc',
+      id: 'open_hands_1_2',
+      titleKey: 'tip_open_hands_1_2_title',
+      descriptionKey: 'tip_open_hands_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_open_hands_1_2.png',
       minMonth: 2,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_side_by_side_bonding_1_2',
-      titleKey: 'tip_tip_side_by_side_bonding_1_2_title',
-      descriptionKey: 'tip_tip_side_by_side_bonding_1_2_desc',
+      id: 'side_by_side_bonding_1_2',
+      titleKey: 'tip_side_by_side_bonding_1_2_title',
+      descriptionKey: 'tip_side_by_side_bonding_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_side_by_side_bonding_1_2.png',
       minMonth: 1,
       maxMonth: 3,
     ),
     DailyTip(
-      id: 'tip_sound_hunter',
-      titleKey: 'tip_tip_sound_hunter_title',
-      descriptionKey: 'tip_tip_sound_hunter_desc',
+      id: 'sound_hunter_listening',
+      titleKey: 'tip_sound_hunter_listening_title',
+      descriptionKey: 'tip_sound_hunter_listening_desc',
       illustrationPath: 'assets/illustrations/tips/tip_sound_hunter.png',
       minMonth: 2,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_sound_hunter_level2_1_2',
-      titleKey: 'tip_tip_sound_hunter_level2_1_2_title',
-      descriptionKey: 'tip_tip_sound_hunter_level2_1_2_desc',
+      id: 'sound_hunter_level2_1_2',
+      titleKey: 'tip_sound_hunter_level2_1_2_title',
+      descriptionKey: 'tip_sound_hunter_level2_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_sound_hunter_level2_1_2.png',
       minMonth: 2,
       maxMonth: 5,
     ),
     DailyTip(
-      id: 'tip_texture_discovery_1_2',
-      titleKey: 'tip_tip_texture_discovery_1_2_title',
-      descriptionKey: 'tip_tip_texture_discovery_1_2_desc',
+      id: 'texture_discovery_1_2',
+      titleKey: 'tip_texture_discovery_1_2_title',
+      descriptionKey: 'tip_texture_discovery_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_texture_discovery_1_2.png',
       minMonth: 2,
       maxMonth: 5,
     ),
     DailyTip(
-      id: 'tip_outdoor_explorer_4_5',
-      titleKey: 'tip_tip_outdoor_explorer_4_5_title',
-      descriptionKey: 'tip_tip_outdoor_explorer_4_5_desc',
+      id: 'outdoor_explorer_4_5',
+      titleKey: 'tip_outdoor_explorer_4_5_title',
+      descriptionKey: 'tip_outdoor_explorer_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_outdoor_explorer_4_5.png',
       minMonth: 4,
       maxMonth: 7,
     ),
     DailyTip(
-      id: 'tip_reaching_exercise_1_2',
-      titleKey: 'tip_tip_reaching_exercise_1_2_title',
-      descriptionKey: 'tip_tip_reaching_exercise_1_2_desc',
+      id: 'reaching_exercise_1_2',
+      titleKey: 'tip_reaching_exercise_1_2_title',
+      descriptionKey: 'tip_reaching_exercise_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_reaching_exercise_1_2.png',
       minMonth: 2,
       maxMonth: 5,
     ),
     DailyTip(
-      id: 'tip_supported_bounce_1_2',
-      titleKey: 'tip_tip_supported_bounce_1_2_title',
-      descriptionKey: 'tip_tip_supported_bounce_1_2_desc',
+      id: 'supported_bounce_1_2',
+      titleKey: 'tip_supported_bounce_1_2_title',
+      descriptionKey: 'tip_supported_bounce_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_supported_bounce_1_2.png',
       minMonth: 2,
       maxMonth: 5,
     ),
     DailyTip(
-      id: 'tip_visual_tracking_1_2',
-      titleKey: 'tip_tip_visual_tracking_1_2_title',
-      descriptionKey: 'tip_tip_visual_tracking_1_2_desc',
+      id: 'visual_tracking_1_2',
+      titleKey: 'tip_visual_tracking_1_2_title',
+      descriptionKey: 'tip_visual_tracking_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_visual_tracking_1_2.png',
       minMonth: 1,
       maxMonth: 4,
     ),
     DailyTip(
-      id: 'tip_face_play_1_2',
-      titleKey: 'tip_tip_face_play_1_2_title',
-      descriptionKey: 'tip_tip_face_play_1_2_desc',
+      id: 'face_play_1_2',
+      titleKey: 'tip_face_play_1_2_title',
+      descriptionKey: 'tip_face_play_1_2_desc',
       illustrationPath: 'assets/illustrations/tips/tip_face_play_1_2.png',
       minMonth: 1,
       maxMonth: 3,
     ),
     DailyTip(
-      id: 'tip_emotion_labeling_1_2',
-      titleKey: 'tip_tip_emotion_labeling_1_2_title',
-      descriptionKey: 'tip_tip_emotion_labeling_1_2_desc',
+      id: 'emotion_labeling_1_2',
+      titleKey: 'tip_emotion_labeling_1_2_title',
+      descriptionKey: 'tip_emotion_labeling_1_2_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_emotion_labeling_1_2.png',
       minMonth: 1,
       maxMonth: 5,
     ),
     DailyTip(
-      id: 'tip_first_meal',
-      titleKey: 'tip_tip_first_meal_title',
-      descriptionKey: 'tip_tip_first_meal_desc',
+      id: 'first_meal',
+      titleKey: 'tip_first_meal_title',
+      descriptionKey: 'tip_first_meal_desc',
       illustrationPath: 'assets/illustrations/tips/tip_first_meal.png',
       minMonth: 5,
       maxMonth: 8,
     ),
     DailyTip(
-      id: 'tip_hand_to_hand_transfer_4_5',
-      titleKey: 'tip_tip_hand_to_hand_transfer_4_5_title',
-      descriptionKey: 'tip_tip_hand_to_hand_transfer_4_5_desc',
+      id: 'hand_to_hand_transfer_4_5',
+      titleKey: 'tip_hand_to_hand_transfer_4_5_title',
+      descriptionKey: 'tip_hand_to_hand_transfer_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_hand_to_hand_transfer_4_5.png',
       minMonth: 4,
       maxMonth: 7,
     ),
     DailyTip(
-      id: 'tip_supported_sitting_4_5',
-      titleKey: 'tip_tip_supported_sitting_4_5_title',
-      descriptionKey: 'tip_tip_supported_sitting_4_5_desc',
+      id: 'supported_sitting_4_5',
+      titleKey: 'tip_supported_sitting_4_5_title',
+      descriptionKey: 'tip_supported_sitting_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_supported_sitting_4_5.png',
       minMonth: 4,
       maxMonth: 7,
     ),
     DailyTip(
-      id: 'tip_feet_discovery_4_5',
-      titleKey: 'tip_tip_feet_discovery_4_5_title',
-      descriptionKey: 'tip_tip_feet_discovery_4_5_desc',
+      id: 'feet_discovery_4_5',
+      titleKey: 'tip_feet_discovery_4_5_title',
+      descriptionKey: 'tip_feet_discovery_4_5_desc',
       illustrationPath: 'assets/illustrations/tips/tip_feet_discovery_4_5.png',
       minMonth: 4,
       maxMonth: 7,
     ),
     DailyTip(
-      id: 'tip_independent_play_4_5',
-      titleKey: 'tip_tip_independent_play_4_5_title',
-      descriptionKey: 'tip_tip_independent_play_4_5_desc',
+      id: 'independent_play_4_5',
+      titleKey: 'tip_independent_play_4_5_title',
+      descriptionKey: 'tip_independent_play_4_5_desc',
       illustrationPath:
           'assets/illustrations/tips/tip_independent_play_4_5.png',
       minMonth: 4,

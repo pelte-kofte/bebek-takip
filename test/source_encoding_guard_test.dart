@@ -46,8 +46,8 @@ void main() {
   const brokenDataKeys = <String>[
     "Anne S?t?", // should be 'Anne Sütü'
     "Kat? G?da", // should be 'Katı Gıda'
-    "Form?l",    // should be 'Formül'
-    "Do?umda",   // should be 'Doğumda'
+    "Form?l", // should be 'Formül'
+    "Do?umda", // should be 'Doğumda'
   ];
 
   group('Dart source files — encoding sanity', () {

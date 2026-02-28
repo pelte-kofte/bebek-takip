@@ -18,14 +18,19 @@ void main() {
 
   test('ARB locale values do not contain mojibake markers', () {
     final l10nDir = Directory('lib/l10n');
-    expect(l10nDir.existsSync(), isTrue, reason: 'lib/l10n directory not found');
+    expect(
+      l10nDir.existsSync(),
+      isTrue,
+      reason: 'lib/l10n directory not found',
+    );
 
-    final arbFiles = l10nDir
-        .listSync()
-        .whereType<File>()
-        .where((f) => f.path.endsWith('.arb'))
-        .toList()
-      ..sort((a, b) => a.path.compareTo(b.path));
+    final arbFiles =
+        l10nDir
+            .listSync()
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.arb'))
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
 
     expect(arbFiles, isNotEmpty, reason: 'No ARB files found under lib/l10n');
 

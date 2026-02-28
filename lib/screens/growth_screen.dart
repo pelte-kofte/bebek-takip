@@ -46,8 +46,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 child: _records.isEmpty
                     ? _buildEmptyState(isDark)
                     : _selectedTab == 0
-                        ? _buildRecordsList(isDark)
-                        : _buildChartView(isDark),
+                    ? _buildRecordsList(isDark)
+                    : _buildChartView(isDark),
               ),
             ],
           ),
@@ -106,10 +106,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          Text(
-            Dil.buyumeTakibi,
-            style: AppTypography.h1(context),
-          ),
+          Text(Dil.buyumeTakibi, style: AppTypography.h1(context)),
         ],
       ),
     );
@@ -262,7 +259,11 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildChartEmptyState(bool isDark, Color textColor, Color subtitleColor) {
+  Widget _buildChartEmptyState(
+    bool isDark,
+    Color textColor,
+    Color subtitleColor,
+  ) {
     final remaining = 3 - _records.length;
     return Center(
       child: Padding(
@@ -284,9 +285,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
             const SizedBox(height: 8),
             Text(
               '$remaining ölçüm daha ekleyin',
-              style: AppTypography.bodySmall(context).copyWith(
-                color: subtitleColor,
-              ),
+              style: AppTypography.bodySmall(
+                context,
+              ).copyWith(color: subtitleColor),
               textAlign: TextAlign.center,
             ),
           ],
@@ -375,8 +376,12 @@ class _GrowthScreenState extends State<GrowthScreen> {
     final cardColor = isDark
         ? AppColors.bgDarkCard.withValues(alpha: 0.9)
         : Colors.white.withValues(alpha: 0.9);
-    final textColor = isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18);
-    final subtitleColor = isDark ? AppColors.textSecondaryDark : const Color(0xFF7A749E);
+    final textColor = isDark
+        ? AppColors.textPrimaryDark
+        : const Color(0xFF2D1A18);
+    final subtitleColor = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF7A749E);
 
     // Need at least 3 records for a meaningful chart
     if (_records.length < 3) {
@@ -385,7 +390,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
 
     // Sort records by date ascending for charts
     final sorted = List<Map<String, dynamic>>.from(_records)
-      ..sort((a, b) => (a['tarih'] as DateTime).compareTo(b['tarih'] as DateTime));
+      ..sort(
+        (a, b) => (a['tarih'] as DateTime).compareTo(b['tarih'] as DateTime),
+      );
 
     final boyData = <double>[];
     final kiloData = <double>[];
@@ -404,7 +411,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
     final activeData = _chartMetric == 0 ? boyData : kiloData;
     final unit = _chartMetric == 0 ? 'cm' : 'kg';
     final title = _chartMetric == 0 ? '${Dil.boy} (cm)' : '${Dil.kilo} (kg)';
-    final icon = _chartMetric == 0 ? Icons.straighten : Icons.monitor_weight_outlined;
+    final icon = _chartMetric == 0
+        ? Icons.straighten
+        : Icons.monitor_weight_outlined;
     const lineColor = Color(0xFFD4C4E8); // lavender
 
     return SingleChildScrollView(
@@ -722,11 +731,7 @@ class _GrowthChartPainter extends CustomPainter {
 
     for (int i = 0; i <= 2; i++) {
       final y = topPad + chartH * (1 - i / 2);
-      canvas.drawLine(
-        Offset(leftPad, y),
-        Offset(size.width, y),
-        gridPaint,
-      );
+      canvas.drawLine(Offset(leftPad, y), Offset(size.width, y), gridPaint);
 
       // Y-axis label
       final val = minValue + valueRange * (i / 2);
@@ -811,7 +816,8 @@ class _GrowthChartPainter extends CustomPainter {
       }
 
       // X-axis labels: show only a few (first, last, and evenly spaced)
-      final showLabel = i == 0 ||
+      final showLabel =
+          i == 0 ||
           i == data.length - 1 ||
           (data.length > 4 && i == data.length ~/ 2);
 

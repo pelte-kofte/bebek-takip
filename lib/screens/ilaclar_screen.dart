@@ -534,7 +534,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 12),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.35),
+                  color: Colors.grey.withValues(alpha: 0.35),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -618,7 +618,9 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isDark
-                                          ? AppColors.bgDark.withOpacity(0.25)
+                                          ? AppColors.bgDark.withValues(
+                                              alpha: 0.25,
+                                            )
                                           : const Color(0xFFF7EEE9),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -664,6 +666,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     Map<String, dynamic> med, {
     bool interactive = false,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     await _cancelRemindersForMedication(med);
     if (med['isActive'] != true) return;
     if (VeriYonetici.isMedicationReminderEnabled() != true) {
@@ -688,7 +691,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
       }
     }
 
-    final l10n = AppLocalizations.of(context)!;
     final title = l10n.medicationReminderTitle(med['name'] ?? '');
     final body = med['dosage']?.toString().trim().isNotEmpty == true
         ? l10n.medicationReminderBodyWithDose(med['dosage'])
@@ -743,7 +745,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                   Icon(
                     Icons.medication_outlined,
                     size: 64,
-                    color: AppColors.primary.withOpacity(0.5),
+                    color: AppColors.primary.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -859,10 +861,12 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.bgDarkCard.withOpacity(isActive ? 0.9 : 0.5)
-              : Colors.white.withOpacity(isActive ? 0.9 : 0.6),
+              ? AppColors.bgDarkCard.withValues(alpha: isActive ? 0.9 : 0.5)
+              : Colors.white.withValues(alpha: isActive ? 0.9 : 0.6),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFFFB4A2).withOpacity(0.05)),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+          ),
         ),
         child: Column(
           children: [
@@ -895,7 +899,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                             ),
                             decoration: BoxDecoration(
                               color: isMedication
-                                  ? AppColors.primary.withOpacity(0.15)
+                                  ? AppColors.primary.withValues(alpha: 0.15)
                                   : const Color(0xFFE5E0F7),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -966,12 +970,14 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                                         ),
                                         decoration: BoxDecoration(
                                           color: active
-                                              ? AppColors.primary.withOpacity(
-                                                  0.2,
+                                              ? AppColors.primary.withValues(
+                                                  alpha: 0.2,
                                                 )
                                               : (isDark
                                                     ? AppColors.bgDark
-                                                          .withOpacity(0.25)
+                                                          .withValues(
+                                                            alpha: 0.25,
+                                                          )
                                                     : const Color(0xFFF7EEE9)),
                                           borderRadius: BorderRadius.circular(
                                             999,
@@ -1084,10 +1090,12 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                                             decoration: BoxDecoration(
                                               color: active
                                                   ? AppColors.primary
-                                                        .withOpacity(0.2)
+                                                        .withValues(alpha: 0.2)
                                                   : (isDark
                                                         ? AppColors.bgDark
-                                                              .withOpacity(0.25)
+                                                              .withValues(
+                                                                alpha: 0.25,
+                                                              )
                                                         : const Color(
                                                             0xFFF7EEE9,
                                                           )),
@@ -1245,7 +1253,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -1491,6 +1499,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     Map<String, dynamic>? oldMedication,
     required Map<String, dynamic> savedMedication,
   }) async {
+    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     await _reminderService.initialize();
 
@@ -1532,7 +1541,6 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
       return;
     }
 
-    final l10n = AppLocalizations.of(context)!;
     DateTime? vaccineDate;
     if (scheduleType == 'vaccine_protocol') {
       final vaccineId = savedMedication['vaccineId'] as String?;
@@ -1646,7 +1654,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
             if (_scheduleType == 'vaccine_protocol') ...[
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
-                value: _vaccineId,
+                initialValue: _vaccineId,
                 items: vaccines
                     .map(
                       (v) => DropdownMenuItem<String>(
@@ -1665,7 +1673,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                      value: _beforeHours,
+                      initialValue: _beforeHours,
                       items: List.generate(13, (i) => i)
                           .map(
                             (h) => DropdownMenuItem<int>(
@@ -1682,7 +1690,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                      value: _afterHours,
+                      initialValue: _afterHours,
                       items: List.generate(25, (i) => i)
                           .map(
                             (h) => DropdownMenuItem<int>(
@@ -1753,13 +1761,13 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withOpacity(0.15)
+              ? AppColors.primary.withValues(alpha: 0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected
                 ? AppColors.primary
-                : AppColors.primary.withOpacity(0.2),
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Center(child: Text(label)),
@@ -1776,13 +1784,13 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withOpacity(0.15)
+              ? AppColors.primary.withValues(alpha: 0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: selected
                 ? AppColors.primary
-                : AppColors.primary.withOpacity(0.2),
+                : AppColors.primary.withValues(alpha: 0.2),
           ),
         ),
         child: Text(label),
@@ -1797,11 +1805,11 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
       fillColor: isDark ? AppColors.bgDarkCard : Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.primary.withOpacity(0.2)),
+        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: AppColors.primary.withOpacity(0.2)),
+        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

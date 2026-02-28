@@ -995,146 +995,145 @@ class AppLocalizationsEs extends AppLocalizations {
       'Permite que tu bebé toque diferentes texturas con manos y pies: superficies suaves, rugosas y frescas.';
 
   @override
-  String get tip_tip_agu_conversation_1_2_title => 'Charlas de balbuceo';
+  String get tip_agu_conversation_1_2_title => 'Baby Talk Chats';
 
   @override
-  String get tip_tip_agu_conversation_1_2_desc =>
-      'Cuando tu bebé emita sonidos, escúchalo. Respóndele con suavidad cuando termine. Estas pequeñas charlas construyen la comunicación.';
+  String get tip_agu_conversation_1_2_desc =>
+      'When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_title =>
-      'Hombros fuertes (tiempo boca abajo)';
+  String get tip_tummy_time_strength_1_2_title =>
+      'Strong Shoulders (Tummy Time)';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_desc =>
-      'Coloca a tu bebé boca abajo por periodos cortos. Anímalo a levantar la cabeza con juguetes coloridos delante.';
+  String get tip_tummy_time_strength_1_2_desc =>
+      'Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.';
 
   @override
-  String get tip_tip_baby_massage_1_2_title => 'Masaje relajante';
+  String get tip_baby_massage_1_2_title => 'Soothing Massage';
 
   @override
-  String get tip_tip_baby_massage_1_2_desc =>
-      'Después del baño, masajea suavemente empezando por los pies. Favorece la conciencia corporal y ayuda a tu bebé a relajarse.';
+  String get tip_baby_massage_1_2_desc =>
+      'After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.';
 
   @override
-  String get tip_tip_gesture_speech_1_2_title => 'Hablar con gestos';
+  String get tip_gesture_speech_1_2_title => 'Gesture-Based Talking';
 
   @override
-  String get tip_tip_gesture_speech_1_2_desc =>
-      'Usa gestos mientras hablas. Saluda con la mano para nos vamos y frota las manos para terminamos. Esto fortalece la memoria visual.';
+  String get tip_gesture_speech_1_2_desc =>
+      'Use gestures while talking. Wave for \"we\'re going\" and rub hands for \"all done\". This supports visual memory.';
 
   @override
-  String get tip_tip_open_hands_1_2_title => 'Dedos libres';
+  String get tip_open_hands_1_2_title => 'Free Fingers';
 
   @override
-  String get tip_tip_open_hands_1_2_desc =>
-      'Sus manos se abren cada vez más. Ofrécele juguetes suaves para practicar agarrar y soltar.';
+  String get tip_open_hands_1_2_desc =>
+      'Hands are opening more now. Offer soft toys to practice grasping and releasing.';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_title => 'Vínculo lado a lado';
+  String get tip_side_by_side_bonding_1_2_title => 'Side-by-Side Bonding';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_desc =>
-      'Acuéstate junto a tu bebé. Sonríe y háblale con cariño mientras intenta girarse hacia ti.';
+  String get tip_side_by_side_bonding_1_2_desc =>
+      'Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.';
 
   @override
-  String get tip_tip_sound_hunter_title => 'Cazador de sonidos';
+  String get tip_sound_hunter_listening_title => 'Cazador de sonidos';
 
   @override
-  String get tip_tip_sound_hunter_desc =>
+  String get tip_sound_hunter_listening_desc =>
       'Agita un sonajero suavemente en un punto que tu bebé no vea. Girar hacia el sonido favorece la audición y la atención.';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_title =>
-      'Cazador de sonidos (nivel 2)';
+  String get tip_sound_hunter_level2_1_2_title => 'Sound Hunter (Level 2)';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_desc =>
-      'Haz sonidos diferentes a su izquierda y derecha. Buscar el origen fortalece su capacidad de atención.';
+  String get tip_sound_hunter_level2_1_2_desc =>
+      'Make different sounds from left and right. Finding the source strengthens attention skills.';
 
   @override
-  String get tip_tip_texture_discovery_1_2_title => 'Tocar y descubrir';
+  String get tip_texture_discovery_1_2_title => 'Touch and Discover';
 
   @override
-  String get tip_tip_texture_discovery_1_2_desc =>
-      'Ofrécele objetos con distintas texturas. Cada nueva sensación es un nuevo descubrimiento para tu bebé.';
+  String get tip_texture_discovery_1_2_desc =>
+      'Offer objects with different textures. Each new feeling is a new discovery for your baby.';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_title => 'Explorador al aire libre';
+  String get tip_outdoor_explorer_4_5_title => 'Outdoor Explorer';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_desc =>
-      'Muéstrale árboles y animales cuando estén afuera. Déjalo tocar y explorar mientras escucha tu voz.';
+  String get tip_outdoor_explorer_4_5_desc =>
+      'Show trees and animals outside. Let your baby touch and explore while hearing your voice.';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_title => 'Práctica de alcance';
+  String get tip_reaching_exercise_1_2_title => 'Reaching Practice';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_desc =>
-      'Coloca juguetes a su alcance. Incluso intentar agarrarlos ayuda a fortalecer sus músculos.';
+  String get tip_reaching_exercise_1_2_desc =>
+      'Place toys within reach. Even attempts to grab them help strengthen muscles.';
 
   @override
-  String get tip_tip_supported_bounce_1_2_title => 'Rebote con apoyo';
+  String get tip_supported_bounce_1_2_title => 'Supported Bouncing';
 
   @override
-  String get tip_tip_supported_bounce_1_2_desc =>
-      'Sostén a tu bebé erguido sobre tu regazo y permite un rebote suave con apoyo. Ayuda a fortalecer las piernas y a explorar.';
+  String get tip_supported_bounce_1_2_desc =>
+      'Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.';
 
   @override
-  String get tip_tip_visual_tracking_1_2_title => 'Seguimiento visual';
+  String get tip_visual_tracking_1_2_title => 'Visual Tracking';
 
   @override
-  String get tip_tip_visual_tracking_1_2_desc =>
-      'Mueve lentamente un juguete colorido que haga sonido dentro de su campo visual. Es un gran ejercicio para el seguimiento visual.';
+  String get tip_visual_tracking_1_2_desc =>
+      'Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.';
 
   @override
-  String get tip_tip_face_play_1_2_title => 'Juego de expresiones';
+  String get tip_face_play_1_2_title => 'Face Play';
 
   @override
-  String get tip_tip_face_play_1_2_desc =>
-      'Acércate, haz contacto visual y usa expresiones faciales divertidas. Tu voz y tu rostro son sus juguetes favoritos.';
+  String get tip_face_play_1_2_desc =>
+      'Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby\'s favorite toys.';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_title => 'Nombrar emociones';
+  String get tip_emotion_labeling_1_2_title => 'Emotion Naming';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_desc =>
-      'Cuando tu bebé llore, nombra la emoción con calma y reconfórtalo. Sentirse comprendido favorece su seguridad emocional.';
+  String get tip_emotion_labeling_1_2_desc =>
+      'When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.';
 
   @override
-  String get tip_tip_first_meal_title => 'Primera degustación';
+  String get tip_first_meal_title => 'First Tasting';
 
   @override
-  String get tip_tip_first_meal_desc =>
-      'Inicia los sólidos según la recomendación de tu pediatra. Dar comida con cuchara puede ser divertido, pero observa posibles signos de alergia.';
+  String get tip_first_meal_desc =>
+      'Start solids based on your doctor\'s advice. Spoon feeding can be fun, but stay alert for allergy signs.';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Manos activas';
+  String get tip_hand_to_hand_transfer_4_5_title => 'Active Hands';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
-      'Hacia los 4-5 meses, los bebés intentan pasar objetos de una mano a otra. Ofrécele objetos fáciles de agarrar y obsérvalo.';
+  String get tip_hand_to_hand_transfer_4_5_desc =>
+      'Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.';
 
   @override
-  String get tip_tip_supported_sitting_4_5_title => 'Sentado con apoyo';
+  String get tip_supported_sitting_4_5_title => 'Supported Sitting';
 
   @override
-  String get tip_tip_supported_sitting_4_5_desc =>
-      'Practica sentado con apoyo usando cojines. Coloca un juguete delante para motivar el equilibrio y el apoyo del tronco superior.';
+  String get tip_supported_sitting_4_5_desc =>
+      'Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.';
 
   @override
-  String get tip_tip_feet_discovery_4_5_title => 'Descubriendo los pies';
+  String get tip_feet_discovery_4_5_title => 'Discovering Feet';
 
   @override
-  String get tip_tip_feet_discovery_4_5_desc =>
-      'Tu bebé puede agarrar sus pies y llevarlos a la boca cuando está acostado. Deja que los pies exploren diferentes superficies.';
+  String get tip_feet_discovery_4_5_desc =>
+      'Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.';
 
   @override
-  String get tip_tip_independent_play_4_5_title => 'Juego independiente';
+  String get tip_independent_play_4_5_title => 'Independent Play';
 
   @override
-  String get tip_tip_independent_play_4_5_desc =>
-      'Coloca cerca algunos juguetes de distintas texturas y aléjate un poco. El juego independiente fortalece su confianza.';
+  String get tip_independent_play_4_5_desc =>
+      'Place a few textured toys nearby and step back a little. Independent play supports confidence.';
 
   @override
   String ageMonths(int count) {

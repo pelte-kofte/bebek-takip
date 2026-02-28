@@ -196,6 +196,8 @@ class _MainScreenState extends State<MainScreen> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
+        isDismissible: false,
+        enableDrag: false,
         backgroundColor: Colors.transparent,
         builder: (context) => AddScreen(onSaved: _refresh),
       );
@@ -233,7 +235,9 @@ class _MainScreenState extends State<MainScreen> {
             color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
             boxShadow: [
               BoxShadow(
-                color: isDark ? Colors.black26 : Colors.black.withOpacity(0.05),
+                color: isDark
+                    ? Colors.black26
+                    : Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, -5),
               ),
@@ -330,7 +334,7 @@ class _MainScreenState extends State<MainScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
+              color: AppColors.primary.withValues(alpha: 0.4),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),

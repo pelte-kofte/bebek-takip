@@ -49,13 +49,16 @@ void _onBackgroundNotificationResponse(NotificationResponse response) async {
     if (startStr != null && startStr.isNotEmpty && timerBabyId != null) {
       final emzirmeStart = prefs.getString('active_emzirme_start_$timerBabyId');
       final taraf = prefs.getString('active_emzirme_taraf_$timerBabyId');
-      int solSaniye = prefs.getInt('active_emzirme_sol_saniye_$timerBabyId') ?? 0;
-      int sagSaniye = prefs.getInt('active_emzirme_sag_saniye_$timerBabyId') ?? 0;
+      int solSaniye =
+          prefs.getInt('active_emzirme_sol_saniye_$timerBabyId') ?? 0;
+      int sagSaniye =
+          prefs.getInt('active_emzirme_sag_saniye_$timerBabyId') ?? 0;
 
       if (emzirmeStart != null) {
         final segmentStart = DateTime.parse(emzirmeStart);
-        final segmentSeconds =
-            DateTime.now().difference(segmentStart).inSeconds;
+        final segmentSeconds = DateTime.now()
+            .difference(segmentStart)
+            .inSeconds;
         if (taraf == 'sol') {
           solSaniye += segmentSeconds;
         } else if (taraf == 'sag') {
@@ -154,8 +157,9 @@ class SleepNotificationService {
     if (_initialized) return;
     _initialized = true;
 
-    const androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     final iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -282,15 +286,19 @@ class SleepNotificationService {
   Future<void> requestPermissions() async {
     await _notifications
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
 
     final iosResult = await _notifications
         .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
+          IOSFlutterLocalNotificationsPlugin
+        >()
         ?.requestPermissions(alert: true, badge: true, sound: true);
     if (kDebugMode) {
-      debugPrint('[SleepNotificationService] iOS permission result: $iosResult');
+      debugPrint(
+        '[SleepNotificationService] iOS permission result: $iosResult',
+      );
     }
   }
 
@@ -340,7 +348,9 @@ class SleepNotificationService {
       details,
     );
     if (kDebugMode) {
-      debugPrint('[SleepNotificationService] showSleepNotification fired id=$_sleepNotificationId');
+      debugPrint(
+        '[SleepNotificationService] showSleepNotification fired id=$_sleepNotificationId',
+      );
     }
   }
 
@@ -350,7 +360,10 @@ class SleepNotificationService {
 
   // ============ NURSING NOTIFICATION ============
 
-  Future<void> showNursingNotification(DateTime startTime, String? taraf) async {
+  Future<void> showNursingNotification(
+    DateTime startTime,
+    String? taraf,
+  ) async {
     final sideText = taraf != null
         ? ' (${taraf == 'sol' ? 'Sol' : 'Sağ'})'
         : '';
@@ -398,7 +411,9 @@ class SleepNotificationService {
       details,
     );
     if (kDebugMode) {
-      debugPrint('[SleepNotificationService] showNursingNotification fired id=$_nursingNotificationId');
+      debugPrint(
+        '[SleepNotificationService] showNursingNotification fired id=$_nursingNotificationId',
+      );
     }
   }
 

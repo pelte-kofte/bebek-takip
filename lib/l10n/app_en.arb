@@ -2,7 +2,7 @@
   "@@locale": "en",
   "appName": "Nilico",
   "tagline": "Parenting made simple & memorable.",
-  "freeForever": "Free Forever",
+  "freeForever": "Offline First",
   "securePrivate": "Secure & Private",
   "tapToStart": "Tap to start",
   "feedingTracker": "Feeding Tracker",
@@ -494,46 +494,46 @@
   "tip_sound_hunter_desc": "Snap softly near your baby's ear. They may try turning toward the sound.",
   "tip_touch_explore_title": "Touch Exploration",
   "tip_touch_explore_desc": "Let your baby feel different textures on hands and feet: soft, rough, and cool surfaces.",
-  "tip_tip_agu_conversation_1_2_title": "Baby Talk Chats",
-  "tip_tip_agu_conversation_1_2_desc": "When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.",
-  "tip_tip_tummy_time_strength_1_2_title": "Strong Shoulders (Tummy Time)",
-  "tip_tip_tummy_time_strength_1_2_desc": "Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.",
-  "tip_tip_baby_massage_1_2_title": "Soothing Massage",
-  "tip_tip_baby_massage_1_2_desc": "After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.",
-  "tip_tip_gesture_speech_1_2_title": "Gesture-Based Talking",
-  "tip_tip_gesture_speech_1_2_desc": "Use gestures while talking. Wave for \"we're going\" and rub hands for \"all done\". This supports visual memory.",
-  "tip_tip_open_hands_1_2_title": "Free Fingers",
-  "tip_tip_open_hands_1_2_desc": "Hands are opening more now. Offer soft toys to practice grasping and releasing.",
-  "tip_tip_side_by_side_bonding_1_2_title": "Side-by-Side Bonding",
-  "tip_tip_side_by_side_bonding_1_2_desc": "Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.",
-  "tip_tip_sound_hunter_title": "Sound Hunter",
-  "tip_tip_sound_hunter_desc": "Shake a rattle softly where your baby cannot see it. Turning toward sound builds hearing and focus.",
-  "tip_tip_sound_hunter_level2_1_2_title": "Sound Hunter (Level 2)",
-  "tip_tip_sound_hunter_level2_1_2_desc": "Make different sounds from left and right. Finding the source strengthens attention skills.",
-  "tip_tip_texture_discovery_1_2_title": "Touch and Discover",
-  "tip_tip_texture_discovery_1_2_desc": "Offer objects with different textures. Each new feeling is a new discovery for your baby.",
-  "tip_tip_outdoor_explorer_4_5_title": "Outdoor Explorer",
-  "tip_tip_outdoor_explorer_4_5_desc": "Show trees and animals outside. Let your baby touch and explore while hearing your voice.",
-  "tip_tip_reaching_exercise_1_2_title": "Reaching Practice",
-  "tip_tip_reaching_exercise_1_2_desc": "Place toys within reach. Even attempts to grab them help strengthen muscles.",
-  "tip_tip_supported_bounce_1_2_title": "Supported Bouncing",
-  "tip_tip_supported_bounce_1_2_desc": "Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.",
-  "tip_tip_visual_tracking_1_2_title": "Visual Tracking",
-  "tip_tip_visual_tracking_1_2_desc": "Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.",
-  "tip_tip_face_play_1_2_title": "Face Play",
-  "tip_tip_face_play_1_2_desc": "Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby's favorite toys.",
-  "tip_tip_emotion_labeling_1_2_title": "Emotion Naming",
-  "tip_tip_emotion_labeling_1_2_desc": "When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.",
-  "tip_tip_first_meal_title": "First Tasting",
-  "tip_tip_first_meal_desc": "Start solids based on your doctor's advice. Spoon feeding can be fun, but stay alert for allergy signs.",
-  "tip_tip_hand_to_hand_transfer_4_5_title": "Active Hands",
-  "tip_tip_hand_to_hand_transfer_4_5_desc": "Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.",
-  "tip_tip_supported_sitting_4_5_title": "Supported Sitting",
-  "tip_tip_supported_sitting_4_5_desc": "Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.",
-  "tip_tip_feet_discovery_4_5_title": "Discovering Feet",
-  "tip_tip_feet_discovery_4_5_desc": "Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.",
-  "tip_tip_independent_play_4_5_title": "Independent Play",
-  "tip_tip_independent_play_4_5_desc": "Place a few textured toys nearby and step back a little. Independent play supports confidence.",
+  "tip_agu_conversation_1_2_title": "Baby Talk Chats",
+  "tip_agu_conversation_1_2_desc": "When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.",
+  "tip_tummy_time_strength_1_2_title": "Strong Shoulders (Tummy Time)",
+  "tip_tummy_time_strength_1_2_desc": "Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.",
+  "tip_baby_massage_1_2_title": "Soothing Massage",
+  "tip_baby_massage_1_2_desc": "After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.",
+  "tip_gesture_speech_1_2_title": "Gesture-Based Talking",
+  "tip_gesture_speech_1_2_desc": "Use gestures while talking. Wave for \"we're going\" and rub hands for \"all done\". This supports visual memory.",
+  "tip_open_hands_1_2_title": "Free Fingers",
+  "tip_open_hands_1_2_desc": "Hands are opening more now. Offer soft toys to practice grasping and releasing.",
+  "tip_side_by_side_bonding_1_2_title": "Side-by-Side Bonding",
+  "tip_side_by_side_bonding_1_2_desc": "Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.",
+  "tip_sound_hunter_listening_title": "Sound Hunter",
+  "tip_sound_hunter_listening_desc": "Shake a rattle softly where your baby cannot see it. Turning toward sound builds hearing and focus.",
+  "tip_sound_hunter_level2_1_2_title": "Sound Hunter (Level 2)",
+  "tip_sound_hunter_level2_1_2_desc": "Make different sounds from left and right. Finding the source strengthens attention skills.",
+  "tip_texture_discovery_1_2_title": "Touch and Discover",
+  "tip_texture_discovery_1_2_desc": "Offer objects with different textures. Each new feeling is a new discovery for your baby.",
+  "tip_outdoor_explorer_4_5_title": "Outdoor Explorer",
+  "tip_outdoor_explorer_4_5_desc": "Show trees and animals outside. Let your baby touch and explore while hearing your voice.",
+  "tip_reaching_exercise_1_2_title": "Reaching Practice",
+  "tip_reaching_exercise_1_2_desc": "Place toys within reach. Even attempts to grab them help strengthen muscles.",
+  "tip_supported_bounce_1_2_title": "Supported Bouncing",
+  "tip_supported_bounce_1_2_desc": "Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.",
+  "tip_visual_tracking_1_2_title": "Visual Tracking",
+  "tip_visual_tracking_1_2_desc": "Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.",
+  "tip_face_play_1_2_title": "Face Play",
+  "tip_face_play_1_2_desc": "Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby's favorite toys.",
+  "tip_emotion_labeling_1_2_title": "Emotion Naming",
+  "tip_emotion_labeling_1_2_desc": "When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.",
+  "tip_first_meal_title": "First Tasting",
+  "tip_first_meal_desc": "Start solids based on your doctor's advice. Spoon feeding can be fun, but stay alert for allergy signs.",
+  "tip_hand_to_hand_transfer_4_5_title": "Active Hands",
+  "tip_hand_to_hand_transfer_4_5_desc": "Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.",
+  "tip_supported_sitting_4_5_title": "Supported Sitting",
+  "tip_supported_sitting_4_5_desc": "Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.",
+  "tip_feet_discovery_4_5_title": "Discovering Feet",
+  "tip_feet_discovery_4_5_desc": "Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.",
+  "tip_independent_play_4_5_title": "Independent Play",
+  "tip_independent_play_4_5_desc": "Place a few textured toys nearby and step back a little. Independent play supports confidence.",
   "ageMonths": "{count, plural, one{{count} month old} other{{count} months old}}",
   "@ageMonths": {
     "placeholders": {
@@ -692,5 +692,1175 @@
         "type": "String"
       }
     }
+  },
+  "@appName": {
+    "description": "UI text"
+  },
+  "@tagline": {
+    "description": "UI text"
+  },
+  "@freeForever": {
+    "description": "UI text"
+  },
+  "@securePrivate": {
+    "description": "UI text"
+  },
+  "@tapToStart": {
+    "description": "UI text"
+  },
+  "@feedingTracker": {
+    "description": "UI text"
+  },
+  "@feedingTrackerDesc": {
+    "description": "UI text"
+  },
+  "@sleepPatterns": {
+    "description": "UI text"
+  },
+  "@sleepPatternsDesc": {
+    "description": "UI text"
+  },
+  "@growthCharts": {
+    "description": "UI text"
+  },
+  "@growthChartsDesc": {
+    "description": "UI text"
+  },
+  "@preciousMemories": {
+    "description": "UI text"
+  },
+  "@preciousMemoriesDesc": {
+    "description": "UI text"
+  },
+  "@dailyRhythm": {
+    "description": "UI text"
+  },
+  "@dailyRhythmDesc": {
+    "description": "UI text"
+  },
+  "@skip": {
+    "description": "UI text"
+  },
+  "@startYourJourney": {
+    "description": "UI text"
+  },
+  "@continueBtn": {
+    "description": "UI text"
+  },
+  "@save": {
+    "description": "UI text"
+  },
+  "@update": {
+    "description": "UI text"
+  },
+  "@cancel": {
+    "description": "UI text"
+  },
+  "@delete": {
+    "description": "UI text"
+  },
+  "@edit": {
+    "description": "UI text"
+  },
+  "@ok": {
+    "description": "UI text"
+  },
+  "@add": {
+    "description": "UI text"
+  },
+  "@yes": {
+    "description": "UI text"
+  },
+  "@no": {
+    "description": "UI text"
+  },
+  "@share": {
+    "description": "UI text"
+  },
+  "@mlAbbrev": {
+    "description": "UI text"
+  },
+  "@selectTime": {
+    "description": "UI text"
+  },
+  "@tapToSetTime": {
+    "description": "UI text"
+  },
+  "@notificationSleepFired": {
+    "description": "UI text"
+  },
+  "@notificationNursingFired": {
+    "description": "UI text"
+  },
+  "@signedOutSuccessfully": {
+    "description": "UI text"
+  },
+  "@allDataDeleted": {
+    "description": "UI text"
+  },
+  "@webPhotoUploadUnsupported": {
+    "description": "UI text"
+  },
+  "@babyNameHint": {
+    "description": "UI text"
+  },
+  "@babyNotesHint": {
+    "description": "UI text"
+  },
+  "@vaccineNameHint": {
+    "description": "UI text"
+  },
+  "@vaccineDoseHint": {
+    "description": "UI text"
+  },
+  "@vaccineNameCannotBeEmpty": {
+    "description": "UI text"
+  },
+  "@growthWeightHint": {
+    "description": "UI text"
+  },
+  "@growthHeightHint": {
+    "description": "UI text"
+  },
+  "@growthNotesHint": {
+    "description": "UI text"
+  },
+  "@pleaseEnterWeightHeight": {
+    "description": "UI text"
+  },
+  "@memoryTitleHint": {
+    "description": "UI text"
+  },
+  "@memoryNoteHint": {
+    "description": "UI text"
+  },
+  "@home": {
+    "description": "UI text"
+  },
+  "@activities": {
+    "description": "UI text"
+  },
+  "@vaccines": {
+    "description": "UI text"
+  },
+  "@development": {
+    "description": "UI text"
+  },
+  "@memories": {
+    "description": "UI text"
+  },
+  "@settings": {
+    "description": "UI text"
+  },
+  "@addActivity": {
+    "description": "UI text"
+  },
+  "@whatHappened": {
+    "description": "UI text"
+  },
+  "@nursing": {
+    "description": "UI text"
+  },
+  "@bottle": {
+    "description": "UI text"
+  },
+  "@sleep": {
+    "description": "UI text"
+  },
+  "@diaper": {
+    "description": "UI text"
+  },
+  "@side": {
+    "description": "UI text"
+  },
+  "@left": {
+    "description": "UI text"
+  },
+  "@right": {
+    "description": "UI text"
+  },
+  "@duration": {
+    "description": "UI text"
+  },
+  "@minAbbrev": {
+    "description": "UI text"
+  },
+  "@hourAbbrev": {
+    "description": "UI text"
+  },
+  "@category": {
+    "description": "UI text"
+  },
+  "@milk": {
+    "description": "UI text"
+  },
+  "@solid": {
+    "description": "UI text"
+  },
+  "@whatWasGiven": {
+    "description": "UI text"
+  },
+  "@solidFoodHint": {
+    "description": "UI text"
+  },
+  "@amount": {
+    "description": "UI text"
+  },
+  "@milkType": {
+    "description": "UI text"
+  },
+  "@breastMilk": {
+    "description": "UI text"
+  },
+  "@formula": {
+    "description": "UI text"
+  },
+  "@sleepStartedAt": {
+    "description": "UI text"
+  },
+  "@wokeUpAt": {
+    "description": "UI text"
+  },
+  "@tapToSet": {
+    "description": "UI text"
+  },
+  "@type": {
+    "description": "UI text"
+  },
+  "@healthType": {
+    "description": "UI text"
+  },
+  "@healthTime": {
+    "description": "UI text"
+  },
+  "@wet": {
+    "description": "UI text"
+  },
+  "@dirty": {
+    "description": "UI text"
+  },
+  "@both": {
+    "description": "UI text"
+  },
+  "@optionalNotes": {
+    "description": "UI text"
+  },
+  "@diaperNoteHint": {
+    "description": "UI text"
+  },
+  "@pleaseSetDuration": {
+    "description": "UI text"
+  },
+  "@pleaseSetAmount": {
+    "description": "UI text"
+  },
+  "@pleaseSetWakeUpTime": {
+    "description": "UI text"
+  },
+  "@sleepDurationMustBeGreater": {
+    "description": "UI text"
+  },
+  "@today": {
+    "description": "UI text"
+  },
+  "@summary": {
+    "description": "UI text"
+  },
+  "@recentActivities": {
+    "description": "UI text"
+  },
+  "@record": {
+    "description": "UI text"
+  },
+  "@records": {
+    "description": "UI text"
+  },
+  "@breastfeeding": {
+    "description": "UI text"
+  },
+  "@bottleBreastMilk": {
+    "description": "UI text"
+  },
+  "@total": {
+    "description": "UI text"
+  },
+  "@diaperChange": {
+    "description": "UI text"
+  },
+  "@firstFeedingTime": {
+    "description": "UI text"
+  },
+  "@trackBabyFeeding": {
+    "description": "UI text"
+  },
+  "@diaperChangeTime": {
+    "description": "UI text"
+  },
+  "@trackHygiene": {
+    "description": "UI text"
+  },
+  "@sweetDreams": {
+    "description": "UI text"
+  },
+  "@trackSleepPattern": {
+    "description": "UI text"
+  },
+  "@selectAnotherDate": {
+    "description": "UI text"
+  },
+  "@editFeeding": {
+    "description": "UI text"
+  },
+  "@editDiaper": {
+    "description": "UI text"
+  },
+  "@editSleep": {
+    "description": "UI text"
+  },
+  "@start": {
+    "description": "UI text"
+  },
+  "@end": {
+    "description": "UI text"
+  },
+  "@attention": {
+    "description": "UI text"
+  },
+  "@deleteConfirm": {
+    "description": "UI text"
+  },
+  "@myVaccines": {
+    "description": "UI text"
+  },
+  "@addVaccine": {
+    "description": "UI text"
+  },
+  "@applied": {
+    "description": "UI text"
+  },
+  "@pending": {
+    "description": "UI text"
+  },
+  "@upcomingVaccines": {
+    "description": "UI text"
+  },
+  "@completedVaccines": {
+    "description": "UI text"
+  },
+  "@selectDate": {
+    "description": "UI text"
+  },
+  "@calendar": {
+    "description": "UI text"
+  },
+  "@turkishVaccineCalendar": {
+    "description": "UI text"
+  },
+  "@selectAll": {
+    "description": "UI text"
+  },
+  "@clear": {
+    "description": "UI text"
+  },
+  "@alreadyAdded": {
+    "description": "UI text"
+  },
+  "@selectVaccine": {
+    "description": "UI text"
+  },
+  "@noVaccineRecords": {
+    "description": "UI text"
+  },
+  "@loadTurkishCalendar": {
+    "description": "UI text"
+  },
+  "@loadTurkishVaccineCalendar": {
+    "description": "UI text"
+  },
+  "@loadCalendarTitle": {
+    "description": "UI text"
+  },
+  "@loadCalendarDesc": {
+    "description": "UI text"
+  },
+  "@weeklyReport": {
+    "description": "UI text"
+  },
+  "@monthlyReport": {
+    "description": "UI text"
+  },
+  "@weekly": {
+    "description": "UI text"
+  },
+  "@monthly": {
+    "description": "UI text"
+  },
+  "@feeding": {
+    "description": "UI text"
+  },
+  "@totalBreastfeeding": {
+    "description": "UI text"
+  },
+  "@totalDuration": {
+    "description": "UI text"
+  },
+  "@dailyAvg": {
+    "description": "UI text"
+  },
+  "@avgDuration": {
+    "description": "UI text"
+  },
+  "@leftBreast": {
+    "description": "UI text"
+  },
+  "@rightBreast": {
+    "description": "UI text"
+  },
+  "@solidFood": {
+    "description": "UI text"
+  },
+  "@diaperChanges": {
+    "description": "UI text"
+  },
+  "@longestSleep": {
+    "description": "UI text"
+  },
+  "@sleepCount": {
+    "description": "UI text"
+  },
+  "@growth": {
+    "description": "UI text"
+  },
+  "@height": {
+    "description": "UI text"
+  },
+  "@weight": {
+    "description": "UI text"
+  },
+  "@saveAsPdf": {
+    "description": "UI text"
+  },
+  "@pdfMobileOnly": {
+    "description": "UI text"
+  },
+  "@sharingMobileOnly": {
+    "description": "UI text"
+  },
+  "@pdfSaved": {
+    "description": "UI text"
+  },
+  "@babyTrackerReport": {
+    "description": "UI text"
+  },
+  "@generatedWith": {
+    "description": "UI text"
+  },
+  "@months": {
+    "description": "UI text"
+  },
+  "@january": {
+    "description": "UI text"
+  },
+  "@february": {
+    "description": "UI text"
+  },
+  "@march": {
+    "description": "UI text"
+  },
+  "@april": {
+    "description": "UI text"
+  },
+  "@may": {
+    "description": "UI text"
+  },
+  "@june": {
+    "description": "UI text"
+  },
+  "@july": {
+    "description": "UI text"
+  },
+  "@august": {
+    "description": "UI text"
+  },
+  "@september": {
+    "description": "UI text"
+  },
+  "@october": {
+    "description": "UI text"
+  },
+  "@november": {
+    "description": "UI text"
+  },
+  "@december": {
+    "description": "UI text"
+  },
+  "@addOptionalNote": {
+    "description": "UI text"
+  },
+  "@times": {
+    "description": "UI text"
+  },
+  "@feeding_tab": {
+    "description": "UI text"
+  },
+  "@diaper_tab": {
+    "description": "UI text"
+  },
+  "@sleep_tab": {
+    "description": "UI text"
+  },
+  "@list": {
+    "description": "UI text"
+  },
+  "@chart": {
+    "description": "UI text"
+  },
+  "@noMeasurements": {
+    "description": "UI text"
+  },
+  "@addMeasurements": {
+    "description": "UI text"
+  },
+  "@moreDataNeeded": {
+    "description": "UI text"
+  },
+  "@atLeast2Measurements": {
+    "description": "UI text"
+  },
+  "@growthTracking": {
+    "description": "UI text"
+  },
+  "@feedingTimer": {
+    "description": "UI text"
+  },
+  "@sleepingTimer": {
+    "description": "UI text"
+  },
+  "@stopAndSave": {
+    "description": "UI text"
+  },
+  "@activeTimer": {
+    "description": "UI text"
+  },
+  "@lastFed": {
+    "description": "UI text"
+  },
+  "@lastDiaper": {
+    "description": "UI text"
+  },
+  "@lastSleep": {
+    "description": "UI text"
+  },
+  "@recentActivity": {
+    "description": "UI text"
+  },
+  "@seeHistory": {
+    "description": "UI text"
+  },
+  "@noActivitiesLast24h": {
+    "description": "UI text"
+  },
+  "@bottleFeeding": {
+    "description": "UI text"
+  },
+  "@trackYourBabyGrowth": {
+    "description": "UI text"
+  },
+  "@addHeightWeightMeasurements": {
+    "description": "UI text"
+  },
+  "@addFirstMeasurement": {
+    "description": "UI text"
+  },
+  "@lastUpdatedToday": {
+    "description": "UI text"
+  },
+  "@lastUpdated1Day": {
+    "description": "UI text"
+  },
+  "@viewGrowthCharts": {
+    "description": "UI text"
+  },
+  "@weightLabel": {
+    "description": "UI text"
+  },
+  "@heightLabel": {
+    "description": "UI text"
+  },
+  "@noRecordsYet": {
+    "description": "UI text"
+  },
+  "@dailyTip": {
+    "description": "UI text"
+  },
+  "@allTips": {
+    "description": "UI text"
+  },
+  "@upcomingVaccine": {
+    "description": "UI text"
+  },
+  "@sleepTooShort": {
+    "description": "UI text"
+  },
+  "@noSleep": {
+    "description": "UI text"
+  },
+  "@justNow": {
+    "description": "UI text"
+  },
+  "@welcomeToNilico": {
+    "description": "UI text"
+  },
+  "@createYourAccount": {
+    "description": "UI text"
+  },
+  "@loginBenefitText": {
+    "description": "UI text"
+  },
+  "@signInWithApple": {
+    "description": "UI text"
+  },
+  "@signInWithGoogle": {
+    "description": "UI text"
+  },
+  "@continueWithoutLogin": {
+    "description": "UI text"
+  },
+  "@loginOptionalNote": {
+    "description": "UI text"
+  },
+  "@account": {
+    "description": "UI text"
+  },
+  "@signIn": {
+    "description": "UI text"
+  },
+  "@signOut": {
+    "description": "UI text"
+  },
+  "@guestMode": {
+    "description": "UI text"
+  },
+  "@signInToProtectData": {
+    "description": "UI text"
+  },
+  "@backupSyncComingSoon": {
+    "description": "UI text"
+  },
+  "@privacyPolicy": {
+    "description": "UI text"
+  },
+  "@privacyPolicySubtitle": {
+    "description": "UI text"
+  },
+  "@termsOfUse": {
+    "description": "UI text"
+  },
+  "@termsOfUseSubtitle": {
+    "description": "UI text"
+  },
+  "@pageCouldNotOpen": {
+    "description": "UI text"
+  },
+  "@health": {
+    "description": "UI text"
+  },
+  "@medications": {
+    "description": "UI text"
+  },
+  "@noMedications": {
+    "description": "UI text"
+  },
+  "@medication": {
+    "description": "UI text"
+  },
+  "@supplement": {
+    "description": "UI text"
+  },
+  "@addMedication": {
+    "description": "UI text"
+  },
+  "@editMedication": {
+    "description": "UI text"
+  },
+  "@medicationName": {
+    "description": "UI text"
+  },
+  "@medicationNameRequired": {
+    "description": "UI text"
+  },
+  "@dosage": {
+    "description": "UI text"
+  },
+  "@schedule": {
+    "description": "UI text"
+  },
+  "@notes": {
+    "description": "UI text"
+  },
+  "@language": {
+    "description": "UI text"
+  },
+  "@systemDefault": {
+    "description": "UI text"
+  },
+  "@turkish": {
+    "description": "UI text"
+  },
+  "@english": {
+    "description": "UI text"
+  },
+  "@russian": {
+    "description": "UI text"
+  },
+  "@ukrainian": {
+    "description": "UI text"
+  },
+  "@spanish": {
+    "description": "UI text"
+  },
+  "@languageUpdated": {
+    "description": "UI text"
+  },
+  "@tip_siyah_mekonyum_title": {
+    "description": "UI text"
+  },
+  "@tip_siyah_mekonyum_desc": {
+    "description": "UI text"
+  },
+  "@tip_eye_tracking_title": {
+    "description": "UI text"
+  },
+  "@tip_eye_tracking_desc": {
+    "description": "UI text"
+  },
+  "@tip_neck_support_title": {
+    "description": "UI text"
+  },
+  "@tip_neck_support_desc": {
+    "description": "UI text"
+  },
+  "@tip_reflex_stepping_title": {
+    "description": "UI text"
+  },
+  "@tip_reflex_stepping_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_interest_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_interest_desc": {
+    "description": "UI text"
+  },
+  "@tip_parent_interaction_title": {
+    "description": "UI text"
+  },
+  "@tip_parent_interaction_desc": {
+    "description": "UI text"
+  },
+  "@tip_color_worlds_title": {
+    "description": "UI text"
+  },
+  "@tip_color_worlds_desc": {
+    "description": "UI text"
+  },
+  "@tip_mini_athlete_title": {
+    "description": "UI text"
+  },
+  "@tip_mini_athlete_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_desc": {
+    "description": "UI text"
+  },
+  "@tip_touch_explore_title": {
+    "description": "UI text"
+  },
+  "@tip_touch_explore_desc": {
+    "description": "UI text"
+  },
+  "@tip_agu_conversation_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_agu_conversation_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_tummy_time_strength_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_tummy_time_strength_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_baby_massage_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_baby_massage_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_gesture_speech_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_gesture_speech_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_open_hands_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_open_hands_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_side_by_side_bonding_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_side_by_side_bonding_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_listening_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_listening_desc": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_level2_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_sound_hunter_level2_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_texture_discovery_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_texture_discovery_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_outdoor_explorer_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_outdoor_explorer_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_reaching_exercise_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_reaching_exercise_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_supported_bounce_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_supported_bounce_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_visual_tracking_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_visual_tracking_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_face_play_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_face_play_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_emotion_labeling_1_2_title": {
+    "description": "UI text"
+  },
+  "@tip_emotion_labeling_1_2_desc": {
+    "description": "UI text"
+  },
+  "@tip_first_meal_title": {
+    "description": "UI text"
+  },
+  "@tip_first_meal_desc": {
+    "description": "UI text"
+  },
+  "@tip_hand_to_hand_transfer_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_hand_to_hand_transfer_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_supported_sitting_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_supported_sitting_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_feet_discovery_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_feet_discovery_4_5_desc": {
+    "description": "UI text"
+  },
+  "@tip_independent_play_4_5_title": {
+    "description": "UI text"
+  },
+  "@tip_independent_play_4_5_desc": {
+    "description": "UI text"
+  },
+  "@appPreferences": {
+    "description": "UI text"
+  },
+  "@appearance": {
+    "description": "UI text"
+  },
+  "@darkMode": {
+    "description": "UI text"
+  },
+  "@darkModeSubtitle": {
+    "description": "UI text"
+  },
+  "@notifications": {
+    "description": "UI text"
+  },
+  "@feedingReminder": {
+    "description": "UI text"
+  },
+  "@diaperReminder": {
+    "description": "UI text"
+  },
+  "@off": {
+    "description": "UI text"
+  },
+  "@reminderTime": {
+    "description": "UI text"
+  },
+  "@dataManagement": {
+    "description": "UI text"
+  },
+  "@createReport": {
+    "description": "UI text"
+  },
+  "@weeklyMonthlyStats": {
+    "description": "UI text"
+  },
+  "@deleteAllDataTitle": {
+    "description": "UI text"
+  },
+  "@deleteAllDataSubtitle": {
+    "description": "UI text"
+  },
+  "@about": {
+    "description": "UI text"
+  },
+  "@version": {
+    "description": "UI text"
+  },
+  "@developer": {
+    "description": "UI text"
+  },
+  "@deleteAllDataWarning": {
+    "description": "UI text"
+  },
+  "@debug": {
+    "description": "UI text"
+  },
+  "@testSleepNotification": {
+    "description": "UI text"
+  },
+  "@fireSleepNotificationNow": {
+    "description": "UI text"
+  },
+  "@testNursingNotification": {
+    "description": "UI text"
+  },
+  "@fireNursingNotificationNow": {
+    "description": "UI text"
+  },
+  "@user": {
+    "description": "UI text"
+  },
+  "@selectBaby": {
+    "description": "UI text"
+  },
+  "@newBabyAdd": {
+    "description": "UI text"
+  },
+  "@babyProfileTitle": {
+    "description": "UI text"
+  },
+  "@babyInformation": {
+    "description": "UI text"
+  },
+  "@addPhoto": {
+    "description": "UI text"
+  },
+  "@changePhoto": {
+    "description": "UI text"
+  },
+  "@removePhoto": {
+    "description": "UI text"
+  },
+  "@birthDateLabel": {
+    "description": "UI text"
+  },
+  "@notesOptional": {
+    "description": "UI text"
+  },
+  "@growthRecords": {
+    "description": "UI text"
+  },
+  "@deleteThisBabyData": {
+    "description": "UI text"
+  },
+  "@otherBabiesUnaffected": {
+    "description": "UI text"
+  },
+  "@onlyThisBabyPrefix": {
+    "description": "UI text"
+  },
+  "@allRecordsWillBeDeleted": {
+    "description": "UI text"
+  },
+  "@deleteActionIrreversible": {
+    "description": "UI text"
+  },
+  "@birth": {
+    "description": "UI text"
+  },
+  "@selectMonth": {
+    "description": "UI text"
+  },
+  "@otherMonth": {
+    "description": "UI text"
+  },
+  "@period": {
+    "description": "UI text"
+  },
+  "@status": {
+    "description": "UI text"
+  },
+  "@scheduledDate": {
+    "description": "UI text"
+  },
+  "@editVaccine": {
+    "description": "UI text"
+  },
+  "@vaccineName": {
+    "description": "UI text"
+  },
+  "@allLabel": {
+    "description": "UI text"
+  },
+  "@routineFilter": {
+    "description": "UI text"
+  },
+  "@asNeededFilter": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolsFilter": {
+    "description": "UI text"
+  },
+  "@everyDay": {
+    "description": "UI text"
+  },
+  "@asNeeded": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolLabel": {
+    "description": "UI text"
+  },
+  "@noVaccineLink": {
+    "description": "UI text"
+  },
+  "@logGivenNow": {
+    "description": "UI text"
+  },
+  "@medicationDoseLogged": {
+    "description": "UI text"
+  },
+  "@scheduleType": {
+    "description": "UI text"
+  },
+  "@dailySchedule": {
+    "description": "UI text"
+  },
+  "@prnSchedule": {
+    "description": "UI text"
+  },
+  "@dailyTimeRequired": {
+    "description": "UI text"
+  },
+  "@activate": {
+    "description": "UI text"
+  },
+  "@deactivate": {
+    "description": "UI text"
+  },
+  "@active": {
+    "description": "UI text"
+  },
+  "@inactive": {
+    "description": "UI text"
+  },
+  "@medicationReminderBody": {
+    "description": "UI text"
+  },
+  "@addVaccineProtocol": {
+    "description": "UI text"
+  },
+  "@createNew": {
+    "description": "UI text"
+  },
+  "@chooseExistingMedication": {
+    "description": "UI text"
+  },
+  "@feverReducerHint": {
+    "description": "UI text"
+  },
+  "@vaccineProtocolAdded": {
+    "description": "UI text"
+  },
+  "@time": {
+    "description": "UI text"
+  },
+  "@diaperWet": {
+    "description": "UI text"
+  },
+  "@diaperDirty": {
+    "description": "UI text"
+  },
+  "@diaperBoth": {
+    "description": "UI text"
+  },
+  "@eventTimeTooOld": {
+    "description": "UI text"
+  },
+  "@editTitleFeeding": {
+    "description": "UI text"
+  },
+  "@editTitleDiaper": {
+    "description": "UI text"
+  },
+  "@editTitleSleep": {
+    "description": "UI text"
+  },
+  "@editTitleNursing": {
+    "description": "UI text"
+  },
+  "@savedMessage": {
+    "description": "UI text"
+  },
+  "@alreadySavedRecently": {
+    "description": "UI text"
+  },
+  "@undo": {
+    "description": "UI text"
+  },
+  "@yesterday": {
+    "description": "UI text"
+  },
+  "@notGivenYet": {
+    "description": "UI text"
+  },
+  "@viewHistory": {
+    "description": "UI text"
+  },
+  "@noMedicationHistory": {
+    "description": "UI text"
   }
 }

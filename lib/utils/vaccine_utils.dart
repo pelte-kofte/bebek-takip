@@ -1,6 +1,7 @@
 /// Vaccine utility functions for filtering and processing vaccine data
 List<Map<String, dynamic>> getUpcomingVaccines(
-    List<Map<String, dynamic>> allVaccines) {
+  List<Map<String, dynamic>> allVaccines,
+) {
   // Normalize today to midnight for accurate date comparison
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
@@ -41,7 +42,11 @@ List<Map<String, dynamic>> getUpcomingVaccines(
 String getVaccineRelativeDate(DateTime vaccineDate) {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
-  final normalizedDate = DateTime(vaccineDate.year, vaccineDate.month, vaccineDate.day);
+  final normalizedDate = DateTime(
+    vaccineDate.year,
+    vaccineDate.month,
+    vaccineDate.day,
+  );
 
   final diff = normalizedDate.difference(today).inDays;
 

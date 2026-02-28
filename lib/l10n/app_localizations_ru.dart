@@ -1005,146 +1005,145 @@ class AppLocalizationsRu extends AppLocalizations {
       'Дайте малышу почувствовать разные текстуры руками и стопами: мягкие, шероховатые и прохладные поверхности.';
 
   @override
-  String get tip_tip_agu_conversation_1_2_title => 'Разговоры с лепетом';
+  String get tip_agu_conversation_1_2_title => 'Baby Talk Chats';
 
   @override
-  String get tip_tip_agu_conversation_1_2_desc =>
-      'Когда малыш издаёт звуки, внимательно слушайте. Мягко отвечайте, когда он закончит. Такие мини-диалоги развивают общение.';
+  String get tip_agu_conversation_1_2_desc =>
+      'When your baby makes sounds, listen. Reply gently when they finish. These tiny chats build communication.';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_title =>
-      'Сильные плечики (время на животике)';
+  String get tip_tummy_time_strength_1_2_title =>
+      'Strong Shoulders (Tummy Time)';
 
   @override
-  String get tip_tip_tummy_time_strength_1_2_desc =>
-      'Кладите малыша на животик на короткое время. Поощряйте поднимать голову яркой игрушкой перед ним.';
+  String get tip_tummy_time_strength_1_2_desc =>
+      'Place your baby on their tummy for short periods. Encourage head lifting with colorful toys in front.';
 
   @override
-  String get tip_tip_baby_massage_1_2_title => 'Успокаивающий массаж';
+  String get tip_baby_massage_1_2_title => 'Soothing Massage';
 
   @override
-  String get tip_tip_baby_massage_1_2_desc =>
-      'После купания делайте мягкий массаж, начиная со стоп. Это развивает ощущение тела и помогает малышу расслабиться.';
+  String get tip_baby_massage_1_2_desc =>
+      'After bath time, massage gently starting from the feet. It supports body awareness and helps your baby relax.';
 
   @override
-  String get tip_tip_gesture_speech_1_2_title => 'Речь с жестами';
+  String get tip_gesture_speech_1_2_title => 'Gesture-Based Talking';
 
   @override
-  String get tip_tip_gesture_speech_1_2_desc =>
-      'Используйте жесты во время разговора. Помашите рукой для идём и потрите ладони для всё. Это поддерживает зрительную память.';
+  String get tip_gesture_speech_1_2_desc =>
+      'Use gestures while talking. Wave for \"we\'re going\" and rub hands for \"all done\". This supports visual memory.';
 
   @override
-  String get tip_tip_open_hands_1_2_title => 'Свободные пальчики';
+  String get tip_open_hands_1_2_title => 'Free Fingers';
 
   @override
-  String get tip_tip_open_hands_1_2_desc =>
-      'Кулачки раскрываются всё чаще. Предлагайте мягкие игрушки, чтобы тренировать захват и отпускание.';
+  String get tip_open_hands_1_2_desc =>
+      'Hands are opening more now. Offer soft toys to practice grasping and releasing.';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_title => 'Близость рядом';
+  String get tip_side_by_side_bonding_1_2_title => 'Side-by-Side Bonding';
 
   @override
-  String get tip_tip_side_by_side_bonding_1_2_desc =>
-      'Лягте рядом с малышом. Улыбайтесь и говорите ласково, пока он пытается повернуться к вам.';
+  String get tip_side_by_side_bonding_1_2_desc =>
+      'Lie side by side with your baby. Smile and speak lovingly as they try to turn toward you.';
 
   @override
-  String get tip_tip_sound_hunter_title => 'Охотник за звуками';
+  String get tip_sound_hunter_listening_title => 'Охотник за звуками';
 
   @override
-  String get tip_tip_sound_hunter_desc =>
+  String get tip_sound_hunter_listening_desc =>
       'Тихо потрясите погремушкой там, где малыш её не видит. Поворот на звук развивает слух и концентрацию.';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_title =>
-      'Охотник за звуками (уровень 2)';
+  String get tip_sound_hunter_level2_1_2_title => 'Sound Hunter (Level 2)';
 
   @override
-  String get tip_tip_sound_hunter_level2_1_2_desc =>
-      'Издавайте разные звуки слева и справа. Поиск источника укрепляет внимание.';
+  String get tip_sound_hunter_level2_1_2_desc =>
+      'Make different sounds from left and right. Finding the source strengthens attention skills.';
 
   @override
-  String get tip_tip_texture_discovery_1_2_title => 'Трогать и открывать';
+  String get tip_texture_discovery_1_2_title => 'Touch and Discover';
 
   @override
-  String get tip_tip_texture_discovery_1_2_desc =>
-      'Предлагайте предметы с разной фактурой. Каждое новое ощущение — это новое открытие для малыша.';
+  String get tip_texture_discovery_1_2_desc =>
+      'Offer objects with different textures. Each new feeling is a new discovery for your baby.';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_title => 'Исследователь на улице';
+  String get tip_outdoor_explorer_4_5_title => 'Outdoor Explorer';
 
   @override
-  String get tip_tip_outdoor_explorer_4_5_desc =>
-      'Показывайте деревья и животных на прогулке. Давайте малышу трогать и изучать, пока он слышит ваш голос.';
+  String get tip_outdoor_explorer_4_5_desc =>
+      'Show trees and animals outside. Let your baby touch and explore while hearing your voice.';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_title => 'Тренировка дотягивания';
+  String get tip_reaching_exercise_1_2_title => 'Reaching Practice';
 
   @override
-  String get tip_tip_reaching_exercise_1_2_desc =>
-      'Кладите игрушки в зоне досягаемости. Даже попытки дотянуться помогают укреплять мышцы.';
+  String get tip_reaching_exercise_1_2_desc =>
+      'Place toys within reach. Even attempts to grab them help strengthen muscles.';
 
   @override
-  String get tip_tip_supported_bounce_1_2_title => 'Пружиним с поддержкой';
+  String get tip_supported_bounce_1_2_title => 'Supported Bouncing';
 
   @override
-  String get tip_tip_supported_bounce_1_2_desc =>
-      'Держите малыша вертикально у себя на коленях и мягко пружиньте с поддержкой. Это помогает укреплять ножки и исследовать новое.';
+  String get tip_supported_bounce_1_2_desc =>
+      'Hold your baby upright on your lap and let them bounce gently with support. It helps leg strength and exploration.';
 
   @override
-  String get tip_tip_visual_tracking_1_2_title => 'Зрительное слежение';
+  String get tip_visual_tracking_1_2_title => 'Visual Tracking';
 
   @override
-  String get tip_tip_visual_tracking_1_2_desc =>
-      'Медленно двигайте яркую звучащую игрушку в поле зрения малыша. Это отличное упражнение для зрительного слежения.';
+  String get tip_visual_tracking_1_2_desc =>
+      'Move a colorful sound-making toy in slow circles within view. Eye tracking is a great visual exercise.';
 
   @override
-  String get tip_tip_face_play_1_2_title => 'Игра с мимикой';
+  String get tip_face_play_1_2_title => 'Face Play';
 
   @override
-  String get tip_tip_face_play_1_2_desc =>
-      'Подойдите ближе, установите зрительный контакт и используйте весёлую мимику. Ваш голос и лицо — любимые игрушки малыша.';
+  String get tip_face_play_1_2_desc =>
+      'Get close, make eye contact, and use playful facial expressions. Your voice and face are your baby\'s favorite toys.';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_title => 'Называем эмоции';
+  String get tip_emotion_labeling_1_2_title => 'Emotion Naming';
 
   @override
-  String get tip_tip_emotion_labeling_1_2_desc =>
-      'Когда малыш плачет, спокойно называйте его чувство и поддерживайте. Ощущение, что его понимают, укрепляет эмоциональную безопасность.';
+  String get tip_emotion_labeling_1_2_desc =>
+      'When your baby cries, name the feeling kindly and reassure them. Feeling understood helps emotional safety.';
 
   @override
-  String get tip_tip_first_meal_title => 'Первая проба';
+  String get tip_first_meal_title => 'First Tasting';
 
   @override
-  String get tip_tip_first_meal_desc =>
-      'Начинайте прикорм по рекомендации педиатра. Кормление с ложки может быть приятным, но важно следить за признаками аллергии.';
+  String get tip_first_meal_desc =>
+      'Start solids based on your doctor\'s advice. Spoon feeding can be fun, but stay alert for allergy signs.';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_title => 'Активные ручки';
+  String get tip_hand_to_hand_transfer_4_5_title => 'Active Hands';
 
   @override
-  String get tip_tip_hand_to_hand_transfer_4_5_desc =>
-      'Примерно в 4-5 месяцев малыши пытаются перекладывать предметы из одной руки в другую. Предлагайте удобные для захвата предметы и наблюдайте.';
+  String get tip_hand_to_hand_transfer_4_5_desc =>
+      'Around months 4-5, babies try moving objects between hands. Offer easy-to-grasp items and observe.';
 
   @override
-  String get tip_tip_supported_sitting_4_5_title => 'Сидение с поддержкой';
+  String get tip_supported_sitting_4_5_title => 'Supported Sitting';
 
   @override
-  String get tip_tip_supported_sitting_4_5_desc =>
-      'Тренируйте сидение с опорой на подушки. Положите игрушку перед малышом, чтобы мотивировать удержание равновесия и опору корпусом.';
+  String get tip_supported_sitting_4_5_desc =>
+      'Practice supported sitting with pillows. Place a toy in front to motivate balance and upper-body support.';
 
   @override
-  String get tip_tip_feet_discovery_4_5_title => 'Знакомство со стопами';
+  String get tip_feet_discovery_4_5_title => 'Discovering Feet';
 
   @override
-  String get tip_tip_feet_discovery_4_5_desc =>
-      'Лёжа на спине, малыш может хватать стопы и тянуть их ко рту. Позвольте стопам изучать разные поверхности.';
+  String get tip_feet_discovery_4_5_desc =>
+      'Your baby may catch feet and bring them to the mouth while lying down. Let feet explore different surfaces.';
 
   @override
-  String get tip_tip_independent_play_4_5_title => 'Самостоятельная игра';
+  String get tip_independent_play_4_5_title => 'Independent Play';
 
   @override
-  String get tip_tip_independent_play_4_5_desc =>
-      'Положите рядом несколько игрушек с разной фактурой и немного отойдите. Самостоятельная игра укрепляет уверенность малыша.';
+  String get tip_independent_play_4_5_desc =>
+      'Place a few textured toys nearby and step back a little. Independent play supports confidence.';
 
   @override
   String ageMonths(int count) {
