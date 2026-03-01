@@ -572,6 +572,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   String? _photoPath;
   final PhotoStyle _photoStyle =
       PhotoStyle.softIllustration; // Default: soft illustrated
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -648,22 +649,39 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   }
 
   Future<void> _saveMilestone() async {
+    if (_isSaving) return;
     if (_titleController.text.isEmpty) return;
 
-    final milestones = VeriYonetici.getMilestones();
-    milestones.insert(0, {
-      'id': DateTime.now().millisecondsSinceEpoch.toString(),
-      'title': _titleController.text,
-      'date': _selectedDate,
-      'note': _noteController.text,
-      'photoPath': _photoPath,
-      'photoStyle': _photoStyle.name,
-    });
+    setState(() => _isSaving = true);
+    try {
+      final milestones = VeriYonetici.getMilestones();
+      milestones.insert(0, {
+        'id': DateTime.now().millisecondsSinceEpoch.toString(),
+        'title': _titleController.text,
+        'date': _selectedDate,
+        'note': _noteController.text,
+        'photoPath': _photoPath,
+        'photoStyle': _photoStyle.name,
+      });
 
-    await VeriYonetici.saveMilestones(milestones);
-    widget.onSaved();
-    if (mounted) {
+      await VeriYonetici.saveMilestones(milestones);
+      if (!mounted) return;
+      widget.onSaved();
       Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorWithMessage(e.toString()),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
@@ -1049,7 +1067,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
               child: SafeArea(
                 top: false,
                 child: GestureDetector(
-                  onTap: _saveMilestone,
+                  onTap: _isSaving ? null : _saveMilestone,
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 20),
@@ -1064,15 +1082,31 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         ),
                       ],
                     ),
-                    child: const Text(
-                      'Save Memory',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isSaving
+                        ? const SizedBox(
+                            height: 22,
+                            child: Center(
+                              child: SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : const Text(
+                            'Save Memory',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ),
@@ -1178,6 +1212,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   late DateTime _selectedDate;
   String? _photoPath;
   final ImagePicker _imagePicker = ImagePicker();
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -1267,26 +1302,45 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   }
 
   Future<void> _saveMilestone() async {
+    if (_isSaving) return;
     if (_titleController.text.isEmpty) return;
 
-    final milestones = VeriYonetici.getMilestones();
-    final index = milestones.indexWhere(
-      (m) => m['id'] == widget.milestone['id'],
-    );
+    setState(() => _isSaving = true);
+    try {
+      final milestones = VeriYonetici.getMilestones();
+      final index = milestones.indexWhere(
+        (m) => m['id'] == widget.milestone['id'],
+      );
 
-    if (index != -1) {
-      milestones[index] = {
-        ...widget.milestone,
-        'title': _titleController.text,
-        'date': _selectedDate,
-        'note': _noteController.text,
-        'photoPath': _photoPath,
-      };
-      await VeriYonetici.saveMilestones(milestones);
+      if (index != -1) {
+        milestones[index] = {
+          ...widget.milestone,
+          'title': _titleController.text,
+          'date': _selectedDate,
+          'note': _noteController.text,
+          'photoPath': _photoPath,
+        };
+        await VeriYonetici.saveMilestones(milestones);
+      }
+
+      if (!mounted) return;
+      widget.onSaved();
+      Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorWithMessage(e.toString()),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
-
-    widget.onSaved();
-    if (mounted) Navigator.pop(context);
   }
 
   Future<void> _deleteMilestone() async {
@@ -1688,7 +1742,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   const SizedBox(height: 24),
                   // Save button
                   GestureDetector(
-                    onTap: _saveMilestone,
+                    onTap: _isSaving ? null : _saveMilestone,
                     child: Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -1696,15 +1750,31 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                         color: const Color(0xFFFFB4A2),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Text(
-                        'Save Changes',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              height: 22,
+                              child: Center(
+                                child: SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const Text(
+                              'Save Changes',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],

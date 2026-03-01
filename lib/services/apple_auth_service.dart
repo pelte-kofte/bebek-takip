@@ -11,11 +11,12 @@ class AppleAuthService {
 
   static final AppleAuthService instance = AppleAuthService._();
   static final Random _secureRandom = Random.secure();
+
+  // Full alphanumeric + safe-symbol charset (matches Firebase docs example).
   static const String _charset =
-      '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+      '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
 
   bool _inProgress = false;
-  String? _currentNonce;
 
   bool get inProgress => _inProgress;
 
@@ -29,40 +30,6 @@ class AppleAuthService {
     if (kDebugMode) {
       debugPrint('[AppleAuthService] $message');
     }
-  }
-
-  String? _decodeAppleTokenField(
-    dynamic value,
-    String fieldName,
-    String attemptId,
-  ) {
-    if (value == null) {
-      _log('[$attemptId] $fieldName is null.');
-      return null;
-    }
-    if (value is Uint8List) {
-      if (value.isEmpty) {
-        _log('[$attemptId] $fieldName is empty Uint8List.');
-        return null;
-      }
-      return utf8.decode(value);
-    }
-    if (value is List<int>) {
-      if (value.isEmpty) {
-        _log('[$attemptId] $fieldName is empty List<int>.');
-        return null;
-      }
-      return utf8.decode(value);
-    }
-    if (value is String) {
-      if (value.isEmpty) {
-        _log('[$attemptId] $fieldName is empty String.');
-        return null;
-      }
-      return value;
-    }
-    _log('[$attemptId] $fieldName has unsupported type: ${value.runtimeType}');
-    return null;
   }
 
   String _generateAttemptId() {
@@ -101,33 +68,17 @@ class AppleAuthService {
     FirebaseAuthException e, {
     required String stage,
   }) {
-    switch (e.code) {
-      case 'invalid-credential':
-      case 'credential-already-in-use':
-      case 'email-already-in-use':
-      case 'account-exists-with-different-credential':
-      case 'network-request-failed':
-      case 'too-many-requests':
-      case 'user-disabled':
-      case 'operation-not-allowed':
-      case 'missing-or-invalid-nonce':
-      case 'missing-identity-token':
-      case 'missing-web-auth-options':
-        _log(
-          '[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}',
-        );
-        return;
-      default:
-        _log(
-          '[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}',
-        );
-    }
+    _log('[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}');
   }
 
-  // Checklist:
-  // 1) Firebase Console -> Apple provider is enabled.
+  // Prerequisites checklist:
+  // 1) Firebase Console → Apple provider is enabled.
   // 2) Apple Service ID / bundle identifier matches this iOS app target.
   // 3) Xcode Runner target has "Sign in with Apple" capability enabled.
+  //
+  // Nonce contract:
+  //   rawNonce  → passed to Apple as `nonce` (SHA-256 of rawNonce goes into the JWT)
+  //   rawNonce  → passed to Firebase as `rawNonce` (Firebase verifies SHA-256 matches JWT)
   Future<UserCredential?> signIn() async {
     if (_inProgress) {
       _log('Ignoring duplicate Apple sign-in attempt while one is active.');
@@ -138,8 +89,10 @@ class AppleAuthService {
     final attemptId = _generateAttemptId();
     _log('[$attemptId] START Apple sign-in');
     try {
+      // Generate a cryptographically secure random nonce.
+      // We pass SHA-256(rawNonce) to Apple so Apple includes it in the JWT.
+      // We pass rawNonce to Firebase so Firebase can verify SHA-256(rawNonce) == JWT nonce.
       final rawNonce = generateNonce();
-      _currentNonce = rawNonce;
       final hashedNonce = sha256OfString(rawNonce);
       _log(
         '[$attemptId] Nonce generated (rawLength=${rawNonce.length}, sha256Length=${hashedNonce.length})',
@@ -165,7 +118,7 @@ class AppleAuthService {
             webAuthenticationOptions: webOptions,
           );
         } else if (Platform.isIOS) {
-          // iOS native flow only: never pass webAuthenticationOptions here.
+          // iOS native flow: never pass webAuthenticationOptions.
           appleCredential = await SignInWithApple.getAppleIDCredential(
             scopes: const [
               AppleIDAuthorizationScopes.email,
@@ -208,24 +161,10 @@ class AppleAuthService {
         rethrow;
       }
 
-      final identityTokenString = _decodeAppleTokenField(
-        appleCredential.identityToken,
-        'identityToken',
-        attemptId,
-      );
-      final authorizationCodeString = _decodeAppleTokenField(
-        appleCredential.authorizationCode,
-        'authorizationCode',
-        attemptId,
-      );
-
-      _log(
-        '[$attemptId] GOT Apple credential '
-        '(hasToken=${identityTokenString != null}, '
-        'hasCode=${authorizationCodeString != null})',
-      );
-
-      if (identityTokenString == null) {
+      // sign_in_with_apple 6.x returns identityToken as String?.
+      // authorizationCode is NOT required for Firebase authentication.
+      final identityToken = appleCredential.identityToken;
+      if (identityToken == null || identityToken.isEmpty) {
         _log('[$attemptId] Apple credential missing identityToken.');
         throw FirebaseAuthException(
           code: 'missing-identity-token',
@@ -233,28 +172,14 @@ class AppleAuthService {
         );
       }
 
-      if (authorizationCodeString == null) {
-        _log('[$attemptId] Apple credential missing authorizationCode.');
-        throw FirebaseAuthException(
-          code: 'missing-authorization-code',
-          message: 'Apple authorization code is missing.',
-        );
-      }
+      _log('[$attemptId] GOT Apple credential (hasToken=true)');
 
-      final currentNonce = _currentNonce;
-      if (currentNonce == null || currentNonce.isEmpty) {
-        _log(
-          '[$attemptId] Missing raw nonce before Firebase credential creation.',
-        );
-        throw FirebaseAuthException(
-          code: 'missing-or-invalid-nonce',
-          message: 'Missing nonce. Please try again.',
-        );
-      }
-
-      final oauthCredential = OAuthProvider(
-        'apple.com',
-      ).credential(idToken: identityTokenString, rawNonce: currentNonce);
+      // Build the OAuthCredential with rawNonce so Firebase can verify
+      // SHA-256(rawNonce) == nonce claim in the identityToken JWT.
+      final oauthCredential = OAuthProvider('apple.com').credential(
+        idToken: identityToken,
+        rawNonce: rawNonce,
+      );
 
       final auth = FirebaseAuth.instance;
       final currentUser = auth.currentUser;
@@ -309,12 +234,13 @@ class AppleAuthService {
       _log('[$attemptId] ERROR: $e');
       rethrow;
     } finally {
-      _currentNonce = null;
       _inProgress = false;
-      _log('[$attemptId] END - nonce/inProgress cleared');
+      _log('[$attemptId] END - inProgress cleared');
     }
   }
 
+  /// Generates a cryptographically secure random nonce string.
+  /// The SHA-256 of this value is sent to Apple and included in the JWT.
   String generateNonce({int length = 32}) {
     final codeUnits = List<int>.generate(
       length,
@@ -323,6 +249,7 @@ class AppleAuthService {
     return String.fromCharCodes(codeUnits);
   }
 
+  /// Returns the lowercase hex SHA-256 digest of [input].
   String sha256OfString(String input) {
     final bytes = utf8.encode(input);
     return sha256.convert(bytes).toString();

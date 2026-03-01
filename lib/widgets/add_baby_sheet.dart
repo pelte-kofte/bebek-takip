@@ -26,17 +26,36 @@ class _AddBabySheetState extends State<AddBabySheet> {
   }
 
   Future<void> _save() async {
+    if (_saving) return;
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
     setState(() => _saving = true);
+    try {
+      final newId = await VeriYonetici.addBaby(
+        name: name,
+        birthDate: _birthDate,
+      );
+      await VeriYonetici.setActiveBaby(newId);
 
-    final newId = await VeriYonetici.addBaby(name: name, birthDate: _birthDate);
-    await VeriYonetici.setActiveBaby(newId);
-
-    if (!mounted) return;
-    Navigator.pop(context); // close add sheet
-    widget.onBabyAdded();
+      if (!mounted) return;
+      Navigator.pop(context);
+      widget.onBabyAdded();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.errorWithMessage(e.toString()),
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _saving = false);
+      }
+    }
   }
 
   void _pickDate() {
