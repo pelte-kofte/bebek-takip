@@ -54,13 +54,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await Navigator.push(
+            final result = await Navigator.push<bool>(
               context,
               MaterialPageRoute(
                 builder: (context) => AddGrowthScreen(onSaved: _loadRecords),
               ),
             );
-            _loadRecords();
+            if (result == true) {
+              _loadRecords();
+            }
           },
           backgroundColor: AppColors.primary,
           child: const Icon(Icons.add, color: Colors.white),

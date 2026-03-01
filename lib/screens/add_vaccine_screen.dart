@@ -54,7 +54,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     super.dispose();
   }
 
-  void _saveVaccine() async {
+  Future<void> _saveVaccine() async {
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     if (_nameController.text.trim().isEmpty) {
@@ -86,8 +86,13 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
 
       await VeriYonetici.saveAsiKayitlari(vaccines);
       HapticFeedback.lightImpact();
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
       if (mounted) {
-        Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+        );
       }
     } finally {
       if (mounted) {

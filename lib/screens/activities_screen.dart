@@ -1319,6 +1319,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   Future<void> _showEditNursingSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final String recordId = kayit['id']?.toString() ?? '';
     DateTime eventTime = kayit['tarih'] as DateTime;
     final int left = kayit['solDakika'] as int? ?? 0;
@@ -1328,9 +1329,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     if (duration == 0) duration = left + right;
     bool isSaving = false;
 
-    await showModalBottomSheet(
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1351,9 +1354,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'kategori': 'Milk',
               };
               await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (!mounted) return;
-              Navigator.of(context).pop();
-              setState(() {});
+              if (!ctx.mounted) return;
+              Navigator.of(ctx).pop(true);
+            } catch (e) {
+              if (ctx.mounted) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+                );
+              }
             } finally {
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
@@ -1415,10 +1423,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
       ),
     );
+    if (saved == true && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _showEditFeedingSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final String recordId = kayit['id']?.toString() ?? '';
     DateTime eventTime = kayit['tarih'] as DateTime;
     final noteController = TextEditingController(
@@ -1439,9 +1451,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     int solidDuration = (kayit['solidDakika'] as int? ?? 0).clamp(0, 180);
     bool isSaving = false;
 
-    await showModalBottomSheet(
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1485,11 +1499,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 });
               }
               await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (!mounted) return;
-              Navigator.of(context).pop();
-              setState(() {});
+              if (!ctx.mounted) return;
+              Navigator.of(ctx).pop(true);
+            } catch (e) {
+              if (ctx.mounted) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+                );
+              }
             } finally {
-              noteController.dispose();
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
               }
@@ -1591,10 +1609,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
       ),
     );
+    noteController.dispose();
+    if (saved == true && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _showEditDiaperSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final String recordId = kayit['id']?.toString() ?? '';
     DateTime eventTime = kayit['tarih'] as DateTime;
     String type = VeriYonetici.normalizeDiaperType(
@@ -1605,9 +1628,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
     bool isSaving = false;
 
-    await showModalBottomSheet(
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1627,11 +1652,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'notlar': noteController.text,
               };
               await VeriYonetici.updateKakaKaydiById(recordId, updated);
-              if (!mounted) return;
-              Navigator.of(context).pop();
-              setState(() {});
+              if (!ctx.mounted) return;
+              Navigator.of(ctx).pop(true);
+            } catch (e) {
+              if (ctx.mounted) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+                );
+              }
             } finally {
-              noteController.dispose();
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
               }
@@ -1682,18 +1711,25 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
       ),
     );
+    noteController.dispose();
+    if (saved == true && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _showEditSleepSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
     final String recordId = kayit['id']?.toString() ?? '';
     DateTime start = kayit['baslangic'] as DateTime;
     DateTime end = kayit['bitis'] as DateTime;
     bool isSaving = false;
 
-    await showModalBottomSheet(
+    final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1714,9 +1750,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 'sure': normalizedEnd.difference(start),
               };
               await VeriYonetici.updateUykuKaydiById(recordId, updated);
-              if (!mounted) return;
-              Navigator.of(context).pop();
-              setState(() {});
+              if (!ctx.mounted) return;
+              Navigator.of(ctx).pop(true);
+            } catch (e) {
+              if (ctx.mounted) {
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+                );
+              }
             } finally {
               if (ctx.mounted) {
                 setModalState(() => isSaving = false);
@@ -1747,6 +1788,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
       ),
     );
+    if (saved == true && mounted) {
+      setState(() {});
+    }
   }
 
   void _deleteMama(String id) async {

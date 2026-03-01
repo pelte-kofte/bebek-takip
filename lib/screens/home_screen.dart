@@ -1958,13 +1958,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToAddGrowth() async {
-    await Navigator.push(
+    final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (context) => AddGrowthScreen(onSaved: widget.onDataChanged),
       ),
     );
-    setState(() {});
+    if (result == true && mounted) {
+      setState(() {});
+    }
   }
 
   String _formatDaysAgo(AppLocalizations l10n, DateTime date) {

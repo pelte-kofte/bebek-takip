@@ -403,7 +403,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
     );
   }
 
-  void _saveGrowth() async {
+  Future<void> _saveGrowth() async {
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     // Validate required fields
@@ -436,9 +436,18 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
       );
 
       await VeriYonetici.saveBoyKiloKayitlari(kayitlar);
-      widget.onSaved?.call();
+      try {
+        widget.onSaved?.call();
+      } catch (e) {
+        debugPrint('AddGrowthScreen onSaved failed: $e');
+      }
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
       if (mounted) {
-        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+        );
       }
     } finally {
       if (mounted) {

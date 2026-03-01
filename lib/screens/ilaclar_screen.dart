@@ -1308,6 +1308,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
   int _beforeHours = 2;
   int _afterHours = 4;
   bool _isActive = true;
+  bool _isSaving = false;
 
   bool get _isEditing => widget.medication != null;
 
@@ -1379,6 +1380,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
   }
 
   Future<void> _save() async {
+    if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     if (name.isEmpty) {
@@ -1402,75 +1404,98 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
       return;
     }
 
-    final medications = VeriYonetici.getIlacKayitlari();
-    final editingId = widget.medication?['id'] as String?;
-    final existingIndex = editingId == null
-        ? -1
-        : medications.indexWhere((m) => m['id'] == editingId);
-    final existing = existingIndex >= 0
-        ? Map<String, dynamic>.from(medications[existingIndex])
-        : null;
-    final medicationId =
-        existing?['id'] as String? ??
-        'ilac_${DateTime.now().millisecondsSinceEpoch}';
+    setState(() => _isSaving = true);
+    try {
+      final medications = VeriYonetici.getIlacKayitlari();
+      final editingId = widget.medication?['id'] as String?;
+      final existingIndex = editingId == null
+          ? -1
+          : medications.indexWhere((m) => m['id'] == editingId);
+      final existing = existingIndex >= 0
+          ? Map<String, dynamic>.from(medications[existingIndex])
+          : null;
+      final medicationId =
+          existing?['id'] as String? ??
+          'ilac_${DateTime.now().millisecondsSinceEpoch}';
 
-    bool remindersEnabled = existing?['remindersEnabled'] == true;
-    if (_scheduleType == 'prn') {
-      remindersEnabled = false;
-    } else if (!_isEditing || remindersEnabled != true) {
-      final optIn = await _askMedicationReminder();
-      if (optIn == null) return;
-      remindersEnabled = optIn;
+      bool remindersEnabled = existing?['remindersEnabled'] == true;
+      if (_scheduleType == 'prn') {
+        remindersEnabled = false;
+      } else if (!_isEditing || remindersEnabled != true) {
+        final optIn = await _askMedicationReminder();
+        if (optIn == null) return;
+        remindersEnabled = optIn;
+      }
+
+      final payload = {
+        'id': medicationId,
+        'name': name,
+        'type': _type,
+        'dosage': _dosageController.text.trim().isEmpty
+            ? null
+            : _dosageController.text.trim(),
+        'notes': _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
+        'isActive': _isActive,
+        'scheduleType': _scheduleType,
+        'dailyTimes': _scheduleType == 'daily' ? _dailyTimes : null,
+        'vaccineId': _scheduleType == 'vaccine_protocol' ? _vaccineId : null,
+        'protocolOffsets': _scheduleType == 'vaccine_protocol'
+            ? [
+                {'kind': 'before', 'minutes': _beforeHours * 60},
+                {'kind': 'after', 'minutes': _afterHours * 60},
+              ]
+            : null,
+        'repeatEveryHours': null,
+        'maxDoses': null,
+        'remindersEnabled': remindersEnabled,
+        'scheduleText': _scheduleType == 'daily'
+            ? '${l10n.everyDay} • ${_dailyTimes.join(', ')}'
+            : (_scheduleType == 'prn'
+                  ? l10n.asNeeded
+                  : l10n.vaccineProtocolLabel),
+      };
+
+      if (_isEditing && existingIndex != -1) {
+        medications[existingIndex] = {
+          ...medications[existingIndex],
+          ...payload,
+        };
+      } else {
+        medications.add({
+          'babyId': VeriYonetici.getActiveBabyId(),
+          ...payload,
+          'createdAt': DateTime.now(),
+        });
+      }
+
+      await VeriYonetici.saveIlacKayitlari(medications);
+      final saved = medications.firstWhere((m) => m['id'] == medicationId);
+
+      try {
+        await _syncSavedMedicationReminder(
+          oldMedication: existing,
+          savedMedication: Map<String, dynamic>.from(saved),
+        );
+      } catch (e) {
+        debugPrint('Medication reminder sync failed: $e');
+      }
+
+      HapticFeedback.lightImpact();
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
-
-    final payload = {
-      'id': medicationId,
-      'name': name,
-      'type': _type,
-      'dosage': _dosageController.text.trim().isEmpty
-          ? null
-          : _dosageController.text.trim(),
-      'notes': _notesController.text.trim().isEmpty
-          ? null
-          : _notesController.text.trim(),
-      'isActive': _isActive,
-      'scheduleType': _scheduleType,
-      'dailyTimes': _scheduleType == 'daily' ? _dailyTimes : null,
-      'vaccineId': _scheduleType == 'vaccine_protocol' ? _vaccineId : null,
-      'protocolOffsets': _scheduleType == 'vaccine_protocol'
-          ? [
-              {'kind': 'before', 'minutes': _beforeHours * 60},
-              {'kind': 'after', 'minutes': _afterHours * 60},
-            ]
-          : null,
-      'repeatEveryHours': null,
-      'maxDoses': null,
-      'remindersEnabled': remindersEnabled,
-      'scheduleText': _scheduleType == 'daily'
-          ? '${l10n.everyDay} • ${_dailyTimes.join(', ')}'
-          : (_scheduleType == 'prn'
-                ? l10n.asNeeded
-                : l10n.vaccineProtocolLabel),
-    };
-
-    if (_isEditing && existingIndex != -1) {
-      medications[existingIndex] = {...medications[existingIndex], ...payload};
-    } else {
-      medications.add({
-        'babyId': VeriYonetici.getActiveBabyId(),
-        ...payload,
-        'createdAt': DateTime.now(),
-      });
-    }
-
-    await VeriYonetici.saveIlacKayitlari(medications);
-    final saved = medications.firstWhere((m) => m['id'] == medicationId);
-    await _syncSavedMedicationReminder(
-      oldMedication: existing,
-      savedMedication: Map<String, dynamic>.from(saved),
-    );
-    HapticFeedback.lightImpact();
-    if (mounted) Navigator.pop(context, true);
   }
 
   Future<bool?> _askMedicationReminder() {
@@ -1733,7 +1758,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _save,
+                onPressed: _isSaving ? null : _save,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -1743,7 +1768,18 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
                   ),
                   elevation: 0,
                 ),
-                child: Text(l10n.save),
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : Text(l10n.save),
               ),
             ),
           ],

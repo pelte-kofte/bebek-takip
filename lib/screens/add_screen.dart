@@ -2439,6 +2439,17 @@ class _AddScreenState extends State<AddScreen> {
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
+    Future<void> runBestEffort(
+      Future<void> Function() action,
+      String label,
+    ) async {
+      try {
+        await action();
+      } catch (e) {
+        debugPrint('AddScreen $label failed: $e');
+      }
+    }
+
     // Validation: prevent saving activities with zero values
     if (selectedActivity == 'breastfeeding' && minutes == 0) {
       _showValidationError(l10n.pleaseSetDuration);
@@ -2486,13 +2497,19 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
-        await _scheduleFeedingReminderIfEnabled();
-        HapticFeedback.lightImpact();
+        await runBestEffort(
+          _scheduleFeedingReminderIfEnabled,
+          'feeding reminder scheduling',
+        );
+        await runBestEffort(() async {
+          HapticFeedback.lightImpact();
+        }, 'haptic feedback');
         _initialSnapshot = _captureSnapshot();
-        widget.onSaved?.call();
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
+        await runBestEffort(() async {
+          widget.onSaved?.call();
+        }, 'onSaved callback');
+        if (!mounted) return;
+        Navigator.pop(context, true);
       } else if (selectedActivity == 'bottle') {
         final kayitlar = VeriYonetici.getMamaKayitlari();
 
@@ -2521,13 +2538,19 @@ class _AddScreenState extends State<AddScreen> {
         }
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
-        await _scheduleFeedingReminderIfEnabled();
-        HapticFeedback.lightImpact();
+        await runBestEffort(
+          _scheduleFeedingReminderIfEnabled,
+          'feeding reminder scheduling',
+        );
+        await runBestEffort(() async {
+          HapticFeedback.lightImpact();
+        }, 'haptic feedback');
         _initialSnapshot = _captureSnapshot();
-        widget.onSaved?.call();
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
+        await runBestEffort(() async {
+          widget.onSaved?.call();
+        }, 'onSaved callback');
+        if (!mounted) return;
+        Navigator.pop(context, true);
       } else if (selectedActivity == 'sleep') {
         if (_sleepEndDateTime == null) return;
 
@@ -2549,12 +2572,15 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveUykuKayitlari(kayitlar);
-        HapticFeedback.lightImpact();
+        await runBestEffort(() async {
+          HapticFeedback.lightImpact();
+        }, 'haptic feedback');
         _initialSnapshot = _captureSnapshot();
-        widget.onSaved?.call();
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
+        await runBestEffort(() async {
+          widget.onSaved?.call();
+        }, 'onSaved callback');
+        if (!mounted) return;
+        Navigator.pop(context, true);
       } else if (selectedActivity == 'diaper') {
         final kayitlar = VeriYonetici.getKakaKayitlari();
         final diaperType = VeriYonetici.normalizeDiaperType(_diaperType);
@@ -2568,13 +2594,19 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveKakaKayitlari(kayitlar);
-        await _scheduleDiaperReminderIfEnabled();
-        HapticFeedback.lightImpact();
+        await runBestEffort(
+          _scheduleDiaperReminderIfEnabled,
+          'diaper reminder scheduling',
+        );
+        await runBestEffort(() async {
+          HapticFeedback.lightImpact();
+        }, 'haptic feedback');
         _initialSnapshot = _captureSnapshot();
-        widget.onSaved?.call();
-        if (mounted) {
-          Navigator.pop(context, true);
-        }
+        await runBestEffort(() async {
+          widget.onSaved?.call();
+        }, 'onSaved callback');
+        if (!mounted) return;
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
