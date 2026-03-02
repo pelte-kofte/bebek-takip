@@ -3,14 +3,21 @@ import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+
+import '../firebase_options.dart';
 
 class AppleAuthService {
   AppleAuthService._();
 
   static final AppleAuthService instance = AppleAuthService._();
   static final Random _secureRandom = Random.secure();
+  static const MethodChannel _iosRuntimeInfoChannel = MethodChannel(
+    'com.nilico.baby/ios_runtime_info',
+  );
 
   // Full alphanumeric + safe-symbol charset (matches Firebase docs example).
   static const String _charset =
@@ -27,8 +34,53 @@ class AppleAuthService {
   }
 
   void _log(String message) {
-    if (kDebugMode) {
-      debugPrint('[AppleAuthService] $message');
+    debugPrint('[AppleAuthService] $message');
+  }
+
+  String _currentBuildMode() {
+    if (kReleaseMode) return 'release';
+    if (kProfileMode) return 'profile';
+    return 'debug';
+  }
+
+  Map<String, dynamic>? _decodeJwtPayload(String jwt) {
+    final segments = jwt.split('.');
+    if (segments.length < 2) return null;
+
+    try {
+      final normalized = base64Url.normalize(segments[1]);
+      final decoded = utf8.decode(base64Url.decode(normalized));
+      final payload = jsonDecode(decoded);
+      if (payload is Map<String, dynamic>) return payload;
+      if (payload is Map) {
+        return Map<String, dynamic>.from(payload);
+      }
+    } catch (e) {
+      _log('Failed to decode Apple identity token payload: $e');
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?> _fetchIosRuntimeDiagnostics(
+    String attemptId,
+  ) async {
+    if (kIsWeb || !Platform.isIOS) return null;
+
+    try {
+      final result = await _iosRuntimeInfoChannel
+          .invokeMapMethod<String, dynamic>('getAppleSignInDiagnostics');
+      if (result == null) return null;
+      _log(
+        '[$attemptId] iOS runtime diagnostics '
+        'bundleId=${result['bundleId']} '
+        'buildMode=${result['buildMode']} '
+        'appleSignInEntitlement=${result['appleSignInEntitlement']} '
+        'appGroups=${result['appGroups']}',
+      );
+      return result;
+    } catch (e) {
+      _log('[$attemptId] Failed to fetch iOS runtime diagnostics: $e');
+      return null;
     }
   }
 
@@ -67,8 +119,44 @@ class AppleAuthService {
     String attemptId,
     FirebaseAuthException e, {
     required String stage,
+    StackTrace? stackTrace,
   }) {
-    _log('[$attemptId] FirebaseAuthException@$stage ${e.code}: ${e.message}');
+    _log(
+      '[$attemptId] FirebaseAuthException@$stage '
+      'code=${e.code} message=${e.message} plugin=${e.plugin}',
+    );
+    if (stackTrace != null) {
+      _log('[$attemptId] FirebaseAuthException@$stage stack=$stackTrace');
+    }
+  }
+
+  Future<FirebaseApp> _ensureFirebaseReady(String attemptId) async {
+    if (Firebase.apps.isEmpty) {
+      _log('[$attemptId] Firebase not initialized. Initializing now.');
+      final app = await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      _log('[$attemptId] Firebase initialized lazily. app=${app.name}');
+      return app;
+    }
+
+    final app = Firebase.app();
+    _log('[$attemptId] Firebase already initialized. app=${app.name}');
+    return app;
+  }
+
+  void _logFirebaseState(String attemptId, FirebaseApp app) {
+    final options = app.options;
+    _log(
+      '[$attemptId] Firebase state '
+      'apps=${Firebase.apps.length} '
+      'defaultApp=${app.name} '
+      'apiKey=${options.apiKey} '
+      'appId=${options.appId} '
+      'projectId=${options.projectId} '
+      'messagingSenderId=${options.messagingSenderId} '
+      'storageBucket=${options.storageBucket}',
+    );
   }
 
   // Prerequisites checklist:
@@ -89,6 +177,27 @@ class AppleAuthService {
     final attemptId = _generateAttemptId();
     _log('[$attemptId] START Apple sign-in');
     try {
+      _log(
+        '[$attemptId] Build branch '
+        'mode=${_currentBuildMode()} '
+        'kIsWeb=$kIsWeb '
+        'platform=${kIsWeb ? 'web' : Platform.operatingSystem}',
+      );
+      final firebaseApp = await _ensureFirebaseReady(attemptId);
+      _logFirebaseState(attemptId, firebaseApp);
+      final runtimeDiagnostics = await _fetchIosRuntimeDiagnostics(attemptId);
+      if (Platform.isIOS && runtimeDiagnostics != null) {
+        final appleSignInEntitlement =
+            runtimeDiagnostics['appleSignInEntitlement'];
+        if (appleSignInEntitlement == null) {
+          throw FirebaseAuthException(
+            code: 'missing-apple-sign-in-entitlement',
+            message:
+                'Signed iOS app is missing the Sign In with Apple entitlement.',
+          );
+        }
+      }
+
       // Generate a cryptographically secure random nonce.
       // We pass SHA-256(rawNonce) to Apple so Apple includes it in the JWT.
       // We pass rawNonce to Firebase so Firebase can verify SHA-256(rawNonce) == JWT nonce.
@@ -101,6 +210,7 @@ class AppleAuthService {
       final AuthorizationCredentialAppleID appleCredential;
       try {
         if (kIsWeb) {
+          _log('[$attemptId] Using Apple flow branch=web');
           final webOptions = _webAuthOptions(attemptId);
           if (webOptions == null) {
             throw FirebaseAuthException(
@@ -118,6 +228,7 @@ class AppleAuthService {
             webAuthenticationOptions: webOptions,
           );
         } else if (Platform.isIOS) {
+          _log('[$attemptId] Using Apple flow branch=ios-native');
           // iOS native flow: never pass webAuthenticationOptions.
           appleCredential = await SignInWithApple.getAppleIDCredential(
             scopes: const [
@@ -127,6 +238,7 @@ class AppleAuthService {
             nonce: hashedNonce,
           );
         } else if (Platform.isAndroid) {
+          _log('[$attemptId] Using Apple flow branch=android-web');
           final webOptions = _webAuthOptions(attemptId);
           if (webOptions == null) {
             throw FirebaseAuthException(
@@ -144,6 +256,7 @@ class AppleAuthService {
             webAuthenticationOptions: webOptions,
           );
         } else {
+          _log('[$attemptId] Using Apple flow branch=fallback-native');
           appleCredential = await SignInWithApple.getAppleIDCredential(
             scopes: const [
               AppleIDAuthorizationScopes.email,
@@ -172,28 +285,77 @@ class AppleAuthService {
         );
       }
 
-      _log('[$attemptId] GOT Apple credential (hasToken=true)');
+      _log(
+        '[$attemptId] GOT Apple credential '
+        'hasToken=true '
+        'hasAuthorizationCode=${appleCredential.authorizationCode.isNotEmpty} '
+        'hasEmail=${(appleCredential.email ?? '').isNotEmpty} '
+        'hasGivenName=${(appleCredential.givenName ?? '').isNotEmpty} '
+        'hasFamilyName=${(appleCredential.familyName ?? '').isNotEmpty} '
+        'userIdentifierPresent=${(appleCredential.userIdentifier ?? '').isNotEmpty}',
+      );
+
+      final jwtPayload = _decodeJwtPayload(identityToken);
+      final aud = jwtPayload?['aud'];
+      final iss = jwtPayload?['iss'];
+      final exp = jwtPayload?['exp'];
+      final iat = jwtPayload?['iat'];
+      final jwtNonce = jwtPayload?['nonce'];
+      _log(
+        '[$attemptId] Apple identityToken payload '
+        'aud=$aud iss=$iss exp=$exp iat=$iat nonce=$jwtNonce',
+      );
+      if (jwtNonce != null) {
+        _log(
+          '[$attemptId] Apple nonce comparison '
+          'jwtMatchesHashedNonce=${jwtNonce == hashedNonce}',
+        );
+      }
+
+      final runtimeBundleId = runtimeDiagnostics?['bundleId']?.toString();
+      if (Platform.isIOS &&
+          runtimeBundleId != null &&
+          runtimeBundleId.isNotEmpty) {
+        if (aud != runtimeBundleId) {
+          _log(
+            '[$attemptId] Apple audience mismatch '
+            'tokenAud=$aud runtimeBundleId=$runtimeBundleId',
+          );
+          throw FirebaseAuthException(
+            code: 'invalid-apple-audience',
+            message:
+                'Apple identity token audience mismatch. Expected $runtimeBundleId, got $aud.',
+          );
+        }
+      }
 
       // Build the OAuthCredential with rawNonce so Firebase can verify
       // SHA-256(rawNonce) == nonce claim in the identityToken JWT.
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: identityToken,
-        rawNonce: rawNonce,
-      );
+      final oauthCredential = OAuthProvider(
+        'apple.com',
+      ).credential(idToken: identityToken, rawNonce: rawNonce);
 
       final auth = FirebaseAuth.instance;
       final currentUser = auth.currentUser;
 
       _log(
-        '[$attemptId] BEFORE Firebase call (anonymous=${currentUser?.isAnonymous})',
+        '[$attemptId] BEFORE Firebase call '
+        'method=${currentUser != null && currentUser.isAnonymous ? 'linkWithCredential' : 'signInWithCredential'} '
+        'anonymous=${currentUser?.isAnonymous} '
+        'credentialProvider=${oauthCredential.providerId}',
       );
 
       UserCredential result;
       if (currentUser != null && currentUser.isAnonymous) {
         try {
           result = await currentUser.linkWithCredential(oauthCredential);
-        } on FirebaseAuthException catch (e) {
-          _logFirebaseAuthException(attemptId, e, stage: 'linkWithCredential');
+        } on FirebaseAuthException catch (e, st) {
+          _logFirebaseAuthException(
+            attemptId,
+            e,
+            stage: 'linkWithCredential',
+            stackTrace: st,
+          );
           if (!_isLinkConflict(e)) {
             rethrow;
           }
@@ -203,11 +365,12 @@ class AppleAuthService {
           await auth.signOut();
           try {
             result = await auth.signInWithCredential(oauthCredential);
-          } on FirebaseAuthException catch (e) {
+          } on FirebaseAuthException catch (e, st) {
             _logFirebaseAuthException(
               attemptId,
               e,
               stage: 'signInWithCredential-after-link-conflict',
+              stackTrace: st,
             );
             rethrow;
           }
@@ -215,23 +378,35 @@ class AppleAuthService {
       } else {
         try {
           result = await auth.signInWithCredential(oauthCredential);
-        } on FirebaseAuthException catch (e) {
+        } on FirebaseAuthException catch (e, st) {
           _logFirebaseAuthException(
             attemptId,
             e,
             stage: 'signInWithCredential',
+            stackTrace: st,
           );
           rethrow;
         }
       }
 
-      _log('[$attemptId] SUCCESS uid=${result.user?.uid}');
+      _log(
+        '[$attemptId] AFTER Firebase success '
+        'uid=${result.user?.uid} '
+        'isAnonymous=${result.user?.isAnonymous} '
+        'providerDataCount=${result.user?.providerData.length}',
+      );
       return result;
-    } on FirebaseAuthException catch (e) {
-      _logFirebaseAuthException(attemptId, e, stage: 'top-level');
+    } on FirebaseAuthException catch (e, st) {
+      _logFirebaseAuthException(
+        attemptId,
+        e,
+        stage: 'top-level',
+        stackTrace: st,
+      );
       rethrow;
-    } catch (e) {
+    } catch (e, st) {
       _log('[$attemptId] ERROR: $e');
+      _log('[$attemptId] ERROR stack=$st');
       rethrow;
     } finally {
       _inProgress = false;
