@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,6 +38,7 @@ class VeriYonetici {
   // Singleton instance
   static SharedPreferences? _prefs;
   static LocalStore? _localStore;
+  static const Duration _bestEffortCloudSyncTimeout = Duration(seconds: 8);
 
   // In-memory cache
   static List<Map<String, dynamic>> _mamaKayitlari = [];
@@ -290,6 +292,24 @@ class VeriYonetici {
     } catch (_) {
       _log('Cloud sync failed, keeping local cache.');
       // Keep local cache if cloud is temporarily unavailable.
+    }
+  }
+
+  static Future<void> _syncActiveBabyRecordsToCloudBestEffort({
+    String? babyId,
+  }) async {
+    try {
+      await _syncActiveBabyRecordsToCloud(
+        babyId: babyId,
+      ).timeout(_bestEffortCloudSyncTimeout);
+    } on TimeoutException catch (e) {
+      _log(
+        'Best-effort cloud sync timed out for babyId=${babyId ?? _activeBabyId}: $e',
+      );
+    } catch (e) {
+      _log(
+        'Best-effort cloud sync failed for babyId=${babyId ?? _activeBabyId}: $e',
+      );
     }
   }
 
@@ -1360,7 +1380,7 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=feeding count=${kayitlar.length}');
     }
-    await _syncActiveBabyRecordsToCloud();
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
   }
 
   static Future<bool> updateMamaKaydiById(
@@ -1473,7 +1493,7 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=diaper count=${kayitlar.length}');
     }
-    await _syncActiveBabyRecordsToCloud();
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
   }
 
   static Future<bool> updateKakaKaydiById(
@@ -1575,7 +1595,7 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=sleep count=${kayitlar.length}');
     }
-    await _syncActiveBabyRecordsToCloud();
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
   }
 
   static Future<bool> updateUykuKaydiById(

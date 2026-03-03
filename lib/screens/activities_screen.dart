@@ -1317,6 +1317,38 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
+  Future<void> _runCareEntrySave({
+    required BuildContext sheetContext,
+    required StateSetter setModalState,
+    required bool isSaving,
+    required void Function(bool value) setSaving,
+    required Future<bool> Function() action,
+    required ScaffoldMessengerState messenger,
+    required String errorMessage,
+  }) async {
+    if (isSaving) return;
+
+    setModalState(() => setSaving(true));
+    var didPop = false;
+    try {
+      final saved = await action();
+      if (!saved) {
+        throw StateError('Record could not be updated.');
+      }
+      if (!mounted || !sheetContext.mounted) return;
+      didPop = true;
+      Navigator.of(sheetContext).pop(true);
+    } catch (e, st) {
+      debugPrint('ActivitiesScreen care entry save failed: $e\n$st');
+      if (!mounted || !sheetContext.mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(errorMessage)));
+    } finally {
+      if (!didPop && sheetContext.mounted) {
+        setModalState(() => setSaving(false));
+      }
+    }
+  }
+
   Future<void> _showEditNursingSheet(Map<String, dynamic> kayit) async {
     final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
@@ -1340,33 +1372,27 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           title: l10n.editTitleNursing,
           isSaving: isSaving,
           onSave: () async {
-            if (isSaving) return;
             if (duration <= 0) return;
-            setModalState(() => isSaving = true);
-            try {
-              final updated = {
-                'id': recordId,
-                'tarih': eventTime,
-                'tur': 'Anne Sütü',
-                'solDakika': side == 'left' ? duration : 0,
-                'sagDakika': side == 'right' ? duration : 0,
-                'miktar': 0,
-                'kategori': 'Milk',
-              };
-              await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (!ctx.mounted) return;
-              Navigator.of(ctx).pop(true);
-            } catch (e) {
-              if (ctx.mounted) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
-                );
-              }
-            } finally {
-              if (ctx.mounted) {
-                setModalState(() => isSaving = false);
-              }
-            }
+            await _runCareEntrySave(
+              sheetContext: ctx,
+              setModalState: setModalState,
+              isSaving: isSaving,
+              setSaving: (value) => isSaving = value,
+              messenger: messenger,
+              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              action: () {
+                final updated = {
+                  'id': recordId,
+                  'tarih': eventTime,
+                  'tur': 'Anne Sütü',
+                  'solDakika': side == 'left' ? duration : 0,
+                  'sagDakika': side == 'right' ? duration : 0,
+                  'miktar': 0,
+                  'kategori': 'Milk',
+                };
+                return VeriYonetici.updateMamaKaydiById(recordId, updated);
+              },
+            );
           },
           child: Column(
             children: [
@@ -1462,56 +1488,50 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           title: l10n.editTitleFeeding,
           isSaving: isSaving,
           onSave: () async {
-            if (isSaving) return;
-            setModalState(() => isSaving = true);
-            try {
-              final Map<String, dynamic> updated = {
-                'id': recordId,
-                'tarih': eventTime,
-              };
-              if (selectedType == 'solid') {
-                updated.addAll({
-                  'tur': 'Katı Gıda',
-                  'solDakika': 0,
-                  'sagDakika': 0,
-                  'miktar': 0,
-                  'kategori': 'Solid',
-                  'solidAciklama': noteController.text.isEmpty
-                      ? null
-                      : noteController.text,
-                  'solidDakika': solidDuration,
-                });
-              } else if (selectedType == 'bottleMilk') {
-                updated.addAll({
-                  'tur': 'Anne Sütü (Biberon)',
-                  'solDakika': 0,
-                  'sagDakika': 0,
-                  'miktar': amount,
-                  'kategori': 'Milk',
-                });
-              } else {
-                updated.addAll({
-                  'tur': 'Formül',
-                  'solDakika': 0,
-                  'sagDakika': 0,
-                  'miktar': amount,
-                  'kategori': 'Milk',
-                });
-              }
-              await VeriYonetici.updateMamaKaydiById(recordId, updated);
-              if (!ctx.mounted) return;
-              Navigator.of(ctx).pop(true);
-            } catch (e) {
-              if (ctx.mounted) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
-                );
-              }
-            } finally {
-              if (ctx.mounted) {
-                setModalState(() => isSaving = false);
-              }
-            }
+            await _runCareEntrySave(
+              sheetContext: ctx,
+              setModalState: setModalState,
+              isSaving: isSaving,
+              setSaving: (value) => isSaving = value,
+              messenger: messenger,
+              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              action: () {
+                final Map<String, dynamic> updated = {
+                  'id': recordId,
+                  'tarih': eventTime,
+                };
+                if (selectedType == 'solid') {
+                  updated.addAll({
+                    'tur': 'Katı Gıda',
+                    'solDakika': 0,
+                    'sagDakika': 0,
+                    'miktar': 0,
+                    'kategori': 'Solid',
+                    'solidAciklama': noteController.text.isEmpty
+                        ? null
+                        : noteController.text,
+                    'solidDakika': solidDuration,
+                  });
+                } else if (selectedType == 'bottleMilk') {
+                  updated.addAll({
+                    'tur': 'Anne Sütü (Biberon)',
+                    'solDakika': 0,
+                    'sagDakika': 0,
+                    'miktar': amount,
+                    'kategori': 'Milk',
+                  });
+                } else {
+                  updated.addAll({
+                    'tur': 'Formül',
+                    'solDakika': 0,
+                    'sagDakika': 0,
+                    'miktar': amount,
+                    'kategori': 'Milk',
+                  });
+                }
+                return VeriYonetici.updateMamaKaydiById(recordId, updated);
+              },
+            );
           },
           child: Column(
             children: [
@@ -1639,32 +1659,26 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           title: l10n.editTitleDiaper,
           isSaving: isSaving,
           onSave: () async {
-            if (isSaving) return;
-            setModalState(() => isSaving = true);
-            try {
-              final normalized = VeriYonetici.normalizeDiaperType(type);
-              final updated = {
-                'id': recordId,
-                'tarih': eventTime,
-                'tur': normalized,
-                'diaperType': normalized,
-                'eventType': VeriYonetici.diaperEventType,
-                'notlar': noteController.text,
-              };
-              await VeriYonetici.updateKakaKaydiById(recordId, updated);
-              if (!ctx.mounted) return;
-              Navigator.of(ctx).pop(true);
-            } catch (e) {
-              if (ctx.mounted) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
-                );
-              }
-            } finally {
-              if (ctx.mounted) {
-                setModalState(() => isSaving = false);
-              }
-            }
+            await _runCareEntrySave(
+              sheetContext: ctx,
+              setModalState: setModalState,
+              isSaving: isSaving,
+              setSaving: (value) => isSaving = value,
+              messenger: messenger,
+              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              action: () {
+                final normalized = VeriYonetici.normalizeDiaperType(type);
+                final updated = {
+                  'id': recordId,
+                  'tarih': eventTime,
+                  'tur': normalized,
+                  'diaperType': normalized,
+                  'eventType': VeriYonetici.diaperEventType,
+                  'notlar': noteController.text,
+                };
+                return VeriYonetici.updateKakaKaydiById(recordId, updated);
+              },
+            );
           },
           child: Column(
             children: [
@@ -1736,33 +1750,27 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           title: l10n.editTitleSleep,
           isSaving: isSaving,
           onSave: () async {
-            if (isSaving) return;
-            setModalState(() => isSaving = true);
-            try {
-              var normalizedEnd = end;
-              if (normalizedEnd.isBefore(start)) {
-                normalizedEnd = normalizedEnd.add(const Duration(days: 1));
-              }
-              final updated = {
-                'id': recordId,
-                'baslangic': start,
-                'bitis': normalizedEnd,
-                'sure': normalizedEnd.difference(start),
-              };
-              await VeriYonetici.updateUykuKaydiById(recordId, updated);
-              if (!ctx.mounted) return;
-              Navigator.of(ctx).pop(true);
-            } catch (e) {
-              if (ctx.mounted) {
-                messenger.showSnackBar(
-                  SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
-                );
-              }
-            } finally {
-              if (ctx.mounted) {
-                setModalState(() => isSaving = false);
-              }
-            }
+            await _runCareEntrySave(
+              sheetContext: ctx,
+              setModalState: setModalState,
+              isSaving: isSaving,
+              setSaving: (value) => isSaving = value,
+              messenger: messenger,
+              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              action: () {
+                var normalizedEnd = end;
+                if (normalizedEnd.isBefore(start)) {
+                  normalizedEnd = normalizedEnd.add(const Duration(days: 1));
+                }
+                final updated = {
+                  'id': recordId,
+                  'baslangic': start,
+                  'bitis': normalizedEnd,
+                  'sure': normalizedEnd.difference(start),
+                };
+                return VeriYonetici.updateUykuKaydiById(recordId, updated);
+              },
+            );
           },
           child: Column(
             children: [

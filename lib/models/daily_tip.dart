@@ -616,8 +616,8 @@ class DailyTip {
       titleKey: 'tip_kucuk_okuyucu_title',
       descriptionKey: 'tip_kucuk_okuyucu_desc',
       illustrationPath: 'assets/illustrations/tips/tip_kucuk_okuyucu.webp',
-      minMonth: 4,
-      maxMonth: 7,
+      minMonth: 6,
+      maxMonth: 9,
     ),
     DailyTip(
       id: 'yercekimi_deneyi',
@@ -648,7 +648,7 @@ class DailyTip {
       titleKey: 'tip_yemek_zamani_title',
       descriptionKey: 'tip_yemek_zamani_desc',
       illustrationPath: 'assets/illustrations/tips/tip_yemek_zamani.webp',
-      minMonth: 4,
+      minMonth: 6,
       maxMonth: 7,
     ),
     DailyTip(

@@ -2435,8 +2435,37 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  Future<void> _saveActivity() async {
+  Future<void> _runSaveAction(Future<void> Function() action) async {
     if (_isSaving) return;
+
+    setState(() => _isSaving = true);
+    try {
+      await action();
+      try {
+        await Future.sync(() => HapticFeedback.lightImpact());
+      } catch (e, st) {
+        debugPrint('AddScreen haptic feedback failed: $e\n$st');
+      }
+      _initialSnapshot = _captureSnapshot();
+      try {
+        await Future.sync(() => widget.onSaved?.call());
+      } catch (e, st) {
+        debugPrint('AddScreen onSaved callback failed: $e\n$st');
+      }
+      if (!mounted) return;
+      Navigator.of(context).pop(true);
+    } catch (e, st) {
+      debugPrint('AddScreen save failed: $e\n$st');
+      if (!mounted) return;
+      _showValidationError('Kaydedilemedi. Lutfen tekrar deneyin.');
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  Future<void> _saveActivity() async {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     Future<void> runBestEffort(
@@ -2481,9 +2510,8 @@ class _AddScreenState extends State<AddScreen> {
       }
     }
 
-    setState(() => _isSaving = true);
-    try {
-      if (selectedActivity == 'breastfeeding') {
+    if (selectedActivity == 'breastfeeding') {
+      await _runSaveAction(() async {
         final kayitlar = VeriYonetici.getMamaKayitlari();
         final totalMinutes = minutes + (seconds / 60);
 
@@ -2501,16 +2529,12 @@ class _AddScreenState extends State<AddScreen> {
           _scheduleFeedingReminderIfEnabled,
           'feeding reminder scheduling',
         );
-        await runBestEffort(() async {
-          HapticFeedback.lightImpact();
-        }, 'haptic feedback');
-        _initialSnapshot = _captureSnapshot();
-        await runBestEffort(() async {
-          widget.onSaved?.call();
-        }, 'onSaved callback');
-        if (!mounted) return;
-        Navigator.pop(context, true);
-      } else if (selectedActivity == 'bottle') {
+      });
+      return;
+    }
+
+    if (selectedActivity == 'bottle') {
+      await _runSaveAction(() async {
         final kayitlar = VeriYonetici.getMamaKayitlari();
 
         if (feedingCategory == 'Solid') {
@@ -2542,18 +2566,12 @@ class _AddScreenState extends State<AddScreen> {
           _scheduleFeedingReminderIfEnabled,
           'feeding reminder scheduling',
         );
-        await runBestEffort(() async {
-          HapticFeedback.lightImpact();
-        }, 'haptic feedback');
-        _initialSnapshot = _captureSnapshot();
-        await runBestEffort(() async {
-          widget.onSaved?.call();
-        }, 'onSaved callback');
-        if (!mounted) return;
-        Navigator.pop(context, true);
-      } else if (selectedActivity == 'sleep') {
-        if (_sleepEndDateTime == null) return;
+      });
+      return;
+    }
 
+    if (selectedActivity == 'sleep') {
+      await _runSaveAction(() async {
         final startDateTime = _sleepStartDateTime;
         var endDateTime = _sleepEndDateTime!;
 
@@ -2572,16 +2590,12 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveUykuKayitlari(kayitlar);
-        await runBestEffort(() async {
-          HapticFeedback.lightImpact();
-        }, 'haptic feedback');
-        _initialSnapshot = _captureSnapshot();
-        await runBestEffort(() async {
-          widget.onSaved?.call();
-        }, 'onSaved callback');
-        if (!mounted) return;
-        Navigator.pop(context, true);
-      } else if (selectedActivity == 'diaper') {
+      });
+      return;
+    }
+
+    if (selectedActivity == 'diaper') {
+      await _runSaveAction(() async {
         final kayitlar = VeriYonetici.getKakaKayitlari();
         final diaperType = VeriYonetici.normalizeDiaperType(_diaperType);
 
@@ -2598,24 +2612,7 @@ class _AddScreenState extends State<AddScreen> {
           _scheduleDiaperReminderIfEnabled,
           'diaper reminder scheduling',
         );
-        await runBestEffort(() async {
-          HapticFeedback.lightImpact();
-        }, 'haptic feedback');
-        _initialSnapshot = _captureSnapshot();
-        await runBestEffort(() async {
-          widget.onSaved?.call();
-        }, 'onSaved callback');
-        if (!mounted) return;
-        Navigator.pop(context, true);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showValidationError(l10n.errorWithMessage(e.toString()));
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
+      });
     }
   }
 
