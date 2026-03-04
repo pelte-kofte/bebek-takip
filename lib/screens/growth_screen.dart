@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
-import '../models/dil.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import 'add_growth_screen.dart';
@@ -14,8 +16,8 @@ class GrowthScreen extends StatefulWidget {
 
 class _GrowthScreenState extends State<GrowthScreen> {
   List<Map<String, dynamic>> _records = [];
-  int _selectedTab = 0; // 0 = Liste, 1 = Grafik
-  int _chartMetric = 0; // 0 = Boy (height), 1 = Kilo (weight)
+  int _selectedTab = 0;
+  int _chartMetric = 0;
 
   @override
   void initState() {
@@ -29,9 +31,27 @@ class _GrowthScreenState extends State<GrowthScreen> {
     });
   }
 
+  String _localeName(BuildContext context) => Localizations.localeOf(context).toString();
+
+  String _formatDate(BuildContext context, DateTime date) {
+    return intl.DateFormat.yMMMMd(_localeName(context)).format(date);
+  }
+
+  String _formatMonthLabel(BuildContext context, DateTime date) {
+    return intl.DateFormat.MMM(_localeName(context)).format(date);
+  }
+
+  String _formatNumber(BuildContext context, num value) {
+    return intl.NumberFormat.decimalPatternDigits(
+      locale: _localeName(context),
+      decimalDigits: 1,
+    ).format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return DecorativeBackground(
       preset: BackgroundPreset.growth,
@@ -40,14 +60,14 @@ class _GrowthScreenState extends State<GrowthScreen> {
         body: SafeArea(
           child: Column(
             children: [
-              _buildHeader(isDark),
-              _buildTabBar(isDark),
+              _buildHeader(isDark, l10n),
+              _buildTabBar(isDark, l10n),
               Expanded(
                 child: _records.isEmpty
-                    ? _buildEmptyState(isDark)
+                    ? _buildEmptyState(l10n)
                     : _selectedTab == 0
-                    ? _buildRecordsList(isDark)
-                    : _buildChartView(isDark),
+                        ? _buildRecordsList(isDark, l10n)
+                        : _buildChartView(isDark, l10n),
               ),
             ],
           ),
@@ -71,7 +91,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildHeader(bool isDark) {
+  Widget _buildHeader(bool isDark, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Row(
@@ -108,13 +128,13 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
           ),
           const SizedBox(width: 16),
-          Text(Dil.buyumeTakibi, style: AppTypography.h1(context)),
+          Text(l10n.growthTracking, style: AppTypography.h1(context)),
         ],
       ),
     );
   }
 
-  Widget _buildTabBar(bool isDark) {
+  Widget _buildTabBar(bool isDark, AppLocalizations l10n) {
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
     final activeColor = const Color(0xFFFFB4A2);
     final inactiveTextColor = isDark
@@ -164,7 +184,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Liste',
+                          l10n.list,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -210,7 +230,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Grafik',
+                          l10n.chart,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -231,7 +251,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -245,13 +265,13 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Henuz olcum yok',
+              l10n.noMeasurements,
               style: AppTypography.h3(context),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              'Boy ve kilo olcumlerini ekleyin',
+              l10n.addMeasurements,
               style: AppTypography.bodySmall(context),
               textAlign: TextAlign.center,
             ),
@@ -262,9 +282,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
   }
 
   Widget _buildChartEmptyState(
-    bool isDark,
-    Color textColor,
     Color subtitleColor,
+    AppLocalizations l10n,
   ) {
     final remaining = 3 - _records.length;
     return Center(
@@ -280,13 +299,13 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Grafik için daha fazla veri gerekli',
+              l10n.moreDataNeeded,
               style: AppTypography.h3(context),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
-              '$remaining ölçüm daha ekleyin',
+              l10n.addMoreMeasurements(remaining),
               style: AppTypography.bodySmall(
                 context,
               ).copyWith(color: subtitleColor),
@@ -298,15 +317,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildRecordsList(bool isDark) {
+  Widget _buildRecordsList(bool isDark, AppLocalizations l10n) {
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
       itemCount: _records.length,
       itemBuilder: (context, index) {
         final record = _records[index];
-        final tarih = record['tarih'] as DateTime;
-        final boy = record['boy'];
-        final kilo = record['kilo'];
+        final date = record['tarih'] as DateTime;
+        final height = (record['boy'] as num?) ?? 0;
+        final weight = (record['kilo'] as num?) ?? 0;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -352,12 +371,12 @@ class _GrowthScreenState extends State<GrowthScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${tarih.day} ${Dil.aylar[tarih.month - 1]} ${tarih.year}',
+                      _formatDate(context, date),
                       style: AppTypography.h3(context).copyWith(fontSize: 16),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${Dil.boy}: $boy cm  •  ${Dil.kilo}: $kilo kg',
+                      '${l10n.height}: ${_formatNumber(context, height)} ${l10n.centimeterUnit}  •  ${l10n.weight}: ${_formatNumber(context, weight)} ${l10n.kilogramUnit}',
                       style: AppTypography.caption(context).copyWith(
                         color: isDark
                             ? AppColors.textSecondaryDark
@@ -374,7 +393,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildChartView(bool isDark) {
+  Widget _buildChartView(bool isDark, AppLocalizations l10n) {
     final cardColor = isDark
         ? AppColors.bgDarkCard.withValues(alpha: 0.9)
         : Colors.white.withValues(alpha: 0.9);
@@ -385,48 +404,47 @@ class _GrowthScreenState extends State<GrowthScreen> {
         ? AppColors.textSecondaryDark
         : const Color(0xFF7A749E);
 
-    // Need at least 3 records for a meaningful chart
     if (_records.length < 3) {
-      return _buildChartEmptyState(isDark, textColor, subtitleColor);
+      return _buildChartEmptyState(subtitleColor, l10n);
     }
 
-    // Sort records by date ascending for charts
     final sorted = List<Map<String, dynamic>>.from(_records)
       ..sort(
         (a, b) => (a['tarih'] as DateTime).compareTo(b['tarih'] as DateTime),
       );
 
-    final boyData = <double>[];
-    final kiloData = <double>[];
+    final heightData = <double>[];
+    final weightData = <double>[];
     final labels = <String>[];
 
-    for (final r in sorted) {
-      final boy = r['boy'];
-      final kilo = r['kilo'];
-      if (boy != null) boyData.add((boy as num).toDouble());
-      if (kilo != null) kiloData.add((kilo as num).toDouble());
-      final t = r['tarih'] as DateTime;
-      // Month-level labels only
-      labels.add(Dil.aylar[t.month - 1].substring(0, 3));
+    for (final record in sorted) {
+      final height = record['boy'];
+      final weight = record['kilo'];
+      if (height != null) {
+        heightData.add((height as num).toDouble());
+      }
+      if (weight != null) {
+        weightData.add((weight as num).toDouble());
+      }
+      labels.add(_formatMonthLabel(context, record['tarih'] as DateTime));
     }
 
-    final activeData = _chartMetric == 0 ? boyData : kiloData;
-    final unit = _chartMetric == 0 ? 'cm' : 'kg';
-    final title = _chartMetric == 0 ? '${Dil.boy} (cm)' : '${Dil.kilo} (kg)';
+    final activeData = _chartMetric == 0 ? heightData : weightData;
+    final unit = _chartMetric == 0 ? l10n.centimeterUnit : l10n.kilogramUnit;
+    final title = _chartMetric == 0
+        ? '${l10n.height} (${l10n.centimeterUnit})'
+        : '${l10n.weight} (${l10n.kilogramUnit})';
     final icon = _chartMetric == 0
         ? Icons.straighten
         : Icons.monitor_weight_outlined;
-    const lineColor = Color(0xFFD4C4E8); // lavender
+    const lineColor = Color(0xFFD4C4E8);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
       child: Column(
         children: [
-          // Metric toggle
-          _buildMetricToggle(isDark),
+          _buildMetricToggle(isDark, l10n),
           const SizedBox(height: 16),
-
-          // Chart card
           _buildChartCard(
             cardColor: cardColor,
             textColor: textColor,
@@ -437,13 +455,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
             data: activeData,
             labels: labels,
             unit: unit,
+            localeName: _localeName(context),
+            emptyChartHint: l10n.atLeast2Measurements,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMetricToggle(bool isDark) {
+  Widget _buildMetricToggle(bool isDark, AppLocalizations l10n) {
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
     const lavender = Color(0xFFD4C4E8);
     final inactiveTextColor = isDark
@@ -480,7 +500,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    Dil.boy,
+                    l10n.height,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -511,7 +531,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    Dil.kilo,
+                    l10n.weight,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -537,10 +557,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
     required List<double> data,
     required List<String> labels,
     required String unit,
+    required String localeName,
+    required String emptyChartHint,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final numberFormat = intl.NumberFormat.decimalPatternDigits(
+      locale: localeName,
+      decimalDigits: 1,
+    );
 
-    // Single-record: show a value card instead of a chart
     if (data.length == 1) {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -575,7 +600,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              '${data.first.toStringAsFixed(1)} $unit',
+              '${numberFormat.format(data.first)} $unit',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -589,7 +614,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Grafik icin en az 2 olcum gerekli',
+              emptyChartHint,
               style: TextStyle(
                 fontSize: 13,
                 color: subtitleColor.withValues(alpha: 0.7),
@@ -629,7 +654,6 @@ class _GrowthScreenState extends State<GrowthScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title row
           Row(
             children: [
               Container(
@@ -651,9 +675,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 ),
               ),
               const Spacer(),
-              // Latest value
               Text(
-                '${data.last.toStringAsFixed(1)} $unit',
+                '${numberFormat.format(data.last)} $unit',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -663,8 +686,6 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ],
           ),
           const SizedBox(height: 20),
-
-          // Chart
           SizedBox(
             height: 180,
             child: CustomPaint(
@@ -677,7 +698,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 lineColor: lineColor,
                 labelColor: subtitleColor,
                 gridColor: subtitleColor.withValues(alpha: 0.1),
-                unit: unit,
+                localeName: localeName,
               ),
             ),
           ),
@@ -695,7 +716,7 @@ class _GrowthChartPainter extends CustomPainter {
   final Color lineColor;
   final Color labelColor;
   final Color gridColor;
-  final String unit;
+  final String localeName;
 
   _GrowthChartPainter({
     required this.data,
@@ -705,12 +726,14 @@ class _GrowthChartPainter extends CustomPainter {
     required this.lineColor,
     required this.labelColor,
     required this.gridColor,
-    required this.unit,
+    required this.localeName,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (data.isEmpty) return;
+    if (data.isEmpty) {
+      return;
+    }
 
     const leftPad = 44.0;
     const bottomPad = 24.0;
@@ -720,7 +743,6 @@ class _GrowthChartPainter extends CustomPainter {
     final chartH = size.height - bottomPad - topPad;
     final valueRange = maxValue - minValue;
 
-    // Grid lines (3 horizontal)
     final gridPaint = Paint()
       ..color = gridColor
       ..strokeWidth = 1;
@@ -730,21 +752,23 @@ class _GrowthChartPainter extends CustomPainter {
       fontSize: 10,
       fontWeight: FontWeight.w500,
     );
+    final numberFormat = intl.NumberFormat.decimalPatternDigits(
+      locale: localeName,
+      decimalDigits: 1,
+    );
 
     for (int i = 0; i <= 2; i++) {
       final y = topPad + chartH * (1 - i / 2);
       canvas.drawLine(Offset(leftPad, y), Offset(size.width, y), gridPaint);
 
-      // Y-axis label
       final val = minValue + valueRange * (i / 2);
       final tp = TextPainter(
-        text: TextSpan(text: val.toStringAsFixed(1), style: labelStyle),
+        text: TextSpan(text: numberFormat.format(val), style: labelStyle),
         textDirection: TextDirection.ltr,
       )..layout();
       tp.paint(canvas, Offset(leftPad - tp.width - 6, y - tp.height / 2));
     }
 
-    // Plot data
     final linePaint = Paint()
       ..color = lineColor
       ..strokeWidth = 2.5
@@ -793,19 +817,16 @@ class _GrowthChartPainter extends CustomPainter {
       }
     }
 
-    // Close fill path
     fillPath.lineTo(leftPad + (data.length - 1) * stepX, topPad + chartH);
     fillPath.close();
 
     canvas.drawPath(fillPath, fillPaint);
     canvas.drawPath(path, linePaint);
 
-    // Draw dots and x-axis labels
     for (int i = 0; i < points.length; i++) {
       final isLast = i == points.length - 1;
 
       if (isLast) {
-        // Highlight most recent data point with larger dot and glow
         final glowPaint = Paint()
           ..color = lineColor.withValues(alpha: 0.3)
           ..style = PaintingStyle.fill;
@@ -817,7 +838,6 @@ class _GrowthChartPainter extends CustomPainter {
         canvas.drawCircle(points[i], 3.5, dotPaint);
       }
 
-      // X-axis labels: show only a few (first, last, and evenly spaced)
       final showLabel =
           i == 0 ||
           i == data.length - 1 ||
@@ -840,6 +860,7 @@ class _GrowthChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _GrowthChartPainter oldDelegate) {
     return oldDelegate.data != data ||
         oldDelegate.minValue != minValue ||
-        oldDelegate.maxValue != maxValue;
+        oldDelegate.maxValue != maxValue ||
+        oldDelegate.localeName != localeName;
   }
 }

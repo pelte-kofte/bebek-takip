@@ -220,6 +220,14 @@
   "addMoreMeasurements": "{count} ölçüm daha ekleyin",
   "atLeast2Measurements": "Grafik için en az 2 ölçüm gerekli",
   "growthTracking": "Büyüme Takibi",
+  "growthEntryTitle": "Büyüme Kaydı",
+  "growthEntrySubtitle": "Boy ve kilo takibi",
+  "growthDateField": "TARİH",
+  "growthWeightField": "KİLO (kg)",
+  "growthHeightField": "BOY (cm)",
+  "growthNotesField": "NOTLAR (İsteğe bağlı)",
+  "centimeterUnit": "cm",
+  "kilogramUnit": "kg",
   "feedingTimer": "EMZİRME",
   "sleepingTimer": "UYKU",
   "stopAndSave": "DURDUR & KAYDET",
@@ -534,6 +542,8 @@
     }
   },
   "medicationReminderBody": "Time to give this medication",
+  "medicationSetRemindersTitle": "Bu ilaç için hatırlatıcı ayarlansın mı?",
+  "medicationSetRemindersBody": "Bunu daha sonra ilacı düzenleyerek değiştirebilirsiniz.",
   "medicationReminderBodyWithDose": "Dose: {dose}",
   "@medicationReminderBodyWithDose": {
     "placeholders": {
@@ -1143,6 +1153,30 @@
     "description": "UI text"
   },
   "@growthTracking": {
+    "description": "UI text"
+  },
+  "@growthEntryTitle": {
+    "description": "UI text"
+  },
+  "@growthEntrySubtitle": {
+    "description": "UI text"
+  },
+  "@growthDateField": {
+    "description": "UI text"
+  },
+  "@growthWeightField": {
+    "description": "UI text"
+  },
+  "@growthHeightField": {
+    "description": "UI text"
+  },
+  "@growthNotesField": {
+    "description": "UI text"
+  },
+  "@centimeterUnit": {
+    "description": "UI text"
+  },
+  "@kilogramUnit": {
     "description": "UI text"
   },
   "@feedingTimer": {
@@ -1755,6 +1789,12 @@
     "description": "UI text"
   },
   "@medicationReminderBody": {
+    "description": "UI text"
+  },
+  "@medicationSetRemindersTitle": {
+    "description": "UI text"
+  },
+  "@medicationSetRemindersBody": {
     "description": "UI text"
   },
   "@addVaccineProtocol": {

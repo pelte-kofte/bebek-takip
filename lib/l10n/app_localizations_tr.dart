@@ -629,6 +629,30 @@ class AppLocalizationsTr extends AppLocalizations {
   String get growthTracking => 'Büyüme Takibi';
 
   @override
+  String get growthEntryTitle => 'Büyüme Kaydı';
+
+  @override
+  String get growthEntrySubtitle => 'Boy ve kilo takibi';
+
+  @override
+  String get growthDateField => 'TARİH';
+
+  @override
+  String get growthWeightField => 'KİLO (kg)';
+
+  @override
+  String get growthHeightField => 'BOY (cm)';
+
+  @override
+  String get growthNotesField => 'NOTLAR (İsteğe bağlı)';
+
+  @override
+  String get centimeterUnit => 'cm';
+
+  @override
+  String get kilogramUnit => 'kg';
+
+  @override
   String get feedingTimer => 'EMZİRME';
 
   @override
@@ -1527,6 +1551,14 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get medicationReminderBody => 'Time to give this medication';
+
+  @override
+  String get medicationSetRemindersTitle =>
+      'Bu ilaç için hatırlatıcı ayarlansın mı?';
+
+  @override
+  String get medicationSetRemindersBody =>
+      'Bunu daha sonra ilacı düzenleyerek değiştirebilirsiniz.';
 
   @override
   String medicationReminderBodyWithDose(String dose) {

@@ -289,6 +289,14 @@
   },
   "atLeast2Measurements": "At least 2 measurements needed for chart",
   "growthTracking": "Growth Tracking",
+  "growthEntryTitle": "Growth Record",
+  "growthEntrySubtitle": "Track height and weight",
+  "growthDateField": "DATE",
+  "growthWeightField": "WEIGHT (kg)",
+  "growthHeightField": "HEIGHT (cm)",
+  "growthNotesField": "NOTES (Optional)",
+  "centimeterUnit": "cm",
+  "kilogramUnit": "kg",
   "feedingTimer": "NURSING",
   "sleepingTimer": "SLEEPING",
   "stopAndSave": "STOP & SAVE",
@@ -696,6 +704,8 @@
     }
   },
   "medicationReminderBody": "Time to give this medication",
+  "medicationSetRemindersTitle": "Set reminders for this medication?",
+  "medicationSetRemindersBody": "You can change this later by editing the medication.",
   "medicationReminderBodyWithDose": "Dose: {dose}",
   "@medicationReminderBodyWithDose": {
     "placeholders": {
@@ -1286,6 +1296,30 @@
   "@growthTracking": {
     "description": "UI text"
   },
+  "@growthEntryTitle": {
+    "description": "UI text"
+  },
+  "@growthEntrySubtitle": {
+    "description": "UI text"
+  },
+  "@growthDateField": {
+    "description": "UI text"
+  },
+  "@growthWeightField": {
+    "description": "UI text"
+  },
+  "@growthHeightField": {
+    "description": "UI text"
+  },
+  "@growthNotesField": {
+    "description": "UI text"
+  },
+  "@centimeterUnit": {
+    "description": "UI text"
+  },
+  "@kilogramUnit": {
+    "description": "UI text"
+  },
   "@feedingTimer": {
     "description": "UI text"
   },
@@ -1854,6 +1888,12 @@
     "description": "UI text"
   },
   "@medicationReminderBody": {
+    "description": "UI text"
+  },
+  "@medicationSetRemindersTitle": {
+    "description": "UI text"
+  },
+  "@medicationSetRemindersBody": {
     "description": "UI text"
   },
   "@addVaccineProtocol": {

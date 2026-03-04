@@ -1499,21 +1499,20 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
   }
 
   Future<bool?> _askMedicationReminder() {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Set reminders for this medication?'),
-        content: const Text(
-          'You can change this later by editing the medication.',
-        ),
+        title: Text(l10n.medicationSetRemindersTitle),
+        content: Text(l10n.medicationSetRemindersBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('No'),
+            child: Text(l10n.no),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Yes'),
+            child: Text(l10n.yes),
           ),
         ],
       ),

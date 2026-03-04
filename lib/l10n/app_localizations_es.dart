@@ -660,6 +660,30 @@ class AppLocalizationsEs extends AppLocalizations {
   String get growthTracking => 'Seguimiento de crecimiento';
 
   @override
+  String get growthEntryTitle => 'Growth Record';
+
+  @override
+  String get growthEntrySubtitle => 'Track height and weight';
+
+  @override
+  String get growthDateField => 'DATE';
+
+  @override
+  String get growthWeightField => 'WEIGHT (kg)';
+
+  @override
+  String get growthHeightField => 'HEIGHT (cm)';
+
+  @override
+  String get growthNotesField => 'NOTES (Optional)';
+
+  @override
+  String get centimeterUnit => 'cm';
+
+  @override
+  String get kilogramUnit => 'kg';
+
+  @override
   String get feedingTimer => 'LACTANCIA';
 
   @override
@@ -1563,6 +1587,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get medicationReminderBody => 'Time to give this medication';
+
+  @override
+  String get medicationSetRemindersTitle =>
+      'Set reminders for this medication?';
+
+  @override
+  String get medicationSetRemindersBody =>
+      'You can change this later by editing the medication.';
 
   @override
   String medicationReminderBodyWithDose(String dose) {

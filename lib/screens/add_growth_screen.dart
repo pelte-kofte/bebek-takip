@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
+
 import '../l10n/app_localizations.dart';
-import '../models/veri_yonetici.dart';
 import '../models/ikonlar.dart';
+import '../models/veri_yonetici.dart';
 
 class AddGrowthScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -29,12 +31,14 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final localeName = Localizations.localeOf(context).toString();
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBF5),
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Row(
@@ -63,22 +67,22 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  const Column(
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Büyüme Kaydı',
-                        style: TextStyle(
+                        l10n.growthEntryTitle,
+                        style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2D1A18),
                           letterSpacing: -0.5,
                         ),
                       ),
-                      SizedBox(height: 2),
+                      const SizedBox(height: 2),
                       Text(
-                        'Boy ve kilo takibi',
-                        style: TextStyle(
+                        l10n.growthEntrySubtitle,
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Color(0xFF7A749E),
                           letterSpacing: 0.2,
@@ -89,15 +93,12 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                 ],
               ),
             ),
-
-            // Content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Growth icon
                     Center(
                       child: Container(
                         width: 100,
@@ -110,11 +111,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-
-                    // Date selector
-                    const Text(
-                      'TARİH',
-                      style: TextStyle(
+                    Text(
+                      l10n.growthDateField,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF7A749E),
@@ -129,6 +128,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           initialDate: _selectedDate,
                           firstDate: DateTime(2020),
                           lastDate: DateTime.now(),
+                          locale: Localizations.localeOf(context),
                         );
                         if (picked != null) {
                           setState(() => _selectedDate = picked);
@@ -167,7 +167,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                              intl.DateFormat.yMd(localeName).format(_selectedDate),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -185,11 +185,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Weight input
-                    const Text(
-                      'KİLO (kg)',
-                      style: TextStyle(
+                    Text(
+                      l10n.growthWeightField,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF7A749E),
@@ -215,19 +213,17 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(
-                            context,
-                          )!.growthWeightHint,
-                          hintStyle: TextStyle(
+                          hintText: l10n.growthWeightHint,
+                          hintStyle: const TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 16,
                           ),
-                          prefixIcon: Padding(
+                          prefixIcon: const Padding(
                             padding: EdgeInsets.only(left: 16, right: 8),
                             child: Icon(
                               Icons.monitor_weight_outlined,
@@ -244,11 +240,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Height input
-                    const Text(
-                      'BOY (cm)',
-                      style: TextStyle(
+                    Text(
+                      l10n.growthHeightField,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF7A749E),
@@ -274,19 +268,17 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           decimal: true,
                         ),
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(
-                            context,
-                          )!.growthHeightHint,
-                          hintStyle: TextStyle(
+                          hintText: l10n.growthHeightHint,
+                          hintStyle: const TextStyle(
                             color: Color(0xFF7A749E),
                             fontSize: 16,
                           ),
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 16,
                           ),
-                          prefixIcon: Padding(
+                          prefixIcon: const Padding(
                             padding: EdgeInsets.only(left: 16, right: 8),
                             child: Icon(
                               Icons.height,
@@ -303,11 +295,9 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Notes input (optional)
-                    const Text(
-                      'NOTLAR (İsteğe bağlı)',
-                      style: TextStyle(
+                    Text(
+                      l10n.growthNotesField,
+                      style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF7A749E),
@@ -331,9 +321,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         controller: _notesController,
                         maxLines: 3,
                         decoration: InputDecoration(
-                          hintText: AppLocalizations.of(
-                            context,
-                          )!.growthNotesHint,
+                          hintText: l10n.growthNotesHint,
                           hintStyle: TextStyle(
                             color: const Color(
                               0xFF7A749E,
@@ -350,8 +338,6 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-
-                    // Save button
                     GestureDetector(
                       onTap: _isSaving ? null : _saveGrowth,
                       child: Container(
@@ -381,10 +367,10 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                                   ),
                                 ),
                               )
-                            : const Text(
-                                'Kaydet',
+                            : Text(
+                                l10n.save,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -404,44 +390,45 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
   }
 
   Future<void> _saveGrowth() async {
-    if (_isSaving) return;
+    if (_isSaving) {
+      return;
+    }
     final l10n = AppLocalizations.of(context)!;
-    // Validate required fields
     if (_weightController.text.isEmpty || _heightController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.pleaseEnterWeightHeight),
-          backgroundColor: Color(0xFFFFB4A2),
+          backgroundColor: const Color(0xFFFFB4A2),
         ),
       );
       return;
     }
+
     setState(() => _isSaving = true);
 
     try {
-      final kayitlar = VeriYonetici.getBoyKiloKayitlari();
+      final records = VeriYonetici.getBoyKiloKayitlari();
 
-      kayitlar.insert(0, {
+      records.insert(0, {
         'tarih': _selectedDate,
-        'boy':
-            double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
-        'kilo':
-            double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
+        'boy': double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
+        'kilo': double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
         'notlar': _notesController.text,
       });
 
-      // Sort by date descending
-      kayitlar.sort(
+      records.sort(
         (a, b) => (b['tarih'] as DateTime).compareTo(a['tarih'] as DateTime),
       );
 
-      await VeriYonetici.saveBoyKiloKayitlari(kayitlar);
+      await VeriYonetici.saveBoyKiloKayitlari(records);
       try {
         widget.onSaved?.call();
       } catch (e) {
         debugPrint('AddGrowthScreen onSaved failed: $e');
       }
-      if (!mounted) return;
+      if (!mounted) {
+        return;
+      }
       Navigator.pop(context, true);
     } catch (e) {
       if (mounted) {

@@ -1259,6 +1259,54 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
+  /// **'Growth Record'**
+  String get growthEntryTitle;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'Track height and weight'**
+  String get growthEntrySubtitle;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'DATE'**
+  String get growthDateField;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'WEIGHT (kg)'**
+  String get growthWeightField;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'HEIGHT (cm)'**
+  String get growthHeightField;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'NOTES (Optional)'**
+  String get growthNotesField;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'cm'**
+  String get centimeterUnit;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get kilogramUnit;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
   /// **'NURSING'**
   String get feedingTimer;
 
@@ -2845,6 +2893,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Time to give this medication'**
   String get medicationReminderBody;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'Set reminders for this medication?'**
+  String get medicationSetRemindersTitle;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later by editing the medication.'**
+  String get medicationSetRemindersBody;
 
   /// No description provided for @medicationReminderBodyWithDose.
   ///
