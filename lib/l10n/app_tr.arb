@@ -3,6 +3,7 @@
   "appName": "Nilico",
   "tagline": "Ebeveynlik artik daha kolay ve unutulmaz.",
   "freeForever": "Önce Offline",
+  "instantStart": "Anında Başla",
   "securePrivate": "Güvenli ve Gizli",
   "tapToStart": "Başlamak için dokun",
   "feedingTracker": "Beslenme Takibi",
@@ -35,12 +36,16 @@
   "notificationNursingFired": "Emzirme bildirimi tetiklendi",
   "signedOutSuccessfully": "Çıkış yapıldı",
   "errorWithMessage": "Hata: {message}",
+  "saveFailedTryAgain": "Kaydedilemedi. Lütfen tekrar deneyin.",
   "@errorWithMessage": {
     "placeholders": {
       "message": {
         "type": "String"
       }
     }
+  },
+  "@saveFailedTryAgain": {
+    "description": "UI text"
   },
   "allDataDeleted": "Tüm veriler silindi",
   "googleSignInFailed": "Google girişi başarısız: {error}",

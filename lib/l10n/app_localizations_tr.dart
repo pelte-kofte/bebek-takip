@@ -18,6 +18,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get freeForever => 'Önce Offline';
 
   @override
+  String get instantStart => 'Anında Başla';
+
+  @override
   String get securePrivate => 'Güvenli ve Gizli';
 
   @override
@@ -119,6 +122,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String errorWithMessage(String message) {
     return 'Hata: $message';
   }
+
+  @override
+  String get saveFailedTryAgain => 'Kaydedilemedi. Lütfen tekrar deneyin.';
 
   @override
   String get allDataDeleted => 'Tüm veriler silindi';

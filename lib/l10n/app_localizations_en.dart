@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freeForever => 'Offline First';
 
   @override
+  String get instantStart => 'Start Instantly';
+
+  @override
   String get securePrivate => 'Secure & Private';
 
   @override
@@ -119,6 +122,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorWithMessage(String message) {
     return 'Error: $message';
   }
+
+  @override
+  String get saveFailedTryAgain => 'Couldn\'t save. Please try again.';
 
   @override
   String get allDataDeleted => 'All data deleted';

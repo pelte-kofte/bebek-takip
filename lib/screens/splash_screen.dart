@@ -151,7 +151,9 @@ class _SplashScreenState extends State<SplashScreen>
                                 runSpacing: 8,
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  _buildFeatureChip('✓ ${l10n.freeForever}'),
+                                  _buildFeatureChip(
+                                    '✓ ${l10n.instantStart}',
+                                  ),
                                   _buildFeatureChip('✓ ${l10n.securePrivate}'),
                                 ],
                               ),

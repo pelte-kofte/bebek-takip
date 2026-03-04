@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
     show
@@ -2435,31 +2437,60 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  Future<void> _runSaveAction(Future<void> Function() action) async {
+  Future<void> _runBestEffortAfterClose(
+    Future<void> Function() action,
+    String label,
+  ) async {
+    try {
+      await action().timeout(const Duration(seconds: 3));
+    } catch (e, st) {
+      debugPrint('AddScreen $label failed: $e\n$st');
+    }
+  }
+
+  void _schedulePostCloseTask(
+    Future<void> Function() action,
+    String label,
+  ) {
+    unawaited(_runBestEffortAfterClose(action, label));
+  }
+
+  Future<void> _runSaveAction(
+    Future<void> Function() action, {
+    Future<void> Function()? afterClose,
+  }) async {
     if (_isSaving) return;
 
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isSaving = true);
+    var didClose = false;
     try {
-      await action();
+      await action().timeout(const Duration(seconds: 3));
+      _initialSnapshot = _captureSnapshot();
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      didClose = true;
+      Navigator.of(context).pop(true);
+
       try {
-        await Future.sync(() => HapticFeedback.lightImpact());
+        HapticFeedback.lightImpact();
       } catch (e, st) {
         debugPrint('AddScreen haptic feedback failed: $e\n$st');
       }
-      _initialSnapshot = _captureSnapshot();
       try {
-        await Future.sync(() => widget.onSaved?.call());
+        widget.onSaved?.call();
       } catch (e, st) {
         debugPrint('AddScreen onSaved callback failed: $e\n$st');
       }
-      if (!mounted) return;
-      Navigator.of(context).pop(true);
+      if (afterClose != null) {
+        _schedulePostCloseTask(afterClose, 'post-close action');
+      }
     } catch (e, st) {
       debugPrint('AddScreen save failed: $e\n$st');
       if (!mounted) return;
-      _showValidationError('Kaydedilemedi. Lutfen tekrar deneyin.');
+      _showValidationError(l10n.saveFailedTryAgain);
     } finally {
-      if (mounted) {
+      if (!didClose && mounted) {
         setState(() => _isSaving = false);
       }
     }
@@ -2468,16 +2499,6 @@ class _AddScreenState extends State<AddScreen> {
   Future<void> _saveActivity() async {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
-    Future<void> runBestEffort(
-      Future<void> Function() action,
-      String label,
-    ) async {
-      try {
-        await action();
-      } catch (e) {
-        debugPrint('AddScreen $label failed: $e');
-      }
-    }
 
     // Validation: prevent saving activities with zero values
     if (selectedActivity == 'breastfeeding' && minutes == 0) {
@@ -2525,11 +2546,7 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
-        await runBestEffort(
-          _scheduleFeedingReminderIfEnabled,
-          'feeding reminder scheduling',
-        );
-      });
+      }, afterClose: _scheduleFeedingReminderIfEnabled);
       return;
     }
 
@@ -2562,11 +2579,7 @@ class _AddScreenState extends State<AddScreen> {
         }
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
-        await runBestEffort(
-          _scheduleFeedingReminderIfEnabled,
-          'feeding reminder scheduling',
-        );
-      });
+      }, afterClose: _scheduleFeedingReminderIfEnabled);
       return;
     }
 
@@ -2608,11 +2621,7 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveKakaKayitlari(kayitlar);
-        await runBestEffort(
-          _scheduleDiaperReminderIfEnabled,
-          'diaper reminder scheduling',
-        );
-      });
+      }, afterClose: _scheduleDiaperReminderIfEnabled);
     }
   }
 

@@ -3,6 +3,7 @@
   "appName": "Nilico",
   "tagline": "Parenting made simple & memorable.",
   "freeForever": "Offline First",
+  "instantStart": "Start Instantly",
   "securePrivate": "Secure & Private",
   "tapToStart": "Tap to start",
   "feedingTracker": "Feeding Tracker",
@@ -35,12 +36,16 @@
   "notificationNursingFired": "Nursing notification fired",
   "signedOutSuccessfully": "Signed out successfully",
   "errorWithMessage": "Error: {message}",
+  "saveFailedTryAgain": "Couldn't save. Please try again.",
   "@errorWithMessage": {
     "placeholders": {
       "message": {
         "type": "String"
       }
     }
+  },
+  "@saveFailedTryAgain": {
+    "description": "UI text"
   },
   "allDataDeleted": "All data deleted",
   "googleSignInFailed": "Google sign-in failed: {error}",

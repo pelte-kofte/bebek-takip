@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
     show
@@ -1324,24 +1326,27 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     required void Function(bool value) setSaving,
     required Future<bool> Function() action,
     required ScaffoldMessengerState messenger,
-    required String errorMessage,
+    required AppLocalizations l10n,
   }) async {
     if (isSaving) return;
 
     setModalState(() => setSaving(true));
     var didPop = false;
     try {
-      final saved = await action();
+      final saved = await action().timeout(const Duration(seconds: 3));
       if (!saved) {
         throw StateError('Record could not be updated.');
       }
       if (!mounted || !sheetContext.mounted) return;
+      setModalState(() => setSaving(false));
       didPop = true;
       Navigator.of(sheetContext).pop(true);
     } catch (e, st) {
       debugPrint('ActivitiesScreen care entry save failed: $e\n$st');
       if (!mounted || !sheetContext.mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(errorMessage)));
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.saveFailedTryAgain)),
+      );
     } finally {
       if (!didPop && sheetContext.mounted) {
         setModalState(() => setSaving(false));
@@ -1379,7 +1384,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               isSaving: isSaving,
               setSaving: (value) => isSaving = value,
               messenger: messenger,
-              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              l10n: l10n,
               action: () {
                 final updated = {
                   'id': recordId,
@@ -1494,7 +1499,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               isSaving: isSaving,
               setSaving: (value) => isSaving = value,
               messenger: messenger,
-              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              l10n: l10n,
               action: () {
                 final Map<String, dynamic> updated = {
                   'id': recordId,
@@ -1665,7 +1670,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               isSaving: isSaving,
               setSaving: (value) => isSaving = value,
               messenger: messenger,
-              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              l10n: l10n,
               action: () {
                 final normalized = VeriYonetici.normalizeDiaperType(type);
                 final updated = {
@@ -1756,7 +1761,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               isSaving: isSaving,
               setSaving: (value) => isSaving = value,
               messenger: messenger,
-              errorMessage: 'Kaydedilemedi. Lutfen tekrar deneyin.',
+              l10n: l10n,
               action: () {
                 var normalizedEnd = end;
                 if (normalizedEnd.isBefore(start)) {

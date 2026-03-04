@@ -313,6 +313,22 @@ class VeriYonetici {
     }
   }
 
+  static void _scheduleBestEffortCloudWrite(
+    Future<void> Function() action, {
+    required String label,
+  }) {
+    unawaited(() async {
+      try {
+        await action().timeout(const Duration(seconds: 3));
+      } catch (e, st) {
+        _log('Best-effort $label failed: $e');
+        if (kDebugMode) {
+          _log('Best-effort $label stack: $st');
+        }
+      }
+    }());
+  }
+
   static Future<void> refreshForCurrentUser() async {
     await _syncFromCloudIfSignedIn();
     if (_babies.isNotEmpty && !_babies.any((b) => b.id == _activeBabyId)) {
@@ -1694,7 +1710,10 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('anilar', jsonEncode(data));
-    await _syncActiveBabyMemoriesToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyMemoriesToCloud,
+      label: 'memory sync',
+    );
   }
 
   // ============ BOY/KILO ============
@@ -1782,7 +1801,10 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('boykilo_kayitlari', jsonEncode(data));
-    await _syncActiveBabyRecordsToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyRecordsToCloud,
+      label: 'growth sync',
+    );
   }
 
   // ============ MILESTONES ============
@@ -1969,7 +1991,10 @@ class VeriYonetici {
         .toList();
     await _setLocalString('asi_kayitlari', jsonEncode(data));
     _vaccineVersion.value++;
-    await _syncActiveBabyRecordsToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyRecordsToCloud,
+      label: 'vaccine sync',
+    );
   }
 
   // ============ İLAÇLAR ============
@@ -2118,7 +2143,10 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('ilac_kayitlari', jsonEncode(data));
-    await _syncActiveBabyMedicationsToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyMedicationsToCloud,
+      label: 'medication sync',
+    );
   }
 
   static List<Map<String, dynamic>> _loadIlacDozKayitlari() {
@@ -2432,7 +2460,10 @@ class VeriYonetici {
             .toList(),
       ),
     );
-    await _syncActiveBabyMedicationLogsToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyMedicationLogsToCloud,
+      label: 'medication log sync',
+    );
   }
 
   // ============ TEMA & SETTINGS ============

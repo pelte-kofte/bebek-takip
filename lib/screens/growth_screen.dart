@@ -378,6 +378,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
                     Text(
                       '${l10n.height}: ${_formatNumber(context, height)} ${l10n.centimeterUnit}  •  ${l10n.weight}: ${_formatNumber(context, weight)} ${l10n.kilogramUnit}',
                       style: AppTypography.caption(context).copyWith(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.1,
                         color: isDark
                             ? AppColors.textSecondaryDark
                             : const Color(0xFF866F65),

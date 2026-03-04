@@ -122,6 +122,12 @@ abstract class AppLocalizations {
   /// **'Offline First'**
   String get freeForever;
 
+  /// No description provided for @instantStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Instantly'**
+  String get instantStart;
+
   /// UI text
   ///
   /// In en, this message translates to:
@@ -313,6 +319,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error: {message}'**
   String errorWithMessage(String message);
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save. Please try again.'**
+  String get saveFailedTryAgain;
 
   /// UI text
   ///

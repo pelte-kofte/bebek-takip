@@ -18,6 +18,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get freeForever => 'Безкоштовно назавжди';
 
   @override
+  String get instantStart => 'Start Instantly';
+
+  @override
   String get securePrivate => 'Безпечно та конфіденційно';
 
   @override
@@ -119,6 +122,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String errorWithMessage(String message) {
     return 'Помилка: $message';
   }
+
+  @override
+  String get saveFailedTryAgain => 'Couldn\'t save. Please try again.';
 
   @override
   String get allDataDeleted => 'Усі дані видалено';
