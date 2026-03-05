@@ -719,6 +719,42 @@
       }
     }
   },
+  "notifFeedingTitle": "🍼 Feeding Reminder",
+  "notifFeedingBody": "It's time to feed your baby",
+  "notifDiaperTitle": "👶 Diaper Reminder",
+  "notifDiaperBody": "It's time to check your baby's diaper",
+  "notifSleepTitle": "Sleep in progress",
+  "notifSleepBody": "Tap the notification to stop",
+  "notifNursingTitle": "Nursing in progress",
+  "notifNursingTitleWithSide": "Nursing in progress ({side})",
+  "@notifNursingTitleWithSide": {
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "notifNursingBody": "Tap the notification to stop",
+  "notifMedTitle": "{name} reminder",
+  "@notifMedTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notifMedBody": "Dose: {dose} {unit}",
+  "@notifMedBody": {
+    "placeholders": {
+      "dose": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "notifGenericBody": "Reminder time",
   "addVaccineProtocol": "Add vaccine protocol",
   "createNew": "Create new",
   "chooseExistingMedication": "Choose existing medication",

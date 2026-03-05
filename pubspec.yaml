@@ -1,7 +1,7 @@
 name: bebek_takip
 description: "Bebek takip uygulaması"
 publish_to: 'none'
-version: 1.0.0+27
+version: 1.0.0+28
 
 environment:
   sdk: ^3.10.4
@@ -31,6 +31,7 @@ dependencies:
   firebase_core: ^3.8.1
   firebase_auth: ^5.3.4
   cloud_firestore: ^5.5.1
+  firebase_storage: ^12.3.7
   crypto: ^3.0.6
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.4

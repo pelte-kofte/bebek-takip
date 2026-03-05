@@ -125,7 +125,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _toggleMedicationReminder(bool value) async {
-    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _medicationReminderEnabled = value);
     await VeriYonetici.setMedicationReminderEnabled(value);
@@ -174,10 +173,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
       await _reminderService.scheduleMedicationReminders(
         med,
-        title: l10n.medicationReminderTitle(med['name'] ?? ''),
-        body: med['dosage']?.toString().trim().isNotEmpty == true
-            ? l10n.medicationReminderBodyWithDose(med['dosage'])
-            : l10n.medicationReminderBody,
         vaccineDate: vaccineDate,
       );
     }

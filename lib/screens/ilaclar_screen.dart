@@ -666,7 +666,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     Map<String, dynamic> med, {
     bool interactive = false,
   }) async {
-    final l10n = AppLocalizations.of(context)!;
     await _cancelRemindersForMedication(med);
     if (med['isActive'] != true) return;
     if (VeriYonetici.isMedicationReminderEnabled() != true) {
@@ -691,10 +690,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
       }
     }
 
-    final title = l10n.medicationReminderTitle(med['name'] ?? '');
-    final body = med['dosage']?.toString().trim().isNotEmpty == true
-        ? l10n.medicationReminderBodyWithDose(med['dosage'])
-        : l10n.medicationReminderBody;
     final scheduleType = (med['scheduleType'] as String?) ?? _filterPrn;
 
     DateTime? vaccineDate;
@@ -710,8 +705,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
 
     await _reminderService.scheduleMedicationReminders(
       med,
-      title: title,
-      body: body,
       vaccineDate: vaccineDate,
     );
     if (interactive && mounted) {
@@ -1523,7 +1516,6 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     Map<String, dynamic>? oldMedication,
     required Map<String, dynamic> savedMedication,
   }) async {
-    final l10n = AppLocalizations.of(context)!;
     final messenger = ScaffoldMessenger.of(context);
     await _reminderService.initialize();
 
@@ -1578,10 +1570,6 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
 
     await _reminderService.scheduleMedicationReminders(
       savedMedication,
-      title: l10n.medicationReminderTitle(savedMedication['name'] ?? ''),
-      body: savedMedication['dosage']?.toString().trim().isNotEmpty == true
-          ? l10n.medicationReminderBodyWithDose(savedMedication['dosage'])
-          : l10n.medicationReminderBody,
       vaccineDate: vaccineDate,
     );
     if (mounted) {

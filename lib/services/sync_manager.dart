@@ -89,42 +89,59 @@ class SyncManager {
   static Future<UserCredential> onLogin(AuthCredential credential) async {
     final auth = FirebaseAuth.instance;
     final currentUser = auth.currentUser;
+    final anonUser = currentUser;
+    final shouldLinkAnonymous = anonUser != null && anonUser.isAnonymous;
     _log(
-      'onLogin start uid=${currentUser?.uid} anonymous=${currentUser?.isAnonymous}',
+      'onLogin start uid=${currentUser?.uid} anonymous=${currentUser?.isAnonymous} '
+      'mode=${shouldLinkAnonymous ? 'link-anonymous' : 'sign-in'} provider=${credential.providerId}',
     );
-    if (currentUser != null && currentUser.isAnonymous) {
-      try {
-        _log('Linking anonymous user uid=${currentUser.uid}');
-        final linked = await currentUser.linkWithCredential(credential);
-        _log('Anonymous account linked, uid=${linked.user?.uid}');
-        return linked;
-      } on FirebaseAuthException catch (e) {
-        if (!_isLinkConflict(e)) rethrow;
-        _log('Link conflict (${e.code}), signing in with credential.');
-        final signedIn = await auth.signInWithCredential(credential);
-        final newUid = signedIn.user?.uid;
-        if (newUid != null && newUid.isNotEmpty) {
+    try {
+      if (shouldLinkAnonymous) {
+        try {
+          _log('Linking anonymous user uid=${anonUser.uid}');
+          final linked = await anonUser.linkWithCredential(credential);
+          _log('Anonymous account linked, uid=${linked.user?.uid}');
+          await syncCurrentUserData();
+          return linked;
+        } on FirebaseAuthException catch (e) {
+          if (!_isLinkConflict(e)) rethrow;
           _log(
-            'Conflict sign-in completed. uid=$newUid. Running safe non-destructive merge migration.',
+            'Link conflict (${e.code}), falling back to signInWithCredential.',
           );
-          await VeriYonetici.refreshForCurrentUser();
+          final signedIn = await auth.signInWithCredential(credential);
+          _log(
+            'Fallback sign-in completed. uid=${signedIn.user?.uid} '
+            'anonymous=${signedIn.user?.isAnonymous}',
+          );
+          await syncCurrentUserData();
+          return signedIn;
         }
-        _log(
-          'Old anonymous remote subtree is intentionally untouched (non-destructive policy).',
-        );
-        return signedIn;
       }
+
+      _log('Signing in directly with provider=${credential.providerId}');
+      final signedIn = await auth.signInWithCredential(credential);
+      _log(
+        'Signed in with provider. uid=${signedIn.user?.uid} '
+        'anonymous=${signedIn.user?.isAnonymous}',
+      );
+      await syncCurrentUserData();
+      return signedIn;
+    } on FirebaseAuthException catch (e) {
+      _log(
+        'FirebaseAuthException onLogin '
+        'code=${e.code} message=${e.message} plugin=${e.plugin}',
+      );
+      rethrow;
     }
-    final signedIn = await auth.signInWithCredential(credential);
-    _log(
-      'Signed in with provider. uid=${signedIn.user?.uid} anonymous=${signedIn.user?.isAnonymous}',
-    );
-    return signedIn;
   }
 
   static Future<void> syncCurrentUserData() async {
     final user = FirebaseAuth.instance.currentUser;
-    _log('Sync requested for uid=${user?.uid} anonymous=${user?.isAnonymous}');
+    final providers =
+        user?.providerData.map((p) => p.providerId).toList() ?? [];
+    _log(
+      'Sync requested for uid=${user?.uid} anonymous=${user?.isAnonymous} providers=$providers',
+    );
     await VeriYonetici.refreshForCurrentUser();
   }
 }

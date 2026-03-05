@@ -1330,7 +1330,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }) async {
     if (isSaving) return;
 
-    setModalState(() => setSaving(true));
+    void safeSetSaving(bool value) {
+      if (!sheetContext.mounted) return;
+      try {
+        setModalState(() => setSaving(value));
+      } catch (e, st) {
+        debugPrint('ActivitiesScreen setSaving($value) failed: $e\n$st');
+      }
+    }
+
+    safeSetSaving(true);
     var didPop = false;
     try {
       final saved = await action().timeout(const Duration(seconds: 3));
@@ -1338,18 +1347,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         throw StateError('Record could not be updated.');
       }
       if (!mounted || !sheetContext.mounted) return;
-      setModalState(() => setSaving(false));
-      didPop = true;
+      safeSetSaving(false);
       Navigator.of(sheetContext).pop(true);
+      didPop = true;
     } catch (e, st) {
       debugPrint('ActivitiesScreen care entry save failed: $e\n$st');
       if (!mounted || !sheetContext.mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.saveFailedTryAgain)),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailedTryAgain)));
     } finally {
-      if (!didPop && sheetContext.mounted) {
-        setModalState(() => setSaving(false));
+      if (sheetContext.mounted && !didPop) {
+        safeSetSaving(false);
       }
     }
   }

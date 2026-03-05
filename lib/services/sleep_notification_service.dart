@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
+import 'locale_service.dart';
 import 'reminder_service.dart';
 
 /// Top-level background handler for when the app is killed.
@@ -305,6 +308,8 @@ class SleepNotificationService {
   // ============ SLEEP NOTIFICATION ============
 
   Future<void> showSleepNotification(DateTime startTime) async {
+    final localized = await _loadNotificationLocalization();
+
     const androidDetails = AndroidNotificationDetails(
       'sleep_timer_channel',
       'Uyku Zamanlayıcı',
@@ -330,9 +335,10 @@ class SleepNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'SLEEP_TIMER_CATEGORY',
     );
 
@@ -341,10 +347,18 @@ class SleepNotificationService {
       iOS: iosDetails,
     );
 
+    _logNotificationDebug(
+      operation: 'show',
+      localeCode: localized.localeCode,
+      title: localized.l10n.notifSleepTitle,
+      body: localized.l10n.notifSleepBody,
+      details: iosDetails,
+    );
+
     await _notifications.show(
       _sleepNotificationId,
-      'Uyku devam ediyor',
-      'Durdurmak için bildirime dokunun',
+      localized.l10n.notifSleepTitle,
+      localized.l10n.notifSleepBody,
       details,
     );
     if (kDebugMode) {
@@ -364,9 +378,11 @@ class SleepNotificationService {
     DateTime startTime,
     String? taraf,
   ) async {
-    final sideText = taraf != null
-        ? ' (${taraf == 'sol' ? 'Sol' : 'Sağ'})'
-        : '';
+    final localized = await _loadNotificationLocalization();
+    final sideLabel = _localizedSideLabel(taraf, localized.l10n);
+    final title = sideLabel == null
+        ? localized.l10n.notifNursingTitle
+        : localized.l10n.notifNursingTitleWithSide(sideLabel);
 
     const androidDetails = AndroidNotificationDetails(
       'nursing_timer_channel',
@@ -393,9 +409,10 @@ class SleepNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'NURSING_TIMER_CATEGORY',
     );
 
@@ -404,10 +421,18 @@ class SleepNotificationService {
       iOS: iosDetails,
     );
 
+    _logNotificationDebug(
+      operation: 'show',
+      localeCode: localized.localeCode,
+      title: title,
+      body: localized.l10n.notifNursingBody,
+      details: iosDetails,
+    );
+
     await _notifications.show(
       _nursingNotificationId,
-      'Emzirme devam ediyor$sideText',
-      'Durdurmak için bildirime dokunun',
+      title,
+      localized.l10n.notifNursingBody,
       details,
     );
     if (kDebugMode) {
@@ -418,9 +443,11 @@ class SleepNotificationService {
   }
 
   Future<void> updateNursingSide(String? taraf) async {
-    final sideText = taraf != null
-        ? ' (${taraf == 'sol' ? 'Sol' : 'Sağ'})'
-        : '';
+    final localized = await _loadNotificationLocalization();
+    final sideLabel = _localizedSideLabel(taraf, localized.l10n);
+    final title = sideLabel == null
+        ? localized.l10n.notifNursingTitle
+        : localized.l10n.notifNursingTitleWithSide(sideLabel);
 
     const androidDetails = AndroidNotificationDetails(
       'nursing_timer_channel',
@@ -446,10 +473,11 @@ class SleepNotificationService {
     const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
-      presentSound: false,
+      presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: 'NURSING_TIMER_CATEGORY',
     );
 
@@ -458,10 +486,18 @@ class SleepNotificationService {
       iOS: iosDetails,
     );
 
+    _logNotificationDebug(
+      operation: 'show',
+      localeCode: localized.localeCode,
+      title: title,
+      body: localized.l10n.notifNursingBody,
+      details: iosDetails,
+    );
+
     await _notifications.show(
       _nursingNotificationId,
-      'Emzirme devam ediyor$sideText',
-      'Durdurmak için bildirime dokunun',
+      title,
+      localized.l10n.notifNursingBody,
       details,
     );
   }
@@ -475,4 +511,43 @@ class SleepNotificationService {
   void dispose() {
     // Nothing to dispose
   }
+
+  Future<_NotificationLocalization> _loadNotificationLocalization() async {
+    final localeCode = await LocaleService.getSavedLocaleCode();
+    final locale = LocaleService.toLocale(localeCode);
+    Intl.defaultLocale = localeCode == 'tr' ? 'tr_TR' : localeCode;
+    final l10n = await AppLocalizations.delegate.load(locale);
+    return _NotificationLocalization(localeCode: localeCode, l10n: l10n);
+  }
+
+  String? _localizedSideLabel(String? taraf, AppLocalizations l10n) {
+    if (taraf == null || taraf.isEmpty) return null;
+    if (taraf == 'sol') return l10n.left;
+    if (taraf == 'sag') return l10n.right;
+    return taraf;
+  }
+
+  void _logNotificationDebug({
+    required String operation,
+    required String localeCode,
+    required String title,
+    required String body,
+    required DarwinNotificationDetails details,
+  }) {
+    debugPrint(
+      '[SleepNotificationService][$operation] platform=$defaultTargetPlatform '
+      'locale=$localeCode title="$title" body="$body" '
+      'ios.presentSound=${details.presentSound} ios.sound=${details.sound}',
+    );
+  }
+}
+
+class _NotificationLocalization {
+  final String localeCode;
+  final AppLocalizations l10n;
+
+  const _NotificationLocalization({
+    required this.localeCode,
+    required this.l10n,
+  });
 }

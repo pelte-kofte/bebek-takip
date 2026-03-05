@@ -1,11 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../firebase_options.dart';
@@ -18,6 +19,7 @@ class AppleAuthService {
   static const MethodChannel _iosRuntimeInfoChannel = MethodChannel(
     'com.nilico.baby/ios_runtime_info',
   );
+  static const MethodChannel _nativeLogger = MethodChannel('native_logger');
 
   // Full alphanumeric + safe-symbol charset (matches Firebase docs example).
   static const String _charset =
@@ -27,14 +29,33 @@ class AppleAuthService {
 
   bool get inProgress => _inProgress;
 
-  bool _isLinkConflict(FirebaseAuthException e) {
-    return e.code == 'credential-already-in-use' ||
-        e.code == 'email-already-in-use' ||
-        e.code == 'account-exists-with-different-credential';
+  void _log(String message, {String? attemptId}) {
+    _emitNativeLog(method: 'log', message: message, attemptId: attemptId);
   }
 
-  void _log(String message) {
-    debugPrint('[AppleAuthService] $message');
+  void _logError(String message, {String? attemptId}) {
+    _emitNativeLog(method: 'error', message: message, attemptId: attemptId);
+  }
+
+  void _emitNativeLog({
+    required String method,
+    required String message,
+    String? attemptId,
+  }) {
+    final normalized = _normalizeLogPrefix(
+      message: message,
+      attemptId: attemptId,
+    );
+    unawaited(
+      _nativeLogger.invokeMethod<void>(method, normalized).catchError((_) {}),
+    );
+  }
+
+  String _normalizeLogPrefix({required String message, String? attemptId}) {
+    final match = RegExp(r'^\[([A-Z0-9]{6})\]\s*(.*)$').firstMatch(message);
+    final resolvedAttemptId = attemptId ?? match?.group(1) ?? 'GLOBAL';
+    final resolvedMessage = match?.group(2) ?? message;
+    return '[AppleAuthService][$resolvedAttemptId] $resolvedMessage';
   }
 
   String _currentBuildMode() {
@@ -76,10 +97,14 @@ class AppleAuthService {
         'buildMode=${result['buildMode']} '
         'appleSignInEntitlement=${result['appleSignInEntitlement']} '
         'appGroups=${result['appGroups']}',
+        attemptId: attemptId,
       );
       return result;
     } catch (e) {
-      _log('[$attemptId] Failed to fetch iOS runtime diagnostics: $e');
+      _logError(
+        'Failed to fetch iOS runtime diagnostics: $e',
+        attemptId: attemptId,
+      );
       return null;
     }
   }
@@ -99,13 +124,17 @@ class AppleAuthService {
     if (serviceId.isEmpty || redirectUriRaw.isEmpty) {
       _log(
         '[$attemptId] Missing APPLE_SERVICE_ID / APPLE_REDIRECT_URI for web/Android Apple flow.',
+        attemptId: attemptId,
       );
       return null;
     }
 
     final redirectUri = Uri.tryParse(redirectUriRaw);
     if (redirectUri == null) {
-      _log('[$attemptId] Invalid APPLE_REDIRECT_URI: "$redirectUriRaw".');
+      _log(
+        'Invalid APPLE_REDIRECT_URI: "$redirectUriRaw".',
+        attemptId: attemptId,
+      );
       return null;
     }
 
@@ -113,21 +142,6 @@ class AppleAuthService {
       clientId: serviceId,
       redirectUri: redirectUri,
     );
-  }
-
-  void _logFirebaseAuthException(
-    String attemptId,
-    FirebaseAuthException e, {
-    required String stage,
-    StackTrace? stackTrace,
-  }) {
-    _log(
-      '[$attemptId] FirebaseAuthException@$stage '
-      'code=${e.code} message=${e.message} plugin=${e.plugin}',
-    );
-    if (stackTrace != null) {
-      _log('[$attemptId] FirebaseAuthException@$stage stack=$stackTrace');
-    }
   }
 
   Future<FirebaseApp> _ensureFirebaseReady(String attemptId) async {
@@ -165,9 +179,10 @@ class AppleAuthService {
   // 3) Xcode Runner target has "Sign in with Apple" capability enabled.
   //
   // Nonce contract:
-  //   rawNonce  → passed to Apple as `nonce` (SHA-256 of rawNonce goes into the JWT)
-  //   rawNonce  → passed to Firebase as `rawNonce` (Firebase verifies SHA-256 matches JWT)
-  Future<UserCredential?> signIn() async {
+  //   hashedNonce (SHA-256 of rawNonce) -> passed to Apple as `nonce`
+  //   rawNonce -> passed to Firebase as `rawNonce`
+  //   Firebase verifies SHA-256(rawNonce) equals JWT nonce claim
+  Future<OAuthCredential?> signIn() async {
     if (_inProgress) {
       _log('Ignoring duplicate Apple sign-in attempt while one is active.');
       return null;
@@ -204,7 +219,18 @@ class AppleAuthService {
       final rawNonce = generateNonce();
       final hashedNonce = sha256OfString(rawNonce);
       _log(
-        '[$attemptId] Nonce generated (rawLength=${rawNonce.length}, sha256Length=${hashedNonce.length})',
+        '[$attemptId] Nonce generated '
+        'rawNonce=$rawNonce '
+        'hashedNonce=$hashedNonce '
+        'rawLength=${rawNonce.length} '
+        'sha256Length=${hashedNonce.length}',
+      );
+      _log(
+        'Calling SignInWithApple.getAppleIDCredential '
+        'scopes=[email,fullName] '
+        'platform=${kIsWeb ? 'web' : Platform.operatingSystem} '
+        'hashedNonceLength=${hashedNonce.length}',
+        attemptId: attemptId,
       );
 
       final AuthorizationCredentialAppleID appleCredential;
@@ -270,15 +296,31 @@ class AppleAuthService {
           _log('[$attemptId] CANCEL - user dismissed Apple sheet');
           return null;
         }
-        _log('[$attemptId] ERROR (Apple authorization): ${e.code} - $e');
+        _logError(
+          'ERROR (Apple authorization): ${e.code} - $e',
+          attemptId: attemptId,
+        );
         rethrow;
       }
 
+      final identityToken = appleCredential.identityToken;
+      _log(
+        'Received appleCredential '
+        'hasIdentityToken=${(identityToken ?? '').isNotEmpty} '
+        'hasAuthorizationCode=${appleCredential.authorizationCode.isNotEmpty} '
+        'userIdentifierPresent=${(appleCredential.userIdentifier ?? '').isNotEmpty} '
+        'hasEmail=${(appleCredential.email ?? '').isNotEmpty} '
+        'hasFullName=${(appleCredential.givenName ?? '').isNotEmpty || (appleCredential.familyName ?? '').isNotEmpty}',
+        attemptId: attemptId,
+      );
+
       // sign_in_with_apple 6.x returns identityToken as String?.
       // authorizationCode is NOT required for Firebase authentication.
-      final identityToken = appleCredential.identityToken;
       if (identityToken == null || identityToken.isEmpty) {
-        _log('[$attemptId] Apple credential missing identityToken.');
+        _logError(
+          'Apple credential missing identityToken.',
+          attemptId: attemptId,
+        );
         throw FirebaseAuthException(
           code: 'missing-identity-token',
           message: 'Apple identity token is missing.',
@@ -329,88 +371,33 @@ class AppleAuthService {
         }
       }
 
-      // Build the OAuthCredential with rawNonce so Firebase can verify
-      // SHA-256(rawNonce) == nonce claim in the identityToken JWT.
       final oauthCredential = OAuthProvider(
         'apple.com',
       ).credential(idToken: identityToken, rawNonce: rawNonce);
-
-      final auth = FirebaseAuth.instance;
-      final currentUser = auth.currentUser;
-
       _log(
-        '[$attemptId] BEFORE Firebase call '
-        'method=${currentUser != null && currentUser.isAnonymous ? 'linkWithCredential' : 'signInWithCredential'} '
-        'anonymous=${currentUser?.isAnonymous} '
-        'credentialProvider=${oauthCredential.providerId}',
+        'Returning Apple OAuthCredential provider=${oauthCredential.providerId} '
+        'rawNonceLength=${rawNonce.length} idTokenPresent=${identityToken.isNotEmpty}',
+        attemptId: attemptId,
       );
-
-      UserCredential result;
-      if (currentUser != null && currentUser.isAnonymous) {
-        try {
-          result = await currentUser.linkWithCredential(oauthCredential);
-        } on FirebaseAuthException catch (e, st) {
-          _logFirebaseAuthException(
-            attemptId,
-            e,
-            stage: 'linkWithCredential',
-            stackTrace: st,
-          );
-          if (!_isLinkConflict(e)) {
-            rethrow;
-          }
-          _log(
-            '[$attemptId] Link conflict (${e.code}); signing out anon, retrying signIn',
-          );
-          await auth.signOut();
-          try {
-            result = await auth.signInWithCredential(oauthCredential);
-          } on FirebaseAuthException catch (e, st) {
-            _logFirebaseAuthException(
-              attemptId,
-              e,
-              stage: 'signInWithCredential-after-link-conflict',
-              stackTrace: st,
-            );
-            rethrow;
-          }
-        }
-      } else {
-        try {
-          result = await auth.signInWithCredential(oauthCredential);
-        } on FirebaseAuthException catch (e, st) {
-          _logFirebaseAuthException(
-            attemptId,
-            e,
-            stage: 'signInWithCredential',
-            stackTrace: st,
-          );
-          rethrow;
-        }
-      }
-
-      _log(
-        '[$attemptId] AFTER Firebase success '
-        'uid=${result.user?.uid} '
-        'isAnonymous=${result.user?.isAnonymous} '
-        'providerDataCount=${result.user?.providerData.length}',
-      );
-      return result;
+      return oauthCredential;
     } on FirebaseAuthException catch (e, st) {
-      _logFirebaseAuthException(
-        attemptId,
-        e,
-        stage: 'top-level',
-        stackTrace: st,
+      _logError(
+        'FirebaseAuthException@top-level '
+        'code=${e.code} message=${e.message} plugin=${e.plugin}',
+        attemptId: attemptId,
+      );
+      _logError(
+        'FirebaseAuthException@top-level stack=$st',
+        attemptId: attemptId,
       );
       rethrow;
     } catch (e, st) {
-      _log('[$attemptId] ERROR: $e');
-      _log('[$attemptId] ERROR stack=$st');
+      _logError('ERROR: $e', attemptId: attemptId);
+      _logError('ERROR stack=$st', attemptId: attemptId);
       rethrow;
     } finally {
       _inProgress = false;
-      _log('[$attemptId] END - inProgress cleared');
+      _log('END - inProgress cleared', attemptId: attemptId);
     }
   }
 
@@ -429,4 +416,7 @@ class AppleAuthService {
     final bytes = utf8.encode(input);
     return sha256.convert(bytes).toString();
   }
+
+  // Backward-compatible alias for callers expecting this exact casing.
+  String sha256ofString(String input) => sha256OfString(input);
 }

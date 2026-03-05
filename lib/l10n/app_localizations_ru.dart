@@ -1619,6 +1619,48 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get notifFeedingTitle => '🍼 Feeding Reminder';
+
+  @override
+  String get notifFeedingBody => 'It\'s time to feed your baby';
+
+  @override
+  String get notifDiaperTitle => '👶 Diaper Reminder';
+
+  @override
+  String get notifDiaperBody => 'It\'s time to check your baby\'s diaper';
+
+  @override
+  String get notifSleepTitle => 'Sleep in progress';
+
+  @override
+  String get notifSleepBody => 'Tap the notification to stop';
+
+  @override
+  String get notifNursingTitle => 'Nursing in progress';
+
+  @override
+  String notifNursingTitleWithSide(String side) {
+    return 'Nursing in progress ($side)';
+  }
+
+  @override
+  String get notifNursingBody => 'Tap the notification to stop';
+
+  @override
+  String notifMedTitle(String name) {
+    return '$name reminder';
+  }
+
+  @override
+  String notifMedBody(String dose, String unit) {
+    return 'Dose: $dose $unit';
+  }
+
+  @override
+  String get notifGenericBody => 'Reminder time';
+
+  @override
   String get addVaccineProtocol => 'Add vaccine protocol';
 
   @override

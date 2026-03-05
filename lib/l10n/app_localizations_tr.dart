@@ -1552,11 +1552,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String medicationReminderTitle(String name) {
-    return '$name reminder';
+    return '$name hatırlatıcısı';
   }
 
   @override
-  String get medicationReminderBody => 'Time to give this medication';
+  String get medicationReminderBody => 'Bu ilacı verme zamanı';
 
   @override
   String get medicationSetRemindersTitle =>
@@ -1568,8 +1568,50 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String medicationReminderBodyWithDose(String dose) {
-    return 'Dose: $dose';
+    return 'Doz: $dose';
   }
+
+  @override
+  String get notifFeedingTitle => '🍼 Beslenme Hatırlatıcısı';
+
+  @override
+  String get notifFeedingBody => 'Bebeğinizi besleme zamanı geldi';
+
+  @override
+  String get notifDiaperTitle => '👶 Bez Hatırlatıcısı';
+
+  @override
+  String get notifDiaperBody => 'Bebeğinizin bezini kontrol etme zamanı';
+
+  @override
+  String get notifSleepTitle => 'Uyku devam ediyor';
+
+  @override
+  String get notifSleepBody => 'Durdurmak için bildirime dokunun';
+
+  @override
+  String get notifNursingTitle => 'Emzirme devam ediyor';
+
+  @override
+  String notifNursingTitleWithSide(String side) {
+    return 'Emzirme devam ediyor ($side)';
+  }
+
+  @override
+  String get notifNursingBody => 'Durdurmak için bildirime dokunun';
+
+  @override
+  String notifMedTitle(String name) {
+    return '$name hatırlatıcısı';
+  }
+
+  @override
+  String notifMedBody(String dose, String unit) {
+    return 'Doz: $dose $unit';
+  }
+
+  @override
+  String get notifGenericBody => 'Hatırlatma zamanı';
 
   @override
   String get addVaccineProtocol => 'Add vaccine protocol';

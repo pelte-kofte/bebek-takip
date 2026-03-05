@@ -22,6 +22,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   final TextEditingController _notesController = TextEditingController();
   late DateTime _birthDate;
   String? _photoPath;
+  String? _photoUrl;
   final ImagePicker _imagePicker = ImagePicker();
 
   // Dirty tracking
@@ -54,6 +55,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     _initialName = baby.name;
     _initialBirthDate = baby.birthDate;
     _initialPhotoPath = baby.photoPath;
+    _photoUrl = baby.photoUrl;
 
     _nameController = TextEditingController(text: _initialName);
     _birthDate = _initialBirthDate;
@@ -72,6 +74,8 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
   bool get _hasPhoto =>
       !kIsWeb && _photoPath != null && File(_photoPath!).existsSync();
 
+  bool get _hasRemotePhoto => (_photoUrl ?? '').trim().isNotEmpty && !_hasPhoto;
+
   Future<void> _pickPhoto() async {
     final l10n = AppLocalizations.of(context)!;
     if (kIsWeb) {
@@ -88,7 +92,10 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
       imageQuality: 85,
     );
     if (image != null) {
-      setState(() => _photoPath = image.path);
+      setState(() {
+        _photoPath = image.path;
+        _photoUrl = null;
+      });
     }
   }
 
@@ -176,7 +183,10 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
-                  setState(() => _photoPath = null);
+                  setState(() {
+                    _photoPath = null;
+                    _photoUrl = null;
+                  });
                 },
               ),
             SizedBox(height: MediaQuery.of(ctx).padding.bottom + 12),
@@ -321,6 +331,13 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                     child: _hasPhoto
                                         ? Image.file(
                                             File(_photoPath!),
+                                            width: 120,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : _hasRemotePhoto
+                                        ? Image.network(
+                                            _photoUrl!,
                                             width: 120,
                                             height: 120,
                                             fit: BoxFit.cover,

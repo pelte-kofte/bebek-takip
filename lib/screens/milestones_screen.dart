@@ -17,13 +17,22 @@ Widget buildPlatformImage(
   BoxFit fit = BoxFit.cover,
   Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
 }) {
-  if (kIsWeb) {
+  final isNetwork = path.startsWith('http://') || path.startsWith('https://');
+  if (kIsWeb || isNetwork) {
     // On web, ImagePicker returns blob URLs that work with Image.network
     return Image.network(path, fit: fit, errorBuilder: errorBuilder);
   } else {
     // On mobile/desktop, use File
     return Image.file(File(path), fit: fit, errorBuilder: errorBuilder);
   }
+}
+
+String? resolveMilestonePhotoSource(Map<String, dynamic> milestone) {
+  final local = milestone['photoPath']?.toString().trim() ?? '';
+  if (local.isNotEmpty) return local;
+  final remote = milestone['photoUrl']?.toString().trim() ?? '';
+  if (remote.isNotEmpty) return remote;
+  return null;
 }
 
 class MilestonesScreen extends StatefulWidget {
@@ -334,9 +343,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
-    final hasPhoto =
-        milestone['photoPath'] != null &&
-        (milestone['photoPath'] as String).isNotEmpty;
+    final photoSource = resolveMilestonePhotoSource(milestone);
+    final hasPhoto = photoSource != null && photoSource.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -364,7 +372,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: buildPlatformImage(
-                        milestone['photoPath'],
+                        photoSource,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
                             const Center(
@@ -2121,9 +2129,8 @@ class MilestoneDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPhoto =
-        milestone['photoPath'] != null &&
-        (milestone['photoPath'] as String).isNotEmpty;
+    final photoSource = resolveMilestonePhotoSource(milestone);
+    final hasPhoto = photoSource != null && photoSource.isNotEmpty;
     final title = milestone['title'] ?? '';
     final date = milestone['date'] as DateTime;
     final note = milestone['note'] ?? '';
@@ -2321,7 +2328,7 @@ class MilestoneDetailScreen extends StatelessWidget {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(24),
                               child: buildPlatformImage(
-                                milestone['photoPath'],
+                                photoSource,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(

@@ -2448,10 +2448,7 @@ class _AddScreenState extends State<AddScreen> {
     }
   }
 
-  void _schedulePostCloseTask(
-    Future<void> Function() action,
-    String label,
-  ) {
+  void _schedulePostCloseTask(Future<void> Function() action, String label) {
     unawaited(_runBestEffortAfterClose(action, label));
   }
 
@@ -2469,8 +2466,8 @@ class _AddScreenState extends State<AddScreen> {
       _initialSnapshot = _captureSnapshot();
       if (!mounted) return;
       setState(() => _isSaving = false);
-      didClose = true;
       Navigator.of(context).pop(true);
+      didClose = true;
 
       try {
         HapticFeedback.lightImpact();
@@ -2490,7 +2487,8 @@ class _AddScreenState extends State<AddScreen> {
       if (!mounted) return;
       _showValidationError(l10n.saveFailedTryAgain);
     } finally {
-      if (!didClose && mounted) {
+      if (mounted && _isSaving) {
+        debugPrint('AddScreen save guard reset (didClose=$didClose)');
         setState(() => _isSaving = false);
       }
     }

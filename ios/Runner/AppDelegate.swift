@@ -1,10 +1,12 @@
 import Flutter
+import os
 import Security
 import UIKit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
   private let iosRuntimeInfoChannelName = "com.nilico.baby/ios_runtime_info"
+  private let nativeLoggerChannelName = "native_logger"
 
   override func application(
     _ application: UIApplication,
@@ -13,16 +15,57 @@ import UIKit
     GeneratedPluginRegistrant.register(with: self)
     LiveActivityHandler.shared.register(with: self)
     if let controller = window?.rootViewController as? FlutterViewController {
-      let channel = FlutterMethodChannel(
+      let diagnosticsChannel = FlutterMethodChannel(
         name: iosRuntimeInfoChannelName,
         binaryMessenger: controller.binaryMessenger
       )
-      channel.setMethodCallHandler { [weak self] call, result in
+      diagnosticsChannel.setMethodCallHandler { [weak self] call, result in
         guard call.method == "getAppleSignInDiagnostics" else {
           result(FlutterMethodNotImplemented)
           return
         }
         result(self?.appleSignInDiagnostics())
+      }
+
+      let loggerChannel = FlutterMethodChannel(
+        name: nativeLoggerChannelName,
+        binaryMessenger: controller.binaryMessenger
+      )
+      loggerChannel.setMethodCallHandler { call, result in
+        guard let message = call.arguments as? String else {
+          result(
+            FlutterError(
+              code: "invalid-args",
+              message: "native_logger expects String argument.",
+              details: nil
+            ))
+          return
+        }
+
+        let subsystem = Bundle.main.bundleIdentifier ?? "Nilico"
+        let category = "AppleAuthService"
+        let fallbackLog = OSLog(subsystem: subsystem, category: category)
+
+        switch call.method {
+        case "log":
+          if #available(iOS 14.0, *) {
+            let logger = Logger(subsystem: subsystem, category: category)
+            logger.log("\(message, privacy: .public)")
+          } else {
+            os_log("%{public}@", log: fallbackLog, type: .info, message)
+          }
+          result(nil)
+        case "error":
+          if #available(iOS 14.0, *) {
+            let logger = Logger(subsystem: subsystem, category: category)
+            logger.error("\(message, privacy: .public)")
+          } else {
+            os_log("%{public}@", log: fallbackLog, type: .error, message)
+          }
+          result(nil)
+        default:
+          result(FlutterMethodNotImplemented)
+        }
       }
     }
 
@@ -30,31 +73,29 @@ import UIKit
   }
 
   private func appleSignInDiagnostics() -> [String: Any] {
-    let entitlementValue = entitlementValue(for: "com.apple.developer.applesignin")
+    let appleEntitlementValue = entitlementValue(for: "com.apple.developer.applesignin")
     let appGroupsValue = entitlementValue(for: "com.apple.security.application-groups")
 
     return [
       "bundleId": Bundle.main.bundleIdentifier ?? "",
       "buildMode": currentBuildMode(),
-      "appleSignInEntitlement": entitlementValue,
+      "appleSignInEntitlement": appleEntitlementValue,
       "appGroups": appGroupsValue,
     ]
   }
 
   private func entitlementValue(for key: String) -> Any {
-    guard let task = SecTaskCreateFromSelf(nil) else {
-      return NSNull()
-    }
-
-    var error: Unmanaged<CFError>?
-    guard let value = SecTaskCopyValueForEntitlement(task, key as CFString, &error) else {
-      if let error {
-        NSLog("[AppDelegate] Entitlement lookup failed for %@: %@", key, error.takeRetainedValue() as Error as NSError)
+    #if DEBUG
+      guard let task = SecTaskCreateFromSelf(nil) else {
+        print("[AppDelegate] SecTaskCreateFromSelf returned nil for key: \(key)")
+        return NSNull()
       }
+      let value = SecTaskCopyValueForEntitlement(task, key as CFString, nil)
+      print("[AppDelegate] entitlement \(key): \(String(describing: value))")
+      return value ?? NSNull()
+    #else
       return NSNull()
-    }
-
-    return value
+    #endif
   }
 
   private func currentBuildMode() -> String {

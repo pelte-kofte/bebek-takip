@@ -9,6 +9,7 @@ import '../data/local/local_store.dart';
 import '../data/local/shared_preferences_local_store.dart';
 import '../data/stores/firestore_store.dart';
 import '../services/data_sync_service.dart';
+import '../services/photo_storage_sync_service.dart';
 import 'baby.dart';
 import 'timer_yonetici.dart';
 
@@ -76,9 +77,10 @@ class VeriYonetici {
   static String _activeBabyId = '';
   static const String _migrationKey = 'multi_baby_migrated';
   static const String diaperEventType = 'diaper';
-  static int _recordIdCounter = 0;
   static final FirestoreStore _firestoreStore = FirestoreStore();
   static DataSyncService? _dataSyncService;
+  static final PhotoStorageSyncService _photoStorageSyncService =
+      PhotoStorageSyncService();
   static const bool _verboseSyncLogs = true;
   static final Map<String, String> _lastCloudFingerprintByKey = {};
   static final Map<String, DateTime> _lastCloudWriteAtByKey = {};
@@ -92,11 +94,6 @@ class VeriYonetici {
     'active_emzirme_sol_saniye_{babyId}',
     'active_emzirme_sag_saniye_{babyId}',
   ];
-
-  static String _newRecordId(String prefix) {
-    _recordIdCounter++;
-    return '${prefix}_${DateTime.now().microsecondsSinceEpoch}_$_recordIdCounter';
-  }
 
   static String _normalizeDiaperToken(dynamic rawValue) {
     final value = (rawValue ?? '').toString().trim().toLowerCase();
@@ -132,6 +129,7 @@ class VeriYonetici {
   }
 
   static String? get _currentUid => FirebaseAuth.instance.currentUser?.uid;
+  static User? get _currentUser => FirebaseAuth.instance.currentUser;
 
   static String? _getLocalString(String key) {
     return _localStore?.getString(key) ?? _prefs?.getString(key);
@@ -149,6 +147,19 @@ class VeriYonetici {
     if (kDebugMode && _verboseSyncLogs) {
       debugPrint('[VeriYonetici] $message');
     }
+  }
+
+  static bool _canSyncWithCloud({
+    required String operation,
+    required String skipMessage,
+  }) {
+    final user = _currentUser;
+    _log('[Sync] $operation auth ${DataSyncService.authStateSummary(user)}');
+    final canSync = DataSyncService.canWriteToCloud(user);
+    if (!canSync) {
+      _log(skipMessage);
+    }
+    return canSync;
   }
 
   static void _notifyDataChanged({required String reason}) {
@@ -234,24 +245,217 @@ class VeriYonetici {
     String extra = '',
     int doseIndex = 0,
   }) {
-    final uid = _currentUid ?? 'anonymous';
-    final raw = '$uid:$babyId:$type:$keyTime:$doseIndex:$extra';
+    final raw = '$babyId:$type:$keyTime:$doseIndex:$extra';
     return sha1.convert(utf8.encode(raw)).toString();
+  }
+
+  static String _stableDateToken(dynamic value) {
+    final dt = value is DateTime
+        ? value
+        : (value is String ? DateTime.tryParse(value) : null);
+    if (dt == null) return '';
+    return dt.toUtc().toIso8601String();
+  }
+
+  static String _repairNaturalKeyFor(String entity, Map<String, dynamic> row) {
+    final babyId = (row['babyId'] ?? _activeBabyId).toString();
+    switch (entity) {
+      case 'feeding':
+        final explicitType = (row['type'] ?? '')
+            .toString()
+            .trim()
+            .toLowerCase();
+        final tur = (row['tur'] ?? '').toString().trim().toLowerCase();
+        final type = explicitType.isNotEmpty
+            ? explicitType
+            : (tur == 'anne' ? 'nursing' : 'feeding');
+        final tarih = _stableDateToken(row['tarih'] ?? row['date']);
+        return 'feeding|$babyId|$type|$tarih|${row['miktar'] ?? ''}|${row['solDakika'] ?? ''}|${row['sagDakika'] ?? ''}|${row['kategori'] ?? ''}';
+      case 'diaper':
+        final tarih = _stableDateToken(row['tarih'] ?? row['date']);
+        final diaperType = (row['diaperType'] ?? row['tur'] ?? '').toString();
+        final eventType = (row['eventType'] ?? '').toString();
+        return 'diaper|$babyId|$tarih|$diaperType|$eventType';
+      case 'sleep':
+        final start = _stableDateToken(row['baslangic'] ?? row['startAt']);
+        final end = _stableDateToken(row['bitis'] ?? row['endAt']);
+        return 'sleep|$babyId|$start|$end';
+      case 'growth':
+        final tarih = _stableDateToken(row['tarih'] ?? row['date']);
+        return 'growth|$babyId|$tarih|${row['boy'] ?? ''}|${row['kilo'] ?? ''}|${row['basCevresi'] ?? ''}';
+      case 'vaccine':
+        final tarih = _stableDateToken(row['tarih'] ?? row['date']);
+        return 'vaccine|$babyId|$tarih|${row['ad'] ?? ''}|${row['donem'] ?? ''}';
+      case 'milestone':
+        final date = _stableDateToken(row['date'] ?? row['tarih']);
+        return 'milestone|$babyId|$date|${row['title'] ?? ''}|${row['note'] ?? ''}';
+      case 'memory':
+        final tarih = _stableDateToken(row['tarih'] ?? row['date']);
+        return 'memory|$babyId|$tarih|${row['baslik'] ?? row['title'] ?? ''}|${row['not'] ?? row['note'] ?? ''}|${row['emoji'] ?? ''}';
+      case 'medication':
+        final createdAt = _stableDateToken(row['createdAt']);
+        return 'medication|$babyId|$createdAt|${row['name'] ?? ''}|${row['type'] ?? ''}';
+      case 'medication_log':
+        final givenAt = _stableDateToken(row['givenAt']);
+        return 'medlog|$babyId|${row['medicationId'] ?? ''}|$givenAt|${row['doseIndex'] ?? ''}|${row['scheduledTime'] ?? ''}|${row['protocolStep'] ?? ''}';
+      default:
+        return '$entity|$babyId';
+    }
+  }
+
+  static String _ensureStableIdForRow(
+    Map<String, dynamic> row, {
+    required String entity,
+    int seed = 0,
+  }) {
+    final existing = (row['id'] ?? '').toString().trim();
+    if (existing.isNotEmpty) return existing;
+
+    final nk = _repairNaturalKeyFor(entity, row);
+    final nkHasSignal = nk.replaceAll('|', '').trim().isNotEmpty;
+    final keyTime = nkHasSignal
+        ? nk
+        : '${DateTime.now().microsecondsSinceEpoch}:$seed';
+    final repaired = _deterministicDocId(
+      babyId: (row['babyId'] ?? _activeBabyId).toString(),
+      type: entity,
+      keyTime: keyTime,
+      extra: nkHasSignal ? 'legacy-repair' : 'legacy-fallback',
+      doseIndex: seed,
+    );
+    row['id'] = repaired;
+    return repaired;
+  }
+
+  static bool _repairMissingIdsInRows({
+    required List<Map<String, dynamic>> rows,
+    required String entity,
+  }) {
+    var changed = false;
+    for (var i = 0; i < rows.length; i++) {
+      final row = rows[i];
+      final before = (row['id'] ?? '').toString().trim();
+      final after = _ensureStableIdForRow(row, entity: entity, seed: i);
+      if (before != after) changed = true;
+    }
+    return changed;
+  }
+
+  // Legacy repair: assign stable IDs once for old rows that were saved without id.
+  static Future<void> _repairMissingIdsAndPersistIfNeeded() async {
+    var changed = false;
+    changed =
+        _repairMissingIdsInRows(rows: _mamaKayitlari, entity: 'feeding') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _kakaKayitlari, entity: 'diaper') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _uykuKayitlari, entity: 'sleep') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _anilar, entity: 'memory') || changed;
+    changed =
+        _repairMissingIdsInRows(rows: _milestones, entity: 'milestone') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _boyKiloKayitlari, entity: 'growth') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _asiKayitlari, entity: 'vaccine') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(rows: _ilacKayitlari, entity: 'medication') ||
+        changed;
+    changed =
+        _repairMissingIdsInRows(
+          rows: _ilacDozKayitlari,
+          entity: 'medication_log',
+        ) ||
+        changed;
+    if (changed) {
+      _log('Legacy ID repair applied for missing ids; persisting once.');
+      await _saveAllCollections();
+    }
+  }
+
+  static bool _rowIsDeleted(Map<String, dynamic> row) =>
+      row['isDeleted'] == true;
+
+  static Map<String, dynamic> _tombstoneRowFrom(
+    Map<String, dynamic> source, {
+    required DateTime now,
+  }) {
+    final map = Map<String, dynamic>.from(source);
+    map['isDeleted'] = true;
+    map['deletedAt'] = now;
+    map['updatedAt'] = now;
+    map['localUpdatedAt'] = now;
+    return map;
+  }
+
+  static List<Map<String, dynamic>> _mergeActiveRowsWithTombstones({
+    required String babyId,
+    required List<Map<String, dynamic>> existingAll,
+    required List<Map<String, dynamic>> incomingActive,
+    required DateTime now,
+  }) {
+    final existingForBaby = existingAll
+        .where((r) => r['babyId'] == babyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final existingActive = existingForBaby.where((r) => !_rowIsDeleted(r));
+    final existingTombstones = existingForBaby.where(_rowIsDeleted);
+    final incomingIds = incomingActive
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+
+    final generatedTombstones = existingActive
+        .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+        .map((r) => _tombstoneRowFrom(r, now: now));
+
+    final merged = <Map<String, dynamic>>[];
+    merged.addAll(incomingActive.map((e) => Map<String, dynamic>.from(e)));
+    merged.addAll(
+      existingTombstones
+          .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
+    merged.addAll(generatedTombstones);
+    return merged;
   }
 
   static Future<void> _syncFromCloudIfSignedIn() async {
     final uid = _currentUid;
     if (uid == null || uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncFromCloudIfSignedIn',
+      skipMessage: '[Sync] skip cloud read: user is anonymous',
+    )) {
+      return;
+    }
 
     try {
       _log('Starting cloud sync for uid=$uid');
       final syncService = _dataSyncService;
       if (syncService == null) return;
       final localBabiesBefore = _babies.length;
-      final remote = await syncService.pullRemoteCoreData(uid);
-      final authUser = FirebaseAuth.instance.currentUser;
+      var remote = await syncService.pullRemoteCoreData(uid);
+      final shouldRunDedupe = await syncService.shouldRunDedupeMigration(uid);
+      if (shouldRunDedupe) {
+        final dedupeResult = syncService.buildDedupeMigrationBundle(remote);
+        remote = dedupeResult.bundle;
+        if (dedupeResult.changed) {
+          _log('Running one-time remote dedupe migration for uid=$uid');
+          await _pushBundleToCloudStrict(uid, dedupeResult.bundle);
+        }
+        await syncService.markDedupeMigrationDone(uid);
+      }
+      final authUser = _currentUser;
       _log(
         'Startup auth uid=${authUser?.uid} anonymous=${authUser?.isAnonymous} '
+        'providers=${DataSyncService.providerIdsForUser(authUser)} '
         'babies local=$localBabiesBefore remote=${remote.babies.length}',
       );
       final merged = syncService.mergeCoreData(
@@ -317,6 +521,12 @@ class VeriYonetici {
     Future<void> Function() action, {
     required String label,
   }) {
+    if (!_canSyncWithCloud(
+      operation: 'schedule:$label',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     unawaited(() async {
       try {
         await action().timeout(const Duration(seconds: 3));
@@ -329,8 +539,72 @@ class VeriYonetici {
     }());
   }
 
+  static Future<void> _syncPhotosWithStorageBestEffort() async {
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    final user = _currentUser;
+    if (!_canSyncWithCloud(
+      operation: '_syncPhotosWithStorageBestEffort',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
+    _log('Starting photo storage sync uid=$uid anonymous=${user?.isAnonymous}');
+
+    final result = await _photoStorageSyncService.syncUserPhotos(
+      uid: uid,
+      babies: _babies,
+      milestones: _milestones,
+      memories: _anilar,
+      log: _log,
+    );
+
+    if (result.babiesChanged) {
+      await _saveBabies();
+      await _syncBabiesToCloud();
+    }
+    if (result.memoriesChanged) {
+      await _persistAnilarToLocalStore();
+      await _persistMilestonesToLocalStore();
+    }
+    if (result.memoriesUploaded && result.uploadedMemoryBabyIds.isNotEmpty) {
+      for (final babyId in result.uploadedMemoryBabyIds) {
+        await _syncBabyMemoriesToCloud(babyId: babyId);
+      }
+    }
+    _log(
+      'Photo storage sync finished '
+      'babiesChanged=${result.babiesChanged} '
+      'memoriesChanged=${result.memoriesChanged} '
+      'uploadedMemoryBabies=${result.uploadedMemoryBabyIds.length}',
+    );
+  }
+
+  static Future<void> _syncBabyMemoriesToCloud({required String babyId}) async {
+    await _repairMissingIdsAndPersistIfNeeded();
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty || babyId.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncBabyMemoriesToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
+    final bundle = _currentCoreBundle();
+    final docs = _memoryDocsForBundleBaby(bundle, babyId);
+    await _firestoreStore.replaceMemoriesForBaby(
+      uid,
+      babyId: babyId,
+      memories: docs,
+    );
+  }
+
   static Future<void> refreshForCurrentUser() async {
     await _syncFromCloudIfSignedIn();
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+    );
     if (_babies.isNotEmpty && !_babies.any((b) => b.id == _activeBabyId)) {
       _activeBabyId = _babies.first.id;
       await _setLocalString('active_baby_id', _activeBabyId);
@@ -404,30 +678,40 @@ class VeriYonetici {
     final Map<String, Map<String, dynamic>> byId = {};
 
     for (final m in bundle.milestones.where((e) => e['babyId'] == babyId)) {
-      final id = (m['id'] ?? _newRecordId('memory')).toString();
+      final row = Map<String, dynamic>.from(m);
+      final id = _ensureStableIdForRow(row, entity: 'milestone');
       byId[id] = {
         'id': id,
         'type': 'milestone',
         'babyId': babyId,
-        'title': m['title'],
-        'note': m['note'],
-        'date': m['date'],
-        'photoLocalPath': m['photoPath'],
-        'photoStyle': m['photoStyle'] ?? 'softIllustration',
+        'title': row['title'],
+        'note': row['note'],
+        'date': row['date'],
+        'photoLocalPath': row['photoPath'],
+        'photoStoragePath': row['photoStoragePath'],
+        'photoUrl': row['photoUrl'],
+        'photoStyle': row['photoStyle'] ?? 'softIllustration',
+        'isDeleted': row['isDeleted'] == true,
+        'deletedAt': row['deletedAt'],
       };
     }
 
     for (final a in bundle.anilar.where((e) => e['babyId'] == babyId)) {
-      final id = (a['id'] ?? _newRecordId('memory')).toString();
+      final row = Map<String, dynamic>.from(a);
+      final id = _ensureStableIdForRow(row, entity: 'memory');
       byId[id] = {
         'id': id,
         'type': 'memory',
         'babyId': babyId,
-        'title': a['baslik'],
-        'note': a['not'],
-        'date': a['tarih'],
-        'emoji': a['emoji'],
-        'photoLocalPath': a['photoPath'],
+        'title': row['baslik'],
+        'note': row['not'],
+        'date': row['tarih'],
+        'emoji': row['emoji'],
+        'photoLocalPath': row['photoPath'],
+        'photoStoragePath': row['photoStoragePath'],
+        'photoUrl': row['photoUrl'],
+        'isDeleted': row['isDeleted'] == true,
+        'deletedAt': row['deletedAt'],
       };
     }
 
@@ -437,6 +721,7 @@ class VeriYonetici {
   static Future<RepositoryDataBundle> exportUserDataSnapshot({
     String? uid,
   }) async {
+    await _repairMissingIdsAndPersistIfNeeded();
     final targetUid = uid ?? _currentUid;
     if (targetUid == null || targetUid.isEmpty) {
       return const RepositoryDataBundle(
@@ -450,6 +735,39 @@ class VeriYonetici {
         anilar: [],
         ilacKayitlari: [],
         ilacDozKayitlari: [],
+      );
+    }
+    if (!_canSyncWithCloud(
+      operation: 'exportUserDataSnapshot',
+      skipMessage: '[Sync] skip cloud read: user is anonymous',
+    )) {
+      return RepositoryDataBundle(
+        babies: List<Baby>.from(_babies),
+        mamaKayitlari: _mamaKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        kakaKayitlari: _kakaKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        uykuKayitlari: _uykuKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        boyKiloKayitlari: _boyKiloKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        asiKayitlari: _asiKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        milestones: _milestones
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        anilar: _anilar.map((e) => Map<String, dynamic>.from(e)).toList(),
+        ilacKayitlari: _ilacKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
+        ilacDozKayitlari: _ilacDozKayitlari
+            .map((e) => Map<String, dynamic>.from(e))
+            .toList(),
       );
     }
     try {
@@ -488,6 +806,12 @@ class VeriYonetici {
 
   static Future<void> clearFirestoreDataForUid(String uid) async {
     if (uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: 'clearFirestoreDataForUid',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       await _firestoreStore.clearUserSubtree(uid);
     } catch (_) {
@@ -508,49 +832,65 @@ class VeriYonetici {
     RepositoryDataBundle bundle,
   ) async {
     if (uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: 'restoreDataBundleToUid',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
-      await _firestoreStore.replaceBabies(uid, bundle.babies);
-
-      for (final baby in bundle.babies) {
-        final babyId = baby.id;
-        final records = _recordsForBundleBaby(bundle, babyId);
-        await _firestoreStore.replaceRecordsForBaby(
-          uid,
-          babyId: babyId,
-          types: {'feeding', 'nursing', 'diaper', 'sleep', 'growth', 'vaccine'},
-          records: records,
-        );
-
-        await _firestoreStore.replaceMemoriesForBaby(
-          uid,
-          babyId: babyId,
-          memories: _memoryDocsForBundleBaby(bundle, babyId),
-        );
-
-        await _firestoreStore.replaceMedicationsForBaby(
-          uid,
-          babyId: babyId,
-          medications: bundle.ilacKayitlari
-              .where((r) => r['babyId'] == babyId)
-              .map((r) => Map<String, dynamic>.from(r))
-              .toList(),
-        );
-
-        await _firestoreStore.replaceMedicationLogsForBaby(
-          uid,
-          babyId: babyId,
-          logs: bundle.ilacDozKayitlari
-              .where((r) => r['babyId'] == babyId)
-              .map((r) => Map<String, dynamic>.from(r))
-              .toList(),
-        );
-      }
+      await _pushBundleToCloudStrict(uid, bundle);
     } catch (_) {
       // Best-effort restore only.
     }
   }
 
+  static Future<void> _pushBundleToCloudStrict(
+    String uid,
+    RepositoryDataBundle bundle,
+  ) async {
+    await _firestoreStore.replaceBabies(uid, bundle.babies);
+    for (final baby in bundle.babies) {
+      final babyId = baby.id;
+      final records = _recordsForBundleBaby(bundle, babyId);
+      await _firestoreStore.replaceRecordsForBaby(
+        uid,
+        babyId: babyId,
+        types: {'feeding', 'nursing', 'diaper', 'sleep', 'growth', 'vaccine'},
+        records: records,
+      );
+      await _firestoreStore.replaceMemoriesForBaby(
+        uid,
+        babyId: babyId,
+        memories: _memoryDocsForBundleBaby(bundle, babyId),
+      );
+      await _firestoreStore.replaceMedicationsForBaby(
+        uid,
+        babyId: babyId,
+        medications: bundle.ilacKayitlari
+            .where((r) => r['babyId'] == babyId)
+            .map((r) => Map<String, dynamic>.from(r))
+            .toList(),
+      );
+      await _firestoreStore.replaceMedicationLogsForBaby(
+        uid,
+        babyId: babyId,
+        logs: bundle.ilacDozKayitlari
+            .where((r) => r['babyId'] == babyId)
+            .map((r) => Map<String, dynamic>.from(r))
+            .toList(),
+      );
+    }
+  }
+
   static Future<void> _pushAllToCloud(String uid) async {
+    await _repairMissingIdsAndPersistIfNeeded();
+    if (!_canSyncWithCloud(
+      operation: '_pushAllToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       await _firestoreStore.replaceBabies(uid, _babies);
       for (final baby in _babies) {
@@ -567,6 +907,12 @@ class VeriYonetici {
   static Future<void> _syncBabiesToCloud() async {
     final uid = _currentUid;
     if (uid == null || uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncBabiesToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       await _withIdempotentCloudWrite('babies:$uid', _babies, () async {
         await _firestoreStore.replaceBabies(uid, _babies);
@@ -575,9 +921,16 @@ class VeriYonetici {
   }
 
   static Future<void> _syncActiveBabyRecordsToCloud({String? babyId}) async {
+    await _repairMissingIdsAndPersistIfNeeded();
     final targetBabyId = babyId ?? _activeBabyId;
     final uid = _currentUid;
     if (uid == null || uid.isEmpty || targetBabyId.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncActiveBabyRecordsToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
 
     try {
       final mama = _mamaKayitlari.where((r) => r['babyId'] == targetBabyId).map(
@@ -698,30 +1051,40 @@ class VeriYonetici {
     final Map<String, Map<String, dynamic>> byId = {};
 
     for (final m in _milestones.where((e) => e['babyId'] == babyId)) {
-      final id = (m['id'] ?? _newRecordId('memory')).toString();
+      final row = Map<String, dynamic>.from(m);
+      final id = _ensureStableIdForRow(row, entity: 'milestone');
       byId[id] = {
         'id': id,
         'type': 'milestone',
         'babyId': babyId,
-        'title': m['title'],
-        'note': m['note'],
-        'date': m['date'],
-        'photoLocalPath': m['photoPath'],
-        'photoStyle': m['photoStyle'] ?? 'softIllustration',
+        'title': row['title'],
+        'note': row['note'],
+        'date': row['date'],
+        'photoLocalPath': row['photoPath'],
+        'photoStoragePath': row['photoStoragePath'],
+        'photoUrl': row['photoUrl'],
+        'photoStyle': row['photoStyle'] ?? 'softIllustration',
+        'isDeleted': row['isDeleted'] == true,
+        'deletedAt': row['deletedAt'],
       };
     }
 
     for (final a in _anilar.where((e) => e['babyId'] == babyId)) {
-      final id = (a['id'] ?? _newRecordId('memory')).toString();
+      final row = Map<String, dynamic>.from(a);
+      final id = _ensureStableIdForRow(row, entity: 'memory');
       byId[id] = {
         'id': id,
         'type': 'memory',
         'babyId': babyId,
-        'title': a['baslik'],
-        'note': a['not'],
-        'date': a['tarih'],
-        'emoji': a['emoji'],
-        'photoLocalPath': a['photoPath'],
+        'title': row['baslik'],
+        'note': row['not'],
+        'date': row['tarih'],
+        'emoji': row['emoji'],
+        'photoLocalPath': row['photoPath'],
+        'photoStoragePath': row['photoStoragePath'],
+        'photoUrl': row['photoUrl'],
+        'isDeleted': row['isDeleted'] == true,
+        'deletedAt': row['deletedAt'],
       };
     }
 
@@ -729,9 +1092,16 @@ class VeriYonetici {
   }
 
   static Future<void> _syncActiveBabyMemoriesToCloud({String? babyId}) async {
+    await _repairMissingIdsAndPersistIfNeeded();
     final targetBabyId = babyId ?? _activeBabyId;
     final uid = _currentUid;
     if (uid == null || uid.isEmpty || targetBabyId.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncActiveBabyMemoriesToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       final memories = _memoryDocsForBaby(targetBabyId);
       await _withIdempotentCloudWrite(
@@ -751,9 +1121,16 @@ class VeriYonetici {
   static Future<void> _syncActiveBabyMedicationsToCloud({
     String? babyId,
   }) async {
+    await _repairMissingIdsAndPersistIfNeeded();
     final targetBabyId = babyId ?? _activeBabyId;
     final uid = _currentUid;
     if (uid == null || uid.isEmpty || targetBabyId.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncActiveBabyMedicationsToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       final meds = _ilacKayitlari
           .where((r) => r['babyId'] == targetBabyId)
@@ -776,9 +1153,16 @@ class VeriYonetici {
   static Future<void> _syncActiveBabyMedicationLogsToCloud({
     String? babyId,
   }) async {
+    await _repairMissingIdsAndPersistIfNeeded();
     final targetBabyId = babyId ?? _activeBabyId;
     final uid = _currentUid;
     if (uid == null || uid.isEmpty || targetBabyId.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncActiveBabyMedicationLogsToCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
     try {
       final logs = _ilacDozKayitlari
           .where((r) => r['babyId'] == targetBabyId)
@@ -841,15 +1225,21 @@ class VeriYonetici {
     _asiKayitlari = _loadAsiKayitlari();
     _ilacKayitlari = _loadIlacKayitlari();
     _ilacDozKayitlari = _loadIlacDozKayitlari();
+    await _repairMissingIdsAndPersistIfNeeded();
 
-    final authUser = FirebaseAuth.instance.currentUser;
+    final authUser = _currentUser;
     _log(
       'Startup auth uid=${authUser?.uid} anonymous=${authUser?.isAnonymous} '
+      'providers=${DataSyncService.providerIdsForUser(authUser)} '
       'babies local=${_babies.length} remote=pending',
     );
 
     // If signed in, prefer Firestore-backed data scoped to current uid.
     await _syncFromCloudIfSignedIn();
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+    );
 
     // Settings
     _darkMode = _prefs!.getBool('dark_mode') ?? false;
@@ -1033,6 +1423,8 @@ class VeriYonetici {
       score += 10;
     }
     if ((baby.photoPath ?? '').trim().isNotEmpty) score += 5;
+    if ((baby.photoStoragePath ?? '').trim().isNotEmpty) score += 3;
+    if ((baby.photoUrl ?? '').trim().isNotEmpty) score += 2;
     return score;
   }
 
@@ -1189,7 +1581,7 @@ class VeriYonetici {
 
     final removedLocalCounts = <String, int>{};
     final uid = _currentUid;
-    final authUser = FirebaseAuth.instance.currentUser;
+    final authUser = _currentUser;
     bool cloudDeleteFailed = false;
 
     _log(
@@ -1261,7 +1653,12 @@ class VeriYonetici {
     await _saveBabies();
     await _saveAllCollections();
 
-    if (uid != null && uid.isNotEmpty) {
+    if (uid != null &&
+        uid.isNotEmpty &&
+        _canSyncWithCloud(
+          operation: 'deleteBaby',
+          skipMessage: '[Sync] skip cloud write: user is anonymous',
+        )) {
       try {
         await _firestoreStore.deleteBabyData(uid, babyId: babyId);
         await _syncBabiesToCloud();
@@ -1293,6 +1690,8 @@ class VeriYonetici {
     String? name,
     DateTime? birthDate,
     String? photoPath,
+    String? photoStoragePath,
+    String? photoUrl,
     bool clearPhoto = false,
   }) async {
     final index = _babies.indexWhere((b) => b.id == babyId);
@@ -1301,11 +1700,28 @@ class VeriYonetici {
     if (birthDate != null) _babies[index].birthDate = birthDate;
     if (clearPhoto) {
       _babies[index].photoPath = null;
+      _babies[index].photoStoragePath = null;
+      _babies[index].photoUrl = null;
     } else if (photoPath != null) {
+      final previous = _babies[index].photoPath;
       _babies[index].photoPath = photoPath;
+      if ((previous ?? '') != photoPath) {
+        _babies[index].photoStoragePath = null;
+        _babies[index].photoUrl = null;
+      }
+    }
+    if (photoStoragePath != null) {
+      _babies[index].photoStoragePath = photoStoragePath;
+    }
+    if (photoUrl != null) {
+      _babies[index].photoUrl = photoUrl;
     }
     await _saveBabies();
     await _syncBabiesToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+    );
     if (babyId == _activeBabyId) {
       _babyName = _babies[index].name;
       _birthDate = _babies[index].birthDate;
@@ -1324,7 +1740,7 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
-              'id': (e['id'] ?? _newRecordId('feeding')).toString(),
+              'id': (e['id'] ?? '').toString(),
               'miktar': e['miktar'] ?? 0,
               'tur': e['tur'] ?? '',
               'solDakika': e['solDakika'] ?? 0,
@@ -1338,6 +1754,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['tarih']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1347,7 +1767,9 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getMamaKayitlari() {
-    return _mamaKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
+    return _mamaKayitlari
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
   }
 
   static Future<void> saveMamaKayitlari(
@@ -1356,18 +1778,11 @@ class VeriYonetici {
     final now = DateTime.now();
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
-      final tarih = (r['tarih'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'feeding',
-              keyTime: tarih.toUtc().toIso8601String(),
-              extra: '${r['tur'] ?? ''}:${r['miktar'] ?? 0}',
-            );
+      _ensureStableIdForRow(r, entity: 'feeding');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = r['isDeleted'] == true;
+      if (r['isDeleted'] != true) r['deletedAt'] = null;
     }
 
     _mamaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -1389,6 +1804,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -1414,11 +1831,41 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteMamaKaydiById(String id) async {
-    final kayitlar = getMamaKayitlari();
-    final before = kayitlar.length;
-    kayitlar.removeWhere((k) => k['id'] == id);
-    if (kayitlar.length == before) return false;
-    await saveMamaKayitlari(kayitlar);
+    final idx = _mamaKayitlari.indexWhere(
+      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+    );
+    if (idx == -1) return false;
+    _mamaKayitlari[idx] = _tombstoneRowFrom(
+      _mamaKayitlari[idx],
+      now: DateTime.now(),
+    );
+    await _setLocalString(
+      'mama_kayitlari',
+      jsonEncode(
+        _mamaKayitlari
+            .map(
+              (e) => {
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'id': e['id'],
+                'miktar': e['miktar'] ?? 0,
+                'tur': e['tur'] ?? '',
+                'solDakika': e['solDakika'] ?? 0,
+                'sagDakika': e['sagDakika'] ?? 0,
+                'kategori': e['kategori'] ?? 'Milk',
+                'solidAciklama': e['solidAciklama'],
+                'babyId': e['babyId'],
+                'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
+                'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
+                    ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
+              },
+            )
+            .toList(),
+      ),
+    );
+    _notifyDataChanged(reason: 'mama_kayitlari');
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
     return true;
   }
 
@@ -1433,7 +1880,7 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
-              'id': (e['id'] ?? _newRecordId('diaper')).toString(),
+              'id': (e['id'] ?? '').toString(),
               'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
               'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
               'eventType': normalizeDiaperEventType(
@@ -1447,6 +1894,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['tarih']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1456,7 +1907,9 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getKakaKayitlari() {
-    return _kakaKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
+    return _kakaKayitlari
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
   }
 
   static Future<void> saveKakaKayitlari(
@@ -1465,22 +1918,15 @@ class VeriYonetici {
     final now = DateTime.now();
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
-      final tarih = (r['tarih'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'diaper',
-              keyTime: tarih.toUtc().toIso8601String(),
-              extra: '${r['diaperType'] ?? r['tur'] ?? ''}',
-            );
+      _ensureStableIdForRow(r, entity: 'diaper');
       final normalizedType = normalizeDiaperType(r['diaperType'] ?? r['tur']);
       r['tur'] = normalizedType;
       r['diaperType'] = normalizedType;
       r['eventType'] = diaperEventType;
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = r['isDeleted'] == true;
+      if (r['isDeleted'] != true) r['deletedAt'] = null;
     }
 
     _kakaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -1502,6 +1948,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -1527,11 +1975,41 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteKakaKaydiById(String id) async {
-    final kayitlar = getKakaKayitlari();
-    final before = kayitlar.length;
-    kayitlar.removeWhere((k) => k['id'] == id);
-    if (kayitlar.length == before) return false;
-    await saveKakaKayitlari(kayitlar);
+    final idx = _kakaKayitlari.indexWhere(
+      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+    );
+    if (idx == -1) return false;
+    _kakaKayitlari[idx] = _tombstoneRowFrom(
+      _kakaKayitlari[idx],
+      now: DateTime.now(),
+    );
+    await _setLocalString(
+      'kaka_kayitlari',
+      jsonEncode(
+        _kakaKayitlari
+            .map(
+              (e) => {
+                'tarih': (e['tarih'] as DateTime).toIso8601String(),
+                'id': e['id'],
+                'tur': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+                'diaperType': normalizeDiaperType(e['diaperType'] ?? e['tur']),
+                'eventType': normalizeDiaperEventType(
+                  e['eventType'] ?? e['kategori'] ?? e['category'],
+                ),
+                'notlar': e['notlar'] ?? '',
+                'babyId': e['babyId'],
+                'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
+                'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
+                    ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
+              },
+            )
+            .toList(),
+      ),
+    );
+    _notifyDataChanged(reason: 'kaka_kayitlari');
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
     return true;
   }
 
@@ -1547,7 +2025,7 @@ class VeriYonetici {
             (e) => Map<String, dynamic>.from({
               'baslangic': DateTime.parse(e['baslangic']),
               'bitis': DateTime.parse(e['bitis']),
-              'id': (e['id'] ?? _newRecordId('sleep')).toString(),
+              'id': (e['id'] ?? '').toString(),
               'sure': Duration(minutes: e['sure']),
               'babyId': e['babyId'] ?? _activeBabyId,
               'updatedAt': e['updatedAt'] != null
@@ -1556,6 +2034,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['bitis']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1565,7 +2047,9 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getUykuKayitlari() {
-    return _uykuKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
+    return _uykuKayitlari
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
   }
 
   static Future<void> saveUykuKayitlari(
@@ -1574,19 +2058,11 @@ class VeriYonetici {
     final now = DateTime.now();
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
-      final start = (r['baslangic'] as DateTime?) ?? now;
-      final end = (r['bitis'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'sleep',
-              keyTime: start.toUtc().toIso8601String(),
-              extra: end.toUtc().toIso8601String(),
-            );
+      _ensureStableIdForRow(r, entity: 'sleep');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = r['isDeleted'] == true;
+      if (r['isDeleted'] != true) r['deletedAt'] = null;
     }
 
     _uykuKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -1604,6 +2080,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -1629,11 +2107,37 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteUykuKaydiById(String id) async {
-    final kayitlar = getUykuKayitlari();
-    final before = kayitlar.length;
-    kayitlar.removeWhere((k) => k['id'] == id);
-    if (kayitlar.length == before) return false;
-    await saveUykuKayitlari(kayitlar);
+    final idx = _uykuKayitlari.indexWhere(
+      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+    );
+    if (idx == -1) return false;
+    _uykuKayitlari[idx] = _tombstoneRowFrom(
+      _uykuKayitlari[idx],
+      now: DateTime.now(),
+    );
+    await _setLocalString(
+      'uyku_kayitlari',
+      jsonEncode(
+        _uykuKayitlari
+            .map(
+              (e) => {
+                'baslangic': (e['baslangic'] as DateTime).toIso8601String(),
+                'bitis': (e['bitis'] as DateTime).toIso8601String(),
+                'id': e['id'],
+                'sure': (e['sure'] as Duration).inMinutes,
+                'babyId': e['babyId'],
+                'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
+                'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
+                    ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
+              },
+            )
+            .toList(),
+      ),
+    );
+    _notifyDataChanged(reason: 'uyku_kayitlari');
+    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
     return true;
   }
 
@@ -1649,8 +2153,12 @@ class VeriYonetici {
             (e) => Map<String, dynamic>.from({
               'baslik': e['baslik'],
               'not': e['not'],
+              'id': (e['id'] ?? '').toString(),
               'tarih': DateTime.parse(e['tarih']),
               'emoji': e['emoji'],
+              'photoPath': e['photoPath'],
+              'photoStoragePath': e['photoStoragePath'],
+              'photoUrl': e['photoUrl'],
               'babyId': e['babyId'] ?? _activeBabyId,
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
@@ -1658,6 +2166,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['tarih']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1667,7 +2179,9 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAnilar() {
-    final rows = _anilar.where((r) => r['babyId'] == _activeBabyId).toList();
+    final rows = _anilar
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
     rows.sort((a, b) {
       final ad =
           a['tarih'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
@@ -1686,34 +2200,67 @@ class VeriYonetici {
 
   static Future<void> saveAnilar(List<Map<String, dynamic>> anilar) async {
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
     for (final r in anilar) {
       r['babyId'] = _activeBabyId;
+      _ensureStableIdForRow(r, entity: 'memory');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = false;
+      r['deletedAt'] = null;
+      if ((r['photoPath'] ?? '').toString().trim().isEmpty) {
+        r['photoStoragePath'] = null;
+        r['photoUrl'] = null;
+      }
+      prepared.add(Map<String, dynamic>.from(r));
     }
 
+    final existingAnilar = _anilar
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _anilar.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _anilar.addAll(anilar.map((e) => Map<String, dynamic>.from(e)));
+    _anilar.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: _activeBabyId,
+        existingAll: existingAnilar,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
+    await _persistAnilarToLocalStore();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyMemoriesToCloud,
+      label: 'memory sync',
+    );
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+    );
+  }
 
+  static Future<void> _persistAnilarToLocalStore() async {
     final data = _anilar
         .map(
           (e) => {
             'baslik': e['baslik'],
             'not': e['not'],
+            'id': e['id'],
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
             'emoji': e['emoji'],
+            'photoPath': e['photoPath'],
+            'photoStoragePath': e['photoStoragePath'],
+            'photoUrl': e['photoUrl'],
             'babyId': e['babyId'],
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
     await _setLocalString('anilar', jsonEncode(data));
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyMemoriesToCloud,
-      label: 'memory sync',
-    );
   }
 
   // ============ BOY/KILO ============
@@ -1727,16 +2274,7 @@ class VeriYonetici {
           .map(
             (e) => Map<String, dynamic>.from({
               'tarih': DateTime.parse(e['tarih']),
-              'id':
-                  (e['id'] ??
-                          _deterministicDocId(
-                            babyId: e['babyId'] ?? _activeBabyId,
-                            type: 'growth',
-                            keyTime: e['tarih'],
-                            extra:
-                                '${e['boy'] ?? ''}:${e['kilo'] ?? ''}:${e['basCevresi'] ?? ''}',
-                          ))
-                      .toString(),
+              'id': (e['id'] ?? '').toString(),
               'boy': e['boy'],
               'kilo': e['kilo'],
               'basCevresi': e['basCevresi'],
@@ -1747,6 +2285,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['tarih']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1757,7 +2299,7 @@ class VeriYonetici {
 
   static List<Map<String, dynamic>> getBoyKiloKayitlari() {
     return _boyKiloKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
         .toList();
   }
 
@@ -1765,25 +2307,30 @@ class VeriYonetici {
     List<Map<String, dynamic>> kayitlar,
   ) async {
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
-      final tarih = (r['tarih'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'growth',
-              keyTime: tarih.toUtc().toIso8601String(),
-              extra:
-                  '${r['boy'] ?? ''}:${r['kilo'] ?? ''}:${r['basCevresi'] ?? ''}',
-            );
+      _ensureStableIdForRow(r, entity: 'growth');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = false;
+      r['deletedAt'] = null;
+      prepared.add(Map<String, dynamic>.from(r));
     }
 
+    final existingGrowth = _boyKiloKayitlari
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _boyKiloKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _boyKiloKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _boyKiloKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: _activeBabyId,
+        existingAll: existingGrowth,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
 
     final data = _boyKiloKayitlari
         .map(
@@ -1797,6 +2344,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -1817,11 +2366,13 @@ class VeriYonetici {
       return list
           .map(
             (e) => Map<String, dynamic>.from({
-              'id': e['id'],
+              'id': (e['id'] ?? '').toString(),
               'title': e['title'],
               'date': DateTime.parse(e['date']),
               'note': e['note'],
               'photoPath': e['photoPath'],
+              'photoStoragePath': e['photoStoragePath'],
+              'photoUrl': e['photoUrl'],
               'photoStyle': e['photoStyle'] ?? 'softIllustration',
               'babyId': e['babyId'] ?? _activeBabyId,
               'updatedAt': e['updatedAt'] != null
@@ -1830,6 +2381,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['date']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1840,7 +2395,7 @@ class VeriYonetici {
 
   static List<Map<String, dynamic>> getMilestones() {
     final rows = _milestones
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
 
@@ -1877,15 +2432,43 @@ class VeriYonetici {
     List<Map<String, dynamic>> milestones,
   ) async {
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
     for (final r in milestones) {
       r['babyId'] = _activeBabyId;
+      _ensureStableIdForRow(r, entity: 'milestone');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = false;
+      r['deletedAt'] = null;
+      if ((r['photoPath'] ?? '').toString().trim().isEmpty) {
+        r['photoStoragePath'] = null;
+        r['photoUrl'] = null;
+      }
+      prepared.add(Map<String, dynamic>.from(r));
     }
 
+    final existingMilestones = _milestones
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _milestones.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _milestones.addAll(milestones.map((e) => Map<String, dynamic>.from(e)));
+    _milestones.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: _activeBabyId,
+        existingAll: existingMilestones,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
+    await _persistMilestonesToLocalStore();
+    await _syncActiveBabyMemoriesToCloud();
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+    );
+  }
 
+  static Future<void> _persistMilestonesToLocalStore() async {
     final data = _milestones
         .map(
           (e) => {
@@ -1894,16 +2477,19 @@ class VeriYonetici {
             'date': (e['date'] as DateTime).toIso8601String(),
             'note': e['note'],
             'photoPath': e['photoPath'],
+            'photoStoragePath': e['photoStoragePath'],
+            'photoUrl': e['photoUrl'],
             'photoStyle': e['photoStyle'] ?? 'softIllustration',
             'babyId': e['babyId'],
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
     await _setLocalString('milestones', jsonEncode(data));
-    await _syncActiveBabyMemoriesToCloud();
   }
 
   // ============ ASILAR ============
@@ -1916,7 +2502,7 @@ class VeriYonetici {
       return list
           .map(
             (e) => Map<String, dynamic>.from({
-              'id': e['id'],
+              'id': (e['id'] ?? '').toString(),
               'ad': e['ad'],
               'donem': e['donem'],
               'tarih': e['tarih'] != null ? DateTime.parse(e['tarih']) : null,
@@ -1933,6 +2519,10 @@ class VeriYonetici {
                   : (e['tarih'] != null
                         ? DateTime.parse(e['tarih'])
                         : DateTime.now()),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -1942,7 +2532,9 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAsiKayitlari() {
-    return _asiKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
+    return _asiKayitlari
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
   }
 
   static ValueNotifier<int> get vaccineNotifier => _vaccineVersion;
@@ -1952,24 +2544,30 @@ class VeriYonetici {
     List<Map<String, dynamic>> kayitlar,
   ) async {
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
-      final tarih = (r['tarih'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'vaccine',
-              keyTime: tarih.toUtc().toIso8601String(),
-              extra: '${r['ad'] ?? ''}:${r['donem'] ?? ''}',
-            );
+      _ensureStableIdForRow(r, entity: 'vaccine');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = false;
+      r['deletedAt'] = null;
+      prepared.add(Map<String, dynamic>.from(r));
     }
 
+    final existingVaccines = _asiKayitlari
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _asiKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _asiKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _asiKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: _activeBabyId,
+        existingAll: existingVaccines,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
 
     final data = _asiKayitlari
         .map(
@@ -1986,6 +2584,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -2007,7 +2607,7 @@ class VeriYonetici {
       return list
           .map(
             (e) => Map<String, dynamic>.from({
-              'id': e['id'],
+              'id': (e['id'] ?? '').toString(),
               'babyId': e['babyId'] ?? _activeBabyId,
               'name': e['name'] ?? '',
               'type': e['type'] ?? 'medication',
@@ -2029,6 +2629,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['createdAt']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -2090,32 +2694,41 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getIlacKayitlari() {
-    return _ilacKayitlari.where((r) => r['babyId'] == _activeBabyId).toList();
+    return _ilacKayitlari
+        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .toList();
   }
 
   static Future<void> saveIlacKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
       r['babyId'] = _activeBabyId;
       final createdAt = (r['createdAt'] as DateTime?) ?? now;
-      final existingId = r['id']?.toString();
-      r['id'] = (existingId != null && existingId.isNotEmpty)
-          ? existingId
-          : _deterministicDocId(
-              babyId: _activeBabyId,
-              type: 'medication',
-              keyTime: createdAt.toUtc().toIso8601String(),
-              extra: '${r['name'] ?? ''}:${r['type'] ?? ''}',
-            );
+      _ensureStableIdForRow(r, entity: 'medication');
       r['createdAt'] = createdAt;
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
+      r['isDeleted'] = false;
+      r['deletedAt'] = null;
+      prepared.add(Map<String, dynamic>.from(r));
     }
 
+    final existingMedications = _ilacKayitlari
+        .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _ilacKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _ilacKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    _ilacKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: _activeBabyId,
+        existingAll: existingMedications,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
 
     final data = _ilacKayitlari
         .map(
@@ -2139,6 +2752,8 @@ class VeriYonetici {
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
+            'isDeleted': e['isDeleted'] == true,
+            'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
           },
         )
         .toList();
@@ -2157,7 +2772,7 @@ class VeriYonetici {
       return list
           .map(
             (e) => Map<String, dynamic>.from({
-              'id': e['id'],
+              'id': (e['id'] ?? '').toString(),
               'babyId': e['babyId'] ?? _activeBabyId,
               'medicationId': e['medicationId'],
               'vaccineId': e['vaccineId'],
@@ -2173,6 +2788,10 @@ class VeriYonetici {
               'localUpdatedAt': e['localUpdatedAt'] != null
                   ? DateTime.parse(e['localUpdatedAt'])
                   : DateTime.parse(e['givenAt']),
+              'isDeleted': e['isDeleted'] == true,
+              'deletedAt': e['deletedAt'] != null
+                  ? DateTime.parse(e['deletedAt'])
+                  : null,
             }),
           )
           .toList();
@@ -2187,6 +2806,7 @@ class VeriYonetici {
   }) {
     return _ilacDozKayitlari.where((r) {
       if (r['babyId'] != _activeBabyId) return false;
+      if (_rowIsDeleted(r)) return false;
       if (medicationId != null && r['medicationId'] != medicationId) {
         return false;
       }
@@ -2205,26 +2825,31 @@ class VeriYonetici {
     String? note,
   }) async {
     final now = DateTime.now();
-    final targetAt = (givenAt ?? now).toUtc().toIso8601String();
-    final id = _deterministicDocId(
-      babyId: _activeBabyId,
-      type: 'medication_log',
-      keyTime: targetAt,
-      extra: medicationId,
-      doseIndex: _normalizeDoseIndex(doseIndex),
+    final targetAt = givenAt ?? now;
+    final normalizedDose = _normalizeDoseIndex(doseIndex);
+    final normalizedStep = protocolStep?.trim().toLowerCase();
+    final id = _medicationDoseSlotLogId(
+      medicationId: medicationId,
+      dayRef: targetAt,
+      doseIndex: normalizedDose,
+      scheduledTime: scheduledTime,
+      protocolStep: normalizedStep,
     );
     _ilacDozKayitlari.insert(0, {
       'id': id,
       'babyId': _activeBabyId,
       'medicationId': medicationId,
       'vaccineId': vaccineId,
-      'givenAt': givenAt ?? DateTime.now(),
-      'doseIndex': doseIndex,
+      'givenAt': targetAt,
+      'doseIndex': normalizedDose,
       'scheduledTime': scheduledTime,
-      'protocolStep': protocolStep,
+      'scheduledTimeKey': _scheduledTimeKey(scheduledTime),
+      'protocolStep': normalizedStep,
       'note': note,
       'updatedAt': now,
       'localUpdatedAt': now,
+      'isDeleted': false,
+      'deletedAt': null,
     });
     await _saveIlacDozKayitlari();
     return id;
@@ -2424,8 +3049,16 @@ class VeriYonetici {
   }
 
   static Future<void> deleteIlacDozKaydi(String doseId) async {
-    _ilacDozKayitlari.removeWhere(
-      (r) => r['babyId'] == _activeBabyId && r['id'] == doseId,
+    final idx = _ilacDozKayitlari.indexWhere(
+      (r) =>
+          r['babyId'] == _activeBabyId &&
+          r['id'] == doseId &&
+          !_rowIsDeleted(r),
+    );
+    if (idx == -1) return;
+    _ilacDozKayitlari[idx] = _tombstoneRowFrom(
+      _ilacDozKayitlari[idx],
+      now: DateTime.now(),
     );
     await _saveIlacDozKayitlari();
   }
@@ -2435,6 +3068,8 @@ class VeriYonetici {
     for (final row in _ilacDozKayitlari) {
       row['updatedAt'] = row['updatedAt'] ?? now;
       row['localUpdatedAt'] = row['localUpdatedAt'] ?? now;
+      row['isDeleted'] = row['isDeleted'] == true;
+      if (row['isDeleted'] != true) row['deletedAt'] = null;
     }
     await _setLocalString(
       'ilac_doz_kayitlari',
@@ -2455,6 +3090,8 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
@@ -2640,6 +3277,8 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
@@ -2664,6 +3303,8 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
@@ -2684,31 +3325,15 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
       ),
     );
 
-    await _setLocalString(
-      'anilar',
-      jsonEncode(
-        _anilar
-            .map(
-              (e) => {
-                'baslik': e['baslik'],
-                'not': e['not'],
-                'tarih': (e['tarih'] as DateTime).toIso8601String(),
-                'emoji': e['emoji'],
-                'babyId': e['babyId'],
-                'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
-                'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
-                    ?.toIso8601String(),
-              },
-            )
-            .toList(),
-      ),
-    );
+    await _persistAnilarToLocalStore();
 
     await _setLocalString(
       'boykilo_kayitlari',
@@ -2725,33 +3350,15 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
       ),
     );
 
-    await _setLocalString(
-      'milestones',
-      jsonEncode(
-        _milestones
-            .map(
-              (e) => {
-                'id': e['id'],
-                'title': e['title'],
-                'date': (e['date'] as DateTime).toIso8601String(),
-                'note': e['note'],
-                'photoPath': e['photoPath'],
-                'photoStyle': e['photoStyle'] ?? 'softIllustration',
-                'babyId': e['babyId'],
-                'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
-                'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
-                    ?.toIso8601String(),
-              },
-            )
-            .toList(),
-      ),
-    );
+    await _persistMilestonesToLocalStore();
 
     await _setLocalString(
       'asi_kayitlari',
@@ -2771,6 +3378,8 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
@@ -2802,6 +3411,8 @@ class VeriYonetici {
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
+                'isDeleted': e['isDeleted'] == true,
+                'deletedAt': (e['deletedAt'] as DateTime?)?.toIso8601String(),
               },
             )
             .toList(),
@@ -2821,6 +3432,7 @@ class VeriYonetici {
                 'givenAt': (e['givenAt'] as DateTime).toIso8601String(),
                 'doseIndex': e['doseIndex'],
                 'scheduledTime': e['scheduledTime'],
+                'scheduledTimeKey': e['scheduledTimeKey'],
                 'protocolStep': e['protocolStep'],
                 'note': e['note'],
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),

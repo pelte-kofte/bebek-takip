@@ -538,7 +538,7 @@
   "deactivate": "Deactivate",
   "active": "Active",
   "inactive": "Inactive",
-  "medicationReminderTitle": "{name} reminder",
+  "medicationReminderTitle": "{name} hatırlatıcısı",
   "@medicationReminderTitle": {
     "placeholders": {
       "name": {
@@ -546,10 +546,10 @@
       }
     }
   },
-  "medicationReminderBody": "Time to give this medication",
+  "medicationReminderBody": "Bu ilacı verme zamanı",
   "medicationSetRemindersTitle": "Bu ilaç için hatırlatıcı ayarlansın mı?",
   "medicationSetRemindersBody": "Bunu daha sonra ilacı düzenleyerek değiştirebilirsiniz.",
-  "medicationReminderBodyWithDose": "Dose: {dose}",
+  "medicationReminderBodyWithDose": "Doz: {dose}",
   "@medicationReminderBodyWithDose": {
     "placeholders": {
       "dose": {
@@ -557,6 +557,42 @@
       }
     }
   },
+  "notifFeedingTitle": "🍼 Beslenme Hatırlatıcısı",
+  "notifFeedingBody": "Bebeğinizi besleme zamanı geldi",
+  "notifDiaperTitle": "👶 Bez Hatırlatıcısı",
+  "notifDiaperBody": "Bebeğinizin bezini kontrol etme zamanı",
+  "notifSleepTitle": "Uyku devam ediyor",
+  "notifSleepBody": "Durdurmak için bildirime dokunun",
+  "notifNursingTitle": "Emzirme devam ediyor",
+  "notifNursingTitleWithSide": "Emzirme devam ediyor ({side})",
+  "@notifNursingTitleWithSide": {
+    "placeholders": {
+      "side": {
+        "type": "String"
+      }
+    }
+  },
+  "notifNursingBody": "Durdurmak için bildirime dokunun",
+  "notifMedTitle": "{name} hatırlatıcısı",
+  "@notifMedTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notifMedBody": "Doz: {dose} {unit}",
+  "@notifMedBody": {
+    "placeholders": {
+      "dose": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "notifGenericBody": "Hatırlatma zamanı",
   "addVaccineProtocol": "Add vaccine protocol",
   "createNew": "Create new",
   "chooseExistingMedication": "Mevcut ilacı seç",

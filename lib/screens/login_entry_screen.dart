@@ -33,7 +33,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
 
   Future<void> _authenticateWithCredential(AuthCredential credential) async {
     await SyncManager.onLogin(credential);
-    _proceedToApp();
+    await _proceedToApp(syncCurrentUser: false);
   }
 
   Future<void> _signInWithGoogle() async {
@@ -84,7 +84,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     try {
       final credential = await AppleAuthService.instance.signIn();
       if (credential == null) return;
-      await _proceedToApp();
+      await _authenticateWithCredential(credential);
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
@@ -161,9 +161,14 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     }
   }
 
-  Future<void> _proceedToApp({bool forcePromptAddBabyForGuest = false}) async {
+  Future<void> _proceedToApp({
+    bool forcePromptAddBabyForGuest = false,
+    bool syncCurrentUser = true,
+  }) async {
     await VeriYonetici.setLoginEntryShown();
-    await SyncManager.syncCurrentUserData();
+    if (syncCurrentUser) {
+      await SyncManager.syncCurrentUserData();
+    }
     final user = FirebaseAuth.instance.currentUser;
     final shouldPromptAddBaby =
         forcePromptAddBabyForGuest &&

@@ -2924,6 +2924,78 @@ abstract class AppLocalizations {
   /// **'Dose: {dose}'**
   String medicationReminderBodyWithDose(String dose);
 
+  /// No description provided for @notifFeedingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🍼 Feeding Reminder'**
+  String get notifFeedingTitle;
+
+  /// No description provided for @notifFeedingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s time to feed your baby'**
+  String get notifFeedingBody;
+
+  /// No description provided for @notifDiaperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'👶 Diaper Reminder'**
+  String get notifDiaperTitle;
+
+  /// No description provided for @notifDiaperBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It\'s time to check your baby\'s diaper'**
+  String get notifDiaperBody;
+
+  /// No description provided for @notifSleepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep in progress'**
+  String get notifSleepTitle;
+
+  /// No description provided for @notifSleepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the notification to stop'**
+  String get notifSleepBody;
+
+  /// No description provided for @notifNursingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nursing in progress'**
+  String get notifNursingTitle;
+
+  /// No description provided for @notifNursingTitleWithSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Nursing in progress ({side})'**
+  String notifNursingTitleWithSide(String side);
+
+  /// No description provided for @notifNursingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the notification to stop'**
+  String get notifNursingBody;
+
+  /// No description provided for @notifMedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} reminder'**
+  String notifMedTitle(String name);
+
+  /// No description provided for @notifMedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Dose: {dose} {unit}'**
+  String notifMedBody(String dose, String unit);
+
+  /// No description provided for @notifGenericBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder time'**
+  String get notifGenericBody;
+
   /// UI text
   ///
   /// In en, this message translates to:

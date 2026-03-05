@@ -1,7 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
+
+import '../l10n/app_localizations.dart';
+import 'locale_service.dart';
 
 class ReminderService {
   static final ReminderService _instance = ReminderService._internal();
@@ -23,15 +28,6 @@ class ReminderService {
   static const String _feedingBodyKey = 'feeding_reminder_body';
   static const String _diaperTitleKey = 'diaper_reminder_title';
   static const String _diaperBodyKey = 'diaper_reminder_body';
-
-  static const String _defaultFeedingTitle =
-      '\u{1F37C} Beslenme Hat\u0131rlat\u0131c\u0131';
-  static const String _defaultFeedingBody =
-      'Bebe\u011Finizi besleme zaman\u0131 geldi';
-  static const String _defaultDiaperTitle =
-      '\u{1F476} Bez Hat\u0131rlat\u0131c\u0131';
-  static const String _defaultDiaperBody =
-      'Bebe\u011Finizin bezini kontrol etme zaman\u0131';
 
   bool _initialized = false;
 
@@ -73,7 +69,7 @@ class ReminderService {
       if (iosPlugin != null) {
         final granted = await iosPlugin.requestPermissions(
           alert: true,
-          badge: false,
+          badge: true,
           sound: true,
         );
         if (granted != true) {
@@ -227,9 +223,10 @@ class ReminderService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
       categoryIdentifier: isFeeding
           ? 'FEEDING_REMINDER_CATEGORY'
           : 'DIAPER_REMINDER_CATEGORY',
@@ -240,7 +237,15 @@ class ReminderService {
       iOS: iosDetails,
     );
 
-    // One-shot: no matchDateTimeComponents → fires once, never repeats
+    _logNotificationDebug(
+      operation: 'zonedSchedule',
+      localeCode: await _savedLocaleCode(),
+      title: title,
+      body: body,
+      details: iosDetails,
+    );
+
+    // One-shot: no matchDateTimeComponents -> fires once, never repeats
     await _notifications.zonedSchedule(
       id,
       title,
@@ -255,22 +260,23 @@ class ReminderService {
 
   Future<void> _ensureReminderStringsUtf8() async {
     final prefs = await SharedPreferences.getInstance();
+    final l10n = await _loadLocalization();
 
     final feedingTitle = _sanitizeReminderText(
       prefs.getString(_feedingTitleKey),
-      _defaultFeedingTitle,
+      l10n.notifFeedingTitle,
     );
     final feedingBody = _sanitizeReminderText(
       prefs.getString(_feedingBodyKey),
-      _defaultFeedingBody,
+      l10n.notifFeedingBody,
     );
     final diaperTitle = _sanitizeReminderText(
       prefs.getString(_diaperTitleKey),
-      _defaultDiaperTitle,
+      l10n.notifDiaperTitle,
     );
     final diaperBody = _sanitizeReminderText(
       prefs.getString(_diaperBodyKey),
-      _defaultDiaperBody,
+      l10n.notifDiaperBody,
     );
 
     // Persist normalized strings to keep storage clean and consistent.
@@ -282,28 +288,30 @@ class ReminderService {
 
   Future<_ReminderContent> _readFeedingReminderContent() async {
     final prefs = await SharedPreferences.getInstance();
+    final l10n = await _loadLocalization();
     return _ReminderContent(
       title: _sanitizeReminderText(
         prefs.getString(_feedingTitleKey),
-        _defaultFeedingTitle,
+        l10n.notifFeedingTitle,
       ),
       body: _sanitizeReminderText(
         prefs.getString(_feedingBodyKey),
-        _defaultFeedingBody,
+        l10n.notifFeedingBody,
       ),
     );
   }
 
   Future<_ReminderContent> _readDiaperReminderContent() async {
     final prefs = await SharedPreferences.getInstance();
+    final l10n = await _loadLocalization();
     return _ReminderContent(
       title: _sanitizeReminderText(
         prefs.getString(_diaperTitleKey),
-        _defaultDiaperTitle,
+        l10n.notifDiaperTitle,
       ),
       body: _sanitizeReminderText(
         prefs.getString(_diaperBodyKey),
-        _defaultDiaperBody,
+        l10n.notifDiaperBody,
       ),
     );
   }
@@ -332,8 +340,8 @@ class ReminderService {
 
   Future<void> scheduleMedicationReminderDaily({
     required int id,
-    required String title,
-    required String body,
+    required String medicationName,
+    String? dosage,
     required int hour,
     required int minute,
   }) async {
@@ -350,13 +358,14 @@ class ReminderService {
       autoCancel: true,
       icon: '@mipmap/ic_launcher',
     );
-    final iosDetails = DarwinNotificationDetails(
+    const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
     );
     final details = NotificationDetails(
       android: androidDetails,
@@ -367,10 +376,23 @@ class ReminderService {
     var first = DateTime(now.year, now.month, now.day, hour, minute);
     if (first.isBefore(now)) first = first.add(const Duration(days: 1));
 
+    final localeCode = await _savedLocaleCode();
+    final medContent = await _buildMedicationNotificationContent(
+      medicationName: medicationName,
+      dosage: dosage,
+    );
+    _logNotificationDebug(
+      operation: 'zonedSchedule',
+      localeCode: localeCode,
+      title: medContent.title,
+      body: medContent.body,
+      details: iosDetails,
+    );
+
     await _notifications.zonedSchedule(
       id,
-      title,
-      body,
+      medContent.title,
+      medContent.body,
       tz.TZDateTime.from(first, tz.local),
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -382,8 +404,8 @@ class ReminderService {
 
   Future<void> scheduleMedicationReminderAt({
     required int id,
-    required String title,
-    required String body,
+    required String medicationName,
+    String? dosage,
     required DateTime scheduledAt,
   }) async {
     if (!_initialized) await initialize();
@@ -400,23 +422,37 @@ class ReminderService {
       autoCancel: true,
       icon: '@mipmap/ic_launcher',
     );
-    final iosDetails = DarwinNotificationDetails(
+    const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      sound: 'default',
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.timeSensitive,
+      interruptionLevel: InterruptionLevel.active,
     );
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
+    final localeCode = await _savedLocaleCode();
+    final medContent = await _buildMedicationNotificationContent(
+      medicationName: medicationName,
+      dosage: dosage,
+    );
+    _logNotificationDebug(
+      operation: 'zonedSchedule',
+      localeCode: localeCode,
+      title: medContent.title,
+      body: medContent.body,
+      details: iosDetails,
+    );
+
     await _notifications.zonedSchedule(
       id,
-      title,
-      body,
+      medContent.title,
+      medContent.body,
       tz.TZDateTime.from(scheduledAt, tz.local),
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -523,14 +559,15 @@ class ReminderService {
 
   Future<void> scheduleMedicationReminders(
     Map<String, dynamic> med, {
-    required String title,
-    required String body,
     DateTime? vaccineDate,
   }) async {
     if (!_initialized) await initialize();
 
     final medId = (med['id'] ?? '').toString();
     if (medId.isEmpty) return;
+
+    final medicationName = (med['name'] ?? '').toString();
+    final dosage = med['dosage']?.toString();
 
     final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
     if (scheduleType == 'daily') {
@@ -549,8 +586,8 @@ class ReminderService {
         );
         await scheduleMedicationReminderDaily(
           id: id,
-          title: title,
-          body: body,
+          medicationName: medicationName,
+          dosage: dosage,
           hour: int.tryParse(parts[0]) ?? 9,
           minute: int.tryParse(parts[1]) ?? 0,
         );
@@ -574,11 +611,76 @@ class ReminderService {
       );
       await scheduleMedicationReminderAt(
         id: id,
-        title: title,
-        body: body,
+        medicationName: medicationName,
+        dosage: dosage,
         scheduledAt: scheduledAt,
       );
     }
+  }
+
+  Future<String> _savedLocaleCode() async {
+    return LocaleService.getSavedLocaleCode();
+  }
+
+  Future<AppLocalizations> _loadLocalization() async {
+    final code = await _savedLocaleCode();
+    final locale = LocaleService.toLocale(code);
+    Intl.defaultLocale = _intlLocaleName(code);
+    return AppLocalizations.delegate.load(locale);
+  }
+
+  Future<_ReminderContent> _buildMedicationNotificationContent({
+    required String medicationName,
+    String? dosage,
+  }) async {
+    final l10n = await _loadLocalization();
+    final localeCode = await _savedLocaleCode();
+
+    final normalizedDose = _formatDoseByLocale(dosage, localeCode);
+    final body = normalizedDose.isNotEmpty
+        ? l10n.notifMedBody(normalizedDose, l10n.mlAbbrev)
+        : l10n.notifGenericBody;
+
+    return _ReminderContent(
+      title: l10n.notifMedTitle(medicationName),
+      body: body,
+    );
+  }
+
+  String _formatDoseByLocale(String? rawDose, String localeCode) {
+    final input = rawDose?.trim() ?? '';
+    if (input.isEmpty) return '';
+
+    final match = RegExp(
+      r'^([0-9]+(?:[.,][0-9]+)?)(?:\s*([A-Za-z]+))?$',
+    ).firstMatch(input);
+    if (match == null) return input;
+
+    final parsed = double.tryParse(match.group(1)!.replaceAll(',', '.'));
+    if (parsed == null) return input;
+
+    final formatted = NumberFormat.decimalPattern(
+      _intlLocaleName(localeCode),
+    ).format(parsed);
+    return formatted;
+  }
+
+  String _intlLocaleName(String code) {
+    return code == 'tr' ? 'tr_TR' : code;
+  }
+
+  void _logNotificationDebug({
+    required String operation,
+    required String localeCode,
+    required String title,
+    required String body,
+    required DarwinNotificationDetails details,
+  }) {
+    debugPrint(
+      '[ReminderService][$operation] platform=$defaultTargetPlatform '
+      'locale=$localeCode title="$title" body="$body" '
+      'ios.presentSound=${details.presentSound} ios.sound=${details.sound}',
+    );
   }
 }
 

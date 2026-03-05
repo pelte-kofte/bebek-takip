@@ -135,10 +135,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           : vaccineTime.add(Duration(minutes: minutes));
       await service.scheduleMedicationReminderAt(
         id: reminderId,
-        title: med['name']?.toString() ?? '',
-        body: med['dosage']?.toString().trim().isNotEmpty == true
-            ? med['dosage'] as String
-            : '',
+        medicationName: med['name']?.toString() ?? '',
+        dosage: med['dosage']?.toString(),
         scheduledAt: scheduledAt,
       );
     }
