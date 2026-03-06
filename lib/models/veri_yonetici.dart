@@ -1820,10 +1820,22 @@ class VeriYonetici {
     String id,
     Map<String, dynamic> updated,
   ) async {
+    final normalizedId = id.trim();
+    if (normalizedId.isEmpty) {
+      _log('updateMamaKaydiById failed: empty id');
+      return false;
+    }
     final kayitlar = getMamaKayitlari();
-    final index = kayitlar.indexWhere((k) => k['id'] == id);
-    if (index == -1) return false;
-    updated['id'] = id;
+    final index = kayitlar.indexWhere(
+      (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+    );
+    if (index == -1) {
+      _log(
+        'updateMamaKaydiById failed: id=$normalizedId not found among active records',
+      );
+      return false;
+    }
+    updated['id'] = normalizedId;
     updated['babyId'] = _activeBabyId;
     kayitlar[index] = updated;
     await saveMamaKayitlari(kayitlar);
@@ -1964,10 +1976,22 @@ class VeriYonetici {
     String id,
     Map<String, dynamic> updated,
   ) async {
+    final normalizedId = id.trim();
+    if (normalizedId.isEmpty) {
+      _log('updateKakaKaydiById failed: empty id');
+      return false;
+    }
     final kayitlar = getKakaKayitlari();
-    final index = kayitlar.indexWhere((k) => k['id'] == id);
-    if (index == -1) return false;
-    updated['id'] = id;
+    final index = kayitlar.indexWhere(
+      (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+    );
+    if (index == -1) {
+      _log(
+        'updateKakaKaydiById failed: id=$normalizedId not found among active records',
+      );
+      return false;
+    }
+    updated['id'] = normalizedId;
     updated['babyId'] = _activeBabyId;
     kayitlar[index] = updated;
     await saveKakaKayitlari(kayitlar);
@@ -2096,10 +2120,22 @@ class VeriYonetici {
     String id,
     Map<String, dynamic> updated,
   ) async {
+    final normalizedId = id.trim();
+    if (normalizedId.isEmpty) {
+      _log('updateUykuKaydiById failed: empty id');
+      return false;
+    }
     final kayitlar = getUykuKayitlari();
-    final index = kayitlar.indexWhere((k) => k['id'] == id);
-    if (index == -1) return false;
-    updated['id'] = id;
+    final index = kayitlar.indexWhere(
+      (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+    );
+    if (index == -1) {
+      _log(
+        'updateUykuKaydiById failed: id=$normalizedId not found among active records',
+      );
+      return false;
+    }
+    updated['id'] = normalizedId;
     updated['babyId'] = _activeBabyId;
     kayitlar[index] = updated;
     await saveUykuKayitlari(kayitlar);

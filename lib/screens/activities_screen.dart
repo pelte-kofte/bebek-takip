@@ -1320,6 +1320,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Future<void> _runCareEntrySave({
+    required String recordType,
+    required String recordId,
     required BuildContext sheetContext,
     required StateSetter setModalState,
     required bool isSaving,
@@ -1342,7 +1344,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     safeSetSaving(true);
     var didPop = false;
     try {
+      debugPrint(
+        '[ActivitiesScreen] care_edit_save start type=$recordType id=$recordId',
+      );
       final saved = await action().timeout(const Duration(seconds: 3));
+      debugPrint(
+        '[ActivitiesScreen] care_edit_save result type=$recordType id=$recordId saved=$saved',
+      );
       if (!saved) {
         throw StateError('Record could not be updated.');
       }
@@ -1351,7 +1359,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       Navigator.of(sheetContext).pop(true);
       didPop = true;
     } catch (e, st) {
-      debugPrint('ActivitiesScreen care entry save failed: $e\n$st');
+      debugPrint(
+        '[ActivitiesScreen] care_edit_save error type=$recordType id=$recordId error=$e\n$st',
+      );
       if (!mounted || !sheetContext.mounted) return;
       messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailedTryAgain)));
     } finally {
@@ -1386,6 +1396,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           onSave: () async {
             if (duration <= 0) return;
             await _runCareEntrySave(
+              recordType: 'nursing',
+              recordId: recordId,
               sheetContext: ctx,
               setModalState: setModalState,
               isSaving: isSaving,
@@ -1501,6 +1513,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           isSaving: isSaving,
           onSave: () async {
             await _runCareEntrySave(
+              recordType: 'feeding',
+              recordId: recordId,
               sheetContext: ctx,
               setModalState: setModalState,
               isSaving: isSaving,
@@ -1672,6 +1686,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           isSaving: isSaving,
           onSave: () async {
             await _runCareEntrySave(
+              recordType: 'diaper',
+              recordId: recordId,
               sheetContext: ctx,
               setModalState: setModalState,
               isSaving: isSaving,
@@ -1763,6 +1779,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           isSaving: isSaving,
           onSave: () async {
             await _runCareEntrySave(
+              recordType: 'sleep',
+              recordId: recordId,
               sheetContext: ctx,
               setModalState: setModalState,
               isSaving: isSaving,
