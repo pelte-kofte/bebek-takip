@@ -770,6 +770,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyTip => 'DAILY TIP';
 
   @override
+  String get dailyTipsTitle => 'Daily Tips';
+
+  @override
   String get allTips => 'All tips';
 
   @override

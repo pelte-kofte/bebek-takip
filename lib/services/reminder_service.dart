@@ -72,6 +72,12 @@ class ReminderService {
           badge: true,
           sound: true,
         );
+        if (kDebugMode) {
+          debugPrint(
+            '[ReminderService] iOS permission request alert=true badge=true '
+            'sound=true granted=$granted',
+          );
+        }
         if (granted != true) {
           _permissionsGranted = false;
           return false;
@@ -219,14 +225,7 @@ class ReminderService {
       ],
     );
 
-    final iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
+    final iosDetails = _buildIosNotificationDetails(
       categoryIdentifier: isFeeding
           ? 'FEEDING_REMINDER_CATEGORY'
           : 'DIAPER_REMINDER_CATEGORY',
@@ -239,6 +238,7 @@ class ReminderService {
 
     _logNotificationDebug(
       operation: 'zonedSchedule',
+      id: id,
       localeCode: await _savedLocaleCode(),
       title: title,
       body: body,
@@ -358,15 +358,7 @@ class ReminderService {
       autoCancel: true,
       icon: '@mipmap/ic_launcher',
     );
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
-    );
+    final iosDetails = _buildIosNotificationDetails();
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
@@ -383,6 +375,7 @@ class ReminderService {
     );
     _logNotificationDebug(
       operation: 'zonedSchedule',
+      id: id,
       localeCode: localeCode,
       title: medContent.title,
       body: medContent.body,
@@ -422,15 +415,7 @@ class ReminderService {
       autoCancel: true,
       icon: '@mipmap/ic_launcher',
     );
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
-    );
+    final iosDetails = _buildIosNotificationDetails();
     final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
@@ -443,6 +428,7 @@ class ReminderService {
     );
     _logNotificationDebug(
       operation: 'zonedSchedule',
+      id: id,
       localeCode: localeCode,
       title: medContent.title,
       body: medContent.body,
@@ -669,8 +655,24 @@ class ReminderService {
     return code == 'tr' ? 'tr_TR' : code;
   }
 
+  DarwinNotificationDetails _buildIosNotificationDetails({
+    String? categoryIdentifier,
+  }) {
+    return DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'default',
+      presentBanner: true,
+      presentList: true,
+      interruptionLevel: InterruptionLevel.active,
+      categoryIdentifier: categoryIdentifier,
+    );
+  }
+
   void _logNotificationDebug({
     required String operation,
+    required int id,
     required String localeCode,
     required String title,
     required String body,
@@ -678,8 +680,9 @@ class ReminderService {
   }) {
     debugPrint(
       '[ReminderService][$operation] platform=$defaultTargetPlatform '
-      'locale=$localeCode title="$title" body="$body" '
-      'ios.presentSound=${details.presentSound} ios.sound=${details.sound}',
+      'id=$id locale=$localeCode title="$title" body="$body" '
+      'ios.presentSound=${details.presentSound} ios.sound=${details.sound} '
+      'ios.interruption=${details.interruptionLevel}',
     );
   }
 }

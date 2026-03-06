@@ -1226,6 +1226,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildSheetScaffold({
+    required BuildContext sheetContext,
     required String title,
     required Widget child,
     required VoidCallback onSave,
@@ -1233,69 +1234,90 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 8,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-      ),
-      child: AbsorbPointer(
-        absorbing: isSaving,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 36,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(2),
+    final media = MediaQuery.of(sheetContext);
+    return SafeArea(
+      top: false,
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(bottom: media.viewInsets.bottom),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => FocusScope.of(sheetContext).unfocus(),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
               ),
             ),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : const Color(0xFF1C1C1E),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Flexible(child: SingleChildScrollView(child: child)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: isSaving ? null : onSave,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: AbsorbPointer(
+              absorbing: isSaving,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: media.size.height * 0.9),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 36,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
                     ),
-                    child: isSaving
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(l10n.save),
-                  ),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        child: child,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(sheetContext).pop(),
+                            child: Text(l10n.cancel),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: FilledButton(
+                            onPressed: isSaving ? null : onSave,
+                            style: FilledButton.styleFrom(
+                              backgroundColor: const Color(0xFF4A90E2),
+                            ),
+                            child: isSaving
+                                ? const SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text(l10n.save),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -1391,6 +1413,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
+          sheetContext: ctx,
           title: l10n.editTitleNursing,
           isSaving: isSaving,
           onSave: () async {
@@ -1509,6 +1532,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
+          sheetContext: ctx,
           title: l10n.editTitleFeeding,
           isSaving: isSaving,
           onSave: () async {
@@ -1682,6 +1706,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
+          sheetContext: ctx,
           title: l10n.editTitleDiaper,
           isSaving: isSaving,
           onSave: () async {
@@ -1696,7 +1721,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               l10n: l10n,
               action: () {
                 final normalized = VeriYonetici.normalizeDiaperType(type);
-                final updated = {
+                final Map<String, dynamic> updated = {
                   'id': recordId,
                   'tarih': eventTime,
                   'tur': normalized,
@@ -1704,6 +1729,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   'eventType': VeriYonetici.diaperEventType,
                   'notlar': noteController.text,
                 };
+                debugPrint(
+                  '[ActivitiesScreen] diaper_edit payload '
+                  'type=diaper id=$recordId updated=$updated',
+                );
                 return VeriYonetici.updateKakaKaydiById(recordId, updated);
               },
             );
@@ -1775,6 +1804,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
+          sheetContext: ctx,
           title: l10n.editTitleSleep,
           isSaving: isSaving,
           onSave: () async {
@@ -1792,12 +1822,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 if (normalizedEnd.isBefore(start)) {
                   normalizedEnd = normalizedEnd.add(const Duration(days: 1));
                 }
-                final updated = {
+                final Map<String, dynamic> updated = {
                   'id': recordId,
                   'baslangic': start,
                   'bitis': normalizedEnd,
                   'sure': normalizedEnd.difference(start),
                 };
+                debugPrint(
+                  '[ActivitiesScreen] sleep_edit payload '
+                  'type=sleep id=$recordId updated=$updated',
+                );
                 return VeriYonetici.updateUykuKaydiById(recordId, updated);
               },
             );

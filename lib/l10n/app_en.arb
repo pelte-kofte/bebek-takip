@@ -358,6 +358,7 @@
   },
   "noRecordsYet": "No records yet",
   "dailyTip": "DAILY TIP",
+  "dailyTipsTitle": "Daily Tips",
   "allTips": "All tips",
   "tip_engelli_kosu_title": "Obstacle Course (Crawling Edition)",
   "tip_engelli_kosu_desc": "Place small pillow or blanket obstacles on the floor. Getting over them to reach a toy helps build problem-solving skills.",
@@ -1424,6 +1425,9 @@
   "@dailyTip": {
     "description": "UI text"
   },
+  "@dailyTipsTitle": {
+    "description": "UI text"
+  },
   "@allTips": {
     "description": "UI text"
   },
@@ -2001,3 +2005,4 @@
     "description": "UI text"
   }
 }
+

@@ -1976,26 +1976,85 @@ class VeriYonetici {
     String id,
     Map<String, dynamic> updated,
   ) async {
-    final normalizedId = id.trim();
-    if (normalizedId.isEmpty) {
-      _log('updateKakaKaydiById failed: empty id');
-      return false;
-    }
+    String canonicalId(dynamic value) =>
+        value?.toString().trim().toLowerCase() ?? '';
+
+    final rawId = id.trim();
+    final normalizedId = canonicalId(id);
     final kayitlar = getKakaKayitlari();
-    final index = kayitlar.indexWhere(
-      (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+
+    _log(
+      'updateKakaKaydiById start rawId="$rawId" normalizedId="$normalizedId" '
+      'activeCount=${kayitlar.length} payloadTarih=${updated['tarih']} '
+      'payloadType=${updated['diaperType'] ?? updated['tur']}',
     );
+
+    var index = kayitlar.indexWhere(
+      (k) => (k['id'] ?? '').toString().trim() == rawId,
+    );
+    if (index == -1 && normalizedId.isNotEmpty) {
+      index = kayitlar.indexWhere((k) => canonicalId(k['id']) == normalizedId);
+    }
+
+    var matchedByFallback = false;
     if (index == -1) {
+      final payloadTarih = updated['tarih'];
+      if (payloadTarih is DateTime) {
+        final payloadType = normalizeDiaperType(
+          updated['diaperType'] ?? updated['tur'],
+        );
+        final fallbackMatches = kayitlar
+            .where(
+              (k) =>
+                  k['tarih'] is DateTime &&
+                  (k['tarih'] as DateTime).isAtSameMomentAs(payloadTarih) &&
+                  normalizeDiaperType(k['diaperType'] ?? k['tur']) ==
+                      payloadType,
+            )
+            .toList();
+        if (fallbackMatches.length == 1) {
+          final fallbackId = (fallbackMatches.first['id'] ?? '')
+              .toString()
+              .trim();
+          index = kayitlar.indexWhere(
+            (k) => (k['id'] ?? '').toString().trim() == fallbackId,
+          );
+          matchedByFallback = index != -1;
+        }
+      }
+    }
+
+    if (index == -1) {
+      final sampleIds = kayitlar
+          .take(5)
+          .map((k) => (k['id'] ?? '').toString().trim())
+          .toList();
       _log(
-        'updateKakaKaydiById failed: id=$normalizedId not found among active records',
+        'updateKakaKaydiById failed: rawId="$rawId" normalizedId="$normalizedId" '
+        'not found among active records sampleIds=$sampleIds',
       );
       return false;
     }
-    updated['id'] = normalizedId;
-    updated['babyId'] = _activeBabyId;
-    kayitlar[index] = updated;
-    await saveKakaKayitlari(kayitlar);
-    return true;
+
+    final matchedId = (kayitlar[index]['id'] ?? '').toString().trim();
+    _log(
+      'updateKakaKaydiById matched index=$index matchedId="$matchedId" '
+      'matchedByFallback=$matchedByFallback',
+    );
+
+    try {
+      updated['id'] = matchedId;
+      updated['babyId'] = _activeBabyId;
+      kayitlar[index] = updated;
+      await saveKakaKayitlari(kayitlar);
+      _log(
+        'updateKakaKaydiById result=true rawId="$rawId" matchedId="$matchedId"',
+      );
+      return true;
+    } catch (e, st) {
+      _log('updateKakaKaydiById exception rawId="$rawId" error=$e\n$st');
+      return false;
+    }
   }
 
   static Future<bool> deleteKakaKaydiById(String id) async {
@@ -2120,26 +2179,83 @@ class VeriYonetici {
     String id,
     Map<String, dynamic> updated,
   ) async {
-    final normalizedId = id.trim();
-    if (normalizedId.isEmpty) {
-      _log('updateUykuKaydiById failed: empty id');
-      return false;
-    }
+    String canonicalId(dynamic value) =>
+        value?.toString().trim().toLowerCase() ?? '';
+
+    final rawId = id.trim();
+    final normalizedId = canonicalId(id);
     final kayitlar = getUykuKayitlari();
-    final index = kayitlar.indexWhere(
-      (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+
+    _log(
+      'updateUykuKaydiById start rawId="$rawId" normalizedId="$normalizedId" '
+      'activeCount=${kayitlar.length} payloadStart=${updated['baslangic']} '
+      'payloadEnd=${updated['bitis']} payloadSure=${updated['sure']}',
     );
+
+    var index = kayitlar.indexWhere(
+      (k) => (k['id'] ?? '').toString().trim() == rawId,
+    );
+    if (index == -1 && normalizedId.isNotEmpty) {
+      index = kayitlar.indexWhere((k) => canonicalId(k['id']) == normalizedId);
+    }
+
+    var matchedByFallback = false;
     if (index == -1) {
+      final payloadStart = updated['baslangic'];
+      final payloadEnd = updated['bitis'];
+      if (payloadStart is DateTime && payloadEnd is DateTime) {
+        final fallbackMatches = kayitlar
+            .where(
+              (k) =>
+                  k['baslangic'] is DateTime &&
+                  k['bitis'] is DateTime &&
+                  (k['baslangic'] as DateTime).isAtSameMomentAs(payloadStart) &&
+                  (k['bitis'] as DateTime).isAtSameMomentAs(payloadEnd),
+            )
+            .toList();
+        if (fallbackMatches.length == 1) {
+          final fallbackId = (fallbackMatches.first['id'] ?? '')
+              .toString()
+              .trim();
+          index = kayitlar.indexWhere(
+            (k) => (k['id'] ?? '').toString().trim() == fallbackId,
+          );
+          matchedByFallback = index != -1;
+        }
+      }
+    }
+
+    if (index == -1) {
+      final sampleIds = kayitlar
+          .take(5)
+          .map((k) => (k['id'] ?? '').toString().trim())
+          .toList();
       _log(
-        'updateUykuKaydiById failed: id=$normalizedId not found among active records',
+        'updateUykuKaydiById failed: rawId="$rawId" normalizedId="$normalizedId" '
+        'not found among active records sampleIds=$sampleIds',
       );
       return false;
     }
-    updated['id'] = normalizedId;
-    updated['babyId'] = _activeBabyId;
-    kayitlar[index] = updated;
-    await saveUykuKayitlari(kayitlar);
-    return true;
+
+    final matchedId = (kayitlar[index]['id'] ?? '').toString().trim();
+    _log(
+      'updateUykuKaydiById matched index=$index matchedId="$matchedId" '
+      'matchedByFallback=$matchedByFallback',
+    );
+
+    try {
+      updated['id'] = matchedId;
+      updated['babyId'] = _activeBabyId;
+      kayitlar[index] = updated;
+      await saveUykuKayitlari(kayitlar);
+      _log(
+        'updateUykuKaydiById result=true rawId="$rawId" matchedId="$matchedId"',
+      );
+      return true;
+    } catch (e, st) {
+      _log('updateUykuKaydiById exception rawId="$rawId" error=$e\n$st');
+      return false;
+    }
   }
 
   static Future<bool> deleteUykuKaydiById(String id) async {

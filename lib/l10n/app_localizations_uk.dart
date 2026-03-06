@@ -783,6 +783,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get dailyTip => 'ПОРАДА ДНЯ';
 
   @override
+  String get dailyTipsTitle => 'Daily Tips';
+
+  @override
   String get allTips => 'Усі поради';
 
   @override

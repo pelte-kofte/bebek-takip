@@ -1469,6 +1469,12 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
+  /// **'Daily Tips'**
+  String get dailyTipsTitle;
+
+  /// UI text
+  ///
+  /// In en, this message translates to:
   /// **'All tips'**
   String get allTips;
 

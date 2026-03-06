@@ -783,6 +783,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get dailyTip => 'СОВЕТ ДНЯ';
 
   @override
+  String get dailyTipsTitle => 'Daily Tips';
+
+  @override
   String get allTips => 'Все советы';
 
   @override

@@ -773,6 +773,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dailyTip => 'CONSEJO DEL DÍA';
 
   @override
+  String get dailyTipsTitle => 'Daily Tips';
+
+  @override
   String get allTips => 'Todos los consejos';
 
   @override

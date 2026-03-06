@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 import '../models/daily_tip.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
@@ -9,6 +10,7 @@ class TipsArchiveScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark
         ? AppColors.textPrimaryDark
@@ -76,7 +78,7 @@ class TipsArchiveScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Günlük İpuçları',
+                          l10n.dailyTipsTitle,
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -234,3 +236,4 @@ class TipsArchiveScreen extends StatelessWidget {
     );
   }
 }
+

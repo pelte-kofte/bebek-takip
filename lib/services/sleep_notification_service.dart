@@ -300,7 +300,8 @@ class SleepNotificationService {
         ?.requestPermissions(alert: true, badge: true, sound: true);
     if (kDebugMode) {
       debugPrint(
-        '[SleepNotificationService] iOS permission result: $iosResult',
+        '[SleepNotificationService] iOS permission request '
+        'alert=true badge=true sound=true granted=$iosResult',
       );
     }
   }
@@ -331,24 +332,18 @@ class SleepNotificationService {
       ],
     );
 
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
+    final iosDetails = _buildIosNotificationDetails(
       categoryIdentifier: 'SLEEP_TIMER_CATEGORY',
     );
 
-    const details = NotificationDetails(
+    final details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     _logNotificationDebug(
       operation: 'show',
+      id: _sleepNotificationId,
       localeCode: localized.localeCode,
       title: localized.l10n.notifSleepTitle,
       body: localized.l10n.notifSleepBody,
@@ -405,14 +400,7 @@ class SleepNotificationService {
       ],
     );
 
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
+    final iosDetails = _buildIosNotificationDetails(
       categoryIdentifier: 'NURSING_TIMER_CATEGORY',
     );
 
@@ -423,6 +411,7 @@ class SleepNotificationService {
 
     _logNotificationDebug(
       operation: 'show',
+      id: _nursingNotificationId,
       localeCode: localized.localeCode,
       title: title,
       body: localized.l10n.notifNursingBody,
@@ -470,14 +459,7 @@ class SleepNotificationService {
       ],
     );
 
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
-      presentBanner: true,
-      presentList: true,
-      interruptionLevel: InterruptionLevel.active,
+    final iosDetails = _buildIosNotificationDetails(
       categoryIdentifier: 'NURSING_TIMER_CATEGORY',
     );
 
@@ -488,6 +470,7 @@ class SleepNotificationService {
 
     _logNotificationDebug(
       operation: 'show',
+      id: _nursingNotificationId,
       localeCode: localized.localeCode,
       title: title,
       body: localized.l10n.notifNursingBody,
@@ -527,8 +510,24 @@ class SleepNotificationService {
     return taraf;
   }
 
+  DarwinNotificationDetails _buildIosNotificationDetails({
+    required String categoryIdentifier,
+  }) {
+    return DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      sound: 'default',
+      presentBanner: true,
+      presentList: true,
+      interruptionLevel: InterruptionLevel.active,
+      categoryIdentifier: categoryIdentifier,
+    );
+  }
+
   void _logNotificationDebug({
     required String operation,
+    required int id,
     required String localeCode,
     required String title,
     required String body,
@@ -536,8 +535,9 @@ class SleepNotificationService {
   }) {
     debugPrint(
       '[SleepNotificationService][$operation] platform=$defaultTargetPlatform '
-      'locale=$localeCode title="$title" body="$body" '
-      'ios.presentSound=${details.presentSound} ios.sound=${details.sound}',
+      'id=$id locale=$localeCode title="$title" body="$body" '
+      'ios.presentSound=${details.presentSound} ios.sound=${details.sound} '
+      'ios.interruption=${details.interruptionLevel}',
     );
   }
 }
