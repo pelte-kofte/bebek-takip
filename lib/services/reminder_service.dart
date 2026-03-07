@@ -28,6 +28,12 @@ class ReminderService {
   static const String _feedingBodyKey = 'feeding_reminder_body';
   static const String _diaperTitleKey = 'diaper_reminder_title';
   static const String _diaperBodyKey = 'diaper_reminder_body';
+  static const bool _iosPresentAlert = true;
+  static const bool _iosPresentBadge = true;
+  static const bool _iosPresentSound = true;
+  static const String _iosSound = 'default';
+  static const InterruptionLevel _iosInterruptionLevel =
+      InterruptionLevel.active;
 
   bool _initialized = false;
 
@@ -659,13 +665,13 @@ class ReminderService {
     String? categoryIdentifier,
   }) {
     return DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      sound: 'default',
+      presentAlert: _iosPresentAlert,
+      presentBadge: _iosPresentBadge,
+      presentSound: _iosPresentSound,
+      sound: _iosSound,
       presentBanner: true,
       presentList: true,
-      interruptionLevel: InterruptionLevel.active,
+      interruptionLevel: _iosInterruptionLevel,
       categoryIdentifier: categoryIdentifier,
     );
   }
@@ -681,6 +687,8 @@ class ReminderService {
     debugPrint(
       '[ReminderService][$operation] platform=$defaultTargetPlatform '
       'id=$id locale=$localeCode title="$title" body="$body" '
+      'ios.presentAlert=${details.presentAlert} '
+      'ios.presentBadge=${details.presentBadge} '
       'ios.presentSound=${details.presentSound} ios.sound=${details.sound} '
       'ios.interruption=${details.interruptionLevel}',
     );
