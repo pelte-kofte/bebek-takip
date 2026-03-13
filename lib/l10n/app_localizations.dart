@@ -2846,6 +2846,60 @@ abstract class AppLocalizations {
   /// **'Log given now'**
   String get logGivenNow;
 
+  /// No description provided for @logDose.
+  ///
+  /// In en, this message translates to:
+  /// **'Log dose'**
+  String get logDose;
+
+  /// No description provided for @givenNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Given now'**
+  String get givenNow;
+
+  /// No description provided for @allDoneToday.
+  ///
+  /// In en, this message translates to:
+  /// **'All done today'**
+  String get allDoneToday;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
+  String get notAvailable;
+
+  /// No description provided for @before.
+  ///
+  /// In en, this message translates to:
+  /// **'Before'**
+  String get before;
+
+  /// No description provided for @after.
+  ///
+  /// In en, this message translates to:
+  /// **'After'**
+  String get after;
+
+  /// No description provided for @todayProgressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Today: {done} / {total} doses'**
+  String todayProgressLabel(int done, int total);
+
+  /// No description provided for @nextDoseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next dose: {value}'**
+  String nextDoseLabel(String value);
+
+  /// No description provided for @givenTodayCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Given today: {count}'**
+  String givenTodayCount(int count);
+
   /// UI text
   ///
   /// In en, this message translates to:

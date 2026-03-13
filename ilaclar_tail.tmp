@@ -1,0 +1,563 @@
+﻿class _MedicationFormScreen extends StatefulWidget {
+  final Map<String, dynamic>? medication;
+
+  const _MedicationFormScreen({this.medication});
+
+  @override
+  State<_MedicationFormScreen> createState() => _MedicationFormScreenState();
+}
+
+class _MedicationFormScreenState extends State<_MedicationFormScreen> {
+  final _nameController = TextEditingController();
+  final _dosageController = TextEditingController();
+  final _notesController = TextEditingController();
+  final ReminderService _reminderService = ReminderService();
+
+  String _type = 'medication';
+  String _scheduleType = 'prn';
+  List<String> _dailyTimes = ['09:00'];
+  String? _vaccineId;
+  int _beforeHours = 2;
+  int _afterHours = 4;
+  bool _isActive = true;
+  bool _isSaving = false;
+
+  bool get _isEditing => widget.medication != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditing) {
+      final med = widget.medication!;
+      _nameController.text = med['name'] ?? '';
+      _dosageController.text = med['dosage'] ?? '';
+      _notesController.text = med['notes'] ?? '';
+      _type = med['type'] ?? 'medication';
+      _isActive = med['isActive'] ?? true;
+      _scheduleType = med['scheduleType'] ?? 'prn';
+      _vaccineId = med['vaccineId'] as String?;
+      final daily = med['dailyTimes'];
+      if (daily is List) {
+        final parsed = daily
+            .map((e) => e?.toString() ?? '')
+            .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+            .toList();
+        if (parsed.isNotEmpty) _dailyTimes = parsed;
+      }
+      final offsets = (med['protocolOffsets'] as List?) ?? const [];
+      for (final item in offsets) {
+        final map = Map<String, dynamic>.from(item as Map);
+        final kind = (map['kind'] as String?) ?? 'after';
+        final minutes = (map['minutes'] as num?)?.toInt() ?? 0;
+        if (kind == 'before') _beforeHours = (minutes / 60).round();
+        if (kind == 'after') _afterHours = (minutes / 60).round();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dosageController.dispose();
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  TimeOfDay _timeFromString(String hhmm) {
+    final parts = hhmm.split(':');
+    return TimeOfDay(
+      hour: int.tryParse(parts[0]) ?? 9,
+      minute: int.tryParse(parts[1]) ?? 0,
+    );
+  }
+
+  String _timeToString(TimeOfDay time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _pickDailyTime({int? index}) async {
+    final initial = index == null
+        ? const TimeOfDay(hour: 9, minute: 0)
+        : _timeFromString(_dailyTimes[index]);
+    final picked = await showTimePicker(context: context, initialTime: initial);
+    if (picked == null) return;
+    setState(() {
+      if (index == null) {
+        _dailyTimes.add(_timeToString(picked));
+      } else {
+        _dailyTimes[index] = _timeToString(picked);
+      }
+      _dailyTimes = _dailyTimes.toSet().toList()..sort();
+    });
+  }
+
+  Future<void> _save() async {
+    if (_isSaving) return;
+    final l10n = AppLocalizations.of(context)!;
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.medicationNameRequired)));
+      return;
+    }
+
+    if (_scheduleType == 'daily' && _dailyTimes.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.dailyTimeRequired)));
+      return;
+    }
+
+    if (_scheduleType == 'vaccine_protocol' && _vaccineId == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.selectVaccine)));
+      return;
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      final medications = VeriYonetici.getIlacKayitlari();
+      final editingId = widget.medication?['id'] as String?;
+      final existingIndex = editingId == null
+          ? -1
+          : medications.indexWhere((m) => m['id'] == editingId);
+      final existing = existingIndex >= 0
+          ? Map<String, dynamic>.from(medications[existingIndex])
+          : null;
+      final medicationId =
+          existing?['id'] as String? ??
+          'ilac_${DateTime.now().millisecondsSinceEpoch}';
+
+      bool remindersEnabled = existing?['remindersEnabled'] == true;
+      if (_scheduleType == 'prn') {
+        remindersEnabled = false;
+      } else if (!_isEditing || remindersEnabled != true) {
+        final optIn = await _askMedicationReminder();
+        if (optIn == null) return;
+        remindersEnabled = optIn;
+      }
+
+      final payload = {
+        'id': medicationId,
+        'name': name,
+        'type': _type,
+        'dosage': _dosageController.text.trim().isEmpty
+            ? null
+            : _dosageController.text.trim(),
+        'notes': _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
+        'isActive': _isActive,
+        'scheduleType': _scheduleType,
+        'dailyTimes': _scheduleType == 'daily' ? _dailyTimes : null,
+        'vaccineId': _scheduleType == 'vaccine_protocol' ? _vaccineId : null,
+        'protocolOffsets': _scheduleType == 'vaccine_protocol'
+            ? [
+                {'kind': 'before', 'minutes': _beforeHours * 60},
+                {'kind': 'after', 'minutes': _afterHours * 60},
+              ]
+            : null,
+        'repeatEveryHours': null,
+        'maxDoses': null,
+        'remindersEnabled': remindersEnabled,
+        'scheduleText': _scheduleType == 'daily'
+            ? '${l10n.everyDay} â€¢ ${_dailyTimes.join(', ')}'
+            : (_scheduleType == 'prn'
+                  ? l10n.asNeeded
+                  : l10n.vaccineProtocolLabel),
+      };
+
+      if (_isEditing && existingIndex != -1) {
+        medications[existingIndex] = {
+          ...medications[existingIndex],
+          ...payload,
+        };
+      } else {
+        medications.add({
+          'babyId': VeriYonetici.getActiveBabyId(),
+          ...payload,
+          'createdAt': DateTime.now(),
+        });
+      }
+
+      await VeriYonetici.saveIlacKayitlari(medications);
+      final saved = medications.firstWhere((m) => m['id'] == medicationId);
+
+      try {
+        await _syncSavedMedicationReminder(
+          oldMedication: existing,
+          savedMedication: Map<String, dynamic>.from(saved),
+        );
+      } catch (e) {
+        debugPrint('Medication reminder sync failed: $e');
+      }
+
+      HapticFeedback.lightImpact();
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorWithMessage(e.toString()))),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
+  Future<bool?> _askMedicationReminder() {
+    final l10n = AppLocalizations.of(context)!;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.medicationSetRemindersTitle),
+        content: Text(l10n.medicationSetRemindersBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.no),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.yes),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _syncSavedMedicationReminder({
+    Map<String, dynamic>? oldMedication,
+    required Map<String, dynamic> savedMedication,
+  }) async {
+    final messenger = ScaffoldMessenger.of(context);
+    await _reminderService.initialize();
+
+    if (oldMedication != null) {
+      await _reminderService.cancelMedicationReminders(
+        oldMedication['id'] as String,
+        dailyTimes: _extractDailyTimes(oldMedication),
+        protocolOffsets: _extractProtocolOffsets(oldMedication),
+        vaccineId: oldMedication['vaccineId'] as String?,
+      );
+    }
+    await _reminderService.cancelMedicationReminders(
+      savedMedication['id'] as String,
+      dailyTimes: _extractDailyTimes(savedMedication),
+      protocolOffsets: _extractProtocolOffsets(savedMedication),
+      vaccineId: savedMedication['vaccineId'] as String?,
+    );
+
+    final globalEnabled = VeriYonetici.isMedicationReminderEnabled();
+    final medEnabled = savedMedication['remindersEnabled'] == true;
+    final active = savedMedication['isActive'] == true;
+    final scheduleType = (savedMedication['scheduleType'] as String?) ?? 'prn';
+    if (!globalEnabled || !medEnabled || !active || scheduleType == 'prn') {
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Notifications disabled')),
+        );
+      }
+      return;
+    }
+
+    final granted = await _reminderService.requestPermission();
+    if (!granted) {
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Permission denied')),
+        );
+      }
+      return;
+    }
+
+    DateTime? vaccineDate;
+    if (scheduleType == 'vaccine_protocol') {
+      final vaccineId = savedMedication['vaccineId'] as String?;
+      if (vaccineId != null) {
+        final vaccine = VeriYonetici.getAsiKayitlari()
+            .where((v) => v['id'] == vaccineId)
+            .firstOrNull;
+        vaccineDate = vaccine?['tarih'] as DateTime?;
+      }
+    }
+
+    await _reminderService.scheduleMedicationReminders(
+      savedMedication,
+      vaccineDate: vaccineDate,
+    );
+    if (mounted) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Reminder scheduled')),
+      );
+    }
+  }
+
+  List<String> _extractDailyTimes(Map<String, dynamic> med) {
+    final raw = med['dailyTimes'];
+    if (raw is! List) return const <String>[];
+    return raw
+        .map((e) => e?.toString() ?? '')
+        .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
+        .toList();
+  }
+
+  List<Map<String, dynamic>> _extractProtocolOffsets(Map<String, dynamic> med) {
+    final raw = med['protocolOffsets'];
+    if (raw is! List) return const <Map<String, dynamic>>[];
+    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
+    final vaccines = VeriYonetici.getAsiKayitlari();
+
+    return Scaffold(
+      backgroundColor: isDark ? null : const Color(0xFFFFFBF5),
+      appBar: AppBar(
+        title: Text(
+          _isEditing ? l10n.editMedication : l10n.addMedication,
+          style: AppTypography.h2(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.medicationName, style: AppTypography.label(context)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _nameController,
+              decoration: _inputDecoration(isDark),
+            ),
+            const SizedBox(height: 16),
+            Text(l10n.type, style: AppTypography.label(context)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(child: _typeChip(l10n.medication, 'medication')),
+                const SizedBox(width: 8),
+                Expanded(child: _typeChip(l10n.supplement, 'supplement')),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(l10n.scheduleType, style: AppTypography.label(context)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _scheduleChip(l10n.dailySchedule, 'daily'),
+                _scheduleChip(l10n.prnSchedule, 'prn'),
+                _scheduleChip(l10n.vaccineProtocolLabel, 'vaccine_protocol'),
+              ],
+            ),
+            if (_scheduleType == 'daily') ...[
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (int i = 0; i < _dailyTimes.length; i++)
+                    InputChip(
+                      label: Text(_dailyTimes[i]),
+                      onPressed: () => _pickDailyTime(index: i),
+                      onDeleted: _dailyTimes.length == 1
+                          ? null
+                          : () => setState(() => _dailyTimes.removeAt(i)),
+                    ),
+                  ActionChip(
+                    avatar: const Icon(Icons.add, size: 18),
+                    label: Text(l10n.selectTime),
+                    onPressed: () => _pickDailyTime(),
+                  ),
+                ],
+              ),
+            ],
+            if (_scheduleType == 'vaccine_protocol') ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _vaccineId,
+                items: vaccines
+                    .map(
+                      (v) => DropdownMenuItem<String>(
+                        value: v['id'] as String,
+                        child: Text(
+                          '${v['ad']} (${(v['tarih'] as DateTime?) == null ? l10n.selectDate : formatLocalizedDate(context, v['tarih'] as DateTime)})',
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) => setState(() => _vaccineId = value),
+                decoration: _inputDecoration(isDark, hint: l10n.selectVaccine),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField<int>(
+                      initialValue: _beforeHours,
+                      items: List.generate(13, (i) => i)
+                          .map(
+                            (h) => DropdownMenuItem<int>(
+                              value: h,
+                              child: Text(l10n.beforeHours(h)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _beforeHours = value ?? 0),
+                      decoration: _inputDecoration(isDark),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: DropdownButtonFormField<int>(
+                      initialValue: _afterHours,
+                      items: List.generate(25, (i) => i)
+                          .map(
+                            (h) => DropdownMenuItem<int>(
+                              value: h,
+                              child: Text(l10n.afterHours(h)),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) =>
+                          setState(() => _afterHours = value ?? 0),
+                      decoration: _inputDecoration(isDark),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            const SizedBox(height: 16),
+            Text(l10n.dosage, style: AppTypography.label(context)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _dosageController,
+              decoration: _inputDecoration(isDark),
+            ),
+            const SizedBox(height: 16),
+            Text(l10n.notes, style: AppTypography.label(context)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _notesController,
+              maxLines: 3,
+              decoration: _inputDecoration(isDark),
+            ),
+            const SizedBox(height: 16),
+            SwitchListTile(
+              value: _isActive,
+              onChanged: (value) => setState(() => _isActive = value),
+              contentPadding: EdgeInsets.zero,
+              title: Text(_isActive ? l10n.active : l10n.inactive),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isSaving ? null : _save,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: _isSaving
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : Text(l10n.save),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _typeChip(String label, String value) {
+    final selected = _type == value;
+    return InkWell(
+      onTap: () => setState(() => _type = value),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: selected
+                ? AppColors.primary
+                : AppColors.primary.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Center(child: Text(label)),
+      ),
+    );
+  }
+
+  Widget _scheduleChip(String label, String value) {
+    final selected = _scheduleType == value;
+    return InkWell(
+      onTap: () => setState(() => _scheduleType = value),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected
+                ? AppColors.primary
+                : AppColors.primary.withValues(alpha: 0.2),
+          ),
+        ),
+        child: Text(label),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(bool isDark, {String? hint}) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: isDark ? AppColors.bgDarkCard : Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.primary.withValues(alpha: 0.2)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: AppColors.primary),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    );
+  }
+}

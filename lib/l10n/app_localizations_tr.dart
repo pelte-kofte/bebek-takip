@@ -15,57 +15,57 @@ class AppLocalizationsTr extends AppLocalizations {
   String get tagline => 'Ebeveynlik artik daha kolay ve unutulmaz.';
 
   @override
-  String get freeForever => 'Ã–nce Offline';
+  String get freeForever => 'Önce Offline';
 
   @override
-  String get instantStart => 'AnÄ±nda BaÅŸla';
+  String get instantStart => 'Anında Başla';
 
   @override
-  String get securePrivate => 'GÃ¼venli ve Gizli';
+  String get securePrivate => 'Güvenli ve Gizli';
 
   @override
-  String get tapToStart => 'BaÅŸlamak iÃ§in dokun';
+  String get tapToStart => 'Başlamak için dokun';
 
   @override
   String get feedingTracker => 'Beslenme Takibi';
 
   @override
   String get feedingTrackerDesc =>
-      'Emzirme, biberon ve ek gÄ±dalarÄ± kolayca kaydedin. DoÄŸal kalÄ±plarÄ± keÅŸfet.';
+      'Emzirme, biberon ve ek gıdaları kolayca kaydedin. Doğal kalıpları keşfet.';
 
   @override
-  String get sleepPatterns => 'Uyku DÃ¼zeni';
+  String get sleepPatterns => 'Uyku Düzeni';
 
   @override
   String get sleepPatternsDesc =>
-      'BebeÄŸinizin ritmini anlayÄ±n ve herkes iÃ§in uyku kalitesini artÄ±rÄ±n.';
+      'Bebeğinizin ritmini anlayın ve herkes için uyku kalitesini artırın.';
 
   @override
-  String get growthCharts => 'BÃ¼yÃ¼me Grafikleri';
+  String get growthCharts => 'Büyüme Grafikleri';
 
   @override
   String get growthChartsDesc =>
-      'Boy ve kilo degiÅŸimlerini gÃ¼zel grafiklerle gÃ¶rselleÅŸtirin.';
+      'Boy ve kilo degişimlerini güzel grafiklerle görselleştirin.';
 
   @override
-  String get preciousMemories => 'DeÄŸerli AnÄ±lar';
+  String get preciousMemories => 'Değerli Anılar';
 
   @override
   String get preciousMemoriesDesc =>
-      'Kilometre taÅŸlarÄ± ve komik anlarÄ± kaydedin. Ã‡ok Ã§abuk bÃ¼yÃ¼yorlar!';
+      'Kilometre taşları ve komik anları kaydedin. Çok çabuk büyüyorlar!';
 
   @override
-  String get dailyRhythm => 'GÃ¼nlÃ¼k Ritim';
+  String get dailyRhythm => 'Günlük Ritim';
 
   @override
   String get dailyRhythmDesc =>
-      'YumuÅŸak rutinler, sakin gÃ¼nler ve huzurlu geceler getirir.';
+      'Yumuşak rutinler, sakin günler ve huzurlu geceler getirir.';
 
   @override
   String get skip => 'Atla';
 
   @override
-  String get startYourJourney => 'YolculuÄŸuna BaÅŸla';
+  String get startYourJourney => 'Yolculuğuna Başla';
 
   @override
   String get continueBtn => 'Devam';
@@ -74,16 +74,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get save => 'Kaydet';
 
   @override
-  String get update => 'GÃ¼ncelle';
+  String get update => 'Güncelle';
 
   @override
-  String get cancel => 'Ä°ptal';
+  String get cancel => 'İptal';
 
   @override
   String get delete => 'Sil';
 
   @override
-  String get edit => 'DÃ¼zenle';
+  String get edit => 'Düzenle';
 
   @override
   String get ok => 'Tamam';
@@ -95,19 +95,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get yes => 'Evet';
 
   @override
-  String get no => 'HayÄ±r';
+  String get no => 'Hayır';
 
   @override
-  String get share => 'PaylaÅŸ';
+  String get share => 'Paylaş';
 
   @override
   String get mlAbbrev => 'ml';
 
   @override
-  String get selectTime => 'Saat seÃ§';
+  String get selectTime => 'Saat seç';
 
   @override
-  String get tapToSetTime => 'Saat seÃ§';
+  String get tapToSetTime => 'Saat seç';
 
   @override
   String get notificationSleepFired => 'Uyku bildirimi tetiklendi';
@@ -116,7 +116,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationNursingFired => 'Emzirme bildirimi tetiklendi';
 
   @override
-  String get signedOutSuccessfully => 'Ã‡Ä±kÄ±ÅŸ yapÄ±ldÄ±';
+  String get signedOutSuccessfully => 'Çıkış yapıldı';
 
   @override
   String errorWithMessage(String message) {
@@ -124,24 +124,24 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get saveFailedTryAgain => 'Kaydedilemedi. LÃ¼tfen tekrar deneyin.';
+  String get saveFailedTryAgain => 'Kaydedilemedi. Lütfen tekrar deneyin.';
 
   @override
-  String get allDataDeleted => 'TÃ¼m veriler silindi';
+  String get allDataDeleted => 'Tüm veriler silindi';
 
   @override
   String googleSignInFailed(String error) {
-    return 'Google giriÅŸi baÅŸarÄ±sÄ±z: $error';
+    return 'Google girişi başarısız: $error';
   }
 
   @override
   String signInFailed(String error) {
-    return 'GiriÅŸ baÅŸarÄ±sÄ±z: $error';
+    return 'Giriş başarısız: $error';
   }
 
   @override
   String get webPhotoUploadUnsupported =>
-      'Web sÃ¼rÃ¼mÃ¼nde fotoÄŸraf yÃ¼kleme desteklenmiyor';
+      'Web sürümünde fotoğraf yükleme desteklenmiyor';
 
   @override
   String babyDataDeleted(String name) {
@@ -149,52 +149,52 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get babyNameHint => 'Bebek adÄ±';
+  String get babyNameHint => 'Bebek adı';
 
   @override
   String get babyNotesHint => 'Alerjiler, tercihler, notlar...';
 
   @override
-  String get vaccineNameHint => 'Ã¶rn: Hepatit B, BCG, Karma AÅŸÄ±';
+  String get vaccineNameHint => 'örn: Hepatit B, BCG, Karma Aşı';
 
   @override
-  String get vaccineDoseHint => 'Ã¶rn: 1. Doz, DabT-IPA-Hib';
+  String get vaccineDoseHint => 'örn: 1. Doz, DabT-IPA-Hib';
 
   @override
-  String get vaccineNameCannotBeEmpty => 'AÅŸÄ± adÄ± boÅŸ bÄ±rakÄ±lamaz';
+  String get vaccineNameCannotBeEmpty => 'Aşı adı boş bırakılamaz';
 
   @override
-  String get growthWeightHint => 'Ã¶rn. 7.5';
+  String get growthWeightHint => 'örn. 7.5';
 
   @override
-  String get growthHeightHint => 'Ã¶rn. 68.5';
+  String get growthHeightHint => 'örn. 68.5';
 
   @override
-  String get growthNotesHint => 'Doktor kontrolÃ¼, aÅŸÄ± gÃ¼nÃ¼ vb...';
+  String get growthNotesHint => 'Doktor kontrolü, aşı günü vb...';
 
   @override
-  String get pleaseEnterWeightHeight => 'LÃ¼tfen kilo ve boy bilgilerini girin';
+  String get pleaseEnterWeightHeight => 'Lütfen kilo ve boy bilgilerini girin';
 
   @override
-  String get memoryTitleHint => 'Ã¶rn. Ä°lk adÄ±mlar';
+  String get memoryTitleHint => 'örn. İlk adımlar';
 
   @override
-  String get memoryNoteHint => 'AnÄ±yÄ± buraya yaz...';
+  String get memoryNoteHint => 'Anıyı buraya yaz...';
 
   @override
   String get home => 'Ana Sayfa';
 
   @override
-  String get activities => 'BakÄ±m';
+  String get activities => 'Bakım';
 
   @override
-  String get vaccines => 'AÅŸÄ±lar';
+  String get vaccines => 'Aşılar';
 
   @override
-  String get development => 'GeliÅŸim';
+  String get development => 'Gelişim';
 
   @override
-  String get memories => 'AnÄ±lar';
+  String get memories => 'Anılar';
 
   @override
   String get settings => 'Ayarlar';
@@ -224,10 +224,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get left => 'Sol';
 
   @override
-  String get right => 'SaÄŸ';
+  String get right => 'Sağ';
 
   @override
-  String get duration => 'SÃ¼re';
+  String get duration => 'Süre';
 
   @override
   String get minAbbrev => 'dk';
@@ -239,37 +239,37 @@ class AppLocalizationsTr extends AppLocalizations {
   String get category => 'Kategori';
 
   @override
-  String get milk => 'SÃ¼t';
+  String get milk => 'Süt';
 
   @override
-  String get solid => 'Ek gÄ±da';
+  String get solid => 'Ek gıda';
 
   @override
   String get whatWasGiven => 'NE VERiLDi?';
 
   @override
-  String get solidFoodHint => 'Or: Muz pÃ¼resi, havuÃ§...';
+  String get solidFoodHint => 'Or: Muz püresi, havuç...';
 
   @override
   String get amount => 'Miktar';
 
   @override
-  String get milkType => 'SÃ¼t TÃ¼rÃ¼';
+  String get milkType => 'Süt Türü';
 
   @override
-  String get breastMilk => 'Anne sÃ¼tÃ¼';
+  String get breastMilk => 'Anne sütü';
 
   @override
   String get formula => 'Mama';
 
   @override
-  String get sleepStartedAt => 'UYKU BAÅLANGICI';
+  String get sleepStartedAt => 'UYKU BAŞLANGICI';
 
   @override
   String get wokeUpAt => 'UYANDI';
 
   @override
-  String get tapToSet => 'Saat seÃ§';
+  String get tapToSet => 'Saat seç';
 
   @override
   String totalSleep(String duration) {
@@ -277,10 +277,10 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get type => 'TÃ¼r';
+  String get type => 'Tür';
 
   @override
-  String get healthType => 'TÃ¼r';
+  String get healthType => 'Tür';
 
   @override
   String get healthTime => 'Saat';
@@ -292,129 +292,129 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dirty => 'Kirli';
 
   @override
-  String get both => 'Ä°kisi birden';
+  String get both => 'İkisi birden';
 
   @override
   String get optionalNotes => 'Not (Opsiyonel)';
 
   @override
-  String get diaperNoteHint => 'Bez deÄŸiÅŸimi hakkÄ±nda not ekleyin...';
+  String get diaperNoteHint => 'Bez değişimi hakkında not ekleyin...';
 
   @override
-  String get pleaseSetDuration => 'LÃ¼tfen sÃ¼re ayarlayÄ±n';
+  String get pleaseSetDuration => 'Lütfen süre ayarlayın';
 
   @override
-  String get pleaseSetAmount => 'LÃ¼tfen miktar ayarlayÄ±n';
+  String get pleaseSetAmount => 'Lütfen miktar ayarlayın';
 
   @override
-  String get pleaseSetWakeUpTime => 'LÃ¼tfen uyanma zamanÄ±nÄ± ayarlayÄ±n';
+  String get pleaseSetWakeUpTime => 'Lütfen uyanma zamanını ayarlayın';
 
   @override
-  String get sleepDurationMustBeGreater => 'Uyku suresi 0\'dan buyuk olmalÄ±';
+  String get sleepDurationMustBeGreater => 'Uyku suresi 0\'dan buyuk olmalı';
 
   @override
-  String get today => 'BugÃ¼n';
+  String get today => 'Bugün';
 
   @override
-  String get summary => 'Ã–ZET';
+  String get summary => 'ÖZET';
 
   @override
-  String get recentActivities => 'SON BAKIM VERÄ°LERÄ°';
+  String get recentActivities => 'SON BAKIM VERİLERİ';
 
   @override
-  String get record => 'kayÄ±t';
+  String get record => 'kayıt';
 
   @override
-  String get records => 'kayÄ±t';
+  String get records => 'kayıt';
 
   @override
   String get breastfeeding => 'Emzirme';
 
   @override
-  String get bottleBreastMilk => 'Biberon (Anne sÃ¼tÃ¼)';
+  String get bottleBreastMilk => 'Biberon (Anne sütü)';
 
   @override
   String get total => 'Toplam';
 
   @override
-  String get diaperChange => 'Bez DeÄŸiÅŸimi';
+  String get diaperChange => 'Bez Değişimi';
 
   @override
-  String get firstFeedingTime => 'Ä°lk mama zamanÄ± geldi mi?';
+  String get firstFeedingTime => 'İlk mama zamanı geldi mi?';
 
   @override
-  String get trackBabyFeeding => 'BebeÄŸinizin beslenmesini takip edin';
+  String get trackBabyFeeding => 'Bebeğinizin beslenmesini takip edin';
 
   @override
-  String get diaperChangeTime => 'Bez degiÅŸtirme zamanÄ±!';
+  String get diaperChangeTime => 'Bez degiştirme zamanı!';
 
   @override
-  String get trackHygiene => 'Hijyen takibini burada yapÄ±n';
+  String get trackHygiene => 'Hijyen takibini burada yapın';
 
   @override
-  String get sweetDreams => 'TatlÄ± ruyalar...';
+  String get sweetDreams => 'Tatlı ruyalar...';
 
   @override
-  String get trackSleepPattern => 'Uyku dÃ¼zenini buradan izleyin';
+  String get trackSleepPattern => 'Uyku düzenini buradan izleyin';
 
   @override
-  String get selectAnotherDate => 'BaÅŸka tarih seÃ§';
+  String get selectAnotherDate => 'Başka tarih seç';
 
   @override
-  String get editFeeding => 'Beslenme DÃ¼zenle';
+  String get editFeeding => 'Beslenme Düzenle';
 
   @override
-  String get editDiaper => 'Bez DÃ¼zenle';
+  String get editDiaper => 'Bez Düzenle';
 
   @override
-  String get editSleep => 'Uyku DÃ¼zenle';
+  String get editSleep => 'Uyku Düzenle';
 
   @override
-  String get start => 'BaÅŸlangÄ±Ã§';
+  String get start => 'Başlangıç';
 
   @override
-  String get end => 'BitiÅŸ';
+  String get end => 'Bitiş';
 
   @override
   String get attention => 'Dikkat';
 
   @override
-  String get deleteConfirm => 'Bu kaydÄ± silmek istediÄŸinize emin misiniz?';
+  String get deleteConfirm => 'Bu kaydı silmek istediğinize emin misiniz?';
 
   @override
-  String get myVaccines => 'AÅŸÄ±larÄ±m';
+  String get myVaccines => 'Aşılarım';
 
   @override
-  String get addVaccine => 'AÅŸÄ± Ekle';
+  String get addVaccine => 'Aşı Ekle';
 
   @override
-  String get applied => 'UygulandÄ±';
+  String get applied => 'Uygulandı';
 
   @override
   String get pending => 'Bekleniyor';
 
   @override
-  String get upcomingVaccines => 'Gelecek AÅŸÄ±lar';
+  String get upcomingVaccines => 'Gelecek Aşılar';
 
   @override
-  String get completedVaccines => 'Tamamlanan AÅŸÄ±lar';
+  String get completedVaccines => 'Tamamlanan Aşılar';
 
   @override
-  String get selectDate => 'Tarih seÃ§';
+  String get selectDate => 'Tarih seç';
 
   @override
   String get calendar => 'Takvim';
 
   @override
-  String get turkishVaccineCalendar => 'TÃ¼rk AÅŸÄ± Takvimi';
+  String get turkishVaccineCalendar => 'Türk Aşı Takvimi';
 
   @override
   String vaccinesAvailable(int count) {
-    return '$count aÅŸi mevcut';
+    return '$count aşi mevcut';
   }
 
   @override
-  String get selectAll => 'TÃ¼mÃ¼nÃ¼ SeÃ§';
+  String get selectAll => 'Tümünü Seç';
 
   @override
   String get clear => 'Temizle';
@@ -424,52 +424,52 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String addVaccines(int count) {
-    return '$count AÅŸÄ± Ekle';
+    return '$count Aşı Ekle';
   }
 
   @override
-  String get selectVaccine => 'AÅŸÄ± Secin';
+  String get selectVaccine => 'Aşı Secin';
 
   @override
   String vaccinesAdded(int count) {
-    return '$count AÅŸÄ± eklendi';
+    return '$count Aşı eklendi';
   }
 
   @override
-  String get noVaccineRecords => 'HenÃ¼z aÅŸÄ± kaydÄ± yok';
+  String get noVaccineRecords => 'Henüz aşı kaydı yok';
 
   @override
   String get loadTurkishCalendar =>
-      'TÃ¼rkiye aÅŸÄ± takvimini yÃ¼kleyin veya manuel olarak ekleyin';
+      'Türkiye aşı takvimini yükleyin veya manuel olarak ekleyin';
 
   @override
-  String get loadTurkishVaccineCalendar => 'TÃ¼rkiye AÅŸÄ± Takvimini YÃ¼kle';
+  String get loadTurkishVaccineCalendar => 'Türkiye Aşı Takvimini Yükle';
 
   @override
-  String get loadCalendarTitle => 'Turkiye AÅŸÄ± Takvimini YÃ¼kle';
+  String get loadCalendarTitle => 'Turkiye Aşı Takvimini Yükle';
 
   @override
   String get loadCalendarDesc =>
-      'TÃ¼rkiye\'nin standart aÅŸÄ± takvimi yÃ¼klenecek. Mevcut aÅŸÄ±lar silinmeyecek.';
+      'Türkiye\'nin standart aşı takvimi yüklenecek. Mevcut aşılar silinmeyecek.';
 
   @override
   String ageYears(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count YaÅŸ',
+      other: '$count Yaş',
     );
     return '$_temp0';
   }
 
   @override
   String ageYearsMonths(int years, int months) {
-    return '$years YaÅŸ $months Ay';
+    return '$years Yaş $months Ay';
   }
 
   @override
   String ageMonthsDays(int months, int days) {
-    return '$months Ay $days GÃ¼nlÃ¼k';
+    return '$months Ay $days Günlük';
   }
 
   @override
@@ -477,22 +477,22 @@ class AppLocalizationsTr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count GÃ¼nlÃ¼k',
+      other: '$count Günlük',
     );
     return '$_temp0';
   }
 
   @override
-  String get weeklyReport => 'HaftalÄ±k Rapor';
+  String get weeklyReport => 'Haftalık Rapor';
 
   @override
-  String get monthlyReport => 'AylÄ±k Rapor';
+  String get monthlyReport => 'Aylık Rapor';
 
   @override
-  String get weekly => 'HaftalÄ±k';
+  String get weekly => 'Haftalık';
 
   @override
-  String get monthly => 'AylÄ±k';
+  String get monthly => 'Aylık';
 
   @override
   String get feeding => 'Beslenme';
@@ -501,34 +501,34 @@ class AppLocalizationsTr extends AppLocalizations {
   String get totalBreastfeeding => 'Toplam Emzirme';
 
   @override
-  String get totalDuration => 'Toplam SÃ¼re';
+  String get totalDuration => 'Toplam Süre';
 
   @override
-  String get dailyAvg => 'GÃ¼nlÃ¼k Ort.';
+  String get dailyAvg => 'Günlük Ort.';
 
   @override
-  String get avgDuration => 'Ort. SÃ¼re';
+  String get avgDuration => 'Ort. Süre';
 
   @override
   String get leftBreast => 'Sol Meme';
 
   @override
-  String get rightBreast => 'SaÄŸ Meme';
+  String get rightBreast => 'Sağ Meme';
 
   @override
-  String get solidFood => 'Ek gÄ±da';
+  String get solidFood => 'Ek gıda';
 
   @override
-  String get diaperChanges => 'Bez DeÄŸiÅŸimi';
+  String get diaperChanges => 'Bez Değişimi';
 
   @override
   String get longestSleep => 'En Uzun Uyku';
 
   @override
-  String get sleepCount => 'Uyku SayÄ±sÄ±';
+  String get sleepCount => 'Uyku Sayısı';
 
   @override
-  String get growth => 'BÃ¼yÃ¼me';
+  String get growth => 'Büyüme';
 
   @override
   String get height => 'Boy';
@@ -540,19 +540,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get saveAsPdf => 'PDF Olarak Kaydet';
 
   @override
-  String get pdfMobileOnly => 'PDF paylaÅŸÄ±mÄ± mobilde kullanÄ±labilir';
+  String get pdfMobileOnly => 'PDF paylaşımı mobilde kullanılabilir';
 
   @override
-  String get sharingMobileOnly => 'PaylaÅŸÄ±m mobilde kullanÄ±labilir';
+  String get sharingMobileOnly => 'Paylaşım mobilde kullanılabilir';
 
   @override
-  String get pdfSaved => 'PDF baÅŸarÄ±yla kaydedildi!';
+  String get pdfSaved => 'PDF başarıyla kaydedildi!';
 
   @override
   String get babyTrackerReport => 'Nilico Raporu';
 
   @override
-  String get generatedWith => 'Nilico ile oluÅŸturuldu';
+  String get generatedWith => 'Nilico ile oluşturuldu';
 
   @override
   String get months => 'ay';
@@ -561,7 +561,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get january => 'Ocak';
 
   @override
-  String get february => 'Åubat';
+  String get february => 'Şubat';
 
   @override
   String get march => 'Mart';
@@ -570,7 +570,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get april => 'Nisan';
 
   @override
-  String get may => 'MayÄ±s';
+  String get may => 'Mayıs';
 
   @override
   String get june => 'Haziran';
@@ -579,19 +579,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get july => 'Temmuz';
 
   @override
-  String get august => 'AÄŸustos';
+  String get august => 'Ağustos';
 
   @override
-  String get september => 'EylÃ¼l';
+  String get september => 'Eylül';
 
   @override
   String get october => 'Ekim';
 
   @override
-  String get november => 'KasÄ±m';
+  String get november => 'Kasım';
 
   @override
-  String get december => 'AralÄ±k';
+  String get december => 'Aralık';
 
   @override
   String get addOptionalNote => 'Not ekle (opsiyonel)';
@@ -615,42 +615,42 @@ class AppLocalizationsTr extends AppLocalizations {
   String get chart => 'Grafik';
 
   @override
-  String get noMeasurements => 'HenÃ¼z Ã¶lÃ§Ã¼m yok';
+  String get noMeasurements => 'Henüz ölçüm yok';
 
   @override
-  String get addMeasurements => 'Boy ve kilo Ã¶lÃ§Ã¼mlerini ekleyin';
+  String get addMeasurements => 'Boy ve kilo ölçümlerini ekleyin';
 
   @override
-  String get moreDataNeeded => 'Grafik iÃ§in daha fazla veri gerekli';
+  String get moreDataNeeded => 'Grafik için daha fazla veri gerekli';
 
   @override
   String addMoreMeasurements(int count) {
-    return '$count Ã¶lÃ§Ã¼m daha ekleyin';
+    return '$count ölçüm daha ekleyin';
   }
 
   @override
-  String get atLeast2Measurements => 'Grafik iÃ§in en az 2 Ã¶lÃ§Ã¼m gerekli';
+  String get atLeast2Measurements => 'Grafik için en az 2 ölçüm gerekli';
 
   @override
-  String get growthTracking => 'BÃ¼yÃ¼me Takibi';
+  String get growthTracking => 'Büyüme Takibi';
 
   @override
-  String get growthEntryTitle => 'BÃ¼yÃ¼me KaydÄ±';
+  String get growthEntryTitle => 'Büyüme Kaydı';
 
   @override
   String get growthEntrySubtitle => 'Boy ve kilo takibi';
 
   @override
-  String get growthDateField => 'TARÄ°H';
+  String get growthDateField => 'TARİH';
 
   @override
-  String get growthWeightField => 'KÄ°LO (kg)';
+  String get growthWeightField => 'KİLO (kg)';
 
   @override
   String get growthHeightField => 'BOY (cm)';
 
   @override
-  String get growthNotesField => 'NOTLAR (Ä°steÄŸe baÄŸlÄ±)';
+  String get growthNotesField => 'NOTLAR (İsteğe bağlı)';
 
   @override
   String get centimeterUnit => 'cm';
@@ -659,7 +659,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get kilogramUnit => 'kg';
 
   @override
-  String get feedingTimer => 'EMZÄ°RME';
+  String get feedingTimer => 'EMZİRME';
 
   @override
   String get sleepingTimer => 'UYKU';
@@ -668,7 +668,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get stopAndSave => 'DURDUR & KAYDET';
 
   @override
-  String get activeTimer => 'AKTÄ°F';
+  String get activeTimer => 'AKTİF';
 
   @override
   String get lastFed => 'SON MAMA';
@@ -680,10 +680,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastSleep => 'SON UYKU';
 
   @override
-  String get recentActivity => 'SON BAKIM VERÄ°LERÄ°';
+  String get recentActivity => 'SON BAKIM VERİLERİ';
 
   @override
-  String get seeHistory => 'GEÃ‡MÄ°ÅÄ° GÃ–R';
+  String get seeHistory => 'GEÇMİŞİ GÖR';
 
   @override
   String get noActivitiesLast24h => 'Son 24 saatte aktivite yok';
@@ -692,260 +692,259 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bottleFeeding => 'Beslenme';
 
   @override
-  String get trackYourBabyGrowth => 'BebeÄŸinizin bÃ¼yÃ¼mesini takip edin';
+  String get trackYourBabyGrowth => 'Bebeğinizin büyümesini takip edin';
 
   @override
-  String get addHeightWeightMeasurements =>
-      'Boy ve kilo Ã¶lÃ§Ã¼mlerini ekleyin';
+  String get addHeightWeightMeasurements => 'Boy ve kilo ölçümlerini ekleyin';
 
   @override
-  String get addFirstMeasurement => 'Ä°lk Ã¶lÃ§Ã¼mÃ¼ ekle';
+  String get addFirstMeasurement => 'İlk ölçümü ekle';
 
   @override
-  String get lastUpdatedToday => 'Son gÃ¼ncelleme bugÃ¼n';
+  String get lastUpdatedToday => 'Son güncelleme bugün';
 
   @override
-  String get lastUpdated1Day => 'Son gÃ¼ncelleme 1 gÃ¼n Ã¶nce';
+  String get lastUpdated1Day => 'Son güncelleme 1 gün önce';
 
   @override
   String lastUpdatedDays(int days) {
-    return 'Son gÃ¼ncelleme $days gÃ¼n Ã¶nce';
+    return 'Son güncelleme $days gün önce';
   }
 
   @override
-  String get viewGrowthCharts => 'BÃœYÃœME GRAFÄ°KLERÄ°NÄ° GÃ–R';
+  String get viewGrowthCharts => 'BÜYÜME GRAFİKLERİNİ GÖR';
 
   @override
-  String get weightLabel => 'KÄ°LO';
+  String get weightLabel => 'KİLO';
 
   @override
   String get heightLabel => 'BOY';
 
   @override
   String mAgo(int count) {
-    return '${count}dk Ã¶nce';
+    return '${count}dk önce';
   }
 
   @override
   String hmAgo(int hours, int minutes) {
-    return '${hours}sa ${minutes}dk Ã¶nce';
+    return '${hours}sa ${minutes}dk önce';
   }
 
   @override
   String dAgo(int days) {
-    return '${days}g Ã¶nce';
+    return '${days}g önce';
   }
 
   @override
-  String get noRecordsYet => 'HenÃ¼z kayÄ±t yok';
+  String get noRecordsYet => 'Henüz kayıt yok';
 
   @override
-  String get dailyTip => 'GÃœNÃœN Ä°PUCU';
+  String get dailyTip => 'GÜNÜN İPUCU';
 
   @override
   String get dailyTipsTitle => 'Günlük İpuçları';
 
   @override
-  String get allTips => 'TÃ¼m ipuÃ§larÄ±';
+  String get allTips => 'Tüm ipuçları';
 
   @override
-  String get tip_engelli_kosu_title => 'Engelli KoÅŸu (Emekleme Versiyon)';
+  String get tip_engelli_kosu_title => 'Engelli Koşu (Emekleme Versiyon)';
 
   @override
   String get tip_engelli_kosu_desc =>
-      'Yere yastÄ±klardan veya battaniyelerden kÃ¼Ã§Ã¼k engeller koy. Hedefteki oyuncaÄŸa ulaÅŸmak iÃ§in bu engelleri aÅŸmasÄ±, problem Ã§Ã¶zme yeteneÄŸini geliÅŸtirir.';
+      'Yere yastıklardan veya battaniyelerden küçük engeller koy. Hedefteki oyuncağa ulaşmak için bu engelleri aşması, problem çözme yeteneğini geliştirir.';
 
   @override
-  String get tip_hafif_agir_title => 'AÄŸÄ±r mÄ± Hafif mi?';
+  String get tip_hafif_agir_title => 'Ağır mı Hafif mi?';
 
   @override
   String get tip_hafif_agir_desc =>
-      'Bir eline tÃ¼y gibi hafif bir bez, diÄŸerine ise daha aÄŸÄ±r bir blok ver. Nesneleri karÅŸÄ±laÅŸtÄ±rmasÄ±nÄ± ve doku/aÄŸÄ±rlÄ±k farkÄ±nÄ± anlamasÄ±nÄ± izle.';
+      'Bir eline tüy gibi hafif bir bez, diğerine ise daha ağır bir blok ver. Nesneleri karşılaştırmasını ve doku/ağırlık farkını anlamasını izle.';
 
   @override
-  String get tip_beni_ismimle_cagir_title => 'Ä°smimle Ã‡aÄŸÄ±r Beni';
+  String get tip_beni_ismimle_cagir_title => 'İsmimle Çağır Beni';
 
   @override
   String get tip_beni_ismimle_cagir_desc =>
-      'O baÅŸka bir yere bakarken adÄ±nÄ± fÄ±sÄ±lda veya sÃ¶yle. Sana dÃ¶nÃ¼p bakmasÄ± iÃ§in teÅŸvik et. Ä°smini tanÄ±masÄ± bu ayÄ±n en bÃ¼yÃ¼k baÅŸarÄ±sÄ± kanka!';
+      'O başka bir yere bakarken adını fısılda veya söyle. Sana dönüp bakması için teşvik et. İsmini tanıması bu ayın en büyük başarısı kanka!';
 
   @override
-  String get tip_su_ne_title => 'Åu Ne? (Ä°ÅŸaretleme)';
+  String get tip_su_ne_title => 'Şu Ne? (İşaretleme)';
 
   @override
   String get tip_su_ne_desc =>
-      'Odadaki farklÄ± nesneleri parmaÄŸÄ±nla gÃ¶sterip adÄ±nÄ± sÃ¶yle. Onun da parmaÄŸÄ±yla bir yerleri iÅŸaret etmeye Ã§alÄ±ÅŸmasÄ±, dÃ¼nyayÄ± seninle beraber keÅŸfettiÄŸini gÃ¶sterir.';
+      'Odadaki farklı nesneleri parmağınla gösterip adını söyle. Onun da parmağıyla bir yerleri işaret etmeye çalışması, dünyayı seninle beraber keşfettiğini gösterir.';
 
   @override
   String get tip_komut_dinlemece_title => 'Komut Dinlemece';
 
   @override
   String get tip_komut_dinlemece_desc =>
-      '\"Topu ver\" veya \"Bana bak\" gibi tek aÅŸamalÄ± basit komutlar ver. Kelimelerle hareketleri eÅŸleÅŸtirmesine yardÄ±mcÄ± ol; anlama becerisi bu ay hÄ±zla geliÅŸiyor.';
+      '\"Topu ver\" veya \"Bana bak\" gibi tek aşamalı basit komutlar ver. Kelimelerle hareketleri eşleştirmesine yardımcı ol; anlama becerisi bu ay hızla gelişiyor.';
 
   @override
-  String get tip_buyuk_yuruyus_title => 'BÃ¼yÃ¼k YÃ¼rÃ¼yÃ¼ÅŸ';
+  String get tip_buyuk_yuruyus_title => 'Büyük Yürüyüş';
 
   @override
   String get tip_buyuk_yuruyus_desc =>
-      'Ellerinden tutarak ya da gÃ¼venli bir yÃ¼rÃ¼me oyuncaÄŸÄ±yla adÄ±m atmasÄ±nÄ± saÄŸla. Dengede kalma Ã§abasÄ±na eÅŸlik et; ilk adÄ±mlarÄ±n heyecanÄ± baÅŸka hiÃ§bir ÅŸeyde yok!';
+      'Ellerinden tutarak ya da güvenli bir yürüme oyuncağıyla adım atmasını sağla. Dengede kalma çabasına eşlik et; ilk adımların heyecanı başka hiçbir şeyde yok!';
 
   @override
-  String get tip_duzenleme_saati_title => 'DÃ¼zenleme Saati';
+  String get tip_duzenleme_saati_title => 'Düzenleme Saati';
 
   @override
   String get tip_duzenleme_saati_desc =>
-      'DaÄŸÄ±lan oyuncaklarÄ± bir sepetin veya kutunun iÃ§ine beraber koyun. \"Hadi ÅŸimdi kutuya!\" diyerek oyuncaklarÄ± iÃ§eri atmasÄ±nÄ± saÄŸla. Organizasyon yeteneÄŸi geliÅŸsin.';
+      'Dağılan oyuncakları bir sepetin veya kutunun içine beraber koyun. \"Hadi şimdi kutuya!\" diyerek oyuncakları içeri atmasını sağla. Organizasyon yeteneği gelişsin.';
 
   @override
   String get tip_emekleme_parkuru_title => 'Emekleme Parkuru';
 
   @override
   String get tip_emekleme_parkuru_desc =>
-      'Yere yumuÅŸak battaniyeler ve yastÄ±klar koyarak kÃ¼Ã§Ã¼k bir engel parkuru yap. En sevdiÄŸi oyuncaÄŸÄ± uzaÄŸa yerleÅŸtirerek onu yere karÄ±n Ã¼stÃ¼ bÄ±rak ve ona ulaÅŸmasÄ± iÃ§in emeklemeye teÅŸvik et.';
+      'Yere yumuşak battaniyeler ve yastıklar koyarak küçük bir engel parkuru yap. En sevdiği oyuncağı uzağa yerleştirerek onu yere karın üstü bırak ve ona ulaşması için emeklemeye teşvik et.';
 
   @override
   String get tip_aynadaki_bebek_title => 'Aynadaki Gizemli Bebek';
 
   @override
   String get tip_aynadaki_bebek_desc =>
-      'BebeÄŸini gÃ¼venli bir aynanÄ±n karÅŸÄ±sÄ±na oturt. Kendi yansÄ±masÄ±nÄ± izlemesini, aynaya dokunmasÄ±nÄ± saÄŸla. \"Bu kimmiÅŸ?\" diyerek kendini tanÄ±masÄ±na ve gÃ¶rsel algÄ±sÄ±nÄ±n geliÅŸmesine yardÄ±mcÄ± ol.';
+      'Bebeğini güvenli bir aynanın karşısına oturt. Kendi yansımasını izlemesini, aynaya dokunmasını sağla. \"Bu kimmiş?\" diyerek kendini tanımasına ve görsel algısının gelişmesine yardımcı ol.';
 
   @override
-  String get tip_yuvarla_bakalim_title => 'Yuvarla BakalÄ±m';
+  String get tip_yuvarla_bakalim_title => 'Yuvarla Bakalım';
 
   @override
   String get tip_yuvarla_bakalim_desc =>
-      'KarÅŸÄ±lÄ±klÄ± yere oturun ve yumuÅŸak bir topu birbirinize yuvarlayÄ±n. Topu yakalamaya Ã§alÄ±ÅŸmasÄ± ve sana geri itmesi iÃ§in onu cesaretlendir; el-gÃ¶z koordinasyonu tavan yapsÄ±n!';
+      'Karşılıklı yere oturun ve yumuşak bir topu birbirinize yuvarlayın. Topu yakalamaya çalışması ve sana geri itmesi için onu cesaretlendir; el-göz koordinasyonu tavan yapsın!';
 
   @override
-  String get tip_nesne_karsilastirma_title => 'Nesne KarÅŸÄ±laÅŸtÄ±rma';
+  String get tip_nesne_karsilastirma_title => 'Nesne Karşılaştırma';
 
   @override
   String get tip_nesne_karsilastirma_desc =>
-      'Elini birine yumuÅŸak bir oyuncak, diÄŸerine sert bir blok ver. DokularÄ± ve aÄŸÄ±rlÄ±klarÄ± arasÄ±ndaki farkÄ± anlamasÄ± iÃ§in ona zaman tanÄ±. Duyusal farkÄ±ndalÄ±k iÃ§in harika bir egzersiz!';
+      'Elini birine yumuşak bir oyuncak, diğerine sert bir blok ver. Dokuları ve ağırlıkları arasındaki farkı anlaması için ona zaman tanı. Duyusal farkındalık için harika bir egzersiz!';
 
   @override
-  String get tip_kucuk_okuyucu_title => 'KÃ¼Ã§Ã¼k Okuyucu';
+  String get tip_kucuk_okuyucu_title => 'Küçük Okuyucu';
 
   @override
   String get tip_kucuk_okuyucu_desc =>
-      'KalÄ±n sayfalÄ± kitaplarÄ± beraber inceleyin. SayfayÄ± Ã§evirmesi iÃ§in ona alan tanÄ±, gerekirse hafifÃ§e ucundan kaldÄ±rarak yardÄ±m et. Ä°nce motor becerileri ve merak duygusu iÃ§in birebir.';
+      'Kalın sayfalı kitapları beraber inceleyin. Sayfayı çevirmesi için ona alan tanı, gerekirse hafifçe ucundan kaldırarak yardım et. İnce motor becerileri ve merak duygusu için birebir.';
 
   @override
-  String get tip_yercekimi_deneyi_title => 'YerÃ§ekimi Deneyi';
+  String get tip_yercekimi_deneyi_title => 'Yerçekimi Deneyi';
 
   @override
   String get tip_yercekimi_deneyi_desc =>
-      'Elindeki oyuncaÄŸÄ± bilerek yere bÄ±rakmasÄ± ve senin almanÄ± beklemesi aslÄ±nda bir neden-sonuÃ§ oyunudur. BÄ±raktÄ±ÄŸÄ±nda \"Gitti!\" diyerek bu keÅŸfine eÅŸlik et.';
+      'Elindeki oyuncağı bilerek yere bırakması ve senin almanı beklemesi aslında bir neden-sonuç oyunudur. Bıraktığında \"Gitti!\" diyerek bu keşfine eşlik et.';
 
   @override
-  String get tip_adimadim_macera_title => 'Ä°lk AdÄ±m HeyecanÄ±';
+  String get tip_adimadim_macera_title => 'İlk Adım Heyecanı';
 
   @override
   String get tip_adimadim_macera_desc =>
-      'Onu koltuk altlarÄ±ndan sÄ±kÄ±ca tut ve ayaklarÄ±nÄ± yere basmasÄ±nÄ± saÄŸla. HafifÃ§e Ã¶ne doÄŸru yÃ¶nlendirerek yÃ¼rÃ¼me hissini tatmasÄ±nÄ± saÄŸla; bacak kaslarÄ±nÄ± ve dengesini geliÅŸtirir.';
+      'Onu koltuk altlarından sıkıca tut ve ayaklarını yere basmasını sağla. Hafifçe öne doğru yönlendirerek yürüme hissini tatmasını sağla; bacak kaslarını ve dengesini geliştirir.';
 
   @override
-  String get tip_comert_bebek_title => 'CÃ¶mert Bebek';
+  String get tip_comert_bebek_title => 'Cömert Bebek';
 
   @override
   String get tip_comert_bebek_desc =>
-      '\"Bana verir misin?\" diyerek elindeki oyuncaÄŸÄ± iste. Sana uzattÄ±ÄŸÄ±nda \"TeÅŸekkÃ¼r ederim!\" diyerek kutla. Bu, karÅŸÄ±lÄ±klÄ± etkileÅŸim ve paylaÅŸma bilincini baÅŸlatÄ±r.';
+      '\"Bana verir misin?\" diyerek elindeki oyuncağı iste. Sana uzattığında \"Teşekkür ederim!\" diyerek kutla. Bu, karşılıklı etkileşim ve paylaşma bilincini başlatır.';
 
   @override
-  String get tip_yemek_zamani_title => 'Yemek ZamanÄ±';
+  String get tip_yemek_zamani_title => 'Yemek Zamanı';
 
   @override
   String get tip_yemek_zamani_desc =>
-      'BebeÄŸinizle beraber sofraya oturun ve en komik hallerine ÅŸahit olun. Ã–nÃ¼ndeki haÅŸlanmÄ±ÅŸ sebzeleri yÃ¼zÃ¼ne bularken el kol koordinasyonu ve mikro hareketleri geliÅŸecektir!';
+      'Bebeğinizle beraber sofraya oturun ve en komik hallerine şahit olun. Önündeki haşlanmış sebzeleri yüzüne bularken el kol koordinasyonu ve mikro hareketleri gelişecektir!';
 
   @override
-  String get tip_alkis_zamani_title => 'AlkÄ±ÅŸ ZamanÄ±';
+  String get tip_alkis_zamani_title => 'Alkış Zamanı';
 
   @override
   String get tip_alkis_zamani_desc =>
-      'Sen alkÄ±ÅŸ tuttukÃ§a bebeÄŸini de sana eÅŸlik etmesi iÃ§in cesaretlendir. Ritmi taklit etmeye Ã§alÄ±ÅŸmasÄ± hem dikkatini hem de koordinasyonunu gÃ¼Ã§lendirir.';
+      'Sen alkış tuttukça bebeğini de sana eşlik etmesi için cesaretlendir. Ritmi taklit etmeye çalışması hem dikkatini hem de koordinasyonunu güçlendirir.';
 
   @override
   String get tip_alo_kim_o_title => 'Alo, Kim O?';
 
   @override
   String get tip_alo_kim_o_desc =>
-      'Oyuncak bir telefonu kulaÄŸÄ±na gÃ¶tÃ¼rÃ¼p kÄ±sa kÄ±sa konuÅŸmalar yap. Sonra telefonu ona uzat. Bu minik rol oyunu ses taklidini ve sosyal etkileÅŸimi destekler.';
+      'Oyuncak bir telefonu kulağına götürüp kısa kısa konuşmalar yap. Sonra telefonu ona uzat. Bu minik rol oyunu ses taklidini ve sosyal etkileşimi destekler.';
 
   @override
   String get tip_baybay_partisi_title => 'Baybay Partisi';
 
   @override
   String get tip_baybay_partisi_desc =>
-      'Evden Ã§Ä±kan birine el sallayÄ±p \"bay bay\" de. BebeÄŸinin de el sallamaya Ã§alÄ±ÅŸmasÄ±nÄ± teÅŸvik et. Taklit yoluyla iletiÅŸim becerisi hÄ±zla geliÅŸir.';
+      'Evden çıkan birine el sallayıp \"bay bay\" de. Bebeğinin de el sallamaya çalışmasını teşvik et. Taklit yoluyla iletişim becerisi hızla gelişir.';
 
   @override
-  String get tip_birak_izle_title => 'BÄ±rak Ä°zle';
+  String get tip_birak_izle_title => 'Bırak İzle';
 
   @override
   String get tip_birak_izle_desc =>
-      'Elindeki oyuncaÄŸÄ± yere bÄ±rakmasÄ±na izin ver ve nereye gittiÄŸini birlikte takip edin. DÃ¼ÅŸen nesneyi izlemesi neden-sonuÃ§ iliÅŸkisini kurmasÄ±na yardÄ±m eder.';
+      'Elindeki oyuncağı yere bırakmasına izin ver ve nereye gittiğini birlikte takip edin. Düşen nesneyi izlemesi neden-sonuç ilişkisini kurmasına yardım eder.';
 
   @override
-  String get tip_goster_bakalim_title => 'GÃ¶ster BakalÄ±m';
+  String get tip_goster_bakalim_title => 'Göster Bakalım';
 
   @override
   String get tip_goster_bakalim_desc =>
-      '\"Top nerede?\" ya da \"Ä±ÅŸÄ±ÄŸÄ± gÃ¶ster\" gibi kÃ¼Ã§Ã¼k sorular sor. ParmaÄŸÄ±nla gÃ¶sterdiÄŸinde onu da bakmaya ve iÅŸaret etmeye teÅŸvik et.';
+      '\"Top nerede?\" ya da \"ışığı göster\" gibi küçük sorular sor. Parmağınla gösterdiğinde onu da bakmaya ve işaret etmeye teşvik et.';
 
   @override
   String get tip_hazine_kutusu_title => 'Hazine Kutusu';
 
   @override
   String get tip_hazine_kutusu_desc =>
-      'GÃ¼venli ev eÅŸyalarÄ±ndan oluÅŸan kÃ¼Ã§Ã¼k bir kutu hazÄ±rla. Ä°Ã§inden Ã§Ä±karÄ±p incelemesine izin ver. Her yeni nesne onun iÃ§in ayrÄ± bir keÅŸif alanÄ±dÄ±r.';
+      'Güvenli ev eşyalarından oluşan küçük bir kutu hazırla. İçinden çıkarıp incelemesine izin ver. Her yeni nesne onun için ayrı bir keşif alanıdır.';
 
   @override
   String get tip_minik_kitap_kurdu_title => 'Minik Kitap Kurdu';
 
   @override
   String get tip_minik_kitap_kurdu_desc =>
-      'KalÄ±n sayfalÄ± bir kitabÄ± birlikte karÄ±ÅŸtÄ±rÄ±n. Resimlere bakÄ±p anlatÄ±rken sayfalarÄ± Ã§evirmesine fÄ±rsat ver. MerakÄ± ve ince motor becerileri birlikte gÃ¼Ã§lenir.';
+      'Kalın sayfalı bir kitabı birlikte karıştırın. Resimlere bakıp anlatırken sayfaları çevirmesine fırsat ver. Merakı ve ince motor becerileri birlikte güçlenir.';
 
   @override
-  String get tip_mobilya_dagcilari_title => 'Mobilya DaÄŸcÄ±larÄ±';
+  String get tip_mobilya_dagcilari_title => 'Mobilya Dağcıları';
 
   @override
   String get tip_mobilya_dagcilari_desc =>
-      'KoltuÄŸa ya da gÃ¼venli bir alÃ§aÄŸa tutunarak ayaÄŸa kalkma denemelerini destekle. TÄ±rmanma ve tutunma Ã§abasÄ± kaslarÄ±nÄ± ve dengesini geliÅŸtirir.';
+      'Koltuğa ya da güvenli bir alçağa tutunarak ayağa kalkma denemelerini destekle. Tırmanma ve tutunma çabası kaslarını ve dengesini geliştirir.';
 
   @override
-  String get tip_saksak_alkis_title => 'ÅakÅŸak AlkÄ±ÅŸ';
+  String get tip_saksak_alkis_title => 'Şakşak Alkış';
 
   @override
   String get tip_saksak_alkis_desc =>
-      'Ellerini neÅŸeyle birbirine vurup alkÄ±ÅŸ yap. BebeÄŸin seni taklit etmeye Ã§alÄ±ÅŸtÄ±kÃ§a ritim duygusu ve Ã§ift taraflÄ± koordinasyonu geliÅŸir.';
+      'Ellerini neşeyle birbirine vurup alkış yap. Bebeğin seni taklit etmeye çalıştıkça ritim duygusu ve çift taraflı koordinasyonu gelişir.';
 
   @override
-  String get tip_sira_sende_title => 'SÄ±ra Sende';
+  String get tip_sira_sende_title => 'Sıra Sende';
 
   @override
   String get tip_sira_sende_desc =>
-      'Basit bir oyuncaÄŸÄ± Ã¶nce sen hareket ettir, sonra ona uzatÄ±p \"ÅŸimdi sÄ±ra sende\" de. SÄ±ra bekleme ve karÅŸÄ±lÄ±klÄ± etkileÅŸim iÃ§in gÃ¼zel bir baÅŸlangÄ±Ã§tÄ±r.';
+      'Basit bir oyuncağı önce sen hareket ettir, sonra ona uzatıp \"şimdi sıra sende\" de. Sıra bekleme ve karşılıklı etkileşim için güzel bir başlangıçtır.';
 
   @override
   String get tip_veral_oyunu_title => 'Ver-Al Oyunu';
 
   @override
   String get tip_veral_oyunu_desc =>
-      'Elindeki oyuncaÄŸÄ± senden almasÄ±na, sonra geri vermesine alan aÃ§. Bu kÃ¼Ã§Ã¼k alÄ±ÅŸveriÅŸ oyunu paylaÅŸma ve karÅŸÄ±lÄ±klÄ± iliÅŸki kurma becerisini besler.';
+      'Elindeki oyuncağı senden almasına, sonra geri vermesine alan aç. Bu küçük alışveriş oyunu paylaşma ve karşılıklı ilişki kurma becerisini besler.';
 
   @override
   String get tip_yuvarla_bekle_title => 'Yuvarla Bekle';
 
   @override
   String get tip_yuvarla_bekle_desc =>
-      'YumuÅŸak bir topu ona doÄŸru yuvarla ve tepki vermesini bekle. Bekleme anÄ±, oyunun sÄ±rasÄ±nÄ± anlamasÄ±na ve dikkatini toplamasÄ±na yardÄ±m eder.';
+      'Yumuşak bir topu ona doğru yuvarla ve tepki vermesini bekle. Bekleme anı, oyunun sırasını anlamasına ve dikkatini toplamasına yardım eder.';
 
   @override
-  String get upcomingVaccine => 'YAKLAÅAN AÅI';
+  String get upcomingVaccine => 'YAKLAŞAN AŞI';
 
   @override
   String nextVaccineLabel(String name) {
@@ -954,21 +953,21 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String leftMinRightMin(int left, int right) {
-    return 'Sol ${left}dk â€¢ SaÄŸ ${right}dk';
+    return 'Sol ${left}dk • Sağ ${right}dk';
   }
 
   @override
   String breastfeedingSavedSnack(int left, int right) {
-    return 'âœ… Emzirme kaydedildi: Sol ${left}dk, SaÄŸ ${right}dk';
+    return '✅ Emzirme kaydedildi: Sol ${left}dk, Sağ ${right}dk';
   }
 
   @override
   String sleepSavedSnack(String duration) {
-    return 'âœ… Uyku kaydedildi: $duration';
+    return '✅ Uyku kaydedildi: $duration';
   }
 
   @override
-  String get sleepTooShort => 'âš ï¸ Uyku 1 dakikadan kÄ±sa, kaydedilmedi';
+  String get sleepTooShort => '⚠️ Uyku 1 dakikadan kısa, kaydedilmedi';
 
   @override
   String kgThisMonth(String value) {
@@ -984,116 +983,116 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noSleep => 'Uyku yok';
 
   @override
-  String get justNow => 'az Ã¶nce';
+  String get justNow => 'az önce';
 
   @override
   String minutesAgo(int count) {
-    return '$count dk Ã¶nce';
+    return '$count dk önce';
   }
 
   @override
   String hoursAgo(int count) {
-    return '$count sa Ã¶nce';
+    return '$count sa önce';
   }
 
   @override
   String daysAgo(int count) {
-    return '$count gÃ¼n Ã¶nce';
+    return '$count gün önce';
   }
 
   @override
-  String get welcomeToNilico => 'Nilico\'ya HoÅŸ Geldiniz';
+  String get welcomeToNilico => 'Nilico\'ya Hoş Geldiniz';
 
   @override
-  String get createYourAccount => 'HesabÄ±nÄ± oluÅŸtur';
+  String get createYourAccount => 'Hesabını oluştur';
 
   @override
   String get loginBenefitText =>
-      'Verilerini gÃ¼vende tutmak ve yakÄ±nda gelecek yedekleme Ã¶zellikleri iÃ§in giriÅŸ yapabilirsin. Ä°stersen giriÅŸ yapmadan da devam edebilirsin.';
+      'Verilerini güvende tutmak ve yakında gelecek yedekleme özellikleri için giriş yapabilirsin. İstersen giriş yapmadan da devam edebilirsin.';
 
   @override
-  String get signInWithApple => 'Apple ile giriÅŸ yap';
+  String get signInWithApple => 'Apple ile giriş yap';
 
   @override
-  String get signInWithGoogle => 'Google ile giriÅŸ yap';
+  String get signInWithGoogle => 'Google ile giriş yap';
 
   @override
-  String get continueWithoutLogin => 'GiriÅŸ yapmadan devam et';
+  String get continueWithoutLogin => 'Giriş yapmadan devam et';
 
   @override
   String get loginOptionalNote =>
-      'GiriÅŸ isteÄŸe baÄŸlÄ±dÄ±r. TÃ¼m Ã¶zellikler hesap olmadan Ã§alÄ±ÅŸÄ±r.';
+      'Giriş isteğe bağlıdır. Tüm özellikler hesap olmadan çalışır.';
 
   @override
   String get account => 'Hesap';
 
   @override
-  String get signIn => 'GiriÅŸ Yap';
+  String get signIn => 'Giriş Yap';
 
   @override
-  String get signOut => 'Ã‡Ä±kÄ±ÅŸ Yap';
+  String get signOut => 'Çıkış Yap';
 
   @override
   String signedInAs(String email) {
-    return '$email olarak giriÅŸ yapÄ±ldÄ±';
+    return '$email olarak giriş yapıldı';
   }
 
   @override
   String get guestMode => 'Misafir Modu';
 
   @override
-  String get signInToProtectData => 'Verilerini korumak iÃ§in giriÅŸ yap';
+  String get signInToProtectData => 'Verilerini korumak için giriş yap';
 
   @override
-  String get backupSyncComingSoon => 'Yedekleme ve senkronizasyon yakÄ±nda';
+  String get backupSyncComingSoon => 'Yedekleme ve senkronizasyon yakında';
 
   @override
-  String get privacyPolicy => 'Gizlilik PolitikasÄ±';
+  String get privacyPolicy => 'Gizlilik Politikası';
 
   @override
-  String get privacyPolicySubtitle => 'Gizlilik politikasÄ±nÄ± gÃ¶rÃ¼ntÃ¼le';
+  String get privacyPolicySubtitle => 'Gizlilik politikasını görüntüle';
 
   @override
-  String get termsOfUse => 'KullanÄ±m ÅartlarÄ±';
+  String get termsOfUse => 'Kullanım Şartları';
 
   @override
-  String get termsOfUseSubtitle => 'KullanÄ±m koÅŸullarÄ±nÄ± gÃ¶rÃ¼ntÃ¼le';
+  String get termsOfUseSubtitle => 'Kullanım koşullarını görüntüle';
 
   @override
-  String get pageCouldNotOpen => 'Sayfa aÃ§Ä±lamadÄ±';
+  String get pageCouldNotOpen => 'Sayfa açılamadı';
 
   @override
-  String get health => 'SaÄŸlÄ±k';
+  String get health => 'Sağlık';
 
   @override
-  String get medications => 'Ä°laÃ§lar';
+  String get medications => 'İlaçlar';
 
   @override
-  String get noMedications => 'HenÃ¼z ilaÃ§/takviye eklenmedi';
+  String get noMedications => 'Henüz ilaç/takviye eklenmedi';
 
   @override
-  String get medication => 'Ä°laÃ§';
+  String get medication => 'İlaç';
 
   @override
   String get supplement => 'Takviye';
 
   @override
-  String get addMedication => 'Ä°laÃ§ Ekle';
+  String get addMedication => 'İlaç Ekle';
 
   @override
-  String get editMedication => 'Ä°lacÄ± DÃ¼zenle';
+  String get editMedication => 'İlacı Düzenle';
 
   @override
   String get medicationName => 'Ad';
 
   @override
-  String get medicationNameRequired => 'LÃ¼tfen bir ad girin';
+  String get medicationNameRequired => 'Lütfen bir ad girin';
 
   @override
   String get dosage => 'Doz';
 
   @override
-  String get schedule => 'KullanÄ±m SÄ±klÄ±ÄŸÄ±';
+  String get schedule => 'Kullanım Sıklığı';
 
   @override
   String get notes => 'Notlar';
@@ -1105,240 +1104,239 @@ class AppLocalizationsTr extends AppLocalizations {
   String get systemDefault => 'Sistem';
 
   @override
-  String get turkish => 'TÃ¼rkÃ§e';
+  String get turkish => 'Türkçe';
 
   @override
   String get english => 'English';
 
   @override
-  String get russian => 'Ğ ÑƒÑÑĞºĞ¸Ğ¹';
+  String get russian => 'Русский';
 
   @override
-  String get ukrainian => 'Ğ£ĞºÑ€Ğ°Ñ—Ğ½ÑÑŒĞºĞ°';
+  String get ukrainian => 'Українська';
 
   @override
-  String get spanish => 'EspaÃ±ol';
+  String get spanish => 'Español';
 
   @override
-  String get languageUpdated => 'Dil gÃ¼ncellendi';
+  String get languageUpdated => 'Dil güncellendi';
 
   @override
-  String get tip_siyah_mekonyum_title => 'Ä°lk Kaka';
+  String get tip_siyah_mekonyum_title => 'İlk Kaka';
 
   @override
   String get tip_siyah_mekonyum_desc =>
-      'BebeÄŸin ister anne sÃ¼tÃ¼ ister formÃ¼l mama alsÄ±n, yaÅŸamÄ±nÄ±n ilk 2â€“4 gÃ¼nÃ¼nde bu durumla karÅŸÄ±laÅŸmak Ã§ok normaldir. EndiÅŸelenmene gerek yok.';
+      'Bebeğin ister anne sütü ister formül mama alsın, yaşamının ilk 2–4 gününde bu durumla karşılaşmak çok normaldir. Endişelenmene gerek yok.';
 
   @override
-  String get tip_eye_tracking_title => 'GÃ¶z Takibi';
+  String get tip_eye_tracking_title => 'Göz Takibi';
 
   @override
   String get tip_eye_tracking_desc =>
-      'BebeÄŸin ÅŸu an sadece 25â€“30 cm uzaÄŸÄ± net gÃ¶rebilir. YÃ¼zÃ¼nÃ¼ ona yaklaÅŸtÄ±r ve gÃ¶zlerinle yavaÅŸÃ§a hareket et. Seni gÃ¶zleriyle takip etmeye Ã§alÄ±ÅŸmasÄ±, gÃ¶rsel geliÅŸimi iÃ§in ilk egzersizidir.';
+      'Bebeğin şu an sadece 25–30 cm uzağı net görebilir. Yüzünü ona yaklaştır ve gözlerinle yavaşça hareket et. Seni gözleriyle takip etmeye çalışması, görsel gelişimi için ilk egzersizidir.';
 
   @override
-  String get tip_neck_support_title => 'Boyun DesteÄŸi';
+  String get tip_neck_support_title => 'Boyun Desteği';
 
   @override
   String get tip_neck_support_desc =>
-      'BebeÄŸini kucaÄŸÄ±na aldÄ±ÄŸÄ±nda baÅŸÄ±nÄ± ve boynunu mutlaka destekle. Boyun kaslarÄ± henÃ¼z Ã§ok zayÄ±f.';
+      'Bebeğini kucağına aldığında başını ve boynunu mutlaka destekle. Boyun kasları henüz çok zayıf.';
 
   @override
-  String get tip_reflex_stepping_title => 'YÃ¼rÃ¼me Refleksi';
+  String get tip_reflex_stepping_title => 'Yürüme Refleksi';
 
   @override
   String get tip_reflex_stepping_desc =>
-      'BebeÄŸini dik tutup ayaklarÄ±nÄ± dÃ¼z bir yÃ¼zeye deÄŸdir. AdÄ±m atma refleksini gÃ¶receksin!';
+      'Bebeğini dik tutup ayaklarını düz bir yüzeye değdir. Adım atma refleksini göreceksin!';
 
   @override
-  String get tip_sound_interest_title => 'Ses Ä°lgisi';
+  String get tip_sound_interest_title => 'Ses İlgisi';
 
   @override
   String get tip_sound_interest_desc =>
-      'BebeÄŸin seslere karÅŸÄ± Ã§ok duyarlÄ±. YumuÅŸak bir Ã§Ä±ngÄ±rak veya mÃ¼zik kutusuyla dikkatini Ã§ekmeyi dene.';
+      'Bebeğin seslere karşı çok duyarlı. Yumuşak bir çıngırak veya müzik kutusuyla dikkatini çekmeyi dene.';
 
   @override
-  String get tip_parent_interaction_title => 'Ebeveyn EtkileÅŸimi';
+  String get tip_parent_interaction_title => 'Ebeveyn Etkileşimi';
 
   @override
   String get tip_parent_interaction_desc =>
-      'BebeÄŸinle gÃ¶z temasÄ± kur ve yavaÅŸÃ§a konuÅŸ. Senin sesini tanÄ±yor ve gÃ¼ven hissediyor.';
+      'Bebeğinle göz teması kur ve yavaşça konuş. Senin sesini tanıyor ve güven hissediyor.';
 
   @override
-  String get tip_color_worlds_title => 'Renk DÃ¼nyasÄ±';
+  String get tip_color_worlds_title => 'Renk Dünyası';
 
   @override
   String get tip_color_worlds_desc =>
-      'YenidoÄŸanlar siyah-beyaz kontrastlarÄ± en iyi gÃ¶rÃ¼r. Siyah-beyaz desenli kartlar gÃ¶stermeyi dene.';
+      'Yenidoğanlar siyah-beyaz kontrastları en iyi görür. Siyah-beyaz desenli kartlar göstermeyi dene.';
 
   @override
   String get tip_mini_athlete_title => 'Mini Atlet';
 
   @override
   String get tip_mini_athlete_desc =>
-      'KarÄ±n Ã¼stÃ¼ (tummy time) egzersizi boyun ve sÄ±rt kaslarÄ±nÄ± gÃ¼Ã§lendirir. GÃ¼nde birkaÃ§ dakika dene.';
+      'Karın üstü (tummy time) egzersizi boyun ve sırt kaslarını güçlendirir. Günde birkaç dakika dene.';
 
   @override
-  String get tip_sound_hunter_title => 'Ses AvcÄ±sÄ±';
+  String get tip_sound_hunter_title => 'Ses Avcısı';
 
   @override
   String get tip_sound_hunter_desc =>
-      'BebeÄŸin kulaÄŸÄ±nÄ±n yanÄ±nda yavaÅŸÃ§a parmak ÅŸÄ±klat. BaÅŸÄ±nÄ± sese doÄŸru Ã§evirmeye Ã§alÄ±ÅŸacaktÄ±r.';
+      'Bebeğin kulağının yanında yavaşça parmak şıklat. Başını sese doğru çevirmeye çalışacaktır.';
 
   @override
-  String get tip_touch_explore_title => 'Dokunma KeÅŸfi';
+  String get tip_touch_explore_title => 'Dokunma Keşfi';
 
   @override
   String get tip_touch_explore_desc =>
-      'FarklÄ± dokularÄ± bebeÄŸinin avuÃ§ iÃ§ine ve ayak tabanÄ±na dokundur. YumuÅŸak, pÃ¼rÃ¼zlÃ¼, serin yÃ¼zeyler dene.';
+      'Farklı dokuları bebeğinin avuç içine ve ayak tabanına dokundur. Yumuşak, pürüzlü, serin yüzeyler dene.';
 
   @override
   String get tip_agu_conversation_1_2_title => 'Agu Sohbetleri';
 
   @override
   String get tip_agu_conversation_1_2_desc =>
-      'BebeÄŸin sesler Ã§Ä±kardÄ±ÄŸÄ±nda onu dinle. O bitirdiÄŸinde yumuÅŸak bir sesle karÅŸÄ±lÄ±k ver. Bu minik sohbetler iletiÅŸimin temelini atar.';
+      'Bebeğin sesler çıkardığında onu dinle. O bitirdiğinde yumuşak bir sesle karşılık ver. Bu minik sohbetler iletişimin temelini atar.';
 
   @override
-  String get tip_tummy_time_strength_1_2_title =>
-      'GÃ¼Ã§lÃ¼ Omuzlar (Tummy Time)';
+  String get tip_tummy_time_strength_1_2_title => 'Güçlü Omuzlar (Tummy Time)';
 
   @override
   String get tip_tummy_time_strength_1_2_desc =>
-      'BebeÄŸini kÄ±sa sÃ¼relerle karnÄ±nÄ±n Ã¼zerine yatÄ±r. Ã–nÃ¼ne renkli oyuncaklar koyarak baÅŸÄ±nÄ± kaldÄ±rmasÄ±nÄ± teÅŸvik et. Bu, emeklemenin ilk adÄ±mÄ±dÄ±r.';
+      'Bebeğini kısa sürelerle karnının üzerine yatır. Önüne renkli oyuncaklar koyarak başını kaldırmasını teşvik et. Bu, emeklemenin ilk adımıdır.';
 
   @override
-  String get tip_baby_massage_1_2_title => 'Huzur MasajÄ±';
+  String get tip_baby_massage_1_2_title => 'Huzur Masajı';
 
   @override
   String get tip_baby_massage_1_2_desc =>
-      'Banyo sonrasÄ± ayaklardan baÅŸlayarak yumuÅŸak dokunuÅŸlarla masaj yap. Bu hem beden farkÄ±ndalÄ±ÄŸÄ±nÄ± artÄ±rÄ±r hem de onu sakinleÅŸtirir.';
+      'Banyo sonrası ayaklardan başlayarak yumuşak dokunuşlarla masaj yap. Bu hem beden farkındalığını artırır hem de onu sakinleştirir.';
 
   @override
-  String get tip_gesture_speech_1_2_title => 'Ä°ÅŸaretli KonuÅŸma';
+  String get tip_gesture_speech_1_2_title => 'İşaretli Konuşma';
 
   @override
   String get tip_gesture_speech_1_2_desc =>
-      'KonuÅŸurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sÃ¼rt. GÃ¶rsel hafÄ±zasÄ± gÃ¼Ã§lenir';
+      'Konuşurken hareketlerini kullan. \"Gidiyoruz\" derken el salla, \"Bitti\" derken ellerini sürt. Görsel hafızası güçlenir';
 
   @override
-  String get tip_open_hands_1_2_title => 'Ã–zgÃ¼r Parmaklar';
+  String get tip_open_hands_1_2_title => 'Özgür Parmaklar';
 
   @override
   String get tip_open_hands_1_2_desc =>
-      'ArtÄ±k elleri yumruk olmaktan Ã§Ä±kÄ±yor. ParmaklarÄ±nÄ± aÃ§Ä±p kapamasÄ±nÄ± izle. Avucuna yumuÅŸak oyuncaklar vererek yakalama becerisini destekle.';
+      'Artık elleri yumruk olmaktan çıkıyor. Parmaklarını açıp kapamasını izle. Avucuna yumuşak oyuncaklar vererek yakalama becerisini destekle.';
 
   @override
   String get tip_side_by_side_bonding_1_2_title => 'Yan Yana Keyif';
 
   @override
   String get tip_side_by_side_bonding_1_2_desc =>
-      'BebeÄŸinle yan yana uzan. Seni gÃ¶rdÃ¼ÄŸÃ¼nde sana doÄŸru dÃ¶nmeye Ã§alÄ±ÅŸacaktÄ±r. GÃ¼lÃ¼mse ve sevgi dolu sÃ¶zler fÄ±sÄ±lda.';
+      'Bebeğinle yan yana uzan. Seni gördüğünde sana doğru dönmeye çalışacaktır. Gülümse ve sevgi dolu sözler fısılda.';
 
   @override
-  String get tip_sound_hunter_listening_title => 'Ses AvcÄ±sÄ±';
+  String get tip_sound_hunter_listening_title => 'Ses Avcısı';
 
   @override
   String get tip_sound_hunter_listening_desc =>
-      'BebeÄŸinin gÃ¶rmediÄŸi bir noktada hafifÃ§e bir Ã§Ä±ngÄ±rak salla. BaÅŸÄ±nÄ± sesin geldiÄŸi yÃ¶ne Ã§evirmesi, iÅŸitme ve odaklanmayÄ± geliÅŸtirir.';
+      'Bebeğinin görmediği bir noktada hafifçe bir çıngırak salla. Başını sesin geldiği yöne çevirmesi, işitme ve odaklanmayı geliştirir.';
 
   @override
-  String get tip_sound_hunter_level2_1_2_title => 'Ses AvcÄ±sÄ± (Seviye 2)';
+  String get tip_sound_hunter_level2_1_2_title => 'Ses Avcısı (Seviye 2)';
 
   @override
   String get tip_sound_hunter_level2_1_2_desc =>
-      'SaÄŸÄ±ndan ve solundan farklÄ± sesler Ã§Ä±kar. KaynaÄŸÄ± bulmaya Ã§alÄ±ÅŸmasÄ± dikkat becerilerini gÃ¼Ã§lendirir.';
+      'Sağından ve solundan farklı sesler çıkar. Kaynağı bulmaya çalışması dikkat becerilerini güçlendirir.';
 
   @override
-  String get tip_texture_discovery_1_2_title => 'Dokun ve KeÅŸfet';
+  String get tip_texture_discovery_1_2_title => 'Dokun ve Keşfet';
 
   @override
   String get tip_texture_discovery_1_2_desc =>
-      'FarklÄ± dokulardaki nesneleri dokundur. Her yeni his, onun iÃ§in keÅŸfedilecek yeni bir dÃ¼nyadÄ±r.';
+      'Farklı dokulardaki nesneleri dokundur. Her yeni his, onun için keşfedilecek yeni bir dünyadır.';
 
   @override
-  String get tip_outdoor_explorer_4_5_title => 'DÄ±ÅŸ DÃ¼nya KaÅŸifi';
+  String get tip_outdoor_explorer_4_5_title => 'Dış Dünya Kaşifi';
 
   @override
   String get tip_outdoor_explorer_4_5_desc =>
-      'DÄ±ÅŸarÄ±da gÃ¶rdÃ¼ÄŸÃ¼n aÄŸaÃ§larÄ±, hayvanlarÄ± ona gÃ¶ster. DokunmasÄ±nÄ± saÄŸla ve anlat. DÃ¼nyayÄ± senin sesinle tanÄ±mak ona gÃ¼ven verir.';
+      'Dışarıda gördüğün ağaçları, hayvanları ona göster. Dokunmasını sağla ve anlat. Dünyayı senin sesinle tanımak ona güven verir.';
 
   @override
-  String get tip_reaching_exercise_1_2_title => 'Uzanma AntrenmanÄ±';
+  String get tip_reaching_exercise_1_2_title => 'Uzanma Antrenmanı';
 
   @override
   String get tip_reaching_exercise_1_2_desc =>
-      'UlaÅŸabileceÄŸi yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapmasÄ± kaslarÄ±nÄ± gÃ¼Ã§lendirir.';
+      'Ulaşabileceği yerlere oyuncaklar koy. Tam yakalayamasa bile hamle yapması kaslarını güçlendirir.';
 
   @override
-  String get tip_supported_bounce_1_2_title => 'Diz ÃœstÃ¼ Yaylanma';
+  String get tip_supported_bounce_1_2_title => 'Diz Üstü Yaylanma';
 
   @override
   String get tip_supported_bounce_1_2_desc =>
-      'Onu kucaÄŸÄ±nda dik tutup ayaklarÄ±nÄ± dizlerine bastÄ±rarak hafifÃ§e yaylanmasÄ±nÄ± saÄŸla. Bu \"zÄ±plama\" oyunu bacak kaslarÄ±nÄ± gÃ¼Ã§lendirirken, dÃ¼nyayÄ± seninle aynÄ± bakÄ±ÅŸ aÃ§Ä±sÄ±ndan gÃ¶rmesini saÄŸlar.';
+      'Onu kucağında dik tutup ayaklarını dizlerine bastırarak hafifçe yaylanmasını sağla. Bu \"zıplama\" oyunu bacak kaslarını güçlendirirken, dünyayı seninle aynı bakış açısından görmesini sağlar.';
 
   @override
-  String get tip_visual_tracking_1_2_title => 'GÃ¶rsel Takip';
+  String get tip_visual_tracking_1_2_title => 'Görsel Takip';
 
   @override
   String get tip_visual_tracking_1_2_desc =>
-      'Bir ipe ses Ã§Ä±karan renkli bir oyuncak baÄŸla ve bebeÄŸinin gÃ¶rÃ¼ÅŸ alanÄ±nda yavaÅŸÃ§a daireler Ã§izerek hareket ettir. GÃ¶zleriyle takip etmesi, gÃ¶rsel takip yeteneÄŸi iÃ§in mÃ¼thiÅŸ bir egzersizdir.';
+      'Bir ipe ses çıkaran renkli bir oyuncak bağla ve bebeğinin görüş alanında yavaşça daireler çizerek hareket ettir. Gözleriyle takip etmesi, görsel takip yeteneği için müthiş bir egzersizdir.';
 
   @override
-  String get tip_face_play_1_2_title => 'Mimik DansÄ±';
+  String get tip_face_play_1_2_title => 'Mimik Dansı';
 
   @override
   String get tip_face_play_1_2_desc =>
-      'BebeÄŸine yÃ¼zÃ¼nÃ¼ yaklaÅŸtÄ±r, gÃ¶z temasÄ± kur ve komik mimikler yap. Senin ses tonun ve yÃ¼zÃ¼ndeki her deÄŸiÅŸim, onun en sevdiÄŸi ve en Ã¶ÄŸretici oyuncaÄŸÄ±dÄ±r.';
+      'Bebeğine yüzünü yaklaştır, göz teması kur ve komik mimikler yap. Senin ses tonun ve yüzündeki her değişim, onun en sevdiği ve en öğretici oyuncağıdır.';
 
   @override
   String get tip_emotion_labeling_1_2_title => 'Duygu';
 
   @override
   String get tip_emotion_labeling_1_2_desc =>
-      'BebeÄŸin acÄ±ktÄ±ÄŸÄ± veya sÄ±kÄ±ldÄ±ÄŸÄ± iÃ§in aÄŸladÄ±ÄŸÄ±nda, onun hissini isimlendir. \"KarnÄ±n acÄ±ktÄ±, seni anlÄ±yorum, ÅŸimdi halledeceÄŸiz\" diyerek anlaÅŸÄ±ldÄ±ÄŸÄ±nÄ± hissettir.';
+      'Bebeğin acıktığı veya sıkıldığı için ağladığında, onun hissini isimlendir. \"Karnın acıktı, seni anlıyorum, şimdi halledeceğiz\" diyerek anlaşıldığını hissettir.';
 
   @override
-  String get tip_first_meal_title => 'Ä°lk TadÄ±m';
+  String get tip_first_meal_title => 'İlk Tadım';
 
   @override
   String get tip_first_meal_desc =>
-      'KatÄ± gÄ±daya hekiminizin Ã¶nerisinde geÃ§in. KaÅŸÄ±kl abeslenme her ne kadar eÄŸlenceli olsa da alerji durumuna karÅŸÄ± tetikte olun';
+      'Katı gıdaya hekiminizin önerisinde geçin. Kaşıkl abeslenme her ne kadar eğlenceli olsa da alerji durumuna karşı tetikte olun';
 
   @override
   String get tip_hand_to_hand_transfer_4_5_title => 'Aktif Eller';
 
   @override
   String get tip_hand_to_hand_transfer_4_5_desc =>
-      '4-5. aydan itibaren nesneleri bir elinden diÄŸerine geÃ§irmeye Ã§alÄ±ÅŸacaktÄ±r. Ona kavramasÄ± kolay nesneler ver ve nesneyi evirip Ã§evirmesini, bir elinden diÄŸerine aktarmasÄ±nÄ± hayranlÄ±kla izle.';
+      '4-5. aydan itibaren nesneleri bir elinden diğerine geçirmeye çalışacaktır. Ona kavraması kolay nesneler ver ve nesneyi evirip çevirmesini, bir elinden diğerine aktarmasını hayranlıkla izle.';
 
   @override
   String get tip_supported_sitting_4_5_title => 'Destekli Oturma';
 
   @override
   String get tip_supported_sitting_4_5_desc =>
-      'MiniÄŸinin dengesini kurmasÄ± iÃ§in sÄ±rtÄ±nÄ± yastÄ±klarla destekleyerek oturtma denemeleri yap. Ã–nÃ¼ne dikkatini Ã§ekecek bir oyuncak koy ki, kollarÄ±ndan destek alÄ±p dÃ¼nyayÄ± bu yeni aÃ§Ä±dan izlemenin tadÄ±nÄ± Ã§Ä±karsÄ±n.';
+      'Miniğinin dengesini kurması için sırtını yastıklarla destekleyerek oturtma denemeleri yap. Önüne dikkatini çekecek bir oyuncak koy ki, kollarından destek alıp dünyayı bu yeni açıdan izlemenin tadını çıkarsın.';
 
   @override
-  String get tip_feet_discovery_4_5_title => 'Ayaklarla TanÄ±ÅŸma';
+  String get tip_feet_discovery_4_5_title => 'Ayaklarla Tanışma';
 
   @override
   String get tip_feet_discovery_4_5_desc =>
-      'BebeÄŸin sÄ±rt Ã¼stÃ¼ yatarken artÄ±k ayaklarÄ±nÄ± yakalayÄ±p aÄŸzÄ±na gÃ¶tÃ¼rebilir. Bu \"vÃ¼cut keÅŸfi\" seanslarÄ±nda ayaklarÄ±nÄ± serbest bÄ±rak, farklÄ± yÃ¼zeylere (halÄ±, parke, yumuÅŸak battaniye) basmasÄ±nÄ± saÄŸla; minik adÄ±mlarÄ±n provasÄ± baÅŸlÄ±yor.';
+      'Bebeğin sırt üstü yatarken artık ayaklarını yakalayıp ağzına götürebilir. Bu \"vücut keşfi\" seanslarında ayaklarını serbest bırak, farklı yüzeylere (halı, parke, yumuşak battaniye) basmasını sağla; minik adımların provası başlıyor.';
 
   @override
-  String get tip_independent_play_4_5_title => 'Kendi BaÅŸÄ±na Oyun';
+  String get tip_independent_play_4_5_title => 'Kendi Başına Oyun';
 
   @override
   String get tip_independent_play_4_5_desc =>
-      'Ã–nÃ¼ne ilgisini Ã§eken, farklÄ± dokularda birkaÃ§ oyuncak bÄ±rak ve biraz geri Ã§ekil. Kendi kendini oyalamayÄ± ve nesnelerle baÄŸÄ±msÄ±z baÄŸ kurmayÄ± Ã¶ÄŸrenmesi, Ã¶zgÃ¼veni iÃ§in dev bir adÄ±mdÄ±r.';
+      'Önüne ilgisini çeken, farklı dokularda birkaç oyuncak bırak ve biraz geri çekil. Kendi kendini oyalamayı ve nesnelerle bağımsız bağ kurmayı öğrenmesi, özgüveni için dev bir adımdır.';
 
   @override
   String ageMonths(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count AylÄ±k',
+      other: '$count Aylık',
     );
     return '$_temp0';
   }
@@ -1347,56 +1345,56 @@ class AppLocalizationsTr extends AppLocalizations {
   String get appPreferences => 'Uygulama tercihleri';
 
   @override
-  String get appearance => 'GÃ¶rÃ¼nÃ¼m';
+  String get appearance => 'Görünüm';
 
   @override
-  String get darkMode => 'KaranlÄ±k Mod';
+  String get darkMode => 'Karanlık Mod';
 
   @override
-  String get darkModeSubtitle => 'GÃ¶z yormayan koyu tema';
+  String get darkModeSubtitle => 'Göz yormayan koyu tema';
 
   @override
   String get notifications => 'Bildirimler';
 
   @override
-  String get feedingReminder => 'Beslenme HatÄ±rlatÄ±cÄ±';
+  String get feedingReminder => 'Beslenme Hatırlatıcı';
 
   @override
-  String get diaperReminder => 'Bez HatÄ±rlatÄ±cÄ±';
+  String get diaperReminder => 'Bez Hatırlatıcı';
 
   @override
-  String get off => 'KapalÄ±';
+  String get off => 'Kapalı';
 
   @override
-  String get reminderTime => 'HatÄ±rlatma Saati';
+  String get reminderTime => 'Hatırlatma Saati';
 
   @override
-  String get dataManagement => 'Veri YÃ¶netimi';
+  String get dataManagement => 'Veri Yönetimi';
 
   @override
-  String get createReport => 'Rapor OluÅŸtur';
+  String get createReport => 'Rapor Oluştur';
 
   @override
-  String get weeklyMonthlyStats => 'HaftalÄ±k/AylÄ±k istatistikler';
+  String get weeklyMonthlyStats => 'Haftalık/Aylık istatistikler';
 
   @override
-  String get deleteAllDataTitle => 'TÃ¼m Verileri Sil';
+  String get deleteAllDataTitle => 'Tüm Verileri Sil';
 
   @override
-  String get deleteAllDataSubtitle => 'TÃ¼m kayÄ±tlarÄ± kalÄ±cÄ± olarak sil';
+  String get deleteAllDataSubtitle => 'Tüm kayıtları kalıcı olarak sil';
 
   @override
-  String get about => 'HakkÄ±nda';
+  String get about => 'Hakkında';
 
   @override
   String get version => 'Versiyon';
 
   @override
-  String get developer => 'GeliÅŸtirici';
+  String get developer => 'Geliştirici';
 
   @override
   String get deleteAllDataWarning =>
-      'Bu iÅŸlem tÃ¼m kayÄ±tlarÄ± kalÄ±cÄ± olarak siler. Geri alÄ±namaz.';
+      'Bu işlem tüm kayıtları kalıcı olarak siler. Geri alınamaz.';
 
   @override
   String get debug => 'DEBUG';
@@ -1405,19 +1403,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get testSleepNotification => 'Uyku Bildirimi Testi';
 
   @override
-  String get fireSleepNotificationNow => 'Uyku bildirimini ÅŸimdi tetikle';
+  String get fireSleepNotificationNow => 'Uyku bildirimini şimdi tetikle';
 
   @override
   String get testNursingNotification => 'Emzirme Bildirimi Testi';
 
   @override
-  String get fireNursingNotificationNow => 'Emzirme bildirimini ÅŸimdi tetikle';
+  String get fireNursingNotificationNow => 'Emzirme bildirimini şimdi tetikle';
 
   @override
-  String get user => 'KullanÄ±cÄ±';
+  String get user => 'Kullanıcı';
 
   @override
-  String get selectBaby => 'Bebek SeÃ§';
+  String get selectBaby => 'Bebek Seç';
 
   @override
   String get newBabyAdd => 'Yeni Bebek Ekle';
@@ -1429,42 +1427,41 @@ class AppLocalizationsTr extends AppLocalizations {
   String get babyInformation => 'Bebek Bilgileri';
 
   @override
-  String get addPhoto => 'FotoÄŸraf ekle';
+  String get addPhoto => 'Fotoğraf ekle';
 
   @override
-  String get changePhoto => 'FotoÄŸrafÄ± DeÄŸiÅŸtir';
+  String get changePhoto => 'Fotoğrafı Değiştir';
 
   @override
-  String get removePhoto => 'FotoÄŸrafÄ± KaldÄ±r';
+  String get removePhoto => 'Fotoğrafı Kaldır';
 
   @override
-  String get birthDateLabel => 'DoÄŸum Tarihi';
+  String get birthDateLabel => 'Doğum Tarihi';
 
   @override
-  String get notesOptional => 'Notlar (isteÄŸe baÄŸlÄ±)';
+  String get notesOptional => 'Notlar (isteğe bağlı)';
 
   @override
-  String get growthRecords => 'BÃ¼yÃ¼me KayÄ±tlarÄ±';
+  String get growthRecords => 'Büyüme Kayıtları';
 
   @override
-  String get deleteThisBabyData => 'Bu bebeÄŸin verilerini sil';
+  String get deleteThisBabyData => 'Bu bebeğin verilerini sil';
 
   @override
-  String get otherBabiesUnaffected => 'DiÄŸer bebekler etkilenmez';
+  String get otherBabiesUnaffected => 'Diğer bebekler etkilenmez';
 
   @override
   String get onlyThisBabyPrefix => 'Sadece ';
 
   @override
-  String get allRecordsWillBeDeleted =>
-      ' bebeÄŸinin tÃ¼m kayÄ±tlarÄ± silinecek.';
+  String get allRecordsWillBeDeleted => ' bebeğinin tüm kayıtları silinecek.';
 
   @override
   String get deleteActionIrreversible =>
-      'DiÄŸer bebekler etkilenmez. Bu iÅŸlem geri alÄ±namaz.';
+      'Diğer bebekler etkilenmez. Bu işlem geri alınamaz.';
 
   @override
-  String get birth => 'DoÄŸum';
+  String get birth => 'Doğum';
 
   @override
   String monthNumber(int month) {
@@ -1472,13 +1469,13 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get selectMonth => 'Ay SeÃ§in';
+  String get selectMonth => 'Ay Seçin';
 
   @override
-  String get otherMonth => 'DiÄŸer Ay';
+  String get otherMonth => 'Diğer Ay';
 
   @override
-  String get period => 'DÃ¶nem';
+  String get period => 'Dönem';
 
   @override
   String get status => 'Durum';
@@ -1487,31 +1484,31 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scheduledDate => 'Planlanan Tarih';
 
   @override
-  String get editVaccine => 'AÅŸÄ± DÃ¼zenle';
+  String get editVaccine => 'Aşı Düzenle';
 
   @override
-  String get vaccineName => 'AÅŸÄ± AdÄ±';
+  String get vaccineName => 'Aşı Adı';
 
   @override
-  String get allLabel => 'TÃ¼mÃ¼';
+  String get allLabel => 'Tümü';
 
   @override
   String get routineFilter => 'Rutin';
 
   @override
-  String get asNeededFilter => 'GerektikÃ§e';
+  String get asNeededFilter => 'Gerektikçe';
 
   @override
-  String get vaccineProtocolsFilter => 'AÅŸÄ± protokolleri';
+  String get vaccineProtocolsFilter => 'Aşı protokolleri';
 
   @override
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'GerektikÃ§e';
+  String get asNeeded => 'Gerektikçe';
 
   @override
-  String get vaccineProtocolLabel => 'AÅŸÄ± protokolÃ¼';
+  String get vaccineProtocolLabel => 'Aşı protokolü';
 
   @override
   String linkedToVaccine(String vaccine) {
@@ -1530,16 +1527,49 @@ class AppLocalizationsTr extends AppLocalizations {
   String get logGivenNow => 'Verildi olarak kaydet';
 
   @override
+  String get logDose => 'Doz kaydet';
+
+  @override
+  String get givenNow => 'Simdi verildi';
+
+  @override
+  String get allDoneToday => 'Bugun tamamlandi';
+
+  @override
+  String get notAvailable => 'Yok';
+
+  @override
+  String get before => 'Once';
+
+  @override
+  String get after => 'Sonra';
+
+  @override
+  String todayProgressLabel(int done, int total) {
+    return 'Bugun: $done / $total doz';
+  }
+
+  @override
+  String nextDoseLabel(String value) {
+    return 'Siradaki doz: $value';
+  }
+
+  @override
+  String givenTodayCount(int count) {
+    return 'Bugun verildi: $count';
+  }
+
+  @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override
-  String get scheduleType => 'KullanÄ±m tÃ¼rÃ¼';
+  String get scheduleType => 'Kullanım türü';
 
   @override
-  String get dailySchedule => 'GÃ¼nlÃ¼k';
+  String get dailySchedule => 'Günlük';
 
   @override
-  String get prnSchedule => 'GerektikÃ§e';
+  String get prnSchedule => 'Gerektikçe';
 
   @override
   String get dailyTimeRequired => 'Add at least one daily time';
@@ -1558,19 +1588,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String medicationReminderTitle(String name) {
-    return '$name hatÄ±rlatÄ±cÄ±sÄ±';
+    return '$name hatırlatıcısı';
   }
 
   @override
-  String get medicationReminderBody => 'Bu ilacÄ± verme zamanÄ±';
+  String get medicationReminderBody => 'Bu ilacı verme zamanı';
 
   @override
   String get medicationSetRemindersTitle =>
-      'Bu ilaÃ§ iÃ§in hatÄ±rlatÄ±cÄ± ayarlansÄ±n mÄ±?';
+      'Bu ilaç için hatırlatıcı ayarlansın mı?';
 
   @override
   String get medicationSetRemindersBody =>
-      'Bunu daha sonra ilacÄ± dÃ¼zenleyerek deÄŸiÅŸtirebilirsiniz.';
+      'Bunu daha sonra ilacı düzenleyerek değiştirebilirsiniz.';
 
   @override
   String medicationReminderBodyWithDose(String dose) {
@@ -1578,22 +1608,22 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get notifFeedingTitle => 'ğŸ¼ Beslenme HatÄ±rlatÄ±cÄ±sÄ±';
+  String get notifFeedingTitle => '🍼 Beslenme Hatırlatıcısı';
 
   @override
-  String get notifFeedingBody => 'BebeÄŸinizi besleme zamanÄ± geldi';
+  String get notifFeedingBody => 'Bebeğinizi besleme zamanı geldi';
 
   @override
-  String get notifDiaperTitle => 'ğŸ‘¶ Bez HatÄ±rlatÄ±cÄ±sÄ±';
+  String get notifDiaperTitle => '👶 Bez Hatırlatıcısı';
 
   @override
-  String get notifDiaperBody => 'BebeÄŸinizin bezini kontrol etme zamanÄ±';
+  String get notifDiaperBody => 'Bebeğinizin bezini kontrol etme zamanı';
 
   @override
   String get notifSleepTitle => 'Uyku devam ediyor';
 
   @override
-  String get notifSleepBody => 'Durdurmak iÃ§in bildirime dokunun';
+  String get notifSleepBody => 'Durdurmak için bildirime dokunun';
 
   @override
   String get notifNursingTitle => 'Emzirme devam ediyor';
@@ -1604,11 +1634,11 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get notifNursingBody => 'Durdurmak iÃ§in bildirime dokunun';
+  String get notifNursingBody => 'Durdurmak için bildirime dokunun';
 
   @override
   String notifMedTitle(String name) {
-    return '$name hatÄ±rlatÄ±cÄ±sÄ±';
+    return '$name hatırlatıcısı';
   }
 
   @override
@@ -1617,7 +1647,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get notifGenericBody => 'HatÄ±rlatma zamanÄ±';
+  String get notifGenericBody => 'Hatırlatma zamanı';
 
   @override
   String get addVaccineProtocol => 'Add vaccine protocol';
@@ -1626,7 +1656,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get createNew => 'Create new';
 
   @override
-  String get chooseExistingMedication => 'Mevcut ilacÄ± seÃ§';
+  String get chooseExistingMedication => 'Mevcut ilacı seç';
 
   @override
   String get feverReducerHint => 'Fever reducer';
@@ -1654,47 +1684,46 @@ class AppLocalizationsTr extends AppLocalizations {
   String get diaperDirty => 'Kirli';
 
   @override
-  String get diaperBoth => 'Ä°kisi birden';
+  String get diaperBoth => 'İkisi birden';
 
   @override
-  String get eventTimeTooOld =>
-      'SeÃ§ilen zaman son 48 saat iÃ§inde olmalÄ±dÄ±r';
+  String get eventTimeTooOld => 'Seçilen zaman son 48 saat içinde olmalıdır';
 
   @override
-  String get editTitleFeeding => 'Beslenme DÃ¼zenle';
+  String get editTitleFeeding => 'Beslenme Düzenle';
 
   @override
-  String get editTitleDiaper => 'Bez DÃ¼zenle';
+  String get editTitleDiaper => 'Bez Düzenle';
 
   @override
-  String get editTitleSleep => 'Uyku DÃ¼zenle';
+  String get editTitleSleep => 'Uyku Düzenle';
 
   @override
-  String get editTitleNursing => 'Emzirmeyi DÃ¼zenle';
+  String get editTitleNursing => 'Emzirmeyi Düzenle';
 
   @override
   String get savedMessage => 'Kaydedildi';
 
   @override
-  String get alreadySavedRecently => 'Zaten az Ã¶nce kaydedildi';
+  String get alreadySavedRecently => 'Zaten az önce kaydedildi';
 
   @override
   String get undo => 'Geri al';
 
   @override
-  String get yesterday => 'DÃ¼n';
+  String get yesterday => 'Dün';
 
   @override
-  String get notGivenYet => 'HenÃ¼z verilmedi';
+  String get notGivenYet => 'Henüz verilmedi';
 
   @override
-  String get viewHistory => 'GeÃ§miÅŸi gÃ¶rÃ¼ntÃ¼le';
+  String get viewHistory => 'Geçmişi görüntüle';
 
   @override
-  String get noMedicationHistory => 'Verilme geÃ§miÅŸi yok';
+  String get noMedicationHistory => 'Verilme geçmişi yok';
 
   @override
   String lastGivenLabel(String value) {
-    return 'Son veriliÅŸ: $value';
+    return 'Son veriliş: $value';
   }
 }
