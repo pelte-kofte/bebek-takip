@@ -1574,6 +1574,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get logGivenNow => 'Отметить как дано';
 
   @override
+  String get logDose => 'Записать дозу';
+
+  @override
+  String get givenNow => 'Дать сейчас';
+
+  @override
+  String get allDoneToday => 'На сегодня все';
+
+  @override
+  String get notAvailable => 'Недоступно';
+
+  @override
+  String get before => 'До';
+
+  @override
+  String get after => 'После';
+
+  @override
+  String todayProgressLabel(int done, int total) {
+    return 'Сегодня: $done / $total доз';
+  }
+
+  @override
+  String nextDoseLabel(String value) {
+    return 'Следующая доза: $value';
+  }
+
+  @override
+  String givenTodayCount(int count) {
+    return 'Дано сегодня: $count';
+  }
+
+  @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override

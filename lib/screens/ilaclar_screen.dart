@@ -313,6 +313,55 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     return 1;
   }
 
+  int _todayCompletedDoseCount(Map<String, dynamic> med) {
+    if (_isProtocolMedication(med)) {
+      return _todayProtocolLogs(med).length;
+    }
+    return _todayDoseLogsByIndex(med).length;
+  }
+
+  int _nextRoutineDoseIndex(Map<String, dynamic> med) {
+    final dailyTimes = _dailyTimes(med);
+    final todayByIndex = _todayDoseLogsByIndex(med);
+    for (int i = 0; i < dailyTimes.length; i++) {
+      if (!todayByIndex.containsKey(i)) return i;
+    }
+    return dailyTimes.isEmpty ? 0 : dailyTimes.length - 1;
+  }
+
+  String _nextRoutineDoseText(Map<String, dynamic> med, AppLocalizations l10n) {
+    if (_isProtocolMedication(med)) {
+      final todayProtocolLogs = _todayProtocolLogs(med);
+      if (!todayProtocolLogs.containsKey('before')) return l10n.before;
+      if (!todayProtocolLogs.containsKey('after')) return l10n.after;
+      return l10n.allDoneToday;
+    }
+
+    final dailyTimes = _dailyTimes(med);
+    if (dailyTimes.isEmpty) return l10n.notAvailable;
+    if (_todayCompletedDoseCount(med) >= _targetDailyDoseCount(med)) {
+      return l10n.allDoneToday;
+    }
+    final nextIndex = _nextRoutineDoseIndex(med);
+    if (nextIndex < 0 || nextIndex >= dailyTimes.length) {
+      return l10n.notAvailable;
+    }
+    return dailyTimes[nextIndex];
+  }
+
+  Future<void> _logNextRoutineDose(Map<String, dynamic> med) async {
+    if (_isProtocolMedication(med)) {
+      final todayProtocolLogs = _todayProtocolLogs(med);
+      final nextStep = !todayProtocolLogs.containsKey('before')
+          ? 'before'
+          : (!todayProtocolLogs.containsKey('after') ? 'after' : 'before');
+      await _toggleProtocolStep(med, nextStep);
+      return;
+    }
+
+    await _toggleDoseChip(med, _nextRoutineDoseIndex(med));
+  }
+
   String? _last7DaysSummary(Map<String, dynamic> med, AppLocalizations l10n) {
     if (!_isMultiDoseRoutine(med)) return null;
     final now = DateTime.now();
@@ -774,7 +823,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                   final med = meds[index];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _buildMedicationCard(med, isDark, l10n),
+                    child: _buildMedicationListCard(med, isDark, l10n),
                   );
                 },
               ),
@@ -830,6 +879,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     );
   }
 
+  // ignore: unused_element
   Widget _buildMedicationCard(
     Map<String, dynamic> med,
     bool isDark,
@@ -1240,6 +1290,114 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     );
   }
 
+  Widget _buildMedicationListCard(
+    Map<String, dynamic> med,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
+    final isActive = med['isActive'] == true;
+    final isMedication = med['type'] == 'medication';
+    final typeBadge = isMedication ? l10n.medication : l10n.supplement;
+    final subtitle = _scheduleSubtitle(med, l10n);
+    final lastGivenAt = _lastGivenAt(med);
+    final isAsNeeded =
+        ((med['scheduleType'] as String?) ?? _filterPrn) == _filterPrn;
+
+    return GestureDetector(
+      onTap: () => _editMedication(med),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard.withValues(alpha: isActive ? 0.9 : 0.5)
+              : Colors.white.withValues(alpha: isActive ? 0.9 : 0.6),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              isMedication ? Icons.medication_outlined : Icons.eco_outlined,
+              color: isActive ? const Color(0xFFFFB4A2) : Colors.grey,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: isAsNeeded
+                  ? AsNeededMedicationCard(
+                      isDark: isDark,
+                      name: med['name'] ?? '',
+                      typeBadge: typeBadge,
+                      asNeededLabel: l10n.asNeeded,
+                      lastGivenLabel: l10n.lastGivenLabel(
+                        _formatLastGiven(lastGivenAt, l10n),
+                      ),
+                      givenTodayLabel:
+                          l10n.givenTodayCount(_todayCompletedDoseCount(med)),
+                      showGivenToday: _todayCompletedDoseCount(med) > 0,
+                      primaryButtonLabel: l10n.givenNow,
+                      onPrimaryPressed:
+                          isActive &&
+                              !_recentlyTappedMedicationIds.contains(med['id'])
+                          ? () => _logGivenNow(med)
+                          : null,
+                    )
+                  : RoutineMedicationCard(
+                      isDark: isDark,
+                      name: med['name'] ?? '',
+                      typeBadge: typeBadge,
+                      scheduleSummary: subtitle,
+                      progressLabel: l10n.todayProgressLabel(
+                        _todayCompletedDoseCount(med),
+                        _targetDailyDoseCount(med),
+                      ),
+                      lastGivenLabel: l10n.lastGivenLabel(
+                        _formatLastGiven(lastGivenAt, l10n),
+                      ),
+                      nextDoseLabel: l10n.nextDoseLabel(
+                        _nextRoutineDoseText(med, l10n),
+                      ),
+                      primaryButtonLabel: l10n.logDose,
+                      onPrimaryPressed:
+                          isActive ? () => _logNextRoutineDose(med) : null,
+                    ),
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                switch (value) {
+                  case 'edit':
+                    _editMedication(med);
+                    break;
+                  case 'toggle':
+                    _toggleActive(med);
+                    break;
+                  case 'delete':
+                    _deleteMedication(med);
+                    break;
+                  case 'history':
+                    _showMedicationHistory(med);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                PopupMenuItem(value: 'history', child: Text(l10n.viewHistory)),
+                PopupMenuItem(
+                  value: 'toggle',
+                  child: Text(isActive ? l10n.deactivate : l10n.activate),
+                ),
+                PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildAddButton(AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
@@ -1273,6 +1431,261 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
               style: AppTypography.button().copyWith(fontSize: 18),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class RoutineMedicationCard extends StatelessWidget {
+  const RoutineMedicationCard({
+    super.key,
+    required this.isDark,
+    required this.name,
+    required this.typeBadge,
+    required this.scheduleSummary,
+    required this.progressLabel,
+    required this.lastGivenLabel,
+    required this.nextDoseLabel,
+    required this.primaryButtonLabel,
+    required this.onPrimaryPressed,
+  });
+
+  final bool isDark;
+  final String name;
+  final String typeBadge;
+  final String scheduleSummary;
+  final String progressLabel;
+  final String lastGivenLabel;
+  final String nextDoseLabel;
+  final String primaryButtonLabel;
+  final VoidCallback? onPrimaryPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF866F65);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                name,
+                style: AppTypography.h3(context).copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _MedicationTypeBadge(
+              typeBadge: typeBadge,
+              isMedication:
+                  typeBadge == AppLocalizations.of(context)!.medication,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          scheduleSummary,
+          style: AppTypography.caption(context).copyWith(color: muted),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppColors.bgDark.withValues(alpha: 0.28)
+                : const Color(0xFFFFF3EE),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                progressLabel,
+                style: AppTypography.body(context).copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                lastGivenLabel,
+                style: AppTypography.caption(context).copyWith(color: muted),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                nextDoseLabel,
+                style: AppTypography.caption(context).copyWith(color: muted),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: onPrimaryPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
+              disabledForegroundColor: Colors.white70,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              elevation: 0,
+            ),
+            icon: const Icon(Icons.add_task_outlined, size: 18),
+            label: Text(primaryButtonLabel),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AsNeededMedicationCard extends StatelessWidget {
+  const AsNeededMedicationCard({
+    super.key,
+    required this.isDark,
+    required this.name,
+    required this.typeBadge,
+    required this.asNeededLabel,
+    required this.lastGivenLabel,
+    required this.givenTodayLabel,
+    required this.showGivenToday,
+    required this.primaryButtonLabel,
+    required this.onPrimaryPressed,
+  });
+
+  final bool isDark;
+  final String name;
+  final String typeBadge;
+  final String asNeededLabel;
+  final String lastGivenLabel;
+  final String givenTodayLabel;
+  final bool showGivenToday;
+  final String primaryButtonLabel;
+  final VoidCallback? onPrimaryPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF866F65);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                name,
+                style: AppTypography.h3(context).copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(width: 8),
+            _MedicationTypeBadge(
+              typeBadge: typeBadge,
+              isMedication:
+                  typeBadge == AppLocalizations.of(context)!.medication,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          asNeededLabel,
+          style: AppTypography.caption(context).copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark
+                ? AppColors.bgDark.withValues(alpha: 0.28)
+                : const Color(0xFFFFF3EE),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                lastGivenLabel,
+                style: AppTypography.caption(context).copyWith(color: muted),
+              ),
+              if (showGivenToday) ...[
+                const SizedBox(height: 6),
+                Text(
+                  givenTodayLabel,
+                  style: AppTypography.caption(context).copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: onPrimaryPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
+              disabledForegroundColor: Colors.white70,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              elevation: 0,
+            ),
+            icon: const Icon(Icons.check_circle_outline, size: 18),
+            label: Text(primaryButtonLabel),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MedicationTypeBadge extends StatelessWidget {
+  const _MedicationTypeBadge({
+    required this.typeBadge,
+    required this.isMedication,
+  });
+
+  final String typeBadge;
+  final bool isMedication;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isMedication
+            ? AppColors.primary.withValues(alpha: 0.15)
+            : const Color(0xFFE5E0F7),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        typeBadge,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: isMedication ? AppColors.primary : const Color(0xFF6B5B95),
         ),
       ),
     );

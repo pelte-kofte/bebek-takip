@@ -622,6 +622,39 @@
     }
   },
   "logGivenNow": "Отметить как дано",
+  "logDose": "Записать дозу",
+  "givenNow": "Дать сейчас",
+  "allDoneToday": "На сегодня все",
+  "notAvailable": "Недоступно",
+  "before": "До",
+  "after": "После",
+  "todayProgressLabel": "Сегодня: {done} / {total} доз",
+  "@todayProgressLabel": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "nextDoseLabel": "Следующая доза: {value}",
+  "@nextDoseLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "givenTodayCount": "Дано сегодня: {count}",
+  "@givenTodayCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "medicationDoseLogged": "Dose logged",
   "scheduleType": "Тип схемы",
   "dailySchedule": "Ежедневно",

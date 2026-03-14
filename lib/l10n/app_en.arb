@@ -692,6 +692,39 @@
     }
   },
   "logGivenNow": "Log given now",
+  "logDose": "Log dose",
+  "givenNow": "Given now",
+  "allDoneToday": "All done today",
+  "notAvailable": "Not available",
+  "before": "Before",
+  "after": "After",
+  "todayProgressLabel": "Today: {done} / {total} doses",
+  "@todayProgressLabel": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "nextDoseLabel": "Next dose: {value}",
+  "@nextDoseLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "givenTodayCount": "Given today: {count}",
+  "@givenTodayCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "medicationDoseLogged": "Dose logged",
   "scheduleType": "Schedule type",
   "dailySchedule": "Daily",

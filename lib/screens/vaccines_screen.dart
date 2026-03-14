@@ -21,6 +21,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   List<Map<String, dynamic>> _vaccines = [];
   int? _selectedMonth; // null means show all, 0-60 for specific month
 
+  // There is no baby country/preset field in the current model, so the
+  // Turkey vaccine calendar stays opt-in unless a future profile field exists.
+  bool get _showTurkishPresetByDefault => false;
+
   @override
   void initState() {
     super.initState();
@@ -751,6 +755,12 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
+  void _handleTurkishCalendarMenuAction(String value) {
+    if (value == 'selector') {
+      _showNationalVaccineSelector();
+    }
+  }
+
   Widget _buildContent(bool isDark) {
     return SafeArea(
       top: !widget.embedded,
@@ -873,7 +883,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             child: Text(l10n.myVaccines, style: AppTypography.h1(context)),
           ),
           // National vaccine selector button
-          GestureDetector(
+          if (_showTurkishPresetByDefault)
+            GestureDetector(
             onTap: _showNationalVaccineSelector,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -901,7 +912,41 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 ],
               ),
             ),
-          ),
+          )
+          else
+            PopupMenuButton<String>(
+              tooltip: l10n.loadTurkishVaccineCalendar,
+              onSelected: _handleTurkishCalendarMenuAction,
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'selector',
+                  child: Text(l10n.loadTurkishVaccineCalendar),
+                ),
+              ],
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.bgDarkCard : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isDark
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                ),
+                child: Icon(
+                  Icons.more_horiz,
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : const Color(0xFF2D1A18),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -1358,6 +1403,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   Widget _buildEmptyState(bool isDark) {
     final l10n = AppLocalizations.of(context)!;
+    final showTurkishPresetByDefault = _showTurkishPresetByDefault;
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
@@ -1380,26 +1426,41 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             style: AppTypography.h3(context),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.loadTurkishCalendar,
-            style: AppTypography.bodySmall(context),
-            textAlign: TextAlign.center,
-          ),
+          if (showTurkishPresetByDefault) ...[
+            const SizedBox(height: 8),
+            Text(
+              l10n.loadTurkishCalendar,
+              style: AppTypography.bodySmall(context),
+              textAlign: TextAlign.center,
+            ),
+          ],
           const SizedBox(height: 24),
-          OutlinedButton.icon(
-            onPressed: _initializeDefaultVaccines,
-            icon: const Icon(Icons.calendar_month),
-            label: Text(l10n.loadCalendarTitle),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.primary,
-              side: BorderSide(color: AppColors.primary),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+          if (showTurkishPresetByDefault)
+            OutlinedButton.icon(
+              onPressed: _initializeDefaultVaccines,
+              icon: const Icon(Icons.calendar_month),
+              label: Text(l10n.loadCalendarTitle),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: BorderSide(color: AppColors.primary),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            )
+          else
+            TextButton.icon(
+              onPressed: _initializeDefaultVaccines,
+              icon: const Icon(Icons.flag_outlined),
+              label: Text(l10n.loadTurkishVaccineCalendar),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
               ),
             ),
-          ),
         ],
       ),
     );

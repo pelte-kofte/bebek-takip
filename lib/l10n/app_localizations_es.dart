@@ -1563,6 +1563,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get logGivenNow => 'Registrar ahora';
 
   @override
+  String get logDose => 'Registrar dosis';
+
+  @override
+  String get givenNow => 'Dar ahora';
+
+  @override
+  String get allDoneToday => 'Todo listo hoy';
+
+  @override
+  String get notAvailable => 'No disponible';
+
+  @override
+  String get before => 'Antes';
+
+  @override
+  String get after => 'Despues';
+
+  @override
+  String todayProgressLabel(int done, int total) {
+    return 'Hoy: $done / $total dosis';
+  }
+
+  @override
+  String nextDoseLabel(String value) {
+    return 'Proxima dosis: $value';
+  }
+
+  @override
+  String givenTodayCount(int count) {
+    return 'Dado hoy: $count';
+  }
+
+  @override
   String get medicationDoseLogged => 'Dose logged';
 
   @override

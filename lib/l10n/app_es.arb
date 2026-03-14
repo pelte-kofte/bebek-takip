@@ -622,6 +622,39 @@
     }
   },
   "logGivenNow": "Registrar ahora",
+  "logDose": "Registrar dosis",
+  "givenNow": "Dar ahora",
+  "allDoneToday": "Todo listo hoy",
+  "notAvailable": "No disponible",
+  "before": "Antes",
+  "after": "Despues",
+  "todayProgressLabel": "Hoy: {done} / {total} dosis",
+  "@todayProgressLabel": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "nextDoseLabel": "Proxima dosis: {value}",
+  "@nextDoseLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "givenTodayCount": "Dado hoy: {count}",
+  "@givenTodayCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "medicationDoseLogged": "Dose logged",
   "scheduleType": "Tipo de pauta",
   "dailySchedule": "Diario",
