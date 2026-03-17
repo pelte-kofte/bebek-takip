@@ -1802,6 +1802,14 @@ class _SharePreviewSheet extends StatelessWidget {
 
   const _SharePreviewSheet({required this.milestone, required this.formatDate});
 
+  void _showIllustrationComingSoon(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Illustration is coming soon. Backend is not live yet.'),
+      ),
+    );
+  }
+
   Future<void> _doShare() async {
     final title = milestone['title'] ?? '';
     final date = formatDate(milestone['date'] as DateTime, includeYear: true);
@@ -1926,9 +1934,8 @@ class _SharePreviewSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          // AI Illustration placeholder (coming soon)
-          Opacity(
-            opacity: 0.5,
+          GestureDetector(
+            onTap: () => _showIllustrationComingSoon(context),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

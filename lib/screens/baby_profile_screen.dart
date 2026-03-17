@@ -76,6 +76,17 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
 
   bool get _hasRemotePhoto => (_photoUrl ?? '').trim().isNotEmpty && !_hasPhoto;
 
+  Widget _buildPhotoFallback(bool isDark) {
+    return Container(
+      color: isDark ? AppColors.bgDarkCard : const Color(0xFFEBE8FF),
+      child: Icon(
+        Icons.child_care,
+        color: isDark ? const Color(0xFFFFB4A2) : const Color(0xFFFF998A),
+        size: 48,
+      ),
+    );
+  }
+
   Future<void> _pickPhoto() async {
     final l10n = AppLocalizations.of(context)!;
     if (kIsWeb) {
@@ -334,6 +345,10 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                             width: 120,
                                             height: 120,
                                             fit: BoxFit.cover,
+                                            gaplessPlayback: true,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    _buildPhotoFallback(isDark),
                                           )
                                         : _hasRemotePhoto
                                         ? Image.network(
@@ -341,19 +356,12 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                             width: 120,
                                             height: 120,
                                             fit: BoxFit.cover,
+                                            gaplessPlayback: true,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    _buildPhotoFallback(isDark),
                                           )
-                                        : Container(
-                                            color: isDark
-                                                ? AppColors.bgDarkCard
-                                                : const Color(0xFFEBE8FF),
-                                            child: Icon(
-                                              Icons.child_care,
-                                              color: isDark
-                                                  ? const Color(0xFFFFB4A2)
-                                                  : const Color(0xFFFF998A),
-                                              size: 48,
-                                            ),
-                                          ),
+                                        : _buildPhotoFallback(isDark),
                                   ),
                                 ),
                                 // Camera badge

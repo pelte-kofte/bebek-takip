@@ -82,9 +82,10 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
       _isAppleSigningIn = true;
     });
     try {
-      final credential = await AppleAuthService.instance.signIn();
-      if (credential == null) return;
-      await _authenticateWithCredential(credential);
+      final userCredential = await AppleAuthService.instance.signInWithProvider();
+      if (userCredential == null) return;
+      await SyncManager.syncCurrentUserData();
+      await _proceedToApp(syncCurrentUser: false);
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;

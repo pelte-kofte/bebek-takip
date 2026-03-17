@@ -178,6 +178,93 @@ class AppleAuthService {
   // 2) Apple Service ID / bundle identifier matches this iOS app target.
   // 3) Xcode Runner target has "Sign in with Apple" capability enabled.
   //
+  Future<UserCredential?> signInWithProvider() async {
+    if (_inProgress) {
+      _log('Ignoring duplicate Apple sign-in attempt while one is active.');
+      return null;
+    }
+
+    _inProgress = true;
+    final attemptId = _generateAttemptId();
+    _log('[$attemptId] START provider-based Apple sign-in');
+    try {
+      _log(
+        '[$attemptId] Build branch '
+        'mode=${_currentBuildMode()} '
+        'kIsWeb=$kIsWeb '
+        'platform=${kIsWeb ? 'web' : Platform.operatingSystem}',
+      );
+      final firebaseApp = await _ensureFirebaseReady(attemptId);
+      _logFirebaseState(attemptId, firebaseApp);
+      await _fetchIosRuntimeDiagnostics(attemptId);
+
+      final auth = FirebaseAuth.instance;
+      final currentUser = auth.currentUser;
+      final isAnonymous = currentUser?.isAnonymous ?? false;
+      final appleProvider = AppleAuthProvider();
+      appleProvider.addScope('email');
+      appleProvider.addScope('name');
+
+      _log(
+        '[$attemptId] Provider-based Apple flow started '
+        'provider=apple.com anonymous=$isAnonymous',
+      );
+
+      if (isAnonymous && currentUser != null) {
+        _log(
+          '[$attemptId] Using linkWithProvider for Apple '
+          'uid=${currentUser.uid}',
+        );
+        try {
+          final linked = await currentUser.linkWithProvider(appleProvider);
+          _log(
+            '[$attemptId] Apple linkWithProvider completed '
+            'uid=${linked.user?.uid} anonymous=${linked.user?.isAnonymous}',
+          );
+          return linked;
+        } on FirebaseAuthException catch (e) {
+          if (e.code != 'credential-already-in-use') rethrow;
+          _log(
+            '[$attemptId] Apple linkWithProvider conflict '
+            'code=${e.code} fallback=signInWithProvider',
+          );
+          final signedIn = await auth.signInWithProvider(appleProvider);
+          _log(
+            '[$attemptId] Apple signInWithProvider fallback completed '
+            'uid=${signedIn.user?.uid} anonymous=${signedIn.user?.isAnonymous}',
+          );
+          return signedIn;
+        }
+      }
+
+      _log('[$attemptId] Using signInWithProvider for Apple');
+      final signedIn = await auth.signInWithProvider(appleProvider);
+      _log(
+        '[$attemptId] Apple signInWithProvider completed '
+        'uid=${signedIn.user?.uid} anonymous=${signedIn.user?.isAnonymous}',
+      );
+      return signedIn;
+    } on FirebaseAuthException catch (e, st) {
+      _logError(
+        'Provider-based Apple flow failed '
+        'code=${e.code} message=${e.message} plugin=${e.plugin}',
+        attemptId: attemptId,
+      );
+      _logError(
+        'Provider-based Apple flow stack=$st',
+        attemptId: attemptId,
+      );
+      rethrow;
+    } catch (e, st) {
+      _logError('ERROR: $e', attemptId: attemptId);
+      _logError('ERROR stack=$st', attemptId: attemptId);
+      rethrow;
+    } finally {
+      _inProgress = false;
+      _log('END - inProgress cleared', attemptId: attemptId);
+    }
+  }
+
   // Nonce contract:
   //   hashedNonce (SHA-256 of rawNonce) -> passed to Apple as `nonce`
   //   rawNonce -> passed to Firebase as `rawNonce`
@@ -201,17 +288,6 @@ class AppleAuthService {
       final firebaseApp = await _ensureFirebaseReady(attemptId);
       _logFirebaseState(attemptId, firebaseApp);
       final runtimeDiagnostics = await _fetchIosRuntimeDiagnostics(attemptId);
-      if (Platform.isIOS && runtimeDiagnostics != null) {
-        final appleSignInEntitlement =
-            runtimeDiagnostics['appleSignInEntitlement'];
-        if (appleSignInEntitlement == null) {
-          throw FirebaseAuthException(
-            code: 'missing-apple-sign-in-entitlement',
-            message:
-                'Signed iOS app is missing the Sign In with Apple entitlement.',
-          );
-        }
-      }
 
       // Generate a cryptographically secure random nonce.
       // We pass SHA-256(rawNonce) to Apple so Apple includes it in the JWT.

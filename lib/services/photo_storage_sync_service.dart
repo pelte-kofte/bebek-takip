@@ -25,6 +25,7 @@ class PhotoStorageSyncService {
     : _storage = storage ?? FirebaseStorage.instance;
 
   final FirebaseStorage _storage;
+  final Set<String> _inFlightUploadKeys = <String>{};
 
   Future<PhotoStorageSyncResult> syncUserPhotos({
     required String uid,
@@ -78,6 +79,63 @@ class PhotoStorageSyncService {
     );
   }
 
+  Future<void> deleteMemoryPhotos({
+    required String uid,
+    required List<Map<String, dynamic>> rows,
+    required void Function(String message) log,
+  }) async {
+    if (uid.isEmpty || kIsWeb || rows.isEmpty) return;
+
+    for (final row in rows) {
+      final memoryId = (row['id'] ?? '').toString();
+      final babyId = (row['babyId'] ?? '').toString();
+      final storagePath = (row['photoStoragePath'] ?? '').toString().trim();
+      if (storagePath.isEmpty) continue;
+
+      try {
+        log(
+          'photo delete start type=memory memoryId=$memoryId babyId=$babyId storagePath=$storagePath',
+        );
+        await _storage.ref(storagePath).delete();
+        log(
+          'photo delete success type=memory memoryId=$memoryId babyId=$babyId storagePath=$storagePath',
+        );
+      } catch (e) {
+        log(
+          'photo delete fail type=memory memoryId=$memoryId babyId=$babyId storagePath=$storagePath error=$e',
+        );
+      }
+    }
+  }
+
+  Future<void> deleteBabyPhoto({
+    required String uid,
+    required String babyId,
+    required String storagePath,
+    required void Function(String message) log,
+  }) async {
+    final trimmedStoragePath = storagePath.trim();
+    if (uid.isEmpty || kIsWeb) return;
+    if (trimmedStoragePath.isEmpty) {
+      log('profile photo delete skip babyId=$babyId reason=empty-storage-path');
+      return;
+    }
+
+    try {
+      log(
+        'profile photo delete start babyId=$babyId storagePath=$trimmedStoragePath',
+      );
+      await _storage.ref(trimmedStoragePath).delete();
+      log(
+        'profile photo delete success babyId=$babyId storagePath=$trimmedStoragePath',
+      );
+    } catch (e) {
+      log(
+        'profile photo delete fail babyId=$babyId storagePath=$trimmedStoragePath error=$e',
+      );
+    }
+  }
+
   Future<bool> _syncBabyPhoto({
     required String uid,
     required Baby baby,
@@ -92,8 +150,16 @@ class PhotoStorageSyncService {
         await _fileExists(localPath)) {
       final ext = _normalizedExt(localPath);
       final resolvedStoragePath = 'users/$uid/babies/${baby.id}/profile$ext';
+      final uploadKey = 'baby:${baby.id}:$resolvedStoragePath';
       final file = File(localPath);
       final size = await file.length();
+
+      if (!_inFlightUploadKeys.add(uploadKey)) {
+        log(
+          'photo upload skip type=baby babyId=${baby.id} storagePath=$resolvedStoragePath reason=already-in-progress',
+        );
+        return changed;
+      }
 
       try {
         log(
@@ -113,6 +179,8 @@ class PhotoStorageSyncService {
         log(
           'photo upload fail type=baby babyId=${baby.id} size=$size storagePath=$resolvedStoragePath error=$e',
         );
+      } finally {
+        _inFlightUploadKeys.remove(uploadKey);
       }
     }
 
@@ -155,18 +223,41 @@ class PhotoStorageSyncService {
     }
 
     final babyId = (row['babyId'] ?? '').toString();
-    final localPath = (row['photoPath'] ?? '').toString().trim();
+    final localPath =
+        (row['photoPath'] ?? row['photoLocalPath'] ?? '').toString().trim();
     final storagePath = (row['photoStoragePath'] ?? '').toString().trim();
     bool changed = false;
     bool uploaded = false;
 
+    if (babyId.isEmpty && storagePath.isEmpty) {
+      log(
+        'photo upload skip type=memory memoryId=$memoryId reason=missing-baby-id',
+      );
+      return const _MemoryOutcome(changed: false, uploaded: false, babyId: '');
+    }
+
+    if (localPath.isEmpty && storagePath.isEmpty) {
+      log(
+        'photo upload skip type=memory memoryId=$memoryId babyId=$babyId reason=missing-photo',
+      );
+      return _MemoryOutcome(changed: false, uploaded: false, babyId: babyId);
+    }
+
     if (storagePath.isEmpty &&
         localPath.isNotEmpty &&
         await _fileExists(localPath)) {
-      final ext = _normalizedExt(localPath);
-      final resolvedStoragePath = 'users/$uid/memories/$memoryId/photo$ext';
+      final resolvedStoragePath =
+          'users/$uid/babies/$babyId/memories/$memoryId.jpg';
+      final uploadKey = 'memory:$memoryId:$resolvedStoragePath';
       final file = File(localPath);
       final size = await file.length();
+
+      if (!_inFlightUploadKeys.add(uploadKey)) {
+        log(
+          'photo upload skip type=memory memoryId=$memoryId babyId=$babyId storagePath=$resolvedStoragePath reason=already-in-progress',
+        );
+        return _MemoryOutcome(changed: changed, uploaded: uploaded, babyId: babyId);
+      }
 
       try {
         log(
@@ -176,6 +267,8 @@ class PhotoStorageSyncService {
         await ref.putFile(file);
         final downloadUrl = await ref.getDownloadURL();
 
+        row['photoPath'] = localPath;
+        row['photoLocalPath'] = localPath;
         row['photoStoragePath'] = resolvedStoragePath;
         row['photoUrl'] = downloadUrl;
         changed = true;
@@ -187,6 +280,8 @@ class PhotoStorageSyncService {
         log(
           'photo upload fail type=memory memoryId=$memoryId babyId=$babyId size=$size storagePath=$resolvedStoragePath error=$e',
         );
+      } finally {
+        _inFlightUploadKeys.remove(uploadKey);
       }
     }
 
@@ -197,7 +292,7 @@ class PhotoStorageSyncService {
         (localPath.isEmpty || !await _fileExists(localPath))) {
       final ext = _storageExt(currentStoragePath);
       final target = await _localPhotoFile(
-        subDir: 'memories/$memoryId',
+        subDir: 'babies/$babyId/memories/$memoryId',
         fileName: 'photo$ext',
       );
       try {
@@ -206,6 +301,7 @@ class PhotoStorageSyncService {
         );
         await _storage.ref(currentStoragePath).writeToFile(target);
         row['photoPath'] = target.path;
+        row['photoLocalPath'] = target.path;
         changed = true;
         log(
           'photo download success type=memory memoryId=$memoryId babyId=$babyId storagePath=$currentStoragePath localPath=${target.path}',

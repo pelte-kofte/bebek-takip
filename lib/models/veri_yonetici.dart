@@ -40,6 +40,8 @@ class VeriYonetici {
   static SharedPreferences? _prefs;
   static LocalStore? _localStore;
   static const Duration _bestEffortCloudSyncTimeout = Duration(seconds: 8);
+  static const Duration _bestEffortWriteTimeout = Duration(seconds: 3);
+  static const Duration _bestEffortPhotoStorageTimeout = Duration(seconds: 20);
 
   // In-memory cache
   static List<Map<String, dynamic>> _mamaKayitlari = [];
@@ -520,6 +522,7 @@ class VeriYonetici {
   static void _scheduleBestEffortCloudWrite(
     Future<void> Function() action, {
     required String label,
+    Duration timeout = _bestEffortWriteTimeout,
   }) {
     if (!_canSyncWithCloud(
       operation: 'schedule:$label',
@@ -529,7 +532,12 @@ class VeriYonetici {
     }
     unawaited(() async {
       try {
-        await action().timeout(const Duration(seconds: 3));
+        await action().timeout(timeout);
+      } on TimeoutException catch (e, st) {
+        _log('Best-effort $label timed out after ${timeout.inSeconds}s: $e');
+        if (kDebugMode) {
+          _log('Best-effort $label stack: $st');
+        }
       } catch (e, st) {
         _log('Best-effort $label failed: $e');
         if (kDebugMode) {
@@ -547,6 +555,9 @@ class VeriYonetici {
       operation: '_syncPhotosWithStorageBestEffort',
       skipMessage: '[Sync] skip cloud write: user is anonymous',
     )) {
+      _log(
+        'photo upload skip type=memory reason=anonymous uid=$uid memories=${_anilar.length}',
+      );
       return;
     }
     _log('Starting photo storage sync uid=$uid anonymous=${user?.isAnonymous}');
@@ -604,6 +615,7 @@ class VeriYonetici {
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
     );
     if (_babies.isNotEmpty && !_babies.any((b) => b.id == _activeBabyId)) {
       _activeBabyId = _babies.first.id;
@@ -1239,6 +1251,7 @@ class VeriYonetici {
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
     );
 
     // Settings
@@ -1696,16 +1709,31 @@ class VeriYonetici {
   }) async {
     final index = _babies.indexWhere((b) => b.id == babyId);
     if (index == -1) return;
+    final previousPhotoPath = _babies[index].photoPath;
+    final previousPhotoStoragePath =
+        (_babies[index].photoStoragePath ?? '').trim();
+    String? profilePhotoDeletePath;
     if (name != null) _babies[index].name = name;
     if (birthDate != null) _babies[index].birthDate = birthDate;
     if (clearPhoto) {
+      if (previousPhotoStoragePath.isNotEmpty) {
+        profilePhotoDeletePath = previousPhotoStoragePath;
+      } else {
+        _log('profile photo delete skip babyId=$babyId reason=no-remote-photo');
+      }
       _babies[index].photoPath = null;
       _babies[index].photoStoragePath = null;
       _babies[index].photoUrl = null;
     } else if (photoPath != null) {
-      final previous = _babies[index].photoPath;
       _babies[index].photoPath = photoPath;
-      if ((previous ?? '') != photoPath) {
+      if ((previousPhotoPath ?? '') != photoPath) {
+        if (previousPhotoStoragePath.isNotEmpty) {
+          profilePhotoDeletePath = previousPhotoStoragePath;
+        } else {
+          _log(
+            'profile photo delete skip babyId=$babyId reason=no-remote-photo',
+          );
+        }
         _babies[index].photoStoragePath = null;
         _babies[index].photoUrl = null;
       }
@@ -1721,7 +1749,23 @@ class VeriYonetici {
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
     );
+    if ((profilePhotoDeletePath ?? '').isNotEmpty) {
+      final storagePathToDelete = profilePhotoDeletePath!;
+      _scheduleBestEffortCloudWrite(() async {
+        final uid = _currentUid;
+        if (uid == null || uid.isEmpty) return;
+        await _photoStorageSyncService.deleteBabyPhoto(
+          uid: uid,
+          babyId: babyId,
+          storagePath: storagePathToDelete,
+          log: _log,
+        );
+      },
+      label: 'profile photo delete',
+      timeout: _bestEffortPhotoStorageTimeout);
+    }
     if (babyId == _activeBabyId) {
       _babyName = _babies[index].name;
       _birthDate = _babies[index].birthDate;
@@ -2308,7 +2352,8 @@ class VeriYonetici {
               'id': (e['id'] ?? '').toString(),
               'tarih': DateTime.parse(e['tarih']),
               'emoji': e['emoji'],
-              'photoPath': e['photoPath'],
+              'photoPath': e['photoLocalPath'] ?? e['photoPath'],
+              'photoLocalPath': e['photoLocalPath'] ?? e['photoPath'],
               'photoStoragePath': e['photoStoragePath'],
               'photoUrl': e['photoUrl'],
               'babyId': e['babyId'] ?? _activeBabyId,
@@ -2354,21 +2399,42 @@ class VeriYonetici {
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
     for (final r in anilar) {
+      final normalizedPhotoPath =
+          (r['photoPath'] ?? r['photoLocalPath'] ?? '').toString().trim();
       r['babyId'] = _activeBabyId;
       _ensureStableIdForRow(r, entity: 'memory');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
       r['isDeleted'] = false;
       r['deletedAt'] = null;
-      if ((r['photoPath'] ?? '').toString().trim().isEmpty) {
+      if (normalizedPhotoPath.isEmpty) {
+        r['photoPath'] = null;
+        r['photoLocalPath'] = null;
         r['photoStoragePath'] = null;
         r['photoUrl'] = null;
+      } else {
+        r['photoPath'] = normalizedPhotoPath;
+        r['photoLocalPath'] = normalizedPhotoPath;
       }
       prepared.add(Map<String, dynamic>.from(r));
     }
 
     final existingAnilar = _anilar
         .where((r) => r['babyId'] == _activeBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final deletedRowsWithPhotos = existingAnilar
+        .where(
+          (r) =>
+              r['babyId'] == _activeBabyId &&
+              !_rowIsDeleted(r) &&
+              !incomingIds.contains((r['id'] ?? '').toString()) &&
+              (r['photoStoragePath'] ?? '').toString().trim().isNotEmpty,
+        )
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
     _anilar.removeWhere((r) => r['babyId'] == _activeBabyId);
@@ -2388,7 +2454,22 @@ class VeriYonetici {
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
     );
+    if (deletedRowsWithPhotos.isNotEmpty) {
+      final rowsToDelete = deletedRowsWithPhotos;
+      _scheduleBestEffortCloudWrite(() async {
+        final uid = _currentUid;
+        if (uid == null || uid.isEmpty) return;
+        await _photoStorageSyncService.deleteMemoryPhotos(
+          uid: uid,
+          rows: rowsToDelete,
+          log: _log,
+        );
+      },
+      label: 'memory photo delete',
+      timeout: _bestEffortPhotoStorageTimeout);
+    }
   }
 
   static Future<void> _persistAnilarToLocalStore() async {
@@ -2401,6 +2482,7 @@ class VeriYonetici {
             'tarih': (e['tarih'] as DateTime).toIso8601String(),
             'emoji': e['emoji'],
             'photoPath': e['photoPath'],
+            'photoLocalPath': e['photoLocalPath'] ?? e['photoPath'],
             'photoStoragePath': e['photoStoragePath'],
             'photoUrl': e['photoUrl'],
             'babyId': e['babyId'],
@@ -2603,6 +2685,20 @@ class VeriYonetici {
         .where((r) => r['babyId'] == _activeBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final deletedRowsWithPhotos = existingMilestones
+        .where(
+          (r) =>
+              r['babyId'] == _activeBabyId &&
+              !_rowIsDeleted(r) &&
+              !incomingIds.contains((r['id'] ?? '').toString()) &&
+              (r['photoStoragePath'] ?? '').toString().trim().isNotEmpty,
+        )
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
     _milestones.removeWhere((r) => r['babyId'] == _activeBabyId);
     _milestones.addAll(
       _mergeActiveRowsWithTombstones(
@@ -2617,7 +2713,22 @@ class VeriYonetici {
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
     );
+    if (deletedRowsWithPhotos.isNotEmpty) {
+      final rowsToDelete = deletedRowsWithPhotos;
+      _scheduleBestEffortCloudWrite(() async {
+        final uid = _currentUid;
+        if (uid == null || uid.isEmpty) return;
+        await _photoStorageSyncService.deleteMemoryPhotos(
+          uid: uid,
+          rows: rowsToDelete,
+          log: _log,
+        );
+      },
+      label: 'memory photo delete',
+      timeout: _bestEffortPhotoStorageTimeout);
+    }
   }
 
   static Future<void> _persistMilestonesToLocalStore() async {
