@@ -48,6 +48,17 @@ class FirestoreDataRepository implements DataRepository {
     return _firestore.collection('users').doc(uid).collection(path);
   }
 
+  DocumentReference<Map<String, dynamic>> _sharedBabyRef(String babyId) {
+    return _firestore.collection('babies').doc(babyId);
+  }
+
+  CollectionReference<Map<String, dynamic>> _sharedBabyCollection(
+    String babyId,
+    String path,
+  ) {
+    return _sharedBabyRef(babyId).collection(path);
+  }
+
   DateTime _toDateTime(dynamic value, {DateTime? fallback}) {
     if (value is Timestamp) return value.toDate();
     if (value is DateTime) return value;
@@ -185,7 +196,7 @@ class FirestoreDataRepository implements DataRepository {
       return;
     }
     if (records.isEmpty) return;
-    final col = _userCollection(uid, 'records');
+    final col = _sharedBabyCollection(babyId, 'records');
 
     for (final row in records) {
       final id = (row['id'] ?? '').toString();
@@ -215,10 +226,10 @@ class FirestoreDataRepository implements DataRepository {
       _skip('write:_deleteRecordDocsByTypes');
       return;
     }
-    final col = _userCollection(uid, 'records');
+    final col = _sharedBabyCollection(babyId, 'records');
     for (final type in types) {
       await _deleteAllPaginated(
-        col.where('babyId', isEqualTo: babyId).where('type', isEqualTo: type),
+        col.where('type', isEqualTo: type),
         operation: 'write:_deleteRecordDocsByTypes:$type',
       );
     }
@@ -235,8 +246,51 @@ class FirestoreDataRepository implements DataRepository {
       return;
     }
     await _deleteAllPaginated(
-      _userCollection(uid, collection).where('babyId', isEqualTo: babyId),
+      _sharedBabyCollection(babyId, collection),
       operation: operation,
+    );
+  }
+
+  Future<void> _copyLegacyDocsToSharedCollection(
+    QuerySnapshot<Map<String, dynamic>> legacySnap,
+    CollectionReference<Map<String, dynamic>> sharedCol, {
+    required String operation,
+  }) async {
+    if (_isAnonymousOrSignedOut()) {
+      _skip(operation);
+      return;
+    }
+    if (legacySnap.docs.isEmpty) return;
+
+    WriteBatch batch = _firestore.batch();
+    var batchOps = 0;
+    for (final doc in legacySnap.docs) {
+      batch.set(sharedCol.doc(doc.id), doc.data(), SetOptions(merge: true));
+      batchOps++;
+      if (batchOps == 450) {
+        await batch.commit();
+        batch = _firestore.batch();
+        batchOps = 0;
+      }
+    }
+    if (batchOps > 0) {
+      await batch.commit();
+    }
+  }
+
+  Baby _parseBabyDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
+    final data = doc.data();
+    return Baby(
+      id: (data['id'] ?? doc.id).toString(),
+      name: (data['name'] ?? 'Baby').toString(),
+      birthDate: _toDateTime(data['birthDate']),
+      photoPath:
+          data['photoLocalPath']?.toString() ??
+          data['baby_photo_path']?.toString() ??
+          data['photoPath']?.toString(),
+      photoStoragePath: data['photoStoragePath']?.toString(),
+      photoUrl: data['photoUrl']?.toString(),
+      createdAt: _toDateTime(data['createdAt']),
     );
   }
 
@@ -257,39 +311,149 @@ class FirestoreDataRepository implements DataRepository {
         ilacDozKayitlari: [],
       );
     }
-    final babiesRef = _userCollection(uid, 'babies');
-    final recordsRef = _userCollection(uid, 'records');
-    final medicationsRef = _userCollection(uid, 'medications');
-    final medicationLogsRef = _userCollection(uid, 'medicationLogs');
+    final userBabiesRef = _userCollection(uid, 'babies');
+    final sharedIndexRef = _userCollection(uid, 'sharedBabies');
 
-    final babiesSnap = await babiesRef
+    final userBabiesSnap = await userBabiesRef
         .orderBy('createdAt', descending: true)
         .get();
-    final recordsSnap = await recordsRef
-        .orderBy('createdAt', descending: true)
-        .get();
-    final medicationsSnap = await medicationsRef
-        .orderBy('createdAt', descending: true)
-        .get();
-    final logsSnap = await medicationLogsRef
-        .orderBy('createdAt', descending: true)
-        .get();
+    final sharedIndexSnap = await sharedIndexRef.get();
 
-    final babies = babiesSnap.docs.map((doc) {
-      final data = doc.data();
-      return Baby(
-        id: (data['id'] ?? doc.id).toString(),
-        name: (data['name'] ?? 'Baby').toString(),
-        birthDate: _toDateTime(data['birthDate']),
-        photoPath:
-            data['photoLocalPath']?.toString() ??
-            data['baby_photo_path']?.toString() ??
-            data['photoPath']?.toString(),
-        photoStoragePath: data['photoStoragePath']?.toString(),
-        photoUrl: data['photoUrl']?.toString(),
-        createdAt: _toDateTime(data['createdAt']),
-      );
-    }).toList();
+    final legacyBabyDocsById =
+        <String, QueryDocumentSnapshot<Map<String, dynamic>>>{};
+    final orderedBabyIds = <String>[];
+
+    for (final doc in userBabiesSnap.docs) {
+      legacyBabyDocsById[doc.id] = doc;
+      orderedBabyIds.add(doc.id);
+    }
+
+    for (final doc in sharedIndexSnap.docs) {
+      final babyId = (doc.data()['babyId'] as String?) ?? doc.id;
+      if (babyId.isEmpty || orderedBabyIds.contains(babyId)) continue;
+      orderedBabyIds.add(babyId);
+    }
+
+    final babies = <Baby>[];
+    final allRecordDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+    final allMedicationDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+    final allMedicationLogDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+
+    for (final babyId in orderedBabyIds) {
+      final legacyBabyDoc = legacyBabyDocsById[babyId];
+
+      if (legacyBabyDoc != null) {
+        await _writeSharedBabiesIndexIfMissing(uid, babyId);
+        // Legacy owner babies may not have a top-level mirror yet.
+        // Create/merge the mirror before the first read so startup sync does
+        // not hit a permission-denied read on a missing babies/{babyId} doc.
+        await _writeBabyMirrorDoc(uid, _parseBabyDoc(legacyBabyDoc));
+      }
+
+      final sharedBabySnap = await _sharedBabyRef(babyId).get();
+      final sharedOwnerId = sharedBabySnap.data()?['ownerId'] as String?;
+      final isOwnedByCurrentUser =
+          (sharedOwnerId != null && sharedOwnerId == uid) ||
+          legacyBabyDoc != null;
+
+      var sharedRecordsSnap = await _sharedBabyCollection(babyId, 'records')
+          .orderBy('createdAt', descending: true)
+          .get();
+      var sharedMedicationsSnap = await _sharedBabyCollection(
+        babyId,
+        'medications',
+      ).orderBy('createdAt', descending: true).get();
+      var sharedMedicationLogsSnap = await _sharedBabyCollection(
+        babyId,
+        'medicationLogs',
+      ).orderBy('createdAt', descending: true).get();
+
+      if (isOwnedByCurrentUser && legacyBabyDoc != null) {
+        final legacyRecordsSnap = await _userCollection(uid, 'records')
+            .where('babyId', isEqualTo: babyId)
+            .orderBy('createdAt', descending: true)
+            .get();
+        final legacyMedicationsSnap = await _userCollection(uid, 'medications')
+            .where('babyId', isEqualTo: babyId)
+            .orderBy('createdAt', descending: true)
+            .get();
+        final legacyMedicationLogsSnap =
+            await _userCollection(uid, 'medicationLogs')
+                .where('babyId', isEqualTo: babyId)
+                .orderBy('createdAt', descending: true)
+                .get();
+
+        final shouldMigrateRecords =
+            sharedRecordsSnap.docs.isEmpty && legacyRecordsSnap.docs.isNotEmpty;
+        final shouldMigrateMedications =
+            sharedMedicationsSnap.docs.isEmpty &&
+            legacyMedicationsSnap.docs.isNotEmpty;
+        final shouldMigrateMedicationLogs =
+            sharedMedicationLogsSnap.docs.isEmpty &&
+            legacyMedicationLogsSnap.docs.isNotEmpty;
+
+        if (shouldMigrateRecords ||
+            shouldMigrateMedications ||
+            shouldMigrateMedicationLogs) {
+          _log('Lazy-migrating shared baby data babyId=$babyId uid=$uid');
+          if (shouldMigrateRecords) {
+            await _copyLegacyDocsToSharedCollection(
+              legacyRecordsSnap,
+              _sharedBabyCollection(babyId, 'records'),
+              operation: 'migrate:records:$babyId',
+            );
+          }
+          if (shouldMigrateMedications) {
+            await _copyLegacyDocsToSharedCollection(
+              legacyMedicationsSnap,
+              _sharedBabyCollection(babyId, 'medications'),
+              operation: 'migrate:medications:$babyId',
+            );
+          }
+          if (shouldMigrateMedicationLogs) {
+            await _copyLegacyDocsToSharedCollection(
+              legacyMedicationLogsSnap,
+              _sharedBabyCollection(babyId, 'medicationLogs'),
+              operation: 'migrate:medicationLogs:$babyId',
+            );
+          }
+
+          sharedRecordsSnap = await _sharedBabyCollection(babyId, 'records')
+              .orderBy('createdAt', descending: true)
+              .get();
+          sharedMedicationsSnap = await _sharedBabyCollection(
+            babyId,
+            'medications',
+          ).orderBy('createdAt', descending: true).get();
+          sharedMedicationLogsSnap = await _sharedBabyCollection(
+            babyId,
+            'medicationLogs',
+          ).orderBy('createdAt', descending: true).get();
+        }
+      }
+
+      final babyData = sharedBabySnap.data() ?? legacyBabyDoc?.data();
+      if (babyData != null) {
+        babies.add(
+          Baby(
+            id: babyId,
+            name: (babyData['name'] ?? 'Baby').toString(),
+            birthDate: _toDateTime(babyData['birthDate']),
+            photoPath:
+                babyData['photoLocalPath']?.toString() ??
+                babyData['baby_photo_path']?.toString() ??
+                babyData['photoPath']?.toString(),
+            photoStoragePath: babyData['photoStoragePath']?.toString(),
+            photoUrl: babyData['photoUrl']?.toString(),
+            createdAt: _toDateTime(babyData['createdAt']),
+          ),
+        );
+      }
+
+      allRecordDocs.addAll(sharedRecordsSnap.docs);
+      allMedicationDocs.addAll(sharedMedicationsSnap.docs);
+      allMedicationLogDocs.addAll(sharedMedicationLogsSnap.docs);
+    }
 
     final mama = <Map<String, dynamic>>[];
     final kaka = <Map<String, dynamic>>[];
@@ -299,7 +463,7 @@ class FirestoreDataRepository implements DataRepository {
     final milestones = <Map<String, dynamic>>[];
     final anilar = <Map<String, dynamic>>[];
 
-    for (final doc in recordsSnap.docs) {
+    for (final doc in allRecordDocs) {
       final row = doc.data();
       final type = (row['type'] ?? '').toString();
       final id = (row['id'] ?? doc.id).toString();
@@ -490,7 +654,7 @@ class FirestoreDataRepository implements DataRepository {
       }
     }
 
-    final ilaclar = medicationsSnap.docs.map((doc) {
+    final ilaclar = allMedicationDocs.map((doc) {
       final row = doc.data();
       final data = Map<String, dynamic>.from((row['data'] as Map?) ?? {});
       final updatedAt = _toDateTime(row['updatedAt'] ?? row['createdAt']);
@@ -506,7 +670,7 @@ class FirestoreDataRepository implements DataRepository {
       };
     }).toList();
 
-    final dozlar = logsSnap.docs.map((doc) {
+    final dozlar = allMedicationLogDocs.map((doc) {
       final row = doc.data();
       final data = Map<String, dynamic>.from((row['data'] as Map?) ?? {});
       final updatedAt = _toDateTime(row['updatedAt'] ?? row['createdAt']);
@@ -546,18 +710,127 @@ class FirestoreDataRepository implements DataRepository {
       return;
     }
     if (babies.isEmpty) return;
-    final col = _userCollection(uid, 'babies');
     for (final baby in babies) {
       if (!_acquireDocWriteLock('babies:${baby.id}')) continue;
-      await _setWithServerTimestamps(col.doc(baby.id), {
-        'id': baby.id,
+      DocumentSnapshot<Map<String, dynamic>>? sharedBabySnap;
+      try {
+        sharedBabySnap = await _sharedBabyRef(baby.id).get();
+      } catch (e) {
+        _log('replaceBabies shared mirror read fallback babyId=${baby.id}: $e');
+      }
+      final sharedOwnerId = sharedBabySnap?.data()?['ownerId'] as String?;
+      final isSharedMemberBaby =
+          (sharedBabySnap?.exists ?? false) &&
+          sharedOwnerId != null &&
+          sharedOwnerId != uid;
+
+      if (!isSharedMemberBaby) {
+        final col = _userCollection(uid, 'babies');
+        await _setWithServerTimestamps(col.doc(baby.id), {
+          'id': baby.id,
+          'name': baby.name,
+          'birthDate': Timestamp.fromDate(baby.birthDate),
+          'photoLocalPath': baby.photoPath,
+          'baby_photo_path': baby.photoPath,
+          'photoStoragePath': baby.photoStoragePath,
+          'photoUrl': baby.photoUrl,
+        });
+        await _writeOwnershipFieldsIfMissing(uid, baby.id);
+      }
+
+      await _writeBabyMirrorDoc(
+        uid,
+        baby,
+        ownerId: sharedOwnerId ?? uid,
+      );
+    }
+  }
+
+  /// Writes a lightweight mirror of the baby document to the top-level
+  /// babies/{babyId} collection. Cloud Functions (sendInvitation, acceptInvitation)
+  /// and co-parent devices read from this path.
+  /// Uses merge:true — the members map written by acceptInvitation is preserved.
+  Future<void> _writeBabyMirrorDoc(
+    String uid,
+    Baby baby, {
+    String? ownerId,
+  }) async {
+    if (_isAnonymousOrSignedOut()) return;
+    final ref = _firestore.collection('babies').doc(baby.id);
+    try {
+      await ref.set({
         'name': baby.name,
         'birthDate': Timestamp.fromDate(baby.birthDate),
-        'photoLocalPath': baby.photoPath,
-        'baby_photo_path': baby.photoPath,
-        'photoStoragePath': baby.photoStoragePath,
         'photoUrl': baby.photoUrl,
+        'photoStoragePath': baby.photoStoragePath,
+        'ownerId': ownerId ?? uid,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      _log('_writeBabyMirrorDoc error babyId=${baby.id}: $e');
+    }
+  }
+
+  /// Writes ownerId and members map on the baby document only when they are
+  /// absent. Safe to call on every sync — uses set(merge:true) with a
+  /// transaction that no-ops if the fields already exist.
+  Future<void> _writeOwnershipFieldsIfMissing(
+    String uid,
+    String babyId,
+  ) async {
+    if (_isAnonymousOrSignedOut()) return;
+    final ref = _userCollection(uid, 'babies').doc(babyId);
+    try {
+      await _firestore.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        if (!snap.exists) return;
+        final data = snap.data()!;
+        // Only write if either field is missing.
+        final hasOwner = data.containsKey('ownerId');
+        final hasMembers = data.containsKey('members');
+        if (hasOwner && hasMembers) return;
+        final patch = <String, dynamic>{};
+        if (!hasOwner) patch['ownerId'] = uid;
+        if (!hasMembers) {
+          patch['members'] = {
+            uid: {
+              'role': 'owner',
+              'joinedAt': FieldValue.serverTimestamp(),
+            },
+          };
+        }
+        tx.set(ref, patch, SetOptions(merge: true));
       });
+      // Also ensure the sharedBabies index entry exists for the owner.
+      await _writeSharedBabiesIndexIfMissing(uid, babyId);
+    } catch (e) {
+      _log('_writeOwnershipFieldsIfMissing error babyId=$babyId: $e');
+    }
+  }
+
+  /// Writes users/{uid}/sharedBabies/{babyId} if the document does not yet
+  /// exist. This is the helper index used for future shared-parenting queries.
+  Future<void> _writeSharedBabiesIndexIfMissing(
+    String uid,
+    String babyId,
+  ) async {
+    if (_isAnonymousOrSignedOut()) return;
+    final ref = _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('sharedBabies')
+        .doc(babyId);
+    try {
+      await _firestore.runTransaction((tx) async {
+        final snap = await tx.get(ref);
+        if (snap.exists) return;
+        tx.set(ref, {
+          'babyId': babyId,
+          'role': 'owner',
+          'addedAt': FieldValue.serverTimestamp(),
+        });
+      });
+    } catch (e) {
+      _log('_writeSharedBabiesIndexIfMissing error babyId=$babyId: $e');
     }
   }
 
@@ -608,7 +881,7 @@ class FirestoreDataRepository implements DataRepository {
       );
       return;
     }
-    final col = _userCollection(uid, 'medications');
+    final col = _sharedBabyCollection(babyId, 'medications');
     for (final med in medications) {
       final id = (med['id'] ?? '').toString();
       if (id.isEmpty) continue;
@@ -646,7 +919,7 @@ class FirestoreDataRepository implements DataRepository {
       );
       return;
     }
-    final col = _userCollection(uid, 'medicationLogs');
+    final col = _sharedBabyCollection(babyId, 'medicationLogs');
     for (final log in logs) {
       final id = (log['id'] ?? '').toString();
       if (id.isEmpty) continue;
@@ -704,33 +977,50 @@ class FirestoreDataRepository implements DataRepository {
       return;
     }
     final userRef = _firestore.collection('users').doc(uid);
-    final recordsQ = userRef
-        .collection('records')
-        .where('babyId', isEqualTo: babyId);
-    final medicationsQ = userRef
-        .collection('medications')
-        .where('babyId', isEqualTo: babyId);
-    final logsQ = userRef
-        .collection('medicationLogs')
-        .where('babyId', isEqualTo: babyId);
-    final memoriesQ = userRef
-        .collection('memories')
-        .where('babyId', isEqualTo: babyId);
+    final sharedBabySnap = await _sharedBabyRef(babyId).get();
+    final sharedOwnerId = sharedBabySnap.data()?['ownerId'] as String?;
+    final isOwner = sharedOwnerId == null || sharedOwnerId == uid;
 
     final results = await Future.wait<int>([
-      _deleteAllPaginated(recordsQ, operation: 'write:deleteBabyData:records'),
       _deleteAllPaginated(
-        medicationsQ,
-        operation: 'write:deleteBabyData:medications',
+        userRef.collection('records').where('babyId', isEqualTo: babyId),
+        operation: 'write:deleteBabyData:legacyRecords',
       ),
       _deleteAllPaginated(
-        logsQ,
-        operation: 'write:deleteBabyData:medicationLogs',
+        userRef.collection('medications').where('babyId', isEqualTo: babyId),
+        operation: 'write:deleteBabyData:legacyMedications',
       ),
       _deleteAllPaginated(
-        memoriesQ,
-        operation: 'write:deleteBabyData:memories',
+        userRef
+            .collection('medicationLogs')
+            .where('babyId', isEqualTo: babyId),
+        operation: 'write:deleteBabyData:legacyMedicationLogs',
       ),
+      _deleteAllPaginated(
+        userRef.collection('memories').where('babyId', isEqualTo: babyId),
+        operation: 'write:deleteBabyData:legacyMemories',
+      ),
+      if (isOwner)
+        _deleteAllPaginated(
+          _sharedBabyCollection(babyId, 'records'),
+          operation: 'write:deleteBabyData:sharedRecords',
+        )
+      else
+        Future.value(0),
+      if (isOwner)
+        _deleteAllPaginated(
+          _sharedBabyCollection(babyId, 'medications'),
+          operation: 'write:deleteBabyData:sharedMedications',
+        )
+      else
+        Future.value(0),
+      if (isOwner)
+        _deleteAllPaginated(
+          _sharedBabyCollection(babyId, 'medicationLogs'),
+          operation: 'write:deleteBabyData:sharedMedicationLogs',
+        )
+      else
+        Future.value(0),
     ]);
 
     try {
@@ -739,10 +1029,20 @@ class FirestoreDataRepository implements DataRepository {
       if (e.code != 'not-found') rethrow;
     }
 
+    if (isOwner) {
+      try {
+        await _sharedBabyRef(babyId).delete();
+      } on FirebaseException catch (e) {
+        if (e.code != 'not-found') rethrow;
+      }
+    }
+
     _log(
       'deleteBabyData uid=$uid babyId=$babyId '
-      'records=${results[0]} medications=${results[1]} '
-      'medicationLogs=${results[2]} memories=${results[3]}',
+      'legacyRecords=${results[0]} legacyMedications=${results[1]} '
+      'legacyMedicationLogs=${results[2]} legacyMemories=${results[3]} '
+      'sharedRecords=${results[4]} sharedMedications=${results[5]} '
+      'sharedMedicationLogs=${results[6]} owner=$isOwner',
     );
   }
 

@@ -4,13 +4,14 @@ import {randomUUID} from "node:crypto";
 import {getApp, getApps, initializeApp} from "firebase-admin/app";
 import {
   FieldValue,
-  Firestore,
   getFirestore,
 } from "firebase-admin/firestore";
 import {getStorage} from "firebase-admin/storage";
 import {logger} from "firebase-functions";
 import {defineSecret} from "firebase-functions/params";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
+import {HttpsError, onCall} from "firebase-functions/v2/https";
+import OpenAI, {toFile} from "openai";
 
 if (getApps().length === 0) {
   initializeApp();
@@ -18,31 +19,22 @@ if (getApps().length === 0) {
   getApp();
 }
 
-const REPLICATE_API_TOKEN = defineSecret("REPLICATE_API_TOKEN");
+const OPENAI_API_KEY = defineSecret("OPENAI_API_KEY");
 
 const REQUEST_COLLECTION = "illustrationRequests";
-const CREDIT_DOC_PATH_SUFFIX = "illustrationCredits/balance";
-const USER_RECORDS_COLLECTION = "records";
 const REQUEST_STATUS_PENDING = "pending";
 const REQUEST_STATUS_PROCESSING = "processing";
 const REQUEST_STATUS_COMPLETED = "completed";
 const REQUEST_STATUS_FAILED = "failed";
-const CREDIT_RESERVATION_STATE_RESERVED = "reserved";
 const CREDIT_RESERVATION_STATE_CONSUMED = "consumed";
-const CREDIT_RESERVATION_STATE_RELEASED = "released";
-const DEFAULT_PLAN_TIER = "free";
-const REPLICATE_API_BASE_URL = "https://api.replicate.com/v1";
-const REPLICATE_MODEL = "black-forest-labs/flux-kontext-pro";
+const OPENAI_IMAGE_MODEL = "gpt-image-1.5";
 const FUNCTION_TIMEOUT_SECONDS = 300;
 const WORKER_DEADLINE_BUFFER_MS = 45 * 1000;
-const REPLICATE_PREFER_WAIT_SECONDS = 40;
-const REPLICATE_CANCEL_AFTER = "4m";
-const REPLICATE_POLL_INTERVAL_MS = 2500;
-const REPLICATE_FETCH_TIMEOUT_MS = 45 * 1000;
-const REPLICATE_RESULT_DOWNLOAD_TIMEOUT_MS = 45 * 1000;
-const SOURCE_URL_EXPIRY_MS = 15 * 60 * 1000;
+const OPENAI_IMAGE_REQUEST_TIMEOUT_MS = 45 * 1000;
 const GENERATED_IMAGE_CONTENT_TYPE = "image/jpeg";
 const DEADLINE_SAFETY_MARGIN_MS = 5000;
+
+const MONTHLY_INCLUDED_LIMIT = 3;
 
 const ALLOWED_SOURCE_IMAGE_EXTENSIONS = new Set([
   "jpg",
@@ -68,13 +60,6 @@ type IllustrationRequestData = {
   creditReservationState?: string | null;
 };
 
-type UserIllustrationCredits = {
-  freeIllustrationAvailable: boolean;
-  monthlyCreditsRemaining: number;
-  purchasedCreditsRemaining: number;
-  planTier: string;
-};
-
 type CreditConsumption =
   | "freeIllustrationAvailable"
   | "monthlyCreditsRemaining"
@@ -85,23 +70,9 @@ type GenerationResult = {
   contentType: string;
 };
 
-type ReplicatePrediction = {
-  id?: string;
-  status?: string | null;
-  error?: string | null;
-  output?: unknown;
-  urls?: {
-    get?: string | null;
-  };
-};
-
 type RequestValidationResult =
   | {ok: true; data: IllustrationRequestData}
   | {ok: false; errorCode: string; errorMessage: string};
-
-type CreditReservationResult = {
-  bucket: CreditConsumption;
-};
 
 type ParsedSourcePhotoPath = {
   uid: string;
@@ -110,7 +81,6 @@ type ParsedSourcePhotoPath = {
   extension: string;
 };
 
-const db = getFirestore();
 const storage = getStorage();
 
 export const processIllustrationRequest = onDocumentCreated(
@@ -119,7 +89,7 @@ export const processIllustrationRequest = onDocumentCreated(
     region: "us-central1",
     timeoutSeconds: FUNCTION_TIMEOUT_SECONDS,
     memory: "512MiB",
-    secrets: [REPLICATE_API_TOKEN],
+    secrets: [OPENAI_API_KEY],
   },
   async (event) => {
     const snapshot = event.data;
@@ -164,23 +134,22 @@ export const processIllustrationRequest = onDocumentCreated(
       (FUNCTION_TIMEOUT_SECONDS * 1000) -
       WORKER_DEADLINE_BUFFER_MS;
 
-    let reservation: CreditReservationResult | null = null;
     let resultStoragePath: string | null = null;
+    let consumedCreditBucket: CreditConsumption | null = null;
 
     try {
-      await assertRequestOwnershipOrThrow(db, request);
+      await assertRequestOwnershipOrThrow(request);
       await assertSourcePhotoExists(request.sourcePhotoStoragePath);
 
-      reservation = await reserveCreditAndStartProcessing({
-        firestore: db,
-        requestRef,
-        request,
-      });
+      // Atomically validate and consume one credit server-side.
+      // This is the authoritative gate — client-side credit checks are UX only.
+      consumedCreditBucket = await consumeCreditServerSide(request.uid);
 
-      logger.info("Illustration credit reserved.", {
-        requestId,
-        uid: request.uid,
-        reservedBucket: reservation.bucket,
+      await requestRef.update({
+        status: REQUEST_STATUS_PROCESSING,
+        updatedAt: FieldValue.serverTimestamp(),
+        errorCode: null,
+        errorMessage: null,
       });
 
       const generationResult = await generateIllustrationFromSource({
@@ -197,6 +166,9 @@ export const processIllustrationRequest = onDocumentCreated(
         imageBytes: generationResult.imageBytes,
         contentType: generationResult.contentType,
       });
+
+      // Generation succeeded — credit is earned, clear the refund flag.
+      consumedCreditBucket = null;
 
       await requestRef.update({
         status: REQUEST_STATUS_COMPLETED,
@@ -223,39 +195,28 @@ export const processIllustrationRequest = onDocumentCreated(
         errorMessage: normalized.errorMessage,
       });
 
+      // Refund the credit if it was consumed before the failure.
+      if (consumedCreditBucket !== null) {
+        await refundCreditServerSide(request.uid, consumedCreditBucket).catch(
+          (refundErr) => {
+            logger.error("Credit refund failed after worker error.", {
+              requestId,
+              uid: request.uid,
+              refundErr,
+            });
+          },
+        );
+      }
+
       if (resultStoragePath) {
         await deleteGeneratedIllustrationIfPresent(resultStoragePath);
       }
 
-      if (reservation) {
-        try {
-          await releaseReservedCreditAndMarkFailed({
-            firestore: db,
-            requestRef,
-            uid: request.uid,
-            bucket: reservation.bucket,
-            errorCode: normalized.errorCode,
-            errorMessage: normalized.errorMessage,
-          });
-        } catch (releaseError) {
-          logger.error("Failed to release reserved illustration credit.", {
-            requestId,
-            uid: request.uid,
-            releaseError,
-          });
-          await markRequestFailed(
-            requestRef,
-            normalized.errorCode,
-            normalized.errorMessage,
-          );
-        }
-      } else {
-        await markRequestFailed(
-          requestRef,
-          normalized.errorCode,
-          normalized.errorMessage,
-        );
-      }
+      await markRequestFailed(
+        requestRef,
+        normalized.errorCode,
+        normalized.errorMessage,
+      );
     }
   },
 );
@@ -293,7 +254,6 @@ function validateRequestData(
     ["babyId", data.babyId],
     ["memoryId", data.memoryId],
     ["sourcePhotoStoragePath", data.sourcePhotoStoragePath],
-    ["sourcePhotoUrl", data.sourcePhotoUrl],
     ["status", data.status],
   ].filter(([, value]) => !value);
 
@@ -325,158 +285,156 @@ async function markRequestFailed(
   );
 }
 
-async function reserveCreditAndStartProcessing({
-  firestore,
-  requestRef,
-  request,
-}: {
-  firestore: Firestore;
-  requestRef: FirebaseFirestore.DocumentReference;
-  request: IllustrationRequestData;
-}): Promise<CreditReservationResult> {
-  const ref = firestore.doc(`users/${request.uid}/${CREDIT_DOC_PATH_SUFFIX}`);
-  let reservedBucket: CreditConsumption | null = null;
-  await firestore.runTransaction(async (transaction) => {
-    const requestSnapshot = await transaction.get(requestRef);
-    if (!requestSnapshot.exists) {
-      throw new WorkerError(
-        "request-missing",
-        "Illustration request document no longer exists.",
-      );
-    }
+// ---------------------------------------------------------------------------
+// Server-side credit helpers
+// ---------------------------------------------------------------------------
+// These run inside admin-SDK Firestore transactions and are the ONLY
+// authoritative writers of the illustrationCredits/balance document.
+// Client-side Firestore rules deny all writes to this path.
+// ---------------------------------------------------------------------------
 
-    const requestData = validateRequestData(requestSnapshot.data());
-    if (!requestData.ok) {
-      throw new WorkerError(requestData.errorCode, requestData.errorMessage);
-    }
-    if (requestData.data.status !== REQUEST_STATUS_PENDING) {
-      throw new WorkerError(
-        "invalid-request-state",
-        "Illustration request is no longer pending.",
-      );
-    }
+/**
+ * Atomically validates that the user has at least one credit and consumes it.
+ * Monthly-included credits are consumed first; purchased credits second.
+ * Throws WorkerError('insufficient-credits') when the balance is zero.
+ * Returns which bucket was consumed so it can be refunded on failure.
+ * @param {string} uid Authenticated user ID owning the credit balance document.
+ */
+async function consumeCreditServerSide(
+  uid: string,
+): Promise<CreditConsumption> {
+  const db = getFirestore();
+  const creditsRef = db
+    .collection("users")
+    .doc(uid)
+    .collection("illustrationCredits")
+    .doc("balance");
+  const currentMonth = serverYearMonth();
 
-    const snapshot = await transaction.get(ref);
-    const credits = snapshot.exists ?
-      creditsFromSnapshot(snapshot.data()) :
-      defaultCredits();
+  let consumed: CreditConsumption | null = null;
 
-    const bucket = pickCreditBucketToConsume(credits);
-    if (!bucket) {
-      throw new WorkerError(
-        "no-credits-available",
-        "No illustration credits are available for this account.",
-      );
-    }
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(creditsRef);
+    const data = snap.data() ?? {};
 
-    const update: Record<string, unknown> = {
-      uid: request.uid,
-      planTier: credits.planTier || DEFAULT_PLAN_TIER,
-      updatedAt: FieldValue.serverTimestamp(),
-    };
-    if (bucket === "freeIllustrationAvailable") {
-      update.freeIllustrationAvailable = false;
-    } else if (bucket === "monthlyCreditsRemaining") {
-      update.monthlyCreditsRemaining =
-        Math.max(0, credits.monthlyCreditsRemaining - 1);
-    } else {
-      update.purchasedCreditsRemaining =
-        Math.max(0, credits.purchasedCreditsRemaining - 1);
-    }
-
-    transaction.set(ref, update, {merge: true});
-    transaction.set(
-      requestRef,
-      {
-        status: REQUEST_STATUS_PROCESSING,
-        updatedAt: FieldValue.serverTimestamp(),
-        errorCode: null,
-        errorMessage: null,
-        reservedCreditBucket: bucket,
-        creditReservationState: CREDIT_RESERVATION_STATE_RESERVED,
-      },
-      {merge: true},
+    const storedMonth = String(data["usageMonth"] ?? "");
+    const usedThisMonth =
+      storedMonth === currentMonth ? toIntSafe(data["usedThisMonth"]) : 0;
+    const monthlyRemaining = Math.max(
+      0,
+      MONTHLY_INCLUDED_LIMIT - usedThisMonth,
     );
-    reservedBucket = bucket;
+    const purchasedRemaining = toIntSafe(data["purchasedCreditsRemaining"]);
+
+    if (monthlyRemaining <= 0 && purchasedRemaining <= 0) {
+      throw new WorkerError(
+        "insufficient-credits",
+        "No illustration credits remaining.",
+      );
+    }
+
+    if (monthlyRemaining > 0) {
+      consumed = "monthlyCreditsRemaining";
+      tx.set(
+        creditsRef,
+        {
+          usageMonth: currentMonth,
+          usedThisMonth: usedThisMonth + 1,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+      );
+    } else {
+      consumed = "purchasedCreditsRemaining";
+      tx.set(
+        creditsRef,
+        {
+          purchasedCreditsRemaining: Math.max(0, purchasedRemaining - 1),
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+      );
+    }
   });
 
-  if (!reservedBucket) {
+  if (consumed === null) {
     throw new WorkerError(
-      "credit-reservation-failed",
-      "Illustration credit could not be reserved.",
+      "credit-consumption-failed",
+      "Credit consumption completed without selecting a bucket.",
     );
   }
 
-  return {bucket: reservedBucket};
+  return consumed;
 }
 
-async function releaseReservedCreditAndMarkFailed({
-  firestore,
-  requestRef,
-  uid,
-  bucket,
-  errorCode,
-  errorMessage,
-}: {
-  firestore: Firestore;
-  requestRef: FirebaseFirestore.DocumentReference;
-  uid: string;
-  bucket: CreditConsumption;
-  errorCode: string;
-  errorMessage: string;
-}): Promise<void> {
-  const creditsRef = firestore.doc(`users/${uid}/${CREDIT_DOC_PATH_SUFFIX}`);
-  await firestore.runTransaction(async (transaction) => {
-    const [requestSnapshot, creditSnapshot] = await Promise.all([
-      transaction.get(requestRef),
-      transaction.get(creditsRef),
-    ]);
+/**
+ * Refunds one credit to the bucket that was previously consumed.
+ * Called when illustration generation fails after a credit was already taken.
+ * Best-effort: caller should catch and log errors rather than rethrowing.
+ * @param {string} uid Authenticated user ID owning the credit balance document.
+ * @param {CreditConsumption} bucket The credit bucket that should receive
+ *   the refunded credit.
+ */
+async function refundCreditServerSide(
+  uid: string,
+  bucket: CreditConsumption,
+): Promise<void> {
+  const db = getFirestore();
+  const creditsRef = db
+    .collection("users")
+    .doc(uid)
+    .collection("illustrationCredits")
+    .doc("balance");
+  const currentMonth = serverYearMonth();
 
-    const requestData = requestSnapshot.data();
-    const currentState = toTrimmedString(requestData?.creditReservationState);
-    const currentBucket = toCreditConsumption(
-      requestData?.reservedCreditBucket,
-    );
-    const credits = creditSnapshot.exists ?
-      creditsFromSnapshot(creditSnapshot.data()) :
-      defaultCredits();
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(creditsRef);
+    const data = snap.data() ?? {};
 
-    if (
-      currentState === CREDIT_RESERVATION_STATE_RESERVED &&
-      currentBucket === bucket
-    ) {
-      const update: Record<string, unknown> = {
-        uid,
-        planTier: credits.planTier || DEFAULT_PLAN_TIER,
-        updatedAt: FieldValue.serverTimestamp(),
-      };
-
-      if (bucket === "freeIllustrationAvailable") {
-        update.freeIllustrationAvailable = true;
-      } else if (bucket === "monthlyCreditsRemaining") {
-        update.monthlyCreditsRemaining = credits.monthlyCreditsRemaining + 1;
-      } else {
-        update.purchasedCreditsRemaining =
-          credits.purchasedCreditsRemaining + 1;
+    if (bucket === "monthlyCreditsRemaining") {
+      const storedMonth = String(data["usageMonth"] ?? "");
+      if (storedMonth === currentMonth) {
+        tx.set(
+          creditsRef,
+          {
+            usedThisMonth: Math.max(0, toIntSafe(data["usedThisMonth"]) - 1),
+            updatedAt: FieldValue.serverTimestamp(),
+          },
+          {merge: true},
+        );
       }
-
-      transaction.set(creditsRef, update, {merge: true});
+    } else if (bucket === "purchasedCreditsRemaining") {
+      tx.set(
+        creditsRef,
+        {
+          purchasedCreditsRemaining:
+            toIntSafe(data["purchasedCreditsRemaining"]) + 1,
+          updatedAt: FieldValue.serverTimestamp(),
+        },
+        {merge: true},
+      );
     }
-
-    transaction.set(
-      requestRef,
-      {
-        status: REQUEST_STATUS_FAILED,
-        errorCode,
-        errorMessage,
-        updatedAt: FieldValue.serverTimestamp(),
-        reservedCreditBucket: null,
-        creditReservationState: CREDIT_RESERVATION_STATE_RELEASED,
-      },
-      {merge: true},
-    );
   });
 }
+
+// ---------------------------------------------------------------------------
+// Callable: grant purchased illustration credits
+// ---------------------------------------------------------------------------
+// DISABLED: Not wired to Adapty purchase verification yet.
+// Keep exported so the function name is reserved in Cloud Functions.
+// Wire up purchase verification here once Adapty IAP integration is complete.
+// ---------------------------------------------------------------------------
+export const grantPurchasedIllustrationCredits = onCall(
+  {region: "us-central1"},
+  async () => {
+    // TODO: verify Adapty purchase receipt, then use admin SDK to increment
+    // purchasedCreditsRemaining in illustrationCredits/balance.
+    throw new HttpsError(
+      "unimplemented",
+      "Paid illustration packs are not yet available.",
+    );
+  },
+);
 
 async function assertSourcePhotoExists(storagePath: string): Promise<void> {
   const [exists] = await storage.bucket().file(storagePath).exists();
@@ -497,72 +455,76 @@ async function generateIllustrationFromSource({
   request: IllustrationRequestData;
   deadlineMs: number;
 }): Promise<GenerationResult> {
-  const replicateApiToken = REPLICATE_API_TOKEN.value();
-  if (!replicateApiToken) {
+  const openaiApiKey = OPENAI_API_KEY.value();
+  if (!openaiApiKey) {
     throw new WorkerError(
-      "replicate-not-configured",
+      "openai-not-configured",
       "Illustration generation is not configured on the server yet.",
     );
   }
+
+  const client = new OpenAI({
+    apiKey: openaiApiKey,
+  });
 
   logger.info("Illustration generation scaffold reached.", {
     requestId,
     uid: request.uid,
     requestType: request.requestType,
     promptVersion: request.promptVersion,
-    provider: "replicate",
-    model: REPLICATE_MODEL,
+    provider: "openai",
+    model: OPENAI_IMAGE_MODEL,
   });
 
-  const sourceInputImageUrl = await createSignedSourceImageUrl(
+  const sourceImage = await downloadSourceImageForEdit(
     request.sourcePhotoStoragePath,
   );
   const prompt = buildIllustrationPrompt(request);
-
-  let prediction = await createReplicatePrediction({
-    token: replicateApiToken,
+  const timeoutMs = resolveDeadlineAwareTimeout(
     deadlineMs,
-    input: {
+    OPENAI_IMAGE_REQUEST_TIMEOUT_MS,
+  );
+
+  const response = await client.images.edit(
+    {
+      model: OPENAI_IMAGE_MODEL,
+      image: [
+        await toFile(sourceImage.bytes, sourceImage.fileName, {
+          type: sourceImage.mimeType,
+        }),
+      ],
       prompt,
-      input_image: sourceInputImageUrl,
-      output_format: "jpg",
+      quality: "high",
+      output_format: "jpeg",
     },
-  });
+    {
+      timeout: timeoutMs,
+    },
+  );
 
-  if (isPredictionPending(prediction.status)) {
-    prediction = await pollReplicatePredictionUntilTerminal({
-      token: replicateApiToken,
-      initialPrediction: prediction,
-      deadlineMs,
-    });
-  }
-
-  if (prediction.status !== "succeeded") {
+  const imageBase64 = response.data?.[0]?.b64_json;
+  if (!imageBase64) {
     throw new WorkerError(
-      "replicate-prediction-failed",
-      prediction.error ||
-        "Replicate prediction ended with status " +
-          `${prediction.status ?? "unknown"}.`,
+      "openai-missing-output",
+      "OpenAI completed without returning generated image data.",
     );
   }
 
-  const outputUrl = extractReplicateOutputUrl(prediction.output);
-  if (!outputUrl) {
+  const imageBytes = Buffer.from(imageBase64, "base64");
+  if (imageBytes.length === 0) {
     throw new WorkerError(
-      "replicate-missing-output",
-      "Replicate completed without a usable image output.",
+      "openai-empty-output",
+      "OpenAI returned an empty generated image.",
     );
   }
 
-  return downloadReplicateOutput({
-    token: replicateApiToken,
-    outputUrl,
-    deadlineMs,
-  });
+  return {
+    imageBytes,
+    contentType: GENERATED_IMAGE_CONTENT_TYPE,
+  };
 }
 
 async function assertRequestOwnershipOrThrow(
-  firestore: Firestore,
   request: IllustrationRequestData,
 ): Promise<void> {
   const parsedPath = parseSourcePhotoStoragePath(
@@ -587,37 +549,6 @@ async function assertRequestOwnershipOrThrow(
       "Source photo path does not match the requested memory.",
     );
   }
-
-  const trustedRecordRef = firestore.doc(
-    `users/${request.uid}/${USER_RECORDS_COLLECTION}/${request.memoryId}`,
-  );
-  const trustedRecordSnapshot = await trustedRecordRef.get();
-  if (!trustedRecordSnapshot.exists) {
-    throw new WorkerError(
-      "trusted-memory-record-missing",
-      "Trusted memory record could not be found for illustration request.",
-    );
-  }
-
-  const trustedRecord = trustedRecordSnapshot.data();
-  const trustedBabyId = toTrimmedString(trustedRecord?.babyId);
-  const trustedPhotoStoragePath = extractTrustedPhotoStoragePath(trustedRecord);
-
-  if (!trustedBabyId || trustedBabyId !== request.babyId) {
-    throw new WorkerError(
-      "trusted-memory-baby-mismatch",
-      "Trusted memory record does not belong to the requested baby.",
-    );
-  }
-  if (
-    !trustedPhotoStoragePath ||
-    trustedPhotoStoragePath !== request.sourcePhotoStoragePath
-  ) {
-    throw new WorkerError(
-      "trusted-memory-photo-mismatch",
-      "Trusted memory record photo does not match the request source photo.",
-    );
-  }
 }
 
 function buildIllustrationPrompt(request: IllustrationRequestData): string {
@@ -627,253 +558,45 @@ function buildIllustrationPrompt(request: IllustrationRequestData): string {
   // TODO(illustration-prompt): Replace this with the final hidden prompt once
   // the art direction is approved. Keep all prompt construction server-side.
   return [
-    "Transform this baby memory photo into a warm illustrated keepsake.",
-    "Preserve the real composition, identity, pose, and emotional tone.",
-    "Use a soft storybook illustration style with gentle textures,",
-    "clean lines,",
-    "subtle depth, cozy lighting, and child-safe family-friendly aesthetics.",
-    "Keep the baby and important scene details recognizable.",
-    "Do not add text, watermarks, frames, extra limbs, duplicate subjects,",
-    "distorted anatomy, horror elements, or unrelated background objects.",
-    "Output a polished single illustration suitable for a parenting",
-    "memory app.",
+    "Transform this photo into a clean premium children's book illustration.",
+    "COMPOSITION: keep every subject, pose, framing, and scene layout",
+    "exactly as in the original. Do NOT add any new people, animals, or",
+    "objects. Do NOT remove or replace any person visible in the photo.",
+    "The result must show the same number of subjects in the same positions.",
+    "STYLE: clean vector-like illustration with soft but clearly visible",
+    "outlines and smooth shape separation. Warm pastel palette —",
+    "peach, beige, soft brown, warm cream — colors must be soft but",
+    "vivid and saturated enough to feel warm and alive, NOT faded,",
+    "NOT grey, NOT washed-out. Apply soft gradients only where needed.",
+    "Slightly richer contrast than a watercolor while still feeling gentle.",
+    "CHARACTERS: cute slightly-stylized baby proportions, simple but",
+    "expressive warm facial features, soft blush on cheeks, healthy",
+    "skin tones (warm peach/beige, not pale or desaturated).",
+    "QUALITY: clean sharp edges, no blur, no haze, no fog effect,",
+    "no painterly texture, not realistic, not a filtered photo,",
+    "premium modern baby app illustration.",
+    "Do not include text, logos, watermarks, extra limbs, distorted",
+    "anatomy, or horror elements.",
     `Internal request type: ${requestTypeHint}.`,
     `Internal prompt version: ${promptVersionHint}.`,
   ].join(" ");
 }
 
-async function createSignedSourceImageUrl(
+async function downloadSourceImageForEdit(
   storagePath: string,
-): Promise<string> {
-  const file = storage.bucket().file(storagePath);
-  const [signedUrl] = await file.getSignedUrl({
-    action: "read",
-    expires: Date.now() + SOURCE_URL_EXPIRY_MS,
-  });
-  return signedUrl;
-}
+): Promise<{bytes: Buffer; mimeType: string; fileName: string}> {
+  const parsedPath = parseSourcePhotoStoragePath(storagePath);
+  const mimeType =
+    parsedPath.extension === "png" ? "image/png" :
+      parsedPath.extension === "webp" ? "image/webp" :
+        "image/jpeg";
 
-async function createReplicatePrediction({
-  token,
-  deadlineMs,
-  input,
-}: {
-  token: string;
-  deadlineMs: number;
-  input: Record<string, unknown>;
-}): Promise<ReplicatePrediction> {
-  const timeoutMs = resolveDeadlineAwareTimeout(
-    deadlineMs,
-    REPLICATE_FETCH_TIMEOUT_MS,
-  );
-  const response = await fetchWithTimeout(
-    `${REPLICATE_API_BASE_URL}/models/${REPLICATE_MODEL}/predictions`,
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Prefer": `wait=${REPLICATE_PREFER_WAIT_SECONDS}`,
-        "Cancel-After": REPLICATE_CANCEL_AFTER,
-      },
-      body: JSON.stringify({input}),
-    },
-    timeoutMs,
-    "replicate-request-timeout",
-  );
-
-  if (!response.ok) {
-    throw await buildReplicateHttpError(
-      response,
-      "replicate-request-failed",
-      "Replicate prediction creation failed.",
-    );
-  }
-
-  return response.json() as Promise<ReplicatePrediction>;
-}
-
-async function pollReplicatePredictionUntilTerminal({
-  token,
-  initialPrediction,
-  deadlineMs,
-}: {
-  token: string;
-  initialPrediction: ReplicatePrediction;
-  deadlineMs: number;
-}): Promise<ReplicatePrediction> {
-  const getUrl = initialPrediction.urls?.get;
-  if (!getUrl) {
-    throw new WorkerError(
-      "replicate-missing-get-url",
-      "Replicate did not return a polling URL for the prediction.",
-    );
-  }
-
-  let latestPrediction = initialPrediction;
-  while (isPredictionPending(latestPrediction.status)) {
-    if (Date.now() >= deadlineMs - DEADLINE_SAFETY_MARGIN_MS) {
-      throw new WorkerError(
-        "worker-deadline-exceeded",
-        "Not enough time remained to safely complete illustration generation.",
-      );
-    }
-
-    await sleep(REPLICATE_POLL_INTERVAL_MS);
-    const timeoutMs = resolveDeadlineAwareTimeout(
-      deadlineMs,
-      REPLICATE_FETCH_TIMEOUT_MS,
-    );
-    const response = await fetchWithTimeout(
-      getUrl,
-      {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-        },
-      },
-      timeoutMs,
-      "replicate-poll-request-timeout",
-    );
-
-    if (!response.ok) {
-      throw await buildReplicateHttpError(
-        response,
-        "replicate-poll-failed",
-        "Replicate prediction polling failed.",
-      );
-    }
-
-    latestPrediction = await response.json() as ReplicatePrediction;
-  }
-
-  return latestPrediction;
-}
-
-function isPredictionPending(status: string | null | undefined): boolean {
-  return status === "starting" || status === "processing";
-}
-
-function extractReplicateOutputUrl(output: unknown): string | null {
-  if (typeof output === "string" && output.trim()) {
-    return output.trim();
-  }
-
-  if (Array.isArray(output)) {
-    for (const item of output) {
-      const candidate = extractReplicateOutputUrl(item);
-      if (candidate) return candidate;
-    }
-  }
-
-  if (output && typeof output === "object") {
-    const record = output as Record<string, unknown>;
-    const directUrl = toTrimmedString(record.url);
-    if (directUrl) return directUrl;
-  }
-
-  return null;
-}
-
-async function downloadReplicateOutput({
-  token,
-  outputUrl,
-  deadlineMs,
-}: {
-  token: string;
-  outputUrl: string;
-  deadlineMs: number;
-}): Promise<GenerationResult> {
-  const timeoutMs = resolveDeadlineAwareTimeout(
-    deadlineMs,
-    REPLICATE_RESULT_DOWNLOAD_TIMEOUT_MS,
-  );
-  const response = await fetchWithTimeout(
-    outputUrl,
-    {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-    },
-    timeoutMs,
-    "replicate-output-download-timeout",
-  );
-
-  if (!response.ok) {
-    throw await buildReplicateHttpError(
-      response,
-      "replicate-output-download-failed",
-      "Failed to download generated illustration from Replicate.",
-    );
-  }
-
-  const arrayBuffer = await response.arrayBuffer();
-  const imageBytes = Buffer.from(arrayBuffer);
-  if (imageBytes.length === 0) {
-    throw new WorkerError(
-      "replicate-empty-output",
-      "Replicate returned an empty generated image.",
-    );
-  }
-
-  const contentType = response.headers.get("content-type")?.trim() ||
-    GENERATED_IMAGE_CONTENT_TYPE;
-  return {imageBytes, contentType};
-}
-
-async function buildReplicateHttpError(
-  response: Response,
-  errorCode: string,
-  fallbackMessage: string,
-): Promise<WorkerError> {
-  const responseText = await response.text();
-  let detail = responseText.trim();
-
-  try {
-    const parsed = JSON.parse(responseText) as Record<string, unknown>;
-    detail = toTrimmedString(parsed.detail) ||
-      toTrimmedString(parsed.error) ||
-      detail;
-  } catch (_) {
-    // Keep the raw response text if it is not JSON.
-  }
-
-  return new WorkerError(
-    errorCode,
-    `${fallbackMessage} HTTP ${response.status}${detail ? `: ${detail}` : ""}`,
-  );
-}
-
-async function fetchWithTimeout(
-  input: string,
-  init: RequestInit,
-  timeoutMs: number,
-  errorCode: string,
-): Promise<Response> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    return await fetch(input, {
-      ...init,
-      signal: controller.signal,
-    });
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new WorkerError(
-        errorCode,
-        `Timed out after ${timeoutMs}ms.`,
-      );
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+  const [bytes] = await storage.bucket().file(storagePath).download();
+  return {
+    bytes,
+    mimeType,
+    fileName: `source.${parsedPath.extension}`,
+  };
 }
 
 async function saveGeneratedIllustration({
@@ -924,43 +647,6 @@ function buildDownloadUrl(
     `${encodedPath}?alt=media&token=${downloadToken}`;
 }
 
-function creditsFromSnapshot(
-  rawData: FirebaseFirestore.DocumentData | undefined,
-): UserIllustrationCredits {
-  return {
-    freeIllustrationAvailable: rawData?.freeIllustrationAvailable !== false,
-    monthlyCreditsRemaining: toNonNegativeInt(rawData?.monthlyCreditsRemaining),
-    purchasedCreditsRemaining: toNonNegativeInt(
-      rawData?.purchasedCreditsRemaining,
-    ),
-    planTier: toTrimmedString(rawData?.planTier) || DEFAULT_PLAN_TIER,
-  };
-}
-
-function defaultCredits(): UserIllustrationCredits {
-  return {
-    freeIllustrationAvailable: true,
-    monthlyCreditsRemaining: 0,
-    purchasedCreditsRemaining: 0,
-    planTier: DEFAULT_PLAN_TIER,
-  };
-}
-
-function pickCreditBucketToConsume(
-  credits: UserIllustrationCredits,
-): CreditConsumption | null {
-  if (credits.freeIllustrationAvailable) {
-    return "freeIllustrationAvailable";
-  }
-  if (credits.monthlyCreditsRemaining > 0) {
-    return "monthlyCreditsRemaining";
-  }
-  if (credits.purchasedCreditsRemaining > 0) {
-    return "purchasedCreditsRemaining";
-  }
-  return null;
-}
-
 function toTrimmedString(value: unknown): string {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -972,13 +658,6 @@ function toOptionalString(value: unknown): string | null {
 
 function toCreditConsumption(value: unknown): CreditConsumption | null {
   return isCreditConsumption(value) ? value : null;
-}
-
-function toNonNegativeInt(value: unknown): number {
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return Math.max(0, Math.floor(value));
-  }
-  return 0;
 }
 
 function isCreditConsumption(value: unknown): value is CreditConsumption {
@@ -1033,23 +712,6 @@ function parseSourcePhotoStoragePath(
   };
 }
 
-function extractTrustedPhotoStoragePath(
-  rawData: FirebaseFirestore.DocumentData | undefined,
-): string {
-  const directPhotoStoragePath = toTrimmedString(rawData?.photoStoragePath);
-  if (directPhotoStoragePath) {
-    return directPhotoStoragePath;
-  }
-
-  const nestedData = rawData?.data;
-  if (nestedData && typeof nestedData === "object") {
-    return toTrimmedString(
-      (nestedData as Record<string, unknown>).photoStoragePath,
-    );
-  }
-
-  return "";
-}
 
 function resolveDeadlineAwareTimeout(
   deadlineMs: number,
@@ -1091,4 +753,18 @@ class WorkerError extends Error {
     this.errorCode = errorCode;
     this.errorMessage = message;
   }
+}
+
+function serverYearMonth(): string {
+  const now = new Date();
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  return `${year}-${month}`;
+}
+
+function toIntSafe(value: unknown): number {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return Math.trunc(value);
+  }
+  return 0;
 }

@@ -139,18 +139,47 @@ class BabySwitcherSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 14),
-            // Name + age
+            // Name + age + shared label
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    baby.name,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isDark ? Colors.white : const Color(0xFF2D1A18),
-                    ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          baby.name,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color:
+                                isDark ? Colors.white : const Color(0xFF2D1A18),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (VeriYonetici.isSharedBaby(baby.id)) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFDCEFF7),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Shared',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF6AADCF),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   Text(
                     formatLocalizedAge(context, baby.birthDate),

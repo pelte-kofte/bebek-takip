@@ -106,17 +106,16 @@ class IllustrationRequestRepository {
 
   Stream<UserIllustrationCredits> watchCredits(String uid) {
     return _creditsDoc(uid).snapshots().map((doc) {
-      if (!doc.exists) {
-        return UserIllustrationCredits(
-          uid: uid,
-          freeIllustrationAvailable: true,
-          monthlyCreditsRemaining: 0,
-          purchasedCreditsRemaining: 0,
-          planTier: 'free',
-          updatedAt: null,
-        );
-      }
+      if (!doc.exists) return UserIllustrationCredits.empty(uid);
       return UserIllustrationCredits.fromDoc(uid, doc);
     });
   }
+
+  /// One-shot read. Returns empty credits if doc does not exist yet.
+  Future<UserIllustrationCredits> readCredits(String uid) async {
+    final doc = await _creditsDoc(uid).get();
+    if (!doc.exists) return UserIllustrationCredits.empty(uid);
+    return UserIllustrationCredits.fromDoc(uid, doc);
+  }
+
 }

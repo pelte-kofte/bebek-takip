@@ -12,9 +12,14 @@ import '../widgets/decorative_background.dart';
 import '../services/reminder_service.dart';
 import '../services/sleep_notification_service.dart';
 import '../services/locale_service.dart';
+import '../services/premium_service.dart';
 import '../l10n/app_localizations.dart';
 import 'rapor_screen.dart';
 import 'login_entry_screen.dart';
+import 'premium_screen.dart';
+import '../services/shared_parenting_service.dart';
+import 'invitation_inbox_screen.dart';
+import 'shared_parenting_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -374,6 +379,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // PREMIUM Section
+                      _buildPremiumSection(cardColor, textColor, subtitleColor),
+                      const SizedBox(height: 12),
+
+                      // SHARED PARENTING Section
+                      _buildSharedParentingSection(
+                        cardColor,
+                        textColor,
+                        subtitleColor,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // PENDING INVITATIONS Section (conditional)
+                      _buildPendingInvitationsSection(
+                        cardColor,
+                        textColor,
+                        subtitleColor,
+                      ),
+                      const SizedBox(height: 24),
+
                       // HESAP Section
                       _buildAccountSection(cardColor, textColor, subtitleColor),
                       const SizedBox(height: 24),
@@ -824,6 +849,283 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: subtitleColor,
         letterSpacing: 1.0,
       ),
+    );
+  }
+
+  Widget _buildPremiumSection(
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: PremiumService.instance.isPremiumNotifier,
+      builder: (context, isPremium, _) {
+        return _buildCard(
+          cardColor: cardColor,
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => PremiumScreen.show(context),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E0F7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: Color(0xFF9C88CC),
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Premium',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        isPremium
+                            ? 'Premium is active'
+                            : 'Illustrations, shared parenting, and more',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isPremium
+                              ? const Color(0xFF9C88CC)
+                              : subtitleColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (isPremium)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E0F7),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'Active',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF9C88CC),
+                      ),
+                    ),
+                  )
+                else
+                  Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSharedParentingSection(
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    return _buildCard(
+      cardColor: cardColor,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () async {
+          final user = FirebaseAuth.instance.currentUser;
+          if (user == null || user.isAnonymous) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Please sign in to use Shared Parenting.'),
+              ),
+            );
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LoginEntryScreen()),
+            );
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const SharedParentingScreen(),
+            ),
+          );
+        },
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFFDCEFF7),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.people_rounded,
+                color: Color(0xFF6AADCF),
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Shared Parenting',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: textColor,
+                        ),
+                      ),
+                      if (!PremiumService.instance.isPremium) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFB4A2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: const Text(
+                            'Premium',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    PremiumService.instance.isPremium
+                        ? "Share your baby's journey with another parent"
+                        : 'Available with Premium',
+                    style: TextStyle(fontSize: 13, color: subtitleColor),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPendingInvitationsSection(
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    return StreamBuilder<List<InvitationItem>>(
+      stream: SharedParentingService.instance.watchPendingInvitations(),
+      builder: (context, snap) {
+        final count = snap.data?.length ?? 0;
+        if (count == 0) return const SizedBox.shrink();
+
+        return Column(
+          children: [
+            _buildCard(
+              cardColor: cardColor,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const InvitationInboxScreen(),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEDEB),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          const Icon(
+                            Icons.mail_rounded,
+                            color: Color(0xFFFFB4A2),
+                            size: 22,
+                          ),
+                          Positioned(
+                            right: 6,
+                            top: 6,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFFFB4A2),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pending Invitations',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: textColor,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Review invites sent to you',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: subtitleColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
     );
   }
 

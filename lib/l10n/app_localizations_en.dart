@@ -1036,7 +1036,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginBenefitText =>
-      'Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.';
+      'Sign in to back up your baby data and sync across devices. You can also continue without an account for now.';
 
   @override
   String get signInWithApple => 'Sign in with Apple';
@@ -1048,8 +1048,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithoutLogin => 'Continue without login';
 
   @override
-  String get loginOptionalNote =>
-      'Login is optional. All features work without an account.';
+  String get loginOptionalNote => 'You can sign in later at any time.';
 
   @override
   String get account => 'Account';

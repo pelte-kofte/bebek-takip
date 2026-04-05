@@ -8,9 +8,15 @@ import '../l10n/app_localizations.dart';
 import '../main.dart';
 import '../services/apple_auth_service.dart';
 import '../services/sync_manager.dart';
+import 'premium_screen.dart';
 
 class LoginEntryScreen extends StatefulWidget {
-  const LoginEntryScreen({super.key});
+  const LoginEntryScreen({
+    super.key,
+    this.showPremiumDiscoveryAfterLogin = false,
+  });
+
+  final bool showPremiumDiscoveryAfterLogin;
 
   @override
   State<LoginEntryScreen> createState() => _LoginEntryScreenState();
@@ -33,7 +39,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
 
   Future<void> _authenticateWithCredential(AuthCredential credential) async {
     await SyncManager.onLogin(credential);
-    await _proceedToApp(syncCurrentUser: false);
+    await _completeSignedInFlow();
   }
 
   Future<void> _signInWithGoogle() async {
@@ -85,7 +91,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
       final userCredential = await AppleAuthService.instance.signInWithProvider();
       if (userCredential == null) return;
       await SyncManager.syncCurrentUserData();
-      await _proceedToApp(syncCurrentUser: false);
+      await _completeSignedInFlow();
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
@@ -183,6 +189,13 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     }
   }
 
+  Future<void> _completeSignedInFlow() async {
+    if (widget.showPremiumDiscoveryAfterLogin && mounted) {
+      await PremiumScreen.show(context);
+    }
+    await _proceedToApp(syncCurrentUser: false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -257,18 +270,6 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                               color: Colors.white.withValues(alpha: 0.75),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'You can keep using as guest. If you sign in later, your data will sync across devices. Photos are stored locally for now.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              height: 1.4,
-                              color: Colors.white.withValues(alpha: 0.65),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-
                           const SizedBox(height: 32),
 
                           // Sign in buttons

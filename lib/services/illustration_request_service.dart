@@ -5,6 +5,23 @@ import '../data/repositories/illustration_request_repository.dart';
 import '../models/illustration_request.dart';
 import '../models/user_illustration_credits.dart';
 
+// ---------------------------------------------------------------------------
+// Credit exception — thrown before the request is created.
+// The sheet catches this to show the out-of-credits upsell.
+// ---------------------------------------------------------------------------
+
+class IllustrationCreditException implements Exception {
+  final int monthlyRemaining;
+  final int purchasedRemaining;
+
+  const IllustrationCreditException({
+    required this.monthlyRemaining,
+    required this.purchasedRemaining,
+  });
+}
+
+// ---------------------------------------------------------------------------
+
 class IllustrationRequestService {
   IllustrationRequestService({
     IllustrationRequestRepository? repository,
@@ -18,11 +35,17 @@ class IllustrationRequestService {
   static const String memoryPhotoPromptVersion = 'memory-photo-v1';
 
   void _log(String message) {
-    if (kDebugMode) {
-      debugPrint('[IllustrationRequestService] $message');
-    }
+    if (kDebugMode) debugPrint('[IllustrationRequestService] $message');
   }
 
+  /// Creates an illustration request after checking and consuming one credit.
+  ///
+  /// Credit priority:
+  ///   1. Monthly included (3 per month, resets each calendar month)
+  ///   2. Purchased credits (carry over across months)
+  ///
+  /// Throws [IllustrationCreditException] if no credits are available.
+  /// Credits are only consumed when the Firestore write succeeds.
   Future<IllustrationRequest> createMemoryIllustrationRequest({
     required Map<String, dynamic> memory,
   }) async {
@@ -40,8 +63,21 @@ class IllustrationRequestService {
     if (memoryId.isEmpty || babyId.isEmpty) {
       throw StateError('Memory is missing required identifiers.');
     }
-    if (sourcePhotoStoragePath.isEmpty || sourcePhotoUrl.isEmpty) {
+    if (sourcePhotoStoragePath.isEmpty) {
       throw StateError('Memory photo must be uploaded to cloud first.');
+    }
+
+    // ── Credit check (read before write — do not consume yet) ─────────────
+    final credits = await _repository.readCredits(user.uid);
+    if (!credits.canGenerate) {
+      _log(
+        'No credits: monthly=${credits.monthlyRemaining} '
+        'purchased=${credits.purchasedCreditsRemaining}',
+      );
+      throw IllustrationCreditException(
+        monthlyRemaining: credits.monthlyRemaining,
+        purchasedRemaining: credits.purchasedCreditsRemaining,
+      );
     }
 
     _log(
@@ -49,7 +85,10 @@ class IllustrationRequestService {
       'babyId=$babyId uid=${user.uid}',
     );
 
-    return _repository.createRequest(
+    // ── Create the Firestore document ──────────────────────────────────────
+    // Credit consumption is handled server-side by the Cloud Function worker.
+    // The read above is a UX-only gate; the worker is the authoritative check.
+    final request = await _repository.createRequest(
       uid: user.uid,
       babyId: babyId,
       memoryId: memoryId,
@@ -58,6 +97,8 @@ class IllustrationRequestService {
       requestType: memoryPhotoRequestType,
       promptVersion: memoryPhotoPromptVersion,
     );
+
+    return request;
   }
 
   Stream<IllustrationRequest?> watchRequest(String requestId) {
@@ -76,14 +117,7 @@ class IllustrationRequestService {
     final user = _auth.currentUser;
     if (user == null || user.isAnonymous) {
       return Stream<UserIllustrationCredits>.value(
-        const UserIllustrationCredits(
-          uid: '',
-          freeIllustrationAvailable: true,
-          monthlyCreditsRemaining: 0,
-          purchasedCreditsRemaining: 0,
-          planTier: 'anonymous',
-          updatedAt: null,
-        ),
+        UserIllustrationCredits.empty(''),
       );
     }
     return _repository.watchCredits(user.uid);

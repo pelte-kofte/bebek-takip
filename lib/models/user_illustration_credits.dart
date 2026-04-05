@@ -1,37 +1,54 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserIllustrationCredits {
+  /// Monthly included illustrations granted to every premium user.
+  static const int monthlyIncludedLimit = 3;
+
   final String uid;
-  final bool freeIllustrationAvailable;
-  final int monthlyCreditsRemaining;
+
+  /// "YYYY-MM" of the month whose usage is recorded in [usedThisMonth].
+  /// Empty string means the user has never generated an illustration.
+  final String usageMonth;
+
+  /// How many monthly-included illustrations have been used in [usageMonth].
+  final int usedThisMonth;
+
+  /// Extra purchased credits that carry over across months.
   final int purchasedCreditsRemaining;
-  final String planTier;
+
   final DateTime? updatedAt;
 
   const UserIllustrationCredits({
     required this.uid,
-    required this.freeIllustrationAvailable,
-    required this.monthlyCreditsRemaining,
+    required this.usageMonth,
+    required this.usedThisMonth,
     required this.purchasedCreditsRemaining,
-    required this.planTier,
     required this.updatedAt,
   });
 
-  int get totalCreditsRemaining =>
-      (freeIllustrationAvailable ? 1 : 0) +
-      monthlyCreditsRemaining +
-      purchasedCreditsRemaining;
+  // ---------------------------------------------------------------------------
+  // Derived helpers
+  // ---------------------------------------------------------------------------
 
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'freeIllustrationAvailable': freeIllustrationAvailable,
-      'monthlyCreditsRemaining': monthlyCreditsRemaining,
-      'purchasedCreditsRemaining': purchasedCreditsRemaining,
-      'planTier': planTier,
-      'updatedAt': updatedAt,
-    };
+  /// How many monthly-included illustrations remain this calendar month.
+  int get monthlyRemaining {
+    if (usageMonth != _currentYearMonth()) return monthlyIncludedLimit;
+    return (monthlyIncludedLimit - usedThisMonth).clamp(
+      0,
+      monthlyIncludedLimit,
+    );
   }
+
+  bool get hasMonthlyCredits => monthlyRemaining > 0;
+  bool get hasPurchasedCredits => purchasedCreditsRemaining > 0;
+
+  /// True when the user may generate at least one more illustration.
+  /// Monthly included usage is consumed first, then purchased credits.
+  bool get canGenerate => hasMonthlyCredits || hasPurchasedCredits;
+
+  // ---------------------------------------------------------------------------
+  // Serialisation
+  // ---------------------------------------------------------------------------
 
   factory UserIllustrationCredits.fromDoc(
     String uid,
@@ -40,12 +57,30 @@ class UserIllustrationCredits {
     final data = doc.data() ?? const <String, dynamic>{};
     return UserIllustrationCredits(
       uid: uid,
-      freeIllustrationAvailable: data['freeIllustrationAvailable'] != false,
-      monthlyCreditsRemaining: _toInt(data['monthlyCreditsRemaining']),
+      usageMonth: (data['usageMonth'] ?? '').toString(),
+      usedThisMonth: _toInt(data['usedThisMonth']),
       purchasedCreditsRemaining: _toInt(data['purchasedCreditsRemaining']),
-      planTier: (data['planTier'] ?? 'free').toString(),
       updatedAt: _toDateTime(data['updatedAt']),
     );
+  }
+
+  /// Used when no credits doc exists yet (first-time user).
+  factory UserIllustrationCredits.empty(String uid) =>
+      UserIllustrationCredits(
+        uid: uid,
+        usageMonth: '',
+        usedThisMonth: 0,
+        purchasedCreditsRemaining: 0,
+        updatedAt: null,
+      );
+
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
+
+  static String _currentYearMonth() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}';
   }
 
   static int _toInt(dynamic value) {

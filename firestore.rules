@@ -1,0 +1,178 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── User documents ────────────────────────────────────────────────────────
+    // Users can read/write their own top-level user document, EXCEPT for the
+    // isPremium field which is managed exclusively by the backend (admin SDK).
+    // NOTE: Firestore rules cannot restrict individual field writes without a
+    // full document read, so the safest approach is to document the convention
+    // here and rely on the admin SDK (Cloud Functions) as the only writer of
+    // isPremium. Client writes to users/{uid}.isPremium must never be trusted.
+    match /users/{uid} {
+      function isSelf() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+
+      allow read: if isSelf();
+      allow create: if isSelf() && !('isPremium' in request.resource.data);
+      allow update: if isSelf()
+                    && !request.resource.data.diff(resource.data)
+                         .affectedKeys()
+                         .hasAny(['isPremium']);
+      allow delete: if isSelf();
+
+      // Baby sub-collection: owner-only access
+      match /babies/{babyId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Illustration credits: read-only for the owning client.
+      // Consumption and purchase grants are backend-only via admin SDK.
+      match /illustrationCredits/{docId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+
+      // Illustration credit grants: read-only for the owning client.
+      // Written exclusively by the Adapty webhook Cloud Function (admin SDK)
+      // as the idempotency record for each verified purchase event.
+      match /illustrationCreditGrants/{grantId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if false;
+      }
+
+      // All other sub-collections: owner-only read/write.
+      // The two protected sub-collections above are excluded from this wildcard.
+      match /{collection}/{docId} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+        allow write: if request.auth != null && request.auth.uid == uid
+                     && collection != 'illustrationCredits'
+                     && collection != 'illustrationCreditGrants';
+      }
+    }
+
+    // ── Top-level babies ──────────────────────────────────────────────────────
+    // Ownership and membership fields (ownerId, members) are managed exclusively
+    // by Cloud Functions (admin SDK). Clients may update normal baby data only.
+    match /babies/{babyId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      // Protected fields that only the backend (admin SDK) may modify.
+      function isManagedField(key) {
+        return key in ['ownerId', 'members'];
+      }
+
+      // True when the incoming write does not touch any protected fields.
+      function touchesNoManagedFields() {
+        return !request.resource.data.diff(resource.data)
+                 .affectedKeys()
+                 .hasAny(['ownerId', 'members']);
+      }
+
+      // Caller is the owner.
+      function isOwner() {
+        return isSignedIn() && resource.data.ownerId == request.auth.uid;
+      }
+
+      // Caller is a member (set by Cloud Function after invite accepted).
+      function isMember() {
+        return isSignedIn()
+               && ('members' in resource.data)
+               && resource.data.members[request.auth.uid] != null;
+      }
+
+      // Owner may create the initial mirror document for their own baby.
+      allow create: if request.auth != null
+                    && request.resource.data.ownerId == request.auth.uid
+                    && !('members' in request.resource.data);
+
+      // Owner can read and write everything (including membership management).
+      allow read, write: if isOwner();
+
+      // Members can read the baby document.
+      allow read: if isMember();
+
+      // Members can update normal baby data, but cannot touch ownerId or members.
+      allow update: if isMember() && touchesNoManagedFields();
+
+      // Shared baby journey data.
+      match /{collection}/{docId} {
+        function isSupportedSharedCollection() {
+          return collection in ['records', 'medications', 'medicationLogs'];
+        }
+
+        function babyDoc() {
+          return get(/databases/$(database)/documents/babies/$(babyId));
+        }
+
+        function canAccessSharedBabyData() {
+          return isSignedIn()
+                 && babyDoc().exists() && (
+                   babyDoc().data.ownerId == request.auth.uid ||
+                   (('members' in babyDoc().data) &&
+                    babyDoc().data.members[request.auth.uid] != null)
+                 );
+        }
+
+        allow read, write: if isSupportedSharedCollection() &&
+                             canAccessSharedBabyData();
+      }
+    }
+
+    // ── Illustration Requests ─────────────────────────────────────────────────
+    // Clients may create their own pending requests and watch them for status
+    // updates. All field mutations (status, result, error) are backend-only via
+    // admin SDK, so update/delete are denied here.
+    match /illustrationRequests/{requestId} {
+      // Authenticated non-anonymous users may create a request owned by themselves.
+      allow create: if request.auth != null
+                    && request.auth.token.firebase.sign_in_provider != 'anonymous'
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+
+      // Owner may read/watch their own requests (for live status polling).
+      allow read: if request.auth != null
+                  && resource.data.uid == request.auth.uid;
+
+      // Updates and deletes are backend-only (admin SDK bypasses these rules).
+      allow update, delete: if false;
+    }
+
+    // ── Baby Invitations ──────────────────────────────────────────────────────
+    // All writes go through Cloud Functions (admin SDK bypasses these rules).
+    // Clients can only read:
+    //   - Owner: read invitations they sent
+    //   - Invitee: read invitations addressed to their verified email
+    match /babyInvitations/{invitationId} {
+      function normalizedAuthEmail() {
+        return request.auth != null &&
+               request.auth.token.email != null
+               ? request.auth.token.email.lower()
+               : null;
+      }
+
+      function isInvitationOwner() {
+        return request.auth != null &&
+               resource.data.ownerUid == request.auth.uid;
+      }
+
+      function isInvitationInvitee() {
+        return normalizedAuthEmail() != null &&
+               resource.data.inviteeEmail == normalizedAuthEmail();
+      }
+
+      // Direct doc reads may be needed by either the owner or the invitee.
+      allow get: if isInvitationOwner() || isInvitationInvitee();
+
+      // Live inbox queries: invitee sees received, owner sees sent.
+      allow list: if isInvitationInvitee() || isInvitationOwner();
+
+      // No client writes – all writes go through Cloud Functions (admin SDK)
+      allow create, update, delete: if false;
+    }
+  }
+}

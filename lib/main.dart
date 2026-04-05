@@ -17,6 +17,7 @@ import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
 import 'services/locale_service.dart';
 import 'services/sync_manager.dart';
+import 'services/premium_service.dart';
 
 class AppNavigator {
   static final key = GlobalKey<NavigatorState>();
@@ -59,6 +60,8 @@ void main() async {
   } catch (_) {
     // Best-effort sync check only.
   }
+
+  PremiumService.instance.init().ignore();
 
   // Initialize timezones once for scheduled reminders
   ReminderService.initializeTimeZonesOnce();

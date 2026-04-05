@@ -298,11 +298,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: Curves.easeInOut,
       );
     } else {
-      _completeOnboarding();
+      _completeOnboarding(showPremiumDiscoveryAfterLogin: true);
     }
   }
 
-  void _completeOnboarding() async {
+  void _completeOnboarding({
+    bool showPremiumDiscoveryAfterLogin = false,
+  }) async {
     await VeriYonetici.setFirstLaunchComplete();
 
     // Show login entry screen if not shown yet
@@ -311,7 +313,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) return;
 
     AppNavigator.goToRoot(
-      showLoginEntry ? const LoginEntryScreen() : const MainScreen(),
+      showLoginEntry
+          ? LoginEntryScreen(
+              showPremiumDiscoveryAfterLogin: showPremiumDiscoveryAfterLogin,
+            )
+          : const MainScreen(),
     );
   }
 

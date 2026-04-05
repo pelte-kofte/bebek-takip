@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/illustration_upsell_sheet.dart';
 
 // Photo style enum for privacy-friendly sharing
 enum PhotoStyle { original, softIllustration, pastelBlur }
@@ -182,6 +183,13 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           child: Column(
             children: [
               const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.only(right: 24, bottom: 4),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: const IllustrationCreditChip(),
+                ),
+              ),
               // Content
               Expanded(
                 child: _milestones.isEmpty
@@ -551,6 +559,22 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                         ),
                       ),
                     ],
+                    if ((milestone['illustrationUrl'] ?? '')
+                        .toString()
+                        .trim()
+                        .isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          milestone['illustrationUrl'] as String,
+                          height: 72,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -663,6 +687,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
     setState(() => _isSaving = true);
     try {
       final milestones = VeriYonetici.getMilestones();
+      final isFirstMemory = milestones.isEmpty;
       milestones.insert(0, {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'title': _titleController.text,
@@ -675,7 +700,16 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
       await VeriYonetici.saveMilestones(milestones);
       if (!mounted) return;
       widget.onSaved();
-      Navigator.pop(context);
+
+      if (isFirstMemory && mounted) {
+        final saved = VeriYonetici.getMilestones();
+        await IllustrationUpsellSheet.show(
+          context,
+          saved.isNotEmpty ? saved.first : {},
+        );
+      }
+
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1802,12 +1836,9 @@ class _SharePreviewSheet extends StatelessWidget {
 
   const _SharePreviewSheet({required this.milestone, required this.formatDate});
 
-  void _showIllustrationComingSoon(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Illustration is coming soon. Backend is not live yet.'),
-      ),
-    );
+  Future<void> _onIllustrationTap(BuildContext context) async {
+    Navigator.pop(context); // close share sheet
+    await IllustrationUpsellSheet.show(context, milestone);
   }
 
   Future<void> _doShare() async {
@@ -1935,7 +1966,7 @@ class _SharePreviewSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           GestureDetector(
-            onTap: () => _showIllustrationComingSoon(context),
+            onTap: () => _onIllustrationTap(context),
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -1947,37 +1978,21 @@ class _SharePreviewSheet extends StatelessWidget {
                   style: BorderStyle.solid,
                 ),
               ),
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '✨',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Turn this moment into an illustration',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
+                  const Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 16,
+                    color: Color(0xFF9C88CC),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(width: 8),
                   Text(
-                    'Coming soon',
+                    'Turn this moment into an illustration',
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.8),
-                      letterSpacing: 0.5,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -2213,6 +2228,8 @@ class MilestoneDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
+                      const IllustrationCreditChip(),
+                      const SizedBox(width: 10),
                       // Actions menu
                       PopupMenuButton<String>(
                         icon: Container(
@@ -2417,6 +2434,8 @@ class MilestoneDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+                        // Illustration section
+                        _IllustrationSection(milestone: milestone),
                       ],
                     ),
                   ),
@@ -2425,6 +2444,130 @@ class MilestoneDetailScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Shows a generated illustration thumbnail + re-open button if one exists,
+/// or the "Turn into illustration" prompt if not.
+class _IllustrationSection extends StatelessWidget {
+  final Map<String, dynamic> milestone;
+
+  const _IllustrationSection({required this.milestone});
+
+  @override
+  Widget build(BuildContext context) {
+    final illustrationUrl = (milestone['illustrationUrl'] ?? '')
+        .toString()
+        .trim();
+    final hasIllustration = illustrationUrl.isNotEmpty;
+
+    if (hasIllustration) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: GestureDetector(
+          onTap: () => IllustrationUpsellSheet.showResult(
+            context,
+            milestone,
+            illustrationUrl,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Illustration',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  illustrationUrl,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (_, child, progress) {
+                    if (progress == null) return child;
+                    return Container(
+                      height: 200,
+                      color: const Color(0xFFE5E0F7),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xFFFFB4A2),
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (_, _, _) => Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(
+                      child: Icon(
+                        Icons.auto_awesome_rounded,
+                        color: Color(0xFF9C88CC),
+                        size: 36,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tap to view full illustration',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // No illustration yet — show the generate prompt.
+    return Padding(
+      padding: const EdgeInsets.only(top: 24),
+      child: GestureDetector(
+        onTap: () => IllustrationUpsellSheet.show(context, milestone),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.8),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE5E0F7)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.auto_awesome_rounded,
+                size: 16,
+                color: Color(0xFF9C88CC),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Turn this moment into an illustration',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

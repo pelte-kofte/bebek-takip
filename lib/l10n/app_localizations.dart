@@ -1907,7 +1907,7 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'Sign in to prepare for backup and sync features coming soon. You can also continue without signing in.'**
+  /// **'Sign in to back up your baby data and sync across devices. You can also continue without an account for now.'**
   String get loginBenefitText;
 
   /// UI text
@@ -1931,7 +1931,7 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'Login is optional. All features work without an account.'**
+  /// **'You can sign in later at any time.'**
   String get loginOptionalNote;
 
   /// UI text

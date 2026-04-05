@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -77,6 +78,9 @@ class VeriYonetici {
   // Multi-baby support
   static List<Baby> _babies = [];
   static String _activeBabyId = '';
+  // IDs of babies that were shared with this user (not owned by them).
+  // Populated after cloud sync. Used only for display labelling.
+  static final Set<String> _sharedBabyIds = {};
   static const String _migrationKey = 'multi_baby_migrated';
   static const String diaperEventType = 'diaper';
   static final FirestoreStore _firestoreStore = FirestoreStore();
@@ -481,8 +485,12 @@ class VeriYonetici {
       await _saveBabies();
       if (didDedupeBabies) {
         _log('Sync dedupe detected. Rewriting baby docs for uid=$uid.');
-        await _syncBabiesToCloud();
       }
+      // Always sync babies to cloud to ensure the top-level babies/{babyId}
+      // mirror docs exist. This is required by sendInvitation / acceptInvitation
+      // which read babies/{babyId} directly. The write is idempotent — skipped
+      // if the data fingerprint hasn't changed within the last 2 seconds.
+      await _syncBabiesToCloud();
       await _saveAllCollections();
       final shouldMigrate = await syncService.shouldRunInitialMigration(uid);
       if (shouldMigrate) {
@@ -499,6 +507,84 @@ class VeriYonetici {
       _log('Cloud sync failed, keeping local cache.');
       // Keep local cache if cloud is temporarily unavailable.
     }
+  }
+
+  /// Reads users/{uid}/sharedBabies, resolves each baby document from the
+  /// top-level babies/{babyId} collection, and merges them into _babies.
+  /// Own babies are never replaced. Safe to call every startup — skipped for
+  /// anonymous/signed-out users and when no sharedBabies entries exist.
+  static Future<void> _loadSharedBabiesFromCloud() async {
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    final user = _currentUser;
+    if (user == null || user.isAnonymous) return;
+
+    try {
+      final sharedSnap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('sharedBabies')
+          .get();
+
+      if (sharedSnap.docs.isEmpty) return;
+
+      for (final indexDoc in sharedSnap.docs) {
+        final babyId = (indexDoc.data()['babyId'] as String?) ?? indexDoc.id;
+        if (babyId.isEmpty) continue;
+
+        // Skip if already present as an owned baby.
+        final alreadyOwned = _babies.any(
+          (b) => b.id == babyId && !_sharedBabyIds.contains(b.id),
+        );
+        if (alreadyOwned) continue;
+
+        try {
+          final babyDoc = await FirebaseFirestore.instance
+              .collection('babies')
+              .doc(babyId)
+              .get();
+
+          if (!babyDoc.exists) continue;
+          final d = babyDoc.data()!;
+
+          final baby = Baby(
+            id: babyId,
+            name: (d['name'] as String?) ?? 'Baby',
+            birthDate: _parseBabyDate(d['birthDate']),
+            photoStoragePath: d['photoStoragePath'] as String?,
+            photoUrl: d['photoUrl'] as String?,
+          );
+
+          _sharedBabyIds.add(babyId);
+          // Insert or update in _babies without evicting owned babies.
+          final existingIdx = _babies.indexWhere((b) => b.id == babyId);
+          if (existingIdx >= 0) {
+            _babies[existingIdx] = baby;
+          } else {
+            _babies.add(baby);
+          }
+        } catch (e) {
+          _log('_loadSharedBabiesFromCloud: skip babyId=$babyId error=$e');
+        }
+      }
+
+      _log(
+        '_loadSharedBabiesFromCloud: merged ${_sharedBabyIds.length} '
+        'shared babies, total=${_babies.length}',
+      );
+    } catch (e) {
+      _log('_loadSharedBabiesFromCloud failed: $e');
+    }
+  }
+
+  /// Parses a Firestore Timestamp or ISO-8601 string into a DateTime.
+  static DateTime _parseBabyDate(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is String) {
+      return DateTime.tryParse(value) ??
+          DateTime.now().subtract(const Duration(days: 30));
+    }
+    return DateTime.now().subtract(const Duration(days: 30));
   }
 
   static Future<void> _syncActiveBabyRecordsToCloudBestEffort({
@@ -612,6 +698,8 @@ class VeriYonetici {
 
   static Future<void> refreshForCurrentUser() async {
     await _syncFromCloudIfSignedIn();
+    _sharedBabyIds.clear();
+    await _loadSharedBabiesFromCloud();
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
@@ -1076,6 +1164,7 @@ class VeriYonetici {
         'photoStoragePath': row['photoStoragePath'],
         'photoUrl': row['photoUrl'],
         'photoStyle': row['photoStyle'] ?? 'softIllustration',
+        'illustrationUrl': row['illustrationUrl'],
         'isDeleted': row['isDeleted'] == true,
         'deletedAt': row['deletedAt'],
       };
@@ -1248,6 +1337,8 @@ class VeriYonetici {
 
     // If signed in, prefer Firestore-backed data scoped to current uid.
     await _syncFromCloudIfSignedIn();
+    // Load shared babies (accepted invitations) and merge into _babies.
+    await _loadSharedBabiesFromCloud();
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
@@ -1511,6 +1602,9 @@ class VeriYonetici {
     return List.from(_dedupeBabiesById(_babies));
   }
 
+  /// Returns true when [babyId] was shared with this user (not owned).
+  static bool isSharedBaby(String babyId) => _sharedBabyIds.contains(babyId);
+
   static bool hasActiveBaby() {
     return _activeBabyId.isNotEmpty &&
         _babies.any((b) => b.id == _activeBabyId);
@@ -1589,6 +1683,15 @@ class VeriYonetici {
         deleted: false,
         cloudDeleteFailed: false,
         hasRemainingBabies: false,
+      );
+    }
+
+    if (isSharedBaby(babyId)) {
+      _log('Delete skipped for shared babyId=$babyId');
+      return BabyDeleteResult(
+        deleted: false,
+        cloudDeleteFailed: false,
+        hasRemainingBabies: _babies.isNotEmpty,
       );
     }
 
@@ -2608,6 +2711,7 @@ class VeriYonetici {
               'photoStoragePath': e['photoStoragePath'],
               'photoUrl': e['photoUrl'],
               'photoStyle': e['photoStyle'] ?? 'softIllustration',
+              'illustrationUrl': e['illustrationUrl'],
               'babyId': e['babyId'] ?? _activeBabyId,
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
@@ -2731,6 +2835,27 @@ class VeriYonetici {
     }
   }
 
+  /// Writes [illustrationUrl] back to the in-memory milestone record and
+  /// schedules a local + cloud persist. Called after a generation completes.
+  static Future<void> patchMilestoneIllustrationUrl(
+    String milestoneId,
+    String illustrationUrl,
+  ) async {
+    final idx = _milestones.indexWhere(
+      (r) => (r['id'] ?? '').toString() == milestoneId,
+    );
+    if (idx < 0) return;
+    final now = DateTime.now();
+    _milestones[idx]['illustrationUrl'] = illustrationUrl;
+    _milestones[idx]['updatedAt'] = now;
+    _milestones[idx]['localUpdatedAt'] = now;
+    await _persistMilestonesToLocalStore();
+    _scheduleBestEffortCloudWrite(
+      _syncActiveBabyMemoriesToCloud,
+      label: 'illustration url sync',
+    );
+  }
+
   static Future<void> _persistMilestonesToLocalStore() async {
     final data = _milestones
         .map(
@@ -2743,6 +2868,7 @@ class VeriYonetici {
             'photoStoragePath': e['photoStoragePath'],
             'photoUrl': e['photoUrl'],
             'photoStyle': e['photoStyle'] ?? 'softIllustration',
+            'illustrationUrl': e['illustrationUrl'],
             'babyId': e['babyId'],
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
