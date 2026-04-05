@@ -10,7 +10,10 @@ import '../models/user_illustration_credits.dart';
 import '../models/veri_yonetici.dart';
 import '../screens/premium_screen.dart';
 import '../services/illustration_request_service.dart';
-import '../services/premium_service.dart';
+import '../services/premium_service.dart'
+    show
+        IllustrationPackPurchaseException,
+        PremiumService;
 
 // ---------------------------------------------------------------------------
 // Sheet state machine
@@ -188,11 +191,20 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
             });
           } else if (updated.status == IllustrationRequestStatus.failed) {
             _requestSub?.cancel();
+            final isTimeout =
+                updated.errorCode == 'generation-timeout' ||
+                updated.errorCode == 'worker-deadline-exceeded' ||
+                (updated.errorMessage?.toLowerCase().contains('timeout') ??
+                    false) ||
+                (updated.errorMessage?.toLowerCase().contains('timed out') ??
+                    false);
             setState(() {
-              _errorMessage =
-                  (updated.errorMessage?.isNotEmpty == true)
+              _errorMessage = isTimeout
+                  ? 'This photo took too long to generate.\n'
+                      'Your credit has been refunded — please try again.'
+                  : (updated.errorMessage?.isNotEmpty == true
                       ? updated.errorMessage
-                      : 'Something went wrong. Please try again.';
+                      : 'Something went wrong. Please try again.');
               _sheetState = _SheetState.error;
             });
           }
@@ -233,15 +245,36 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
   Future<void> _onBuyPack(String productId) async {
     if (_purchasingPackId != null) return; // already in-flight
     setState(() => _purchasingPackId = productId);
-    final success = await PremiumService.instance.purchaseIllustrationPack(productId);
-    if (!mounted) return;
-    if (success) {
-      // Credits arrive asynchronously via Adapty webhook → Firestore.
-      // Pop the sheet so the user retries generation once credits land.
-      Navigator.pop(context);
-    } else {
-      // User cancelled or error — clear loading state silently.
+    try {
+      final success =
+          await PremiumService.instance.purchaseIllustrationPack(productId);
+      if (!mounted) return;
+      if (success) {
+        // Credits arrive asynchronously via Adapty webhook → Firestore.
+        // Pop the sheet so the user retries generation once credits land.
+        Navigator.pop(context);
+      } else {
+        // User explicitly cancelled the system purchase sheet — no feedback needed.
+        setState(() => _purchasingPackId = null);
+      }
+    } on IllustrationPackPurchaseException catch (e) {
+      if (!mounted) return;
       setState(() => _purchasingPackId = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _purchasingPackId = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Purchase could not be completed. Please try again.'),
+          duration: Duration(seconds: 4),
+        ),
+      );
     }
   }
 

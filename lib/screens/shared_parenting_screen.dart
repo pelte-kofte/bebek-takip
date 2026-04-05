@@ -49,8 +49,13 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
       return;
     }
     if (!PremiumService.instance.isPremium) {
-      await _SharedParentingGateSheet.show(context);
-      // Pop the screen after the sheet is dismissed — user is still free.
+      final wantsUpgrade = await _SharedParentingGateSheet.show(context);
+      // If the user tapped "Unlock with Premium", run the paywall here (awaited)
+      // so SharedParentingScreen stays on the route stack during the purchase.
+      if (mounted && wantsUpgrade == true) {
+        await PremiumScreen.show(context);
+      }
+      // Pop the screen only after the full premium flow has resolved.
       if (mounted && !PremiumService.instance.isPremium) {
         Navigator.of(context).pop();
       }
@@ -339,31 +344,120 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-class _MembersSection extends StatelessWidget {
+class _MembersSection extends StatefulWidget {
   const _MembersSection({required this.babyId});
 
   final String babyId;
 
   @override
+  State<_MembersSection> createState() => _MembersSectionState();
+}
+
+class _MembersSectionState extends State<_MembersSection> {
+  // Tracks which memberUid is currently being removed (shows inline spinner).
+  String? _removingUid;
+
+  Future<void> _confirmAndRemove(
+    String memberUid,
+    String displayLabel,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFFFFFBF5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text(
+          'Remove co-parent?',
+          style: TextStyle(
+            color: Color(0xFF4A3E39),
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        content: Text(
+          '$displayLabel will lose access to this baby immediately.',
+          style: const TextStyle(color: Color(0xFF8A7C75)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Remove',
+              style: TextStyle(color: Color(0xFFB85C4A)),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+    setState(() => _removingUid = memberUid);
+    try {
+      await SharedParentingService.instance.removeMember(
+        babyId: widget.babyId,
+        memberUid: memberUid,
+      );
+      // Stream auto-updates the member list — no manual setState required.
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            e.message ?? 'Could not remove member. Please try again.',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not remove member. Please try again.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _removingUid = null);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DocumentSnapshot>(
-      future:
-          FirebaseFirestore.instance.collection('babies').doc(babyId).get(),
+    final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
+
+    // StreamBuilder keeps the list live — removing a member auto-refreshes.
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('babies')
+          .doc(widget.babyId)
+          .snapshots(),
       builder: (context, snap) {
-        if (snap.connectionState == ConnectionState.waiting) {
+        if (snap.connectionState == ConnectionState.waiting &&
+            !snap.hasData) {
           return const SizedBox.shrink();
         }
 
         final members = <String, dynamic>{};
         if (snap.hasData && snap.data!.exists) {
-          final data = snap.data!.data() as Map<String, dynamic>?;
-          final raw = data?['members'];
+          final raw = snap.data!.data()?['members'];
           if (raw is Map) {
             members.addAll(Map<String, dynamic>.from(raw));
           }
         }
 
+        // Exclude the owner's own entry if present in the map.
+        members.remove(currentUid);
         if (members.isEmpty) return const SizedBox.shrink();
+
+        final isOwner = snap.data?.data()?['ownerId'] == currentUid;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,8 +479,11 @@ class _MembersSection extends StatelessWidget {
               ),
               child: Column(
                 children: members.entries.map((entry) {
+                  final memberUid = entry.key;
                   final info = entry.value as Map<String, dynamic>?;
                   final role = (info?['role'] as String?) ?? 'member';
+                  final isRemoving = _removingUid == memberUid;
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -410,7 +507,7 @@ class _MembersSection extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            entry.key,
+                            memberUid,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF4A3E39),
@@ -418,13 +515,41 @@ class _MembersSection extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Text(
-                          role,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF8A7C75),
+                        if (isOwner) ...[
+                          const SizedBox(width: 8),
+                          if (isRemoving)
+                            const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Color(0xFF8A7C75),
+                              ),
+                            )
+                          else
+                            GestureDetector(
+                              onTap: _removingUid != null
+                                  ? null
+                                  : () => _confirmAndRemove(
+                                        memberUid,
+                                        role,
+                                      ),
+                              child: const Icon(
+                                Icons.person_remove_rounded,
+                                size: 20,
+                                color: Color(0xFFB85C4A),
+                              ),
+                            ),
+                        ] else ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            role,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF8A7C75),
+                            ),
                           ),
-                        ),
+                        ],
                       ],
                     ),
                   );
@@ -517,8 +642,8 @@ class _NavButton extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _SharedParentingGateSheet {
-  static Future<void> show(BuildContext context) {
-    return showModalBottomSheet<void>(
+  static Future<bool?> show(BuildContext context) {
+    return showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -607,10 +732,7 @@ class _SharedParentingGateSheetContent extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                PremiumScreen.show(context);
-              },
+              onTap: () => Navigator.pop(context, true),
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(

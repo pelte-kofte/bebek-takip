@@ -10,6 +10,7 @@ export {
   sendInvitation,
   acceptInvitation,
   declineInvitation,
+  removeMember,
   syncPremiumStatus,
 } from "./invitations.js";
 export {syncPremiumFromAdaptyWebhook} from "./premiumWebhook.js";

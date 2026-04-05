@@ -226,8 +226,22 @@ class AppleAuthService {
           if (e.code != 'credential-already-in-use') rethrow;
           _log(
             '[$attemptId] Apple linkWithProvider conflict '
-            'code=${e.code} fallback=signInWithProvider',
+            'code=${e.code} — reusing pending credential to avoid second prompt',
           );
+          // e.credential is the Apple OAuthCredential from the first prompt.
+          // Use it directly so we do NOT trigger a second Face ID / biometric
+          // prompt via signInWithProvider.
+          final pending = e.credential;
+          if (pending != null) {
+            final signedIn = await auth.signInWithCredential(pending);
+            _log(
+              '[$attemptId] Apple signInWithCredential (reused) completed '
+              'uid=${signedIn.user?.uid} anonymous=${signedIn.user?.isAnonymous}',
+            );
+            return signedIn;
+          }
+          // Credential not attached (rare edge-case) — fall back to fresh flow.
+          _log('[$attemptId] No pending credential; falling back to signInWithProvider');
           final signedIn = await auth.signInWithProvider(appleProvider);
           _log(
             '[$attemptId] Apple signInWithProvider fallback completed '

@@ -12,6 +12,9 @@ class SentInvitationsScreen extends StatefulWidget {
 }
 
 class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
+  // Tracks which invitation IDs are currently being cancelled.
+  final Set<String> _cancelling = {};
+
   @override
   void initState() {
     super.initState();
@@ -23,6 +26,25 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.isAnonymous) {
       Navigator.of(context).pop();
+    }
+  }
+
+  Future<void> _cancelInvitation(InvitationItem item) async {
+    if (_cancelling.contains(item.id)) return;
+    setState(() => _cancelling.add(item.id));
+    try {
+      await SharedParentingService.instance.cancelInvitation(
+        invitationId: item.id,
+      );
+      // Stream auto-removes the row — no manual setState needed.
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not cancel invitation. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _cancelling.remove(item.id));
     }
   }
 
@@ -203,14 +225,33 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        label,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: color,
+                      if (item.status == 'pending')
+                        _cancelling.contains(item.id)
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Color(0xFF8A7C75),
+                                ),
+                              )
+                            : GestureDetector(
+                                onTap: () => _cancelInvitation(item),
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  size: 20,
+                                  color: Color(0xFFB85C4A),
+                                ),
+                              )
+                      else
+                        Text(
+                          label,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: color,
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 );

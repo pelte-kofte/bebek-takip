@@ -53,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _babyName = 'Sofia';
   DateTime _birthDate = DateTime(2024, 9, 17);
   String? _babyPhotoPath;
+  String? _babyPhotoUrl; // remote fallback for shared babies
 
   int get babyAgeInMonths {
     return calcAge(_birthDate, referenceDate: DateTime.now()).totalMonths;
@@ -64,9 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _dataChangedListener = () {
       if (!mounted) return;
       if (kDebugMode) {
-        debugPrint('[HomeScreen] State notified → scheduling rebuild recents');
+        debugPrint('[HomeScreen] State notified → reloading baby info + recents');
       }
-      setState(() {});
+      _loadBabyInfo();
     };
     VeriYonetici.dataNotifier.addListener(_dataChangedListener);
     _loadBabyInfo();
@@ -112,11 +113,13 @@ class _HomeScreenState extends State<HomeScreen> {
         _babyName = '';
         _birthDate = DateTime.now();
         _babyPhotoPath = null;
+        _babyPhotoUrl = null;
         return;
       }
       _babyName = baby.name;
       _birthDate = baby.birthDate;
       _babyPhotoPath = baby.photoPath;
+      _babyPhotoUrl = baby.photoUrl;
     });
   }
 
@@ -411,11 +414,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final textColor = isDark ? Colors.white : const Color(0xFF2D1A18);
     final subtitleColor = textColor.withValues(alpha: 0.6);
-    final hasValidPhoto =
+    final hasLocalPhoto =
         !kIsWeb &&
         _babyPhotoPath != null &&
         _babyPhotoPath!.isNotEmpty &&
         File(_babyPhotoPath!).existsSync();
+    final hasRemotePhoto =
+        _babyPhotoUrl != null && _babyPhotoUrl!.isNotEmpty;
+    final hasValidPhoto = hasLocalPhoto || hasRemotePhoto;
 
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
     final kakaKayitlari = VeriYonetici.getKakaKayitlari();
@@ -520,9 +526,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ],
                                   image: hasValidPhoto
                                       ? DecorationImage(
-                                          image: FileImage(
-                                            File(_babyPhotoPath!),
-                                          ),
+                                          image: hasLocalPhoto
+                                              ? FileImage(File(_babyPhotoPath!))
+                                                  as ImageProvider
+                                              : NetworkImage(_babyPhotoUrl!),
                                           fit: BoxFit.cover,
                                         )
                                       : null,

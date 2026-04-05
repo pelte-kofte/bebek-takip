@@ -106,6 +106,36 @@ class SharedParentingService {
     });
   }
 
+  /// Removes an accepted member from a shared baby.
+  ///
+  /// Only the baby owner may call this. The callable atomically removes the
+  /// member from [babies/{babyId}/members] and deletes their
+  /// [users/{memberUid}/sharedBabies/{babyId}] document so their next sync
+  /// drops access immediately.
+  Future<void> removeMember({
+    required String babyId,
+    required String memberUid,
+  }) async {
+    final callable = FirebaseFunctions.instance.httpsCallable('removeMember');
+    await callable.call<Map<String, dynamic>>({
+      'babyId': babyId,
+      'memberUid': memberUid,
+    });
+  }
+
+  /// Cancels a pending invitation that the current user sent.
+  ///
+  /// Only the invitation owner can cancel, and only while status is 'pending'.
+  /// The Firestore stream in [watchSentInvitations] will auto-update the UI.
+  Future<void> cancelInvitation({required String invitationId}) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) throw StateError('Not authenticated');
+    await FirebaseFirestore.instance
+        .collection('babyInvitations')
+        .doc(invitationId)
+        .delete();
+  }
+
   /// Live stream of pending invitations addressed to the current user.
   Stream<List<InvitationItem>> watchPendingInvitations() {
     final email =

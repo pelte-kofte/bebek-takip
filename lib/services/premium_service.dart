@@ -5,6 +5,20 @@ import 'package:flutter/foundation.dart';
 import 'dart:async';
 
 // ---------------------------------------------------------------------------
+// Exceptions
+// ---------------------------------------------------------------------------
+
+/// Thrown by [PremiumService.purchaseIllustrationPack] when the purchase
+/// fails for a non-cancellation reason (placement not found, product missing,
+/// store error). Callers should display [message] to the user.
+class IllustrationPackPurchaseException implements Exception {
+  final String message;
+  const IllustrationPackPurchaseException(this.message);
+  @override
+  String toString() => 'IllustrationPackPurchaseException: $message';
+}
+
+// ---------------------------------------------------------------------------
 // Adapty configuration
 // ---------------------------------------------------------------------------
 
@@ -235,15 +249,14 @@ class PremiumService {
 
   /// Purchase a one-time illustration credit pack by its store product ID.
   ///
-  /// Product IDs: `illustration_pack_3`, `illustration_pack_10`,
-  /// `illustration_pack_25`. These must match the Adapty placement
-  /// [_kIllustrationPacksPlacementId] exactly.
+  /// Product IDs: `illustration_credits_3`, `illustration_credits_10`,
+  /// `illustration_credits_25`. These must match the Adapty placement
+  /// [_kIllustrationPacksPlacementId] and App Store Connect exactly.
   ///
-  /// Returns `true` when the purchase completed successfully. Returns `false`
-  /// when the user cancelled or an error occurred — errors are caught
-  /// internally and logged. Credits are granted asynchronously via the
-  /// Adapty webhook → Firestore; callers should rely on the Firestore
-  /// credit listener to reflect the updated balance.
+  /// Returns `true` when the purchase completed successfully.
+  /// Returns `false` when the user explicitly cancelled the purchase sheet.
+  /// Throws [IllustrationPackPurchaseException] on configuration or store
+  /// errors so the caller can show meaningful feedback.
   Future<bool> purchaseIllustrationPack(String productId) async {
     await init();
     if (requiresAuthenticatedUser) {
@@ -251,29 +264,71 @@ class PremiumService {
       return false;
     }
     try {
+      _log('Fetching illustration_packs paywall for productId=$productId');
       final paywall = await Adapty().getPaywall(
         placementId: _kIllustrationPacksPlacementId,
       );
+
       final products = await Adapty().getPaywallProducts(paywall: paywall);
-      final AdaptyPaywallProduct? product = products.cast<AdaptyPaywallProduct?>().firstWhere(
-        (p) => p?.vendorProductId == productId,
-        orElse: () => null,
+      _log(
+        'Paywall products fetched count=${products.length} '
+        'ids=${products.map((p) => p.vendorProductId).toList()}',
       );
-      if (product == null) {
-        _log('Product $productId not found in placement $_kIllustrationPacksPlacementId');
-        return false;
+
+      if (products.isEmpty) {
+        _log('No products found in placement $_kIllustrationPacksPlacementId');
+        throw IllustrationPackPurchaseException(
+          'No products are configured for illustration packs. '
+          'Please try again later.',
+        );
       }
+
+      final AdaptyPaywallProduct? product =
+          products.cast<AdaptyPaywallProduct?>().firstWhere(
+            (p) => p?.vendorProductId == productId,
+            orElse: () => null,
+          );
+
+      if (product == null) {
+        _log(
+          'Product $productId not found. '
+          'Available: ${products.map((p) => p.vendorProductId).toList()}',
+        );
+        throw IllustrationPackPurchaseException(
+          'This illustration pack is currently unavailable. '
+          'Please try again later.',
+        );
+      }
+
+      _log('Calling makePurchase for vendorProductId=${product.vendorProductId}');
       await Adapty().makePurchase(product: product);
-      _log('Illustration pack purchased: $productId');
+      _log('Illustration pack purchase succeeded: $productId');
       return true;
     } on AdaptyError catch (e) {
-      // Includes user-cancelled — not worth surfacing as an error.
+      // User-cancelled purchase — treat as silent cancel, not an error.
+      if (_isAdaptyUserCancellation(e)) {
+        _log('Pack purchase cancelled by user: $productId');
+        return false;
+      }
       _log('AdaptyError during pack purchase ($productId): ${e.message}');
-      return false;
+      throw IllustrationPackPurchaseException(
+        'Purchase could not be completed. Please try again.',
+      );
+    } on IllustrationPackPurchaseException {
+      rethrow;
     } catch (e) {
       _log('Unexpected error during pack purchase ($productId): $e');
-      return false;
+      throw IllustrationPackPurchaseException(
+        'Purchase could not be completed. Please try again.',
+      );
     }
+  }
+
+  /// Returns true when an [AdaptyError] represents a user-initiated cancel.
+  /// Adapty maps StoreKit's SKErrorPaymentCancelled (code 2) to this.
+  bool _isAdaptyUserCancellation(AdaptyError e) {
+    final msg = e.message.toLowerCase();
+    return msg.contains('cancel') || msg.contains('user cancel');
   }
 
   // ── Restore ────────────────────────────────────────────────────────────

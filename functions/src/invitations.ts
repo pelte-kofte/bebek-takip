@@ -420,6 +420,81 @@ export const acceptInvitation = onCall(
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Removes an accepted member from a shared baby.
+ * Only the baby owner may call this.
+ * Atomically:
+ *   1. Deletes babies/{babyId}/members/{memberUid} field.
+ *   2. Deletes users/{memberUid}/sharedBabies/{babyId} document.
+ */
+export const removeMember = onCall(
+  {region: "us-central1"},
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be signed in.");
+    }
+    const callerUid = request.auth.uid;
+    const {babyId, memberUid} = request.data ?? {};
+
+    if (!babyId || typeof babyId !== "string" || babyId.trim() === "") {
+      throw new HttpsError("invalid-argument", "babyId is required.");
+    }
+    if (
+      !memberUid ||
+      typeof memberUid !== "string" ||
+      memberUid.trim() === ""
+    ) {
+      throw new HttpsError("invalid-argument", "memberUid is required.");
+    }
+    if (memberUid.trim() === callerUid) {
+      throw new HttpsError(
+        "invalid-argument",
+        "Owner cannot remove themselves."
+      );
+    }
+
+    const db = getFirestore();
+    const babyRef = db.collection("babies").doc(babyId.trim());
+    const babySnap = await babyRef.get();
+
+    if (!babySnap.exists) {
+      throw new HttpsError("not-found", "Baby not found.");
+    }
+    if (babySnap.data()?.ownerId !== callerUid) {
+      throw new HttpsError(
+        "permission-denied",
+        "Only the baby owner can remove members."
+      );
+    }
+
+    const sharedBabyRef = db
+      .collection("users")
+      .doc(memberUid.trim())
+      .collection("sharedBabies")
+      .doc(babyId.trim());
+
+    await db.runTransaction(async (tx) => {
+      // Remove the member entry from babies/{babyId}.members map.
+      tx.update(babyRef, {
+        [`members.${memberUid.trim()}`]: FieldValue.delete(),
+      });
+      // Delete the member's sharedBabies pointer so their next sync
+      // drops access.
+      tx.delete(sharedBabyRef);
+    });
+
+    logger.info("removeMember: member removed", {
+      babyId,
+      memberUid,
+      callerUid,
+    });
+
+    return {success: true};
+  }
+);
+
 export const declineInvitation = onCall(
   {region: "us-central1"},
   async (request) => {

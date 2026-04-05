@@ -2854,6 +2854,7 @@ class VeriYonetici {
       _syncActiveBabyMemoriesToCloud,
       label: 'illustration url sync',
     );
+    _notifyDataChanged(reason: 'illustration-url-patched');
   }
 
   static Future<void> _persistMilestonesToLocalStore() async {

@@ -45,11 +45,22 @@ class MilestonesScreen extends StatefulWidget {
 
 class _MilestonesScreenState extends State<MilestonesScreen> {
   List<Map<String, dynamic>> _milestones = [];
+  late final VoidCallback _dataListener;
 
   @override
   void initState() {
     super.initState();
+    _dataListener = () {
+      if (mounted) _loadMilestones();
+    };
+    VeriYonetici.dataNotifier.addListener(_dataListener);
     _loadMilestones();
+  }
+
+  @override
+  void dispose() {
+    VeriYonetici.dataNotifier.removeListener(_dataListener);
+    super.dispose();
   }
 
   void _loadMilestones() {
@@ -2451,14 +2462,49 @@ class MilestoneDetailScreen extends StatelessWidget {
 
 /// Shows a generated illustration thumbnail + re-open button if one exists,
 /// or the "Turn into illustration" prompt if not.
-class _IllustrationSection extends StatelessWidget {
+///
+/// Stateful so it can react to [VeriYonetici.dataNotifier] firing after
+/// [patchMilestoneIllustrationUrl] completes — the shallow-copied map
+/// passed as [milestone] is NOT mutated in place, so a listener-driven
+/// re-read from VeriYonetici is required.
+class _IllustrationSection extends StatefulWidget {
   final Map<String, dynamic> milestone;
 
   const _IllustrationSection({required this.milestone});
 
   @override
+  State<_IllustrationSection> createState() => _IllustrationSectionState();
+}
+
+class _IllustrationSectionState extends State<_IllustrationSection> {
+  late Map<String, dynamic> _milestone;
+  late final VoidCallback _dataListener;
+
+  @override
+  void initState() {
+    super.initState();
+    _milestone = widget.milestone;
+    _dataListener = () {
+      if (!mounted) return;
+      final id = (_milestone['id'] ?? '').toString();
+      if (id.isEmpty) return;
+      final fresh = VeriYonetici.getMilestones()
+          .where((m) => (m['id'] ?? '').toString() == id)
+          .firstOrNull;
+      if (fresh != null) setState(() => _milestone = fresh);
+    };
+    VeriYonetici.dataNotifier.addListener(_dataListener);
+  }
+
+  @override
+  void dispose() {
+    VeriYonetici.dataNotifier.removeListener(_dataListener);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final illustrationUrl = (milestone['illustrationUrl'] ?? '')
+    final illustrationUrl = (_milestone['illustrationUrl'] ?? '')
         .toString()
         .trim();
     final hasIllustration = illustrationUrl.isNotEmpty;
@@ -2469,7 +2515,7 @@ class _IllustrationSection extends StatelessWidget {
         child: GestureDetector(
           onTap: () => IllustrationUpsellSheet.showResult(
             context,
-            milestone,
+            _milestone,
             illustrationUrl,
           ),
           child: Column(
@@ -2539,7 +2585,7 @@ class _IllustrationSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: GestureDetector(
-        onTap: () => IllustrationUpsellSheet.show(context, milestone),
+        onTap: () => IllustrationUpsellSheet.show(context, _milestone),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),

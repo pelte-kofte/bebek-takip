@@ -29,8 +29,11 @@ const REQUEST_STATUS_FAILED = "failed";
 const CREDIT_RESERVATION_STATE_CONSUMED = "consumed";
 const OPENAI_IMAGE_MODEL = "gpt-image-1.5";
 const FUNCTION_TIMEOUT_SECONDS = 300;
-const WORKER_DEADLINE_BUFFER_MS = 45 * 1000;
-const OPENAI_IMAGE_REQUEST_TIMEOUT_MS = 45 * 1000;
+const WORKER_DEADLINE_BUFFER_MS = 30 * 1000;
+// Complex family photos (3+ people) can take 90-150 s with gpt-image-1.5.
+// The function has 300 s total; we keep 30 s buffer for overhead and storage,
+// leaving ~240 s available. Cap the OpenAI call at 200 s to stay safely under.
+const OPENAI_IMAGE_REQUEST_TIMEOUT_MS = 200 * 1000;
 const GENERATED_IMAGE_CONTENT_TYPE = "image/jpeg";
 const DEADLINE_SAFETY_MARGIN_MS = 5000;
 
@@ -736,6 +739,22 @@ function normalizeWorkerError(error: unknown): WorkerError {
     return error;
   }
   if (error instanceof Error) {
+    // OpenAI SDK surfaces request timeouts with this message pattern.
+    // Tag them with a dedicated code so the Flutter client can show a
+    // friendlier "took too long" message instead of a hard failure.
+    const msg = error.message ?? "";
+    if (
+      msg.toLowerCase().includes("timeout") ||
+      msg.toLowerCase().includes("timed out") ||
+      msg.toLowerCase().includes("connection error") ||
+      error.constructor?.name === "APIConnectionTimeoutError"
+    ) {
+      return new WorkerError(
+        "generation-timeout",
+        "The illustration took too long to generate. " +
+          "Your credit has been refunded — please try again.",
+      );
+    }
     return new WorkerError("illustration-worker-error", error.message);
   }
   return new WorkerError(
