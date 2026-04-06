@@ -358,6 +358,10 @@ export const acceptInvitation = onCall(
 
     const babyId: string = invData.babyId;
     const babyRef = db.collection("babies").doc(babyId);
+    // Capture auth fields before the transaction callback where TypeScript
+    // can no longer narrow request.auth through the closure boundary.
+    const callerDisplayName = request.auth.token.name ?? null;
+    const callerEmailForMember = request.auth.token.email ?? null;
 
     // 5. Transaction
     await db.runTransaction(async (tx) => {
@@ -383,10 +387,14 @@ export const acceptInvitation = onCall(
 
       // c. Add caller to babies/{babyId}.members
       // (dot-path merge keeps other members).
+      // Store displayName and email so the owner's member list can show
+      // human-readable labels without a separate profile lookup.
       tx.update(babyRef, {
         [`members.${callerUid}`]: {
           role: "member",
           joinedAt: FieldValue.serverTimestamp(),
+          displayName: callerDisplayName,
+          email: callerEmailForMember,
         },
       });
 

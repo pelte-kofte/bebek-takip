@@ -260,75 +260,106 @@ class PremiumService {
   Future<bool> purchaseIllustrationPack(String productId) async {
     await init();
     if (requiresAuthenticatedUser) {
-      _log('purchaseIllustrationPack skipped: authenticated user required');
-      return false;
+      _log('[pack] skipped: no authenticated user');
+      throw const IllustrationPackPurchaseException(
+        'Sign in to purchase illustration packs.',
+      );
     }
+
+    // ── Step 1: fetch paywall placement ─────────────────────────────────
+    _log('[pack 1/4] getPaywall placement=$_kIllustrationPacksPlacementId productId=$productId');
+    final AdaptyPaywall paywall;
     try {
-      _log('Fetching illustration_packs paywall for productId=$productId');
-      final paywall = await Adapty().getPaywall(
+      paywall = await Adapty().getPaywall(
         placementId: _kIllustrationPacksPlacementId,
       );
+      _log('[pack 1/4] paywall fetched OK');
+    } on AdaptyError catch (e) {
+      _log('[pack 1/4] FAIL code=${e.code} msg=${e.message}');
+      throw IllustrationPackPurchaseException(
+        'Could not load illustration packs (placement fetch failed, code ${e.code}). '
+        'Please try again.',
+      );
+    } catch (e) {
+      _log('[pack 1/4] UNEXPECTED $e');
+      throw IllustrationPackPurchaseException(
+        'Could not load illustration packs. Please try again.',
+      );
+    }
 
-      final products = await Adapty().getPaywallProducts(paywall: paywall);
+    // ── Step 2: fetch products ───────────────────────────────────────────
+    _log('[pack 2/4] getPaywallProducts');
+    final List<AdaptyPaywallProduct> products;
+    try {
+      products = await Adapty().getPaywallProducts(paywall: paywall);
       _log(
-        'Paywall products fetched count=${products.length} '
+        '[pack 2/4] count=${products.length} '
         'ids=${products.map((p) => p.vendorProductId).toList()}',
       );
+    } on AdaptyError catch (e) {
+      _log('[pack 2/4] FAIL code=${e.code} msg=${e.message}');
+      throw IllustrationPackPurchaseException(
+        'Could not load illustration packs (products fetch failed, code ${e.code}). '
+        'Please try again.',
+      );
+    } catch (e) {
+      _log('[pack 2/4] UNEXPECTED $e');
+      throw IllustrationPackPurchaseException(
+        'Could not load illustration packs. Please try again.',
+      );
+    }
 
-      if (products.isEmpty) {
-        _log('No products found in placement $_kIllustrationPacksPlacementId');
-        throw IllustrationPackPurchaseException(
-          'No products are configured for illustration packs. '
-          'Please try again later.',
+    if (products.isEmpty) {
+      _log('[pack 2/4] zero products returned for placement $_kIllustrationPacksPlacementId');
+      throw const IllustrationPackPurchaseException(
+        'No products are configured for illustration packs. '
+        'Please try again later.',
+      );
+    }
+
+    // ── Step 3: match vendorProductId ────────────────────────────────────
+    _log('[pack 3/4] matching vendorProductId=$productId');
+    final AdaptyPaywallProduct? product =
+        products.cast<AdaptyPaywallProduct?>().firstWhere(
+          (p) => p?.vendorProductId == productId,
+          orElse: () => null,
         );
-      }
 
-      final AdaptyPaywallProduct? product =
-          products.cast<AdaptyPaywallProduct?>().firstWhere(
-            (p) => p?.vendorProductId == productId,
-            orElse: () => null,
-          );
+    if (product == null) {
+      _log(
+        '[pack 3/4] NOT FOUND '
+        'available=${products.map((p) => p.vendorProductId).toList()}',
+      );
+      throw IllustrationPackPurchaseException(
+        'This illustration pack is currently unavailable ($productId not matched). '
+        'Please try again later.',
+      );
+    }
+    _log('[pack 3/4] matched OK vendorProductId=${product.vendorProductId}');
 
-      if (product == null) {
-        _log(
-          'Product $productId not found. '
-          'Available: ${products.map((p) => p.vendorProductId).toList()}',
-        );
-        throw IllustrationPackPurchaseException(
-          'This illustration pack is currently unavailable. '
-          'Please try again later.',
-        );
-      }
-
-      _log('Calling makePurchase for vendorProductId=${product.vendorProductId}');
+    // ── Step 4: trigger StoreKit purchase sheet ──────────────────────────
+    _log('[pack 4/4] calling makePurchase vendorProductId=${product.vendorProductId}');
+    try {
       await Adapty().makePurchase(product: product);
-      _log('Illustration pack purchase succeeded: $productId');
+      _log('[pack 4/4] purchase succeeded: $productId');
       return true;
     } on AdaptyError catch (e) {
-      // User-cancelled purchase — treat as silent cancel, not an error.
-      if (_isAdaptyUserCancellation(e)) {
-        _log('Pack purchase cancelled by user: $productId');
+      // AdaptyErrorCode.paymentCancelled == 2: user tapped Cancel in the
+      // system sheet. Any other AdaptyError is a real store failure.
+      if (e.code == AdaptyErrorCode.paymentCancelled) {
+        _log('[pack 4/4] cancelled by user (code=${e.code}): $productId');
         return false;
       }
-      _log('AdaptyError during pack purchase ($productId): ${e.message}');
+      _log('[pack 4/4] FAIL code=${e.code} msg=${e.message}');
       throw IllustrationPackPurchaseException(
-        'Purchase could not be completed. Please try again.',
+        'Purchase could not be completed (error ${e.code}). Please try again.',
       );
-    } on IllustrationPackPurchaseException {
-      rethrow;
-    } catch (e) {
-      _log('Unexpected error during pack purchase ($productId): $e');
+    } catch (e, stack) {
+      _log('[pack 4/4] UNEXPECTED $e\n$stack');
       throw IllustrationPackPurchaseException(
         'Purchase could not be completed. Please try again.',
       );
     }
-  }
-
-  /// Returns true when an [AdaptyError] represents a user-initiated cancel.
-  /// Adapty maps StoreKit's SKErrorPaymentCancelled (code 2) to this.
-  bool _isAdaptyUserCancellation(AdaptyError e) {
-    final msg = e.message.toLowerCase();
-    return msg.contains('cancel') || msg.contains('user cancel');
   }
 
   // ── Restore ────────────────────────────────────────────────────────────

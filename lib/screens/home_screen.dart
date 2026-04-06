@@ -19,6 +19,8 @@ import 'tips_archive_screen.dart';
 import 'vaccines_screen.dart';
 import '../utils/vaccine_utils.dart';
 import '../utils/locale_text_utils.dart';
+import 'premium_screen.dart';
+import '../services/premium_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
@@ -1390,7 +1392,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
+                    if (!PremiumService.instance.isPremium) {
+                      await PremiumScreen.show(context);
+                      return;
+                    }
+                    if (!context.mounted) return;
                     Navigator.push(
                       context,
                       MaterialPageRoute(

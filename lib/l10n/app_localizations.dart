@@ -3199,6 +3199,540 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last given: {value}'**
   String lastGivenLabel(String value);
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get maybeLater;
+
+  /// No description provided for @genericErrorRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get genericErrorRetry;
+
+  /// No description provided for @babyFallbackName.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby'**
+  String get babyFallbackName;
+
+  /// No description provided for @todayBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY'**
+  String get todayBadge;
+
+  /// No description provided for @spTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Parenting'**
+  String get spTitle;
+
+  /// No description provided for @spInviteDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite another parent to follow the same baby journey together.'**
+  String get spInviteDesc;
+
+  /// No description provided for @spEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get spEmailLabel;
+
+  /// No description provided for @spEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'partner@example.com'**
+  String get spEmailHint;
+
+  /// No description provided for @spEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an email address.'**
+  String get spEnterEmail;
+
+  /// No description provided for @spNoActiveBaby.
+  ///
+  /// In en, this message translates to:
+  /// **'No active baby selected.'**
+  String get spNoActiveBaby;
+
+  /// No description provided for @spInvitePendingFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation already pending for {email}.'**
+  String spInvitePendingFor(String email);
+
+  /// No description provided for @spInviteSentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent to {email}.'**
+  String spInviteSentTo(String email);
+
+  /// No description provided for @spPremiumRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You need a premium subscription to invite co-parents.'**
+  String get spPremiumRequired;
+
+  /// No description provided for @spBabyNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby not found. Please try again.'**
+  String get spBabyNotFound;
+
+  /// No description provided for @spInvalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address.'**
+  String get spInvalidEmail;
+
+  /// No description provided for @spReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get spReceived;
+
+  /// No description provided for @spSentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get spSentLabel;
+
+  /// No description provided for @spInviteParentBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Parent'**
+  String get spInviteParentBtn;
+
+  /// No description provided for @spCoparents.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parents'**
+  String get spCoparents;
+
+  /// No description provided for @spRemoveDialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove co-parent?'**
+  String get spRemoveDialog;
+
+  /// No description provided for @spRemoveContent.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will lose access to this baby immediately.'**
+  String spRemoveContent(String name);
+
+  /// No description provided for @spCouldNotRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not remove member. Please try again.'**
+  String get spCouldNotRemove;
+
+  /// No description provided for @spCoparent.
+  ///
+  /// In en, this message translates to:
+  /// **'Co-parent'**
+  String get spCoparent;
+
+  /// No description provided for @spGateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your baby\'s journey together'**
+  String get spGateTitle;
+
+  /// No description provided for @spGateBullet1.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite another parent'**
+  String get spGateBullet1;
+
+  /// No description provided for @spGateBullet2.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay in sync on the same baby'**
+  String get spGateBullet2;
+
+  /// No description provided for @spGateBullet3.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep updates shared in one place'**
+  String get spGateBullet3;
+
+  /// No description provided for @spUnlockPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock with Premium'**
+  String get spUnlockPremium;
+
+  /// No description provided for @invInboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Received Invitations'**
+  String get invInboxTitle;
+
+  /// No description provided for @invAcceptedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted.'**
+  String get invAcceptedMsg;
+
+  /// No description provided for @invDeclinedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation declined.'**
+  String get invDeclinedMsg;
+
+  /// No description provided for @invNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation not found.'**
+  String get invNotFound;
+
+  /// No description provided for @invExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation has expired.'**
+  String get invExpired;
+
+  /// No description provided for @invNotForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is not addressed to you.'**
+  String get invNotForYou;
+
+  /// No description provided for @invNoLongerPending.
+  ///
+  /// In en, this message translates to:
+  /// **'This invitation is no longer pending.'**
+  String get invNoLongerPending;
+
+  /// No description provided for @invLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load invitations. Please try again.'**
+  String get invLoadError;
+
+  /// No description provided for @invNoneReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'No invitations received'**
+  String get invNoneReceived;
+
+  /// No description provided for @invFromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'from {name}'**
+  String invFromLabel(String name);
+
+  /// No description provided for @invStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get invStatusAccepted;
+
+  /// No description provided for @invStatusDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get invStatusDeclined;
+
+  /// No description provided for @invAcceptBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get invAcceptBtn;
+
+  /// No description provided for @invDeclineBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get invDeclineBtn;
+
+  /// No description provided for @sentInvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent Invitations'**
+  String get sentInvTitle;
+
+  /// No description provided for @sentInvCancelError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel invitation. Please try again.'**
+  String get sentInvCancelError;
+
+  /// No description provided for @sentInvStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get sentInvStatusPending;
+
+  /// No description provided for @sentInvStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get sentInvStatusAccepted;
+
+  /// No description provided for @sentInvStatusDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get sentInvStatusDeclined;
+
+  /// No description provided for @sentInvLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load sent invitations.'**
+  String get sentInvLoadError;
+
+  /// No description provided for @sentInvNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No invitations sent yet'**
+  String get sentInvNone;
+
+  /// No description provided for @sentInvExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String sentInvExpires(String date);
+
+  /// No description provided for @premiumSignInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to use premium features.'**
+  String get premiumSignInRequired;
+
+  /// No description provided for @premiumIsActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is active.'**
+  String get premiumIsActive;
+
+  /// No description provided for @premiumActiveDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have full access to memory illustrations\nand all premium features.'**
+  String get premiumActiveDesc;
+
+  /// No description provided for @premiumManageSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Subscription'**
+  String get premiumManageSubscription;
+
+  /// No description provided for @premiumRestorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore Purchases'**
+  String get premiumRestorePurchases;
+
+  /// No description provided for @premiumNoPurchasesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous purchases found.'**
+  String get premiumNoPurchasesFound;
+
+  /// No description provided for @premiumRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed. Please try again.'**
+  String get premiumRestoreFailed;
+
+  /// No description provided for @illMemoryFeelsSpecial.
+  ///
+  /// In en, this message translates to:
+  /// **'This memory feels special.'**
+  String get illMemoryFeelsSpecial;
+
+  /// No description provided for @illTurnMemoriesIntoArt.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn memories into art'**
+  String get illTurnMemoriesIntoArt;
+
+  /// No description provided for @illPremiumDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn it into a soft illustration and keep it forever.\nSome memories deserve to be felt again.'**
+  String get illPremiumDesc;
+
+  /// No description provided for @illFreeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Transform your baby\'s photos into beautiful soft illustrations.\nAvailable with Premium.'**
+  String get illFreeDesc;
+
+  /// No description provided for @illCreateBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Illustration'**
+  String get illCreateBtn;
+
+  /// No description provided for @illUpgradePremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get illUpgradePremium;
+
+  /// No description provided for @illCreatingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating your illustration…'**
+  String get illCreatingTitle;
+
+  /// No description provided for @illCreatingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This usually takes about a minute.\nWe’ll show it right here when it’s ready.'**
+  String get illCreatingDesc;
+
+  /// No description provided for @illDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss — I’ll check back later'**
+  String get illDismiss;
+
+  /// No description provided for @illReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your illustration is ready.'**
+  String get illReadyTitle;
+
+  /// No description provided for @illReadySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A soft memory, kept forever.'**
+  String get illReadySubtitle;
+
+  /// No description provided for @illShareFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Share with family'**
+  String get illShareFamily;
+
+  /// No description provided for @illSomethingWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get illSomethingWrong;
+
+  /// No description provided for @illOwnerOnlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustrations are owner-only'**
+  String get illOwnerOnlyTitle;
+
+  /// No description provided for @illOwnerOnlyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration generation is only available to the baby owner. Ask the owner to create one.'**
+  String get illOwnerOnlyDesc;
+
+  /// No description provided for @illGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get illGotIt;
+
+  /// No description provided for @illUploadingPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo is still uploading. Please try again in a moment.'**
+  String get illUploadingPhoto;
+
+  /// No description provided for @illTimeoutError.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo took too long to generate.\nYour credit has been refunded — please try again.'**
+  String get illTimeoutError;
+
+  /// No description provided for @illConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not connect to the illustration service. Please try again later.'**
+  String get illConnectionError;
+
+  /// No description provided for @illPurchaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase could not be completed. Please try again.'**
+  String get illPurchaseError;
+
+  /// No description provided for @illOutOfTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You’re out of illustrations'**
+  String get illOutOfTitle;
+
+  /// No description provided for @illOutOfDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn your memories into beautiful artwork.'**
+  String get illOutOfDesc;
+
+  /// No description provided for @illPackQuickLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick pack'**
+  String get illPackQuickLabel;
+
+  /// No description provided for @illPackQuickSub.
+  ///
+  /// In en, this message translates to:
+  /// **'3 illustrations'**
+  String get illPackQuickSub;
+
+  /// No description provided for @illPackBestLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get illPackBestLabel;
+
+  /// No description provided for @illPackBestSub.
+  ///
+  /// In en, this message translates to:
+  /// **'10 illustrations'**
+  String get illPackBestSub;
+
+  /// No description provided for @illPackMostPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get illPackMostPopular;
+
+  /// No description provided for @illPackLoversLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'For memory lovers'**
+  String get illPackLoversLabel;
+
+  /// No description provided for @illPackLoversSub.
+  ///
+  /// In en, this message translates to:
+  /// **'25 illustrations'**
+  String get illPackLoversSub;
+
+  /// No description provided for @illShareFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'A special moment, illustrated.'**
+  String get illShareFallback;
 }
 
 class _AppLocalizationsDelegate

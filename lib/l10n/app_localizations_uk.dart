@@ -1774,4 +1774,293 @@ class AppLocalizationsUk extends AppLocalizations {
   String lastGivenLabel(String value) {
     return 'Останній прийом: $value';
   }
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get maybeLater => 'Maybe later';
+
+  @override
+  String get genericErrorRetry => 'Something went wrong. Please try again.';
+
+  @override
+  String get babyFallbackName => 'Baby';
+
+  @override
+  String get todayBadge => 'TODAY';
+
+  @override
+  String get spTitle => 'Shared Parenting';
+
+  @override
+  String get spInviteDesc =>
+      'Invite another parent to follow the same baby journey together.';
+
+  @override
+  String get spEmailLabel => 'Email address';
+
+  @override
+  String get spEmailHint => 'partner@example.com';
+
+  @override
+  String get spEnterEmail => 'Please enter an email address.';
+
+  @override
+  String get spNoActiveBaby => 'No active baby selected.';
+
+  @override
+  String spInvitePendingFor(String email) {
+    return 'Invitation already pending for $email.';
+  }
+
+  @override
+  String spInviteSentTo(String email) {
+    return 'Invitation sent to $email.';
+  }
+
+  @override
+  String get spPremiumRequired =>
+      'You need a premium subscription to invite co-parents.';
+
+  @override
+  String get spBabyNotFound => 'Baby not found. Please try again.';
+
+  @override
+  String get spInvalidEmail => 'Please enter a valid email address.';
+
+  @override
+  String get spReceived => 'Received';
+
+  @override
+  String get spSentLabel => 'Sent';
+
+  @override
+  String get spInviteParentBtn => 'Invite Parent';
+
+  @override
+  String get spCoparents => 'Co-parents';
+
+  @override
+  String get spRemoveDialog => 'Remove co-parent?';
+
+  @override
+  String spRemoveContent(String name) {
+    return '$name will lose access to this baby immediately.';
+  }
+
+  @override
+  String get spCouldNotRemove => 'Could not remove member. Please try again.';
+
+  @override
+  String get spCoparent => 'Co-parent';
+
+  @override
+  String get spGateTitle => 'Share your baby\'s journey together';
+
+  @override
+  String get spGateBullet1 => 'Invite another parent';
+
+  @override
+  String get spGateBullet2 => 'Stay in sync on the same baby';
+
+  @override
+  String get spGateBullet3 => 'Keep updates shared in one place';
+
+  @override
+  String get spUnlockPremium => 'Unlock with Premium';
+
+  @override
+  String get invInboxTitle => 'Received Invitations';
+
+  @override
+  String get invAcceptedMsg => 'Invitation accepted.';
+
+  @override
+  String get invDeclinedMsg => 'Invitation declined.';
+
+  @override
+  String get invNotFound => 'Invitation not found.';
+
+  @override
+  String get invExpired => 'This invitation has expired.';
+
+  @override
+  String get invNotForYou => 'This invitation is not addressed to you.';
+
+  @override
+  String get invNoLongerPending => 'This invitation is no longer pending.';
+
+  @override
+  String get invLoadError => 'Could not load invitations. Please try again.';
+
+  @override
+  String get invNoneReceived => 'No invitations received';
+
+  @override
+  String invFromLabel(String name) {
+    return 'from $name';
+  }
+
+  @override
+  String get invStatusAccepted => 'Accepted';
+
+  @override
+  String get invStatusDeclined => 'Declined';
+
+  @override
+  String get invAcceptBtn => 'Accept';
+
+  @override
+  String get invDeclineBtn => 'Decline';
+
+  @override
+  String get sentInvTitle => 'Sent Invitations';
+
+  @override
+  String get sentInvCancelError =>
+      'Could not cancel invitation. Please try again.';
+
+  @override
+  String get sentInvStatusPending => 'Pending';
+
+  @override
+  String get sentInvStatusAccepted => 'Accepted';
+
+  @override
+  String get sentInvStatusDeclined => 'Declined';
+
+  @override
+  String get sentInvLoadError => 'Could not load sent invitations.';
+
+  @override
+  String get sentInvNone => 'No invitations sent yet';
+
+  @override
+  String sentInvExpires(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String get premiumSignInRequired => 'Please sign in to use premium features.';
+
+  @override
+  String get premiumIsActive => 'Premium is active.';
+
+  @override
+  String get premiumActiveDesc =>
+      'You have full access to memory illustrations\nand all premium features.';
+
+  @override
+  String get premiumManageSubscription => 'Manage Subscription';
+
+  @override
+  String get premiumRestorePurchases => 'Restore Purchases';
+
+  @override
+  String get premiumNoPurchasesFound => 'No previous purchases found.';
+
+  @override
+  String get premiumRestoreFailed => 'Restore failed. Please try again.';
+
+  @override
+  String get illMemoryFeelsSpecial => 'This memory feels special.';
+
+  @override
+  String get illTurnMemoriesIntoArt => 'Turn memories into art';
+
+  @override
+  String get illPremiumDesc =>
+      'Turn it into a soft illustration and keep it forever.\nSome memories deserve to be felt again.';
+
+  @override
+  String get illFreeDesc =>
+      'Transform your baby\'s photos into beautiful soft illustrations.\nAvailable with Premium.';
+
+  @override
+  String get illCreateBtn => 'Create Illustration';
+
+  @override
+  String get illUpgradePremium => 'Upgrade to Premium';
+
+  @override
+  String get illCreatingTitle => 'Creating your illustration…';
+
+  @override
+  String get illCreatingDesc =>
+      'This usually takes about a minute.\nWe’ll show it right here when it’s ready.';
+
+  @override
+  String get illDismiss => 'Dismiss — I’ll check back later';
+
+  @override
+  String get illReadyTitle => 'Your illustration is ready.';
+
+  @override
+  String get illReadySubtitle => 'A soft memory, kept forever.';
+
+  @override
+  String get illShareFamily => 'Share with family';
+
+  @override
+  String get illSomethingWrong => 'Something went wrong.';
+
+  @override
+  String get illOwnerOnlyTitle => 'Illustrations are owner-only';
+
+  @override
+  String get illOwnerOnlyDesc =>
+      'Illustration generation is only available to the baby owner. Ask the owner to create one.';
+
+  @override
+  String get illGotIt => 'Got it';
+
+  @override
+  String get illUploadingPhoto =>
+      'Your photo is still uploading. Please try again in a moment.';
+
+  @override
+  String get illTimeoutError =>
+      'This photo took too long to generate.\nYour credit has been refunded — please try again.';
+
+  @override
+  String get illConnectionError =>
+      'Could not connect to the illustration service. Please try again later.';
+
+  @override
+  String get illPurchaseError =>
+      'Purchase could not be completed. Please try again.';
+
+  @override
+  String get illOutOfTitle => 'You’re out of illustrations';
+
+  @override
+  String get illOutOfDesc => 'Turn your memories into beautiful artwork.';
+
+  @override
+  String get illPackQuickLabel => 'Quick pack';
+
+  @override
+  String get illPackQuickSub => '3 illustrations';
+
+  @override
+  String get illPackBestLabel => 'Best value';
+
+  @override
+  String get illPackBestSub => '10 illustrations';
+
+  @override
+  String get illPackMostPopular => 'Most popular';
+
+  @override
+  String get illPackLoversLabel => 'For memory lovers';
+
+  @override
+  String get illPackLoversSub => '25 illustrations';
+
+  @override
+  String get illShareFallback => 'A special moment, illustrated.';
 }

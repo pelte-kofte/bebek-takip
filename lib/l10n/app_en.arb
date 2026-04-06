@@ -2036,6 +2036,127 @@
   },
   "@noMedicationHistory": {
     "description": "UI text"
-  }
+  },
+
+  "close": "Close",
+  "remove": "Remove",
+  "maybeLater": "Maybe later",
+  "genericErrorRetry": "Something went wrong. Please try again.",
+  "babyFallbackName": "Baby",
+
+  "todayBadge": "TODAY",
+
+  "spTitle": "Shared Parenting",
+  "spInviteDesc": "Invite another parent to follow the same baby journey together.",
+  "spEmailLabel": "Email address",
+  "spEmailHint": "partner@example.com",
+  "spEnterEmail": "Please enter an email address.",
+  "spNoActiveBaby": "No active baby selected.",
+  "spInvitePendingFor": "Invitation already pending for {email}.",
+  "@spInvitePendingFor": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "spInviteSentTo": "Invitation sent to {email}.",
+  "@spInviteSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "spPremiumRequired": "You need a premium subscription to invite co-parents.",
+  "spBabyNotFound": "Baby not found. Please try again.",
+  "spInvalidEmail": "Please enter a valid email address.",
+  "spReceived": "Received",
+  "spSentLabel": "Sent",
+  "spInviteParentBtn": "Invite Parent",
+  "spCoparents": "Co-parents",
+  "spRemoveDialog": "Remove co-parent?",
+  "spRemoveContent": "{name} will lose access to this baby immediately.",
+  "@spRemoveContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "spCouldNotRemove": "Could not remove member. Please try again.",
+  "spCoparent": "Co-parent",
+  "spGateTitle": "Share your baby's journey together",
+  "spGateBullet1": "Invite another parent",
+  "spGateBullet2": "Stay in sync on the same baby",
+  "spGateBullet3": "Keep updates shared in one place",
+  "spUnlockPremium": "Unlock with Premium",
+
+  "invInboxTitle": "Received Invitations",
+  "invAcceptedMsg": "Invitation accepted.",
+  "invDeclinedMsg": "Invitation declined.",
+  "invNotFound": "Invitation not found.",
+  "invExpired": "This invitation has expired.",
+  "invNotForYou": "This invitation is not addressed to you.",
+  "invNoLongerPending": "This invitation is no longer pending.",
+  "invLoadError": "Could not load invitations. Please try again.",
+  "invNoneReceived": "No invitations received",
+  "invFromLabel": "from {name}",
+  "@invFromLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "invStatusAccepted": "Accepted",
+  "invStatusDeclined": "Declined",
+  "invAcceptBtn": "Accept",
+  "invDeclineBtn": "Decline",
+
+  "sentInvTitle": "Sent Invitations",
+  "sentInvCancelError": "Could not cancel invitation. Please try again.",
+  "sentInvStatusPending": "Pending",
+  "sentInvStatusAccepted": "Accepted",
+  "sentInvStatusDeclined": "Declined",
+  "sentInvLoadError": "Could not load sent invitations.",
+  "sentInvNone": "No invitations sent yet",
+  "sentInvExpires": "Expires {date}",
+  "@sentInvExpires": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+
+  "premiumSignInRequired": "Please sign in to use premium features.",
+  "premiumIsActive": "Premium is active.",
+  "premiumActiveDesc": "You have full access to memory illustrations\nand all premium features.",
+  "premiumManageSubscription": "Manage Subscription",
+  "premiumRestorePurchases": "Restore Purchases",
+  "premiumNoPurchasesFound": "No previous purchases found.",
+  "premiumRestoreFailed": "Restore failed. Please try again.",
+
+  "illMemoryFeelsSpecial": "This memory feels special.",
+  "illTurnMemoriesIntoArt": "Turn memories into art",
+  "illPremiumDesc": "Turn it into a soft illustration and keep it forever.\nSome memories deserve to be felt again.",
+  "illFreeDesc": "Transform your baby's photos into beautiful soft illustrations.\nAvailable with Premium.",
+  "illCreateBtn": "Create Illustration",
+  "illUpgradePremium": "Upgrade to Premium",
+  "illCreatingTitle": "Creating your illustration\u2026",
+  "illCreatingDesc": "This usually takes about a minute.\nWe\u2019ll show it right here when it\u2019s ready.",
+  "illDismiss": "Dismiss \u2014 I\u2019ll check back later",
+  "illReadyTitle": "Your illustration is ready.",
+  "illReadySubtitle": "A soft memory, kept forever.",
+  "illShareFamily": "Share with family",
+  "illSomethingWrong": "Something went wrong.",
+  "illOwnerOnlyTitle": "Illustrations are owner-only",
+  "illOwnerOnlyDesc": "Illustration generation is only available to the baby owner. Ask the owner to create one.",
+  "illGotIt": "Got it",
+  "illUploadingPhoto": "Your photo is still uploading. Please try again in a moment.",
+  "illTimeoutError": "This photo took too long to generate.\nYour credit has been refunded \u2014 please try again.",
+  "illConnectionError": "Could not connect to the illustration service. Please try again later.",
+  "illPurchaseError": "Purchase could not be completed. Please try again.",
+  "illOutOfTitle": "You\u2019re out of illustrations",
+  "illOutOfDesc": "Turn your memories into beautiful artwork.",
+  "illPackQuickLabel": "Quick pack",
+  "illPackQuickSub": "3 illustrations",
+  "illPackBestLabel": "Best value",
+  "illPackBestSub": "10 illustrations",
+  "illPackMostPopular": "Most popular",
+  "illPackLoversLabel": "For memory lovers",
+  "illPackLoversSub": "25 illustrations",
+  "illShareFallback": "A special moment, illustrated."
 }
 

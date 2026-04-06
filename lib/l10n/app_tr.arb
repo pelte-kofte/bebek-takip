@@ -1937,7 +1937,128 @@
   },
   "@noMedicationHistory": {
     "description": "UI text"
-  }
+  },
+
+  "close": "Kapat",
+  "remove": "Kaldır",
+  "maybeLater": "Belki sonra",
+  "genericErrorRetry": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+  "babyFallbackName": "Bebek",
+
+  "todayBadge": "BUGÜN",
+
+  "spTitle": "Ortak Ebeveynlik",
+  "spInviteDesc": "Başka bir ebeveyni aynı bebek yolculuğunu birlikte takip etmek için davet et.",
+  "spEmailLabel": "E-posta adresi",
+  "spEmailHint": "partner@ornek.com",
+  "spEnterEmail": "Lütfen bir e-posta adresi girin.",
+  "spNoActiveBaby": "Aktif bebek seçilmedi.",
+  "spInvitePendingFor": "{email} için davet zaten beklemede.",
+  "@spInvitePendingFor": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "spInviteSentTo": "{email} adresine davet gönderildi.",
+  "@spInviteSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "spPremiumRequired": "Ortak ebeveyn davet etmek için premium abonelik gereklidir.",
+  "spBabyNotFound": "Bebek bulunamadı. Lütfen tekrar deneyin.",
+  "spInvalidEmail": "Lütfen geçerli bir e-posta adresi girin.",
+  "spReceived": "Alınan",
+  "spSentLabel": "Gönderilen",
+  "spInviteParentBtn": "Ebeveyn Davet Et",
+  "spCoparents": "Ortak Ebeveynler",
+  "spRemoveDialog": "Ortak ebeveyn kaldırılsın mı?",
+  "spRemoveContent": "{name} bu bebeğe erişimini hemen kaybedecek.",
+  "@spRemoveContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "spCouldNotRemove": "Üye kaldırılamadı. Lütfen tekrar deneyin.",
+  "spCoparent": "Ortak Ebeveyn",
+  "spGateTitle": "Bebeğinizin yolculuğunu birlikte paylaşın",
+  "spGateBullet1": "Başka bir ebeveyn davet edin",
+  "spGateBullet2": "Aynı bebek için senkronize kalın",
+  "spGateBullet3": "Güncellemeleri tek yerde paylaşın",
+  "spUnlockPremium": "Premium ile Aç",
+
+  "invInboxTitle": "Alınan Davetler",
+  "invAcceptedMsg": "Davet kabul edildi.",
+  "invDeclinedMsg": "Davet reddedildi.",
+  "invNotFound": "Davet bulunamadı.",
+  "invExpired": "Bu davetin süresi dolmuş.",
+  "invNotForYou": "Bu davet size ait değil.",
+  "invNoLongerPending": "Bu davet artık beklemede değil.",
+  "invLoadError": "Davetler yüklenemedi. Lütfen tekrar deneyin.",
+  "invNoneReceived": "Alınan davet yok",
+  "invFromLabel": "{name} tarafından",
+  "@invFromLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "invStatusAccepted": "Kabul Edildi",
+  "invStatusDeclined": "Reddedildi",
+  "invAcceptBtn": "Kabul Et",
+  "invDeclineBtn": "Reddet",
+
+  "sentInvTitle": "Gönderilen Davetler",
+  "sentInvCancelError": "Davet iptal edilemedi. Lütfen tekrar deneyin.",
+  "sentInvStatusPending": "Beklemede",
+  "sentInvStatusAccepted": "Kabul Edildi",
+  "sentInvStatusDeclined": "Reddedildi",
+  "sentInvLoadError": "Gönderilen davetler yüklenemedi.",
+  "sentInvNone": "Henüz davet gönderilmedi",
+  "sentInvExpires": "Son tarih: {date}",
+  "@sentInvExpires": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+
+  "premiumSignInRequired": "Premium özellikleri kullanmak için giriş yapın.",
+  "premiumIsActive": "Premium aktif.",
+  "premiumActiveDesc": "Anı illüstrasyonlarına ve tüm premium özelliklere tam erişiminiz var.",
+  "premiumManageSubscription": "Aboneliği Yönet",
+  "premiumRestorePurchases": "Satın Almaları Geri Yükle",
+  "premiumNoPurchasesFound": "Önceki satın alma bulunamadı.",
+  "premiumRestoreFailed": "Geri yükleme başarısız. Lütfen tekrar deneyin.",
+
+  "illMemoryFeelsSpecial": "Bu anı özel hissettiriyor.",
+  "illTurnMemoriesIntoArt": "Anılarınızı sanata dönüştürün",
+  "illPremiumDesc": "Yumuşak bir illüstrasyona dönüştürün ve sonsuza dek saklayın.\nBazı anılar yeniden hissedilmeyi hak eder.",
+  "illFreeDesc": "Bebeğinizin fotoğraflarını güzel yumuşak illüstrasyonlara dönüştürün.\nPremium ile kullanılabilir.",
+  "illCreateBtn": "İllüstrasyon Oluştur",
+  "illUpgradePremium": "Premium'a Yükselt",
+  "illCreatingTitle": "İllüstrasyonunuz oluşturuluyor\u2026",
+  "illCreatingDesc": "Bu genellikle yaklaşık bir dakika sürer.\nHazır olduğunda burada göstereceğiz.",
+  "illDismiss": "Kapat \u2014 Daha sonra kontrol ederim",
+  "illReadyTitle": "İllüstrasyonunuz hazır.",
+  "illReadySubtitle": "Yumuşak bir anı, sonsuza dek saklı.",
+  "illShareFamily": "Aileyle paylaş",
+  "illSomethingWrong": "Bir şeyler ters gitti.",
+  "illOwnerOnlyTitle": "İllüstrasyonlar yalnızca sahip için",
+  "illOwnerOnlyDesc": "İllüstrasyon oluşturma yalnızca bebek sahibine özeldir. Oluşturması için sahibine danışın.",
+  "illGotIt": "Anladım",
+  "illUploadingPhoto": "Fotoğrafınız hâlâ yükleniyor. Lütfen biraz sonra tekrar deneyin.",
+  "illTimeoutError": "Bu fotoğrafın oluşturulması çok uzun sürdü.\nKrediniz iade edildi \u2014 lütfen tekrar deneyin.",
+  "illConnectionError": "İllüstrasyon servisine bağlanılamadı. Lütfen daha sonra tekrar deneyin.",
+  "illPurchaseError": "Satın alma tamamlanamadı. Lütfen tekrar deneyin.",
+  "illOutOfTitle": "İllüstrasyon hakkınız bitti",
+  "illOutOfDesc": "Anılarınızı güzel eserlere dönüştürün.",
+  "illPackQuickLabel": "Hızlı paket",
+  "illPackQuickSub": "3 illüstrasyon",
+  "illPackBestLabel": "En iyi fiyat",
+  "illPackBestSub": "10 illüstrasyon",
+  "illPackMostPopular": "En çok tercih edilen",
+  "illPackLoversLabel": "Anı severler için",
+  "illPackLoversSub": "25 illüstrasyon",
+  "illShareFallback": "Özel bir an, illüstre edildi."
 }
 
 

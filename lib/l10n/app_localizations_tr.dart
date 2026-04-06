@@ -1726,4 +1726,296 @@ class AppLocalizationsTr extends AppLocalizations {
   String lastGivenLabel(String value) {
     return 'Son veriliş: $value';
   }
+
+  @override
+  String get close => 'Kapat';
+
+  @override
+  String get remove => 'Kaldır';
+
+  @override
+  String get maybeLater => 'Belki sonra';
+
+  @override
+  String get genericErrorRetry =>
+      'Bir şeyler ters gitti. Lütfen tekrar deneyin.';
+
+  @override
+  String get babyFallbackName => 'Bebek';
+
+  @override
+  String get todayBadge => 'BUGÜN';
+
+  @override
+  String get spTitle => 'Ortak Ebeveynlik';
+
+  @override
+  String get spInviteDesc =>
+      'Başka bir ebeveyni aynı bebek yolculuğunu birlikte takip etmek için davet et.';
+
+  @override
+  String get spEmailLabel => 'E-posta adresi';
+
+  @override
+  String get spEmailHint => 'partner@ornek.com';
+
+  @override
+  String get spEnterEmail => 'Lütfen bir e-posta adresi girin.';
+
+  @override
+  String get spNoActiveBaby => 'Aktif bebek seçilmedi.';
+
+  @override
+  String spInvitePendingFor(String email) {
+    return '$email için davet zaten beklemede.';
+  }
+
+  @override
+  String spInviteSentTo(String email) {
+    return '$email adresine davet gönderildi.';
+  }
+
+  @override
+  String get spPremiumRequired =>
+      'Ortak ebeveyn davet etmek için premium abonelik gereklidir.';
+
+  @override
+  String get spBabyNotFound => 'Bebek bulunamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get spInvalidEmail => 'Lütfen geçerli bir e-posta adresi girin.';
+
+  @override
+  String get spReceived => 'Alınan';
+
+  @override
+  String get spSentLabel => 'Gönderilen';
+
+  @override
+  String get spInviteParentBtn => 'Ebeveyn Davet Et';
+
+  @override
+  String get spCoparents => 'Ortak Ebeveynler';
+
+  @override
+  String get spRemoveDialog => 'Ortak ebeveyn kaldırılsın mı?';
+
+  @override
+  String spRemoveContent(String name) {
+    return '$name bu bebeğe erişimini hemen kaybedecek.';
+  }
+
+  @override
+  String get spCouldNotRemove => 'Üye kaldırılamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get spCoparent => 'Ortak Ebeveyn';
+
+  @override
+  String get spGateTitle => 'Bebeğinizin yolculuğunu birlikte paylaşın';
+
+  @override
+  String get spGateBullet1 => 'Başka bir ebeveyn davet edin';
+
+  @override
+  String get spGateBullet2 => 'Aynı bebek için senkronize kalın';
+
+  @override
+  String get spGateBullet3 => 'Güncellemeleri tek yerde paylaşın';
+
+  @override
+  String get spUnlockPremium => 'Premium ile Aç';
+
+  @override
+  String get invInboxTitle => 'Alınan Davetler';
+
+  @override
+  String get invAcceptedMsg => 'Davet kabul edildi.';
+
+  @override
+  String get invDeclinedMsg => 'Davet reddedildi.';
+
+  @override
+  String get invNotFound => 'Davet bulunamadı.';
+
+  @override
+  String get invExpired => 'Bu davetin süresi dolmuş.';
+
+  @override
+  String get invNotForYou => 'Bu davet size ait değil.';
+
+  @override
+  String get invNoLongerPending => 'Bu davet artık beklemede değil.';
+
+  @override
+  String get invLoadError => 'Davetler yüklenemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get invNoneReceived => 'Alınan davet yok';
+
+  @override
+  String invFromLabel(String name) {
+    return '$name tarafından';
+  }
+
+  @override
+  String get invStatusAccepted => 'Kabul Edildi';
+
+  @override
+  String get invStatusDeclined => 'Reddedildi';
+
+  @override
+  String get invAcceptBtn => 'Kabul Et';
+
+  @override
+  String get invDeclineBtn => 'Reddet';
+
+  @override
+  String get sentInvTitle => 'Gönderilen Davetler';
+
+  @override
+  String get sentInvCancelError =>
+      'Davet iptal edilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get sentInvStatusPending => 'Beklemede';
+
+  @override
+  String get sentInvStatusAccepted => 'Kabul Edildi';
+
+  @override
+  String get sentInvStatusDeclined => 'Reddedildi';
+
+  @override
+  String get sentInvLoadError => 'Gönderilen davetler yüklenemedi.';
+
+  @override
+  String get sentInvNone => 'Henüz davet gönderilmedi';
+
+  @override
+  String sentInvExpires(String date) {
+    return 'Son tarih: $date';
+  }
+
+  @override
+  String get premiumSignInRequired =>
+      'Premium özellikleri kullanmak için giriş yapın.';
+
+  @override
+  String get premiumIsActive => 'Premium aktif.';
+
+  @override
+  String get premiumActiveDesc =>
+      'Anı illüstrasyonlarına ve tüm premium özelliklere tam erişiminiz var.';
+
+  @override
+  String get premiumManageSubscription => 'Aboneliği Yönet';
+
+  @override
+  String get premiumRestorePurchases => 'Satın Almaları Geri Yükle';
+
+  @override
+  String get premiumNoPurchasesFound => 'Önceki satın alma bulunamadı.';
+
+  @override
+  String get premiumRestoreFailed =>
+      'Geri yükleme başarısız. Lütfen tekrar deneyin.';
+
+  @override
+  String get illMemoryFeelsSpecial => 'Bu anı özel hissettiriyor.';
+
+  @override
+  String get illTurnMemoriesIntoArt => 'Anılarınızı sanata dönüştürün';
+
+  @override
+  String get illPremiumDesc =>
+      'Yumuşak bir illüstrasyona dönüştürün ve sonsuza dek saklayın.\nBazı anılar yeniden hissedilmeyi hak eder.';
+
+  @override
+  String get illFreeDesc =>
+      'Bebeğinizin fotoğraflarını güzel yumuşak illüstrasyonlara dönüştürün.\nPremium ile kullanılabilir.';
+
+  @override
+  String get illCreateBtn => 'İllüstrasyon Oluştur';
+
+  @override
+  String get illUpgradePremium => 'Premium\'a Yükselt';
+
+  @override
+  String get illCreatingTitle => 'İllüstrasyonunuz oluşturuluyor…';
+
+  @override
+  String get illCreatingDesc =>
+      'Bu genellikle yaklaşık bir dakika sürer.\nHazır olduğunda burada göstereceğiz.';
+
+  @override
+  String get illDismiss => 'Kapat — Daha sonra kontrol ederim';
+
+  @override
+  String get illReadyTitle => 'İllüstrasyonunuz hazır.';
+
+  @override
+  String get illReadySubtitle => 'Yumuşak bir anı, sonsuza dek saklı.';
+
+  @override
+  String get illShareFamily => 'Aileyle paylaş';
+
+  @override
+  String get illSomethingWrong => 'Bir şeyler ters gitti.';
+
+  @override
+  String get illOwnerOnlyTitle => 'İllüstrasyonlar yalnızca sahip için';
+
+  @override
+  String get illOwnerOnlyDesc =>
+      'İllüstrasyon oluşturma yalnızca bebek sahibine özeldir. Oluşturması için sahibine danışın.';
+
+  @override
+  String get illGotIt => 'Anladım';
+
+  @override
+  String get illUploadingPhoto =>
+      'Fotoğrafınız hâlâ yükleniyor. Lütfen biraz sonra tekrar deneyin.';
+
+  @override
+  String get illTimeoutError =>
+      'Bu fotoğrafın oluşturulması çok uzun sürdü.\nKrediniz iade edildi — lütfen tekrar deneyin.';
+
+  @override
+  String get illConnectionError =>
+      'İllüstrasyon servisine bağlanılamadı. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get illPurchaseError =>
+      'Satın alma tamamlanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get illOutOfTitle => 'İllüstrasyon hakkınız bitti';
+
+  @override
+  String get illOutOfDesc => 'Anılarınızı güzel eserlere dönüştürün.';
+
+  @override
+  String get illPackQuickLabel => 'Hızlı paket';
+
+  @override
+  String get illPackQuickSub => '3 illüstrasyon';
+
+  @override
+  String get illPackBestLabel => 'En iyi fiyat';
+
+  @override
+  String get illPackBestSub => '10 illüstrasyon';
+
+  @override
+  String get illPackMostPopular => 'En çok tercih edilen';
+
+  @override
+  String get illPackLoversLabel => 'Anı severler için';
+
+  @override
+  String get illPackLoversSub => '25 illüstrasyon';
+
+  @override
+  String get illShareFallback => 'Özel bir an, illüstre edildi.';
 }

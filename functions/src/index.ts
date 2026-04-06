@@ -14,3 +14,4 @@ export {
   syncPremiumStatus,
 } from "./invitations.js";
 export {syncPremiumFromAdaptyWebhook} from "./premiumWebhook.js";
+export {notifySharedActivity} from "./activityNotifications.js";

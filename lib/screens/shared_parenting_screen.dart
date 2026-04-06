@@ -3,6 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import 'invitation_inbox_screen.dart';
 import 'login_entry_screen.dart';
@@ -70,15 +71,16 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      setState(() => _errorMessage = 'Please enter an email address.');
+      setState(() => _errorMessage = l10n.spEnterEmail);
       return;
     }
 
     final baby = VeriYonetici.getActiveBabyOrNull();
     if (baby == null) {
-      setState(() => _errorMessage = 'No active baby selected.');
+      setState(() => _errorMessage = l10n.spNoActiveBaby);
       return;
     }
 
@@ -95,42 +97,45 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
       );
       if (!mounted) return;
       _emailController.clear();
+      final l10nAfter = AppLocalizations.of(context)!;
       setState(() {
         _successMessage = result.existingInvitation
-            ? 'Invitation already pending for $email.'
-            : 'Invitation sent to $email.';
+            ? l10nAfter.spInvitePendingFor(email)
+            : l10nAfter.spInviteSentTo(email);
         _loading = false;
       });
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
+      final l10nErr = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = _friendlyError(e.code);
+        _errorMessage = _friendlyError(e.code, l10nErr);
         _loading = false;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Something went wrong. Please try again.';
+        _errorMessage = AppLocalizations.of(context)!.genericErrorRetry;
         _loading = false;
       });
     }
   }
 
-  String _friendlyError(String code) {
+  String _friendlyError(String code, AppLocalizations l10n) {
     switch (code) {
       case 'permission-denied':
-        return 'You need a premium subscription to invite co-parents.';
+        return l10n.spPremiumRequired;
       case 'not-found':
-        return 'Baby not found. Please try again.';
+        return l10n.spBabyNotFound;
       case 'invalid-argument':
-        return 'Please enter a valid email address.';
+        return l10n.spInvalidEmail;
       default:
-        return 'Something went wrong. Please try again.';
+        return l10n.genericErrorRetry;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final baby = VeriYonetici.getActiveBabyOrNull();
 
     return Scaffold(
@@ -142,8 +147,8 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF4A3E39)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Shared Parenting',
+        title: Text(
+          l10n.spTitle,
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
@@ -191,9 +196,9 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
               ],
 
               // Description
-              const Text(
-                'Invite another parent to follow the same baby journey together.',
-                style: TextStyle(
+              Text(
+                l10n.spInviteDesc,
+                style: const TextStyle(
                   fontSize: 15,
                   color: Color(0xFF8A7C75),
                   height: 1.5,
@@ -211,7 +216,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                 children: [
                   Expanded(
                     child: _NavButton(
-                      label: 'Received',
+                      label: l10n.spReceived,
                       icon: Icons.inbox_rounded,
                       onTap: () => Navigator.push(
                         context,
@@ -224,7 +229,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _NavButton(
-                      label: 'Sent',
+                      label: l10n.spSentLabel,
                       icon: Icons.send_rounded,
                       onTap: () => Navigator.push(
                         context,
@@ -240,9 +245,9 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
               const SizedBox(height: 28),
 
               // Invite form
-              const Text(
-                'Email address',
-                style: TextStyle(
+              Text(
+                l10n.spEmailLabel,
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF4A3E39),
@@ -256,7 +261,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                 textInputAction: TextInputAction.done,
                 onSubmitted: (_) => _sendInvite(),
                 decoration: InputDecoration(
-                  hintText: 'partner@example.com',
+                  hintText: l10n.spEmailHint,
                   hintStyle: const TextStyle(color: Color(0xFFBDB5B0)),
                   filled: true,
                   fillColor: Colors.white,
@@ -321,9 +326,9 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text(
-                                'Invite Parent',
-                                style: TextStyle(
+                            : Text(
+                                l10n.spInviteParentBtn,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -356,6 +361,51 @@ class _MembersSection extends StatefulWidget {
 class _MembersSectionState extends State<_MembersSection> {
   // Tracks which memberUid is currently being removed (shows inline spinner).
   String? _removingUid;
+
+  // Cache of uid → human-readable label fetched from users/{uid}.
+  // Populated lazily for members whose entry predates the displayName/email stamp.
+  final Map<String, String> _profileLabelCache = {};
+
+  /// Returns the best available label for a member in priority order:
+  ///   1. displayName from the members map (stored on accept since latest backend)
+  ///   2. email from the members map
+  ///   3. cached Firestore profile lookup (for pre-existing members)
+  ///   4. "Co-parent" fallback
+  String _labelFor(String uid, Map<String, dynamic>? info, AppLocalizations l10n) {
+    final displayName = (info?['displayName'] as String?)?.trim() ?? '';
+    if (displayName.isNotEmpty) return displayName;
+    final email = (info?['email'] as String?)?.trim() ?? '';
+    if (email.isNotEmpty) return email;
+    return _profileLabelCache[uid] ?? l10n.spCoparent;
+  }
+
+  /// Fetches users/{uid} from Firestore for any UID not already in the cache
+  /// and updates state so the UI re-renders with the resolved label.
+  Future<void> _fetchMissingLabels(Set<String> uids) async {
+    final missing = uids.where((u) => !_profileLabelCache.containsKey(u)).toList();
+    if (missing.isEmpty) return;
+    for (final uid in missing) {
+      try {
+        final snap = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .get();
+        final data = snap.data();
+        final name = (data?['displayName'] as String?)?.trim() ?? '';
+        final email = (data?['email'] as String?)?.trim() ?? '';
+        final label = name.isNotEmpty
+            ? name
+            : email.isNotEmpty
+                ? email
+                : 'Co-parent';
+        if (mounted) {
+          setState(() => _profileLabelCache[uid] = label);
+        }
+      } catch (_) {
+        // Best-effort — fallback label is already shown.
+      }
+    }
+  }
 
   Future<void> _confirmAndRemove(
     String memberUid,
@@ -431,6 +481,7 @@ class _MembersSectionState extends State<_MembersSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
     // StreamBuilder keeps the list live — removing a member auto-refreshes.
@@ -457,14 +508,30 @@ class _MembersSectionState extends State<_MembersSection> {
         members.remove(currentUid);
         if (members.isEmpty) return const SizedBox.shrink();
 
+        // Lazily resolve human-readable labels for members whose entry
+        // predates the displayName/email stamp (joined before latest deploy).
+        final uidsNeedingFetch = members.keys
+            .where((uid) {
+              final info = members[uid] as Map<String, dynamic>?;
+              final hasName =
+                  (info?['displayName'] as String?)?.trim().isNotEmpty == true;
+              final hasEmail =
+                  (info?['email'] as String?)?.trim().isNotEmpty == true;
+              return !hasName && !hasEmail;
+            })
+            .toSet();
+        if (uidsNeedingFetch.isNotEmpty) {
+          _fetchMissingLabels(uidsNeedingFetch);
+        }
+
         final isOwner = snap.data?.data()?['ownerId'] == currentUid;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Co-parents',
-              style: TextStyle(
+            Text(
+              l10n.spCoparents,
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: Color(0xFF4A3E39),
@@ -507,7 +574,7 @@ class _MembersSectionState extends State<_MembersSection> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            memberUid,
+                            _labelFor(memberUid, info, l10n),
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFF4A3E39),
@@ -532,7 +599,7 @@ class _MembersSectionState extends State<_MembersSection> {
                                   ? null
                                   : () => _confirmAndRemove(
                                         memberUid,
-                                        role,
+                                        _labelFor(memberUid, info, l10n),
                                       ),
                               child: const Icon(
                                 Icons.person_remove_rounded,

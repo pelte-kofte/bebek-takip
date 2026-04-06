@@ -18,6 +18,7 @@ import 'services/reminder_service.dart';
 import 'services/locale_service.dart';
 import 'services/sync_manager.dart';
 import 'services/premium_service.dart';
+import 'services/activity_notification_service.dart';
 
 class AppNavigator {
   static final key = GlobalKey<NavigatorState>();
@@ -62,6 +63,7 @@ void main() async {
   }
 
   PremiumService.instance.init().ignore();
+  ActivityNotificationService.instance.init().ignore();
 
   // Initialize timezones once for scheduled reminders
   ReminderService.initializeTimeZonesOnce();

@@ -2,11 +2,32 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/daily_tip.dart';
 import '../models/veri_yonetici.dart';
+import '../services/premium_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
+import 'premium_screen.dart';
 
-class TipsArchiveScreen extends StatelessWidget {
+class TipsArchiveScreen extends StatefulWidget {
   const TipsArchiveScreen({super.key});
+
+  @override
+  State<TipsArchiveScreen> createState() => _TipsArchiveScreenState();
+}
+
+class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Gate: non-premium users cannot browse the archive.
+    // Pop immediately and show paywall so the back-stack is clean.
+    if (!PremiumService.instance.isPremium) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        Navigator.of(context).pop();
+        await PremiumScreen.show(context);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +219,7 @@ class TipsArchiveScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Text(
-                                          'BUGÜN',
+                                          l10n.todayBadge,
                                           style: TextStyle(
                                             fontSize: 9,
                                             fontWeight: FontWeight.bold,

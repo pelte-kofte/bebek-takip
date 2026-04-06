@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../l10n/app_localizations.dart';
 import 'login_entry_screen.dart';
 import '../services/premium_service.dart';
 
@@ -19,9 +20,10 @@ class PremiumScreen extends StatefulWidget {
     final requiresSignIn = user == null || user.isAnonymous;
     if (requiresSignIn) {
       if (context.mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please sign in to use premium features.'),
+          SnackBar(
+            content: Text(l10n.premiumSignInRequired),
           ),
         );
         await Navigator.of(context).push<void>(
@@ -75,18 +77,20 @@ class _PremiumScreenState extends State<PremiumScreen> {
     try {
       final restored = await PremiumService.instance.restorePurchases();
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       if (!restored) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('No previous purchases found.'),
-            duration: Duration(seconds: 3),
+          SnackBar(
+            content: Text(l10n.premiumNoPurchasesFound),
+            duration: const Duration(seconds: 3),
           ),
         );
       }
     } catch (_) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Restore failed. Please try again.')),
+          SnackBar(content: Text(l10n.premiumRestoreFailed)),
         );
       }
     } finally {
@@ -96,6 +100,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBF5),
       body: SafeArea(
@@ -143,7 +148,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     ),
                     const SizedBox(height: 28),
                     Text(
-                      'Premium is active.',
+                      l10n.premiumIsActive,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.quicksand(
                         fontSize: 28,
@@ -155,8 +160,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'You have full access to memory illustrations\n'
-                      'and all premium features.',
+                      l10n.premiumActiveDesc,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.quicksand(
                         fontSize: 15,
@@ -188,7 +192,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                         ),
                       ),
                       child: Text(
-                        'Manage Subscription',
+                        l10n.premiumManageSubscription,
                         style: GoogleFonts.quicksand(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
@@ -213,7 +217,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
                       : TextButton(
                           onPressed: _onRestorePurchases,
                           child: Text(
-                            'Restore Purchases',
+                            l10n.premiumRestorePurchases,
                             style: GoogleFonts.quicksand(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,

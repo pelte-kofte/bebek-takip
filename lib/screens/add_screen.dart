@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart'
 import 'package:flutter/services.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
+import '../services/activity_notification_service.dart';
 import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/event_datetime_utils.dart';
@@ -2544,6 +2545,7 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
+        _reportActivity('feeding');
       }, afterClose: _scheduleFeedingReminderIfEnabled);
       return;
     }
@@ -2577,6 +2579,7 @@ class _AddScreenState extends State<AddScreen> {
         }
 
         await VeriYonetici.saveMamaKayitlari(kayitlar);
+        _reportActivity('feeding');
       }, afterClose: _scheduleFeedingReminderIfEnabled);
       return;
     }
@@ -2601,6 +2604,7 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveUykuKayitlari(kayitlar);
+        _reportActivity('sleep');
       });
       return;
     }
@@ -2619,8 +2623,21 @@ class _AddScreenState extends State<AddScreen> {
         });
 
         await VeriYonetici.saveKakaKayitlari(kayitlar);
+        _reportActivity('diaper');
       }, afterClose: _scheduleDiaperReminderIfEnabled);
     }
+  }
+
+  /// Fire-and-forget co-parent notification. Never throws — failures are
+  /// logged silently so a notification hiccup never blocks a save.
+  void _reportActivity(String activityType) {
+    final babyId = VeriYonetici.getActiveBabyId();
+    final babyName = VeriYonetici.getActiveBabyOrNull()?.name ?? '';
+    ActivityNotificationService.instance.reportActivity(
+      babyId: babyId,
+      activityType: activityType,
+      babyName: babyName,
+    ).ignore();
   }
 
   String _calculateSleepDuration() {
