@@ -725,5 +725,36 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "sharedBadge": "Общий",
+  "notificationsDisabled": "Уведомления отключены",
+  "permissionDenied": "Разрешение отклонено",
+  "reminderScheduled": "Напоминание установлено",
+  "signInToUseSharedParenting": "Войдите, чтобы использовать совместное воспитание.",
+  "babyCouldNotBeDeleted": "Не удалось удалить ребёнка.",
+  "coParentLoggedActivity": "Родитель зафиксировал активность.",
+  "sharedBabyUpdateTitle": "Обновление общего ребёнка",
+  "allergiesTitle": "Аллергии",
+  "addAllergy": "Добавить аллергию",
+  "allergyName": "Название аллергена",
+  "allergyNote": "Заметка (необязательно)",
+  "noAllergies": "Аллергии не записаны",
+  "deleteAllergy": "Удалить аллергию",
+  "allergyAdded": "Аллергия добавлена",
+
+  "memoriesFilterAll": "Все",
+  "memoriesFilterPhotos": "Фото",
+  "memoriesFilterIllustrated": "С иллюстрацией",
+  "memoriesEmptyFilter": "Нет воспоминаний по этому фильтру",
+  "illBadgeReady": "Иллюстрировано",
+  "illBadgeGenerating": "Создаётся\u2026",
+
+  "illTurnIntoIllustration": "Создать иллюстрацию",
+  "turnIntoIllustration": "Создать иллюстрацию",
+  "illNilicoStyle": "Стиль Nilico",
+  "nilicoStyle": "Стиль Nilico",
+  "illLofiIllustration": "Lo-Fi иллюстрация",
+  "lofiIllustration": "Lo-Fi иллюстрация",
+  "vazgec": "Отмена"
 }

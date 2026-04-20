@@ -1863,6 +1863,73 @@ class AppLocalizationsEs extends AppLocalizations {
   String get spUnlockPremium => 'Unlock with Premium';
 
   @override
+  String get spJoinWithCodeTitle => 'Join with code';
+
+  @override
+  String get spInviteCodeHint => 'Enter invite code';
+
+  @override
+  String get spJoinWithCodeBtn => 'Join Baby';
+
+  @override
+  String get spEnterInviteCode => 'Please enter an invite code.';
+
+  @override
+  String get spInviteCodeTitle => 'Invite code';
+
+  @override
+  String get spInviteCodeDesc =>
+      'Create one secure code and share it with the other parent. The code links the baby to their signed-in account.';
+
+  @override
+  String get spCreateInviteCodeBtn => 'Create Invite Code';
+
+  @override
+  String spInviteCodeCreated(String code) {
+    return 'Invite code created: $code';
+  }
+
+  @override
+  String spInviteCodeReady(String code) {
+    return 'Invite code is ready: $code';
+  }
+
+  @override
+  String get spInviteCodeAccepted => 'Baby linked successfully.';
+
+  @override
+  String get spInviteCodeCopied => 'Invite code copied.';
+
+  @override
+  String get spCopyCode => 'Copy';
+
+  @override
+  String get spShareCode => 'Share';
+
+  @override
+  String get spInviteCodeNotFound => 'Invite code not found.';
+
+  @override
+  String get spInviteCodeExpired => 'This invite code has expired.';
+
+  @override
+  String get spInviteCodeUnavailable =>
+      'This invite code is no longer available.';
+
+  @override
+  String get spInviteCodeActive => 'This code is active now.';
+
+  @override
+  String spInviteCodeExpires(String date) {
+    return 'Expires $date';
+  }
+
+  @override
+  String spInviteCodeShareMessage(String babyName, String code) {
+    return 'Join $babyName with this invite code: $code';
+  }
+
+  @override
   String get invInboxTitle => 'Received Invitations';
 
   @override
@@ -2052,4 +2119,173 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get illShareFallback => 'A special moment, illustrated.';
+
+  @override
+  String get memoryStyle => 'Memory style';
+
+  @override
+  String get memoryStyleOriginal => 'Original';
+
+  @override
+  String get memoryStyleClassic => 'Classic Illustration';
+
+  @override
+  String get memoryStyleLofi => 'Lo-Fi Illustration';
+
+  @override
+  String get medicationReminders => 'Medication reminders';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get legalSection => 'Legal';
+
+  @override
+  String get deleteBabyBtn => 'Delete baby';
+
+  @override
+  String get deleteBabySubtitle => 'Remove baby profile and all baby records.';
+
+  @override
+  String get deleteBabyTitle => 'Delete baby?';
+
+  @override
+  String deleteBabyDialogContent(String babyName) {
+    return 'This will remove $babyName and all related records from this device. If you are signed in, it will also delete synced data from your account. This cannot be undone.';
+  }
+
+  @override
+  String get customRange => 'Custom';
+
+  @override
+  String get selectDateRange => 'Select date range';
+
+  @override
+  String get sharedBadge => 'Compartido';
+
+  @override
+  String get notificationsDisabled => 'Notificaciones desactivadas';
+
+  @override
+  String get permissionDenied => 'Permiso denegado';
+
+  @override
+  String get reminderScheduled => 'Recordatorio programado';
+
+  @override
+  String get signInToUseSharedParenting =>
+      'Inicia sesión para usar Parentalidad compartida.';
+
+  @override
+  String get babyCouldNotBeDeleted => 'No se pudo eliminar al bebé.';
+
+  @override
+  String get coParentLoggedActivity => 'Un copadre registró una actividad.';
+
+  @override
+  String get sharedBabyUpdateTitle => 'Actualización de bebé compartido';
+
+  @override
+  String get allergiesTitle => 'Alergias';
+
+  @override
+  String get addAllergy => 'Agregar Alergia';
+
+  @override
+  String get allergySectionSubtitle =>
+      'Keep sensitivities and food reactions together in one calm place.';
+
+  @override
+  String get noAllergiesSummary =>
+      'No allergy notes yet. Add one anytime if something needs attention.';
+
+  @override
+  String get reportAllergy => 'Report allergy';
+
+  @override
+  String get allergySheetSubtitle =>
+      'Add a food, ingredient, or reaction note so it stays visible in the health view.';
+
+  @override
+  String get allergyActive => 'Active';
+
+  @override
+  String get allergyInactive => 'Inactive';
+
+  @override
+  String get healthOverviewTitle => 'Today at a glance';
+
+  @override
+  String get healthOverviewSubtitle =>
+      'A softer snapshot of care, sleep, and daily health details.';
+
+  @override
+  String get vaccineEmptySubtitle =>
+      'Start with the national schedule or add a vaccine manually whenever you need one.';
+
+  @override
+  String get allergyName => 'Nombre del alérgeno';
+
+  @override
+  String get allergyNote => 'Nota (opcional)';
+
+  @override
+  String get noAllergies => 'No hay alergias registradas';
+
+  @override
+  String get deleteAllergy => 'Eliminar alergia';
+
+  @override
+  String get allergyAdded => 'Alergia agregada';
+
+  @override
+  String get memoriesFilterAll => 'Todo';
+
+  @override
+  String get memoriesFilterPhotos => 'Fotos';
+
+  @override
+  String get memoriesFilterIllustrated => 'Ilustradas';
+
+  @override
+  String get memoriesEmptyFilter => 'Ningún recuerdo coincide con este filtro';
+
+  @override
+  String get illBadgeReady => 'Ilustrado';
+
+  @override
+  String get illBadgeGenerating => 'Generando…';
+
+  @override
+  String get illTurnIntoIllustration => 'Convertir en ilustración';
+
+  @override
+  String get illNilicoStyle => 'Estilo Nilico';
+
+  @override
+  String get illLofiIllustration => 'Ilustración Lo-Fi';
+
+  @override
+  String get buyIllustrations => 'Buy Illustrations';
+
+  @override
+  String get buyIllustrationsSubtitle =>
+      'Illustration packs for extra memories';
+
+  @override
+  String get illustrationReady => 'Ready';
+
+  @override
+  String get illustrationGenerating => 'Generating';
+
+  @override
+  String get memoriesEmptyTitle => 'Save your favorite little moments';
+
+  @override
+  String get memoriesEmptySubtitle =>
+      'Photos, notes, and milestones all stay together here.\nYour first memory can be just a tap away.';
+
+  @override
+  String get addFirstMemory => 'Add your first memory';
 }

@@ -164,6 +164,9 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
                 final expiryStr = item.expiresAt != null
                     ? 'Expires ${DateFormat('MMM d').format(item.expiresAt!)}'
                     : null;
+                final destinationLabel = item.inviteType == 'code'
+                    ? (item.inviteCode ?? '')
+                    : (item.inviteeEmail ?? '');
 
                 return Container(
                   padding: const EdgeInsets.all(16),
@@ -202,7 +205,7 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              item.inviteeEmail,
+                              destinationLabel,
                               style: const TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFF8A7C75),

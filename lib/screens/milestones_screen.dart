@@ -1,16 +1,17 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:share_plus/share_plus.dart';
+import '../models/illustration_request.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
+import '../services/illustration_request_service.dart';
 import '../widgets/decorative_background.dart';
 import '../widgets/illustration_upsell_sheet.dart';
-
-// Photo style enum for privacy-friendly sharing
-enum PhotoStyle { original, softIllustration, pastelBlur }
 
 /// Platform-aware image widget that works on both web and mobile
 Widget buildPlatformImage(
@@ -36,6 +37,19 @@ String? resolveMilestonePhotoSource(Map<String, dynamic> milestone) {
   return null;
 }
 
+bool _shouldShowLocalOnlyMemoryPhotoNote() {
+  final user = FirebaseAuth.instance.currentUser;
+  return user == null || user.isAnonymous;
+}
+
+Future<String?> showMemoryIllustrationStyleSheet(BuildContext context) {
+  return showModalBottomSheet<String>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (_) => const _IllustrationStyleChooserSheet(),
+  );
+}
+
 class MilestonesScreen extends StatefulWidget {
   const MilestonesScreen({super.key});
 
@@ -43,9 +57,16 @@ class MilestonesScreen extends StatefulWidget {
   State<MilestonesScreen> createState() => _MilestonesScreenState();
 }
 
+enum _MemoryFilter { all, photos, illustrated }
+
 class _MilestonesScreenState extends State<MilestonesScreen> {
   List<Map<String, dynamic>> _milestones = [];
+  _MemoryFilter _filter = _MemoryFilter.all;
   late final VoidCallback _dataListener;
+  final IllustrationRequestService _illustrationRequestService =
+      IllustrationRequestService();
+  StreamSubscription<List<IllustrationRequest>>? _requestSubscription;
+  Set<String> _generatingMemoryIds = const <String>{};
 
   @override
   void initState() {
@@ -55,11 +76,28 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     };
     VeriYonetici.dataNotifier.addListener(_dataListener);
     _loadMilestones();
+    _requestSubscription = _illustrationRequestService.watchMyRequests().listen((
+      requests,
+    ) {
+      if (!mounted) return;
+      final generatingIds = requests
+          .where(
+            (request) =>
+                request.memoryId.isNotEmpty &&
+                request.resultImageUrl == null &&
+                (request.status == IllustrationRequestStatus.pending ||
+                    request.status == IllustrationRequestStatus.processing),
+          )
+          .map((request) => request.memoryId)
+          .toSet();
+      setState(() => _generatingMemoryIds = generatingIds);
+    });
   }
 
   @override
   void dispose() {
     VeriYonetici.dataNotifier.removeListener(_dataListener);
+    _requestSubscription?.cancel();
     super.dispose();
   }
 
@@ -184,6 +222,127 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     }
   }
 
+  List<Map<String, dynamic>> get _filteredMilestones {
+    switch (_filter) {
+      case _MemoryFilter.all:
+        return _milestones;
+      case _MemoryFilter.photos:
+        return _milestones.where((m) {
+          final p = resolveMilestonePhotoSource(m);
+          return p != null && p.isNotEmpty;
+        }).toList();
+      case _MemoryFilter.illustrated:
+        return _milestones.where((m) {
+          return (m['illustrationUrl'] ?? '').toString().trim().isNotEmpty;
+        }).toList();
+    }
+  }
+
+  Widget _buildFilterBar() {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 2, 24, 0),
+      child: Row(
+        children: [
+          _buildFilterChip(l10n.memoriesFilterAll, _MemoryFilter.all),
+          const SizedBox(width: 8),
+          _buildFilterChip(l10n.memoriesFilterPhotos, _MemoryFilter.photos),
+          const SizedBox(width: 8),
+          _buildFilterChip(
+            l10n.memoriesFilterIllustrated,
+            _MemoryFilter.illustrated,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, _MemoryFilter filter) {
+    final isSelected = _filter == filter;
+    return GestureDetector(
+      onTap: () => setState(() => _filter = filter),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFFFFB4A2).withValues(alpha: 0.14)
+              : Colors.white.withValues(alpha: 0.75),
+          borderRadius: BorderRadius.circular(100),
+          border: Border.all(
+            color: isSelected
+                ? const Color(0xFFFFB4A2)
+                : const Color(0xFFE5E0F7),
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            color: isSelected
+                ? const Color(0xFFFFB4A2)
+                : const Color(0xFF4A3E39).withValues(alpha: 0.6),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIllustrationBadge({
+    required bool isReady,
+    required bool isGenerating,
+    bool onPhoto = false,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    if (!isReady && !isGenerating) return const SizedBox.shrink();
+
+    final bgColor = isReady
+        ? const Color(0xFF9C88CC).withValues(alpha: onPhoto ? 0.85 : 0.13)
+        : const Color(0xFFFFB4A2).withValues(alpha: onPhoto ? 0.85 : 0.13);
+    final borderColor = isReady
+        ? const Color(0xFF9C88CC).withValues(alpha: onPhoto ? 0.0 : 0.3)
+        : const Color(0xFFFFB4A2).withValues(alpha: onPhoto ? 0.0 : 0.3);
+    final textColor = onPhoto
+        ? Colors.white
+        : (isReady ? const Color(0xFF9C88CC) : const Color(0xFFFFB4A2));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(100),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isGenerating)
+            SizedBox(
+              width: 9,
+              height: 9,
+              child: CircularProgressIndicator(
+                strokeWidth: 1.5,
+                color: textColor,
+              ),
+            )
+          else
+            Icon(Icons.auto_awesome_rounded, size: 10, color: textColor),
+          const SizedBox(width: 4),
+          Text(
+            isReady ? l10n.illustrationReady : l10n.illustrationGenerating,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DecorativeBackground(
@@ -201,6 +360,11 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   child: const IllustrationCreditChip(),
                 ),
               ),
+              if (_milestones.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                _buildFilterBar(),
+                const SizedBox(height: 8),
+              ],
               // Content
               Expanded(
                 child: _milestones.isEmpty
@@ -266,7 +430,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             ),
             const SizedBox(height: 28),
             Text(
-              'Every moment is precious',
+              AppLocalizations.of(context)!.memoriesEmptyTitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 20,
@@ -277,7 +441,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'First smile, first steps...\nSave them before they fade',
+              AppLocalizations.of(context)!.memoriesEmptySubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -305,9 +469,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                     ),
                   ],
                 ),
-                child: const Text(
-                  'Add Memory',
-                  style: TextStyle(
+                child: Text(
+                  AppLocalizations.of(context)!.addFirstMemory,
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
@@ -322,13 +486,29 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   Widget _buildMilestonesList() {
+    final filtered = _filteredMilestones;
+    if (filtered.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(48),
+          child: Text(
+            AppLocalizations.of(context)!.memoriesEmptyFilter,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 15,
+              color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
+            ),
+          ),
+        ),
+      );
+    }
     return Stack(
       children: [
-        // Timeline line
+        // Timeline line — anchored to center of the 12px dot (padding=24, halfDot=6)
         Positioned(
-          left: 24 + 24 - 1, // padding + half icon width - half line width
+          left: 29, // 24 padding + 6 half-dot - 1 half-line
           top: 0,
-          bottom: 120, // Space for FAB
+          bottom: 120,
           child: Container(
             width: 2,
             decoration: BoxDecoration(
@@ -343,7 +523,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             ),
           ),
         ),
-        // Milestone cards
+        // Memory cards
         ListView.builder(
           padding: const EdgeInsets.only(
             left: 24,
@@ -351,11 +531,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             top: 8,
             bottom: 120,
           ),
-          itemCount: _milestones.length,
-          itemBuilder: (context, index) {
-            final milestone = _milestones[index];
-            return _buildMilestoneCard(milestone);
-          },
+          itemCount: filtered.length,
+          itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
         ),
       ],
     );
@@ -364,61 +541,46 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
     final photoSource = resolveMilestonePhotoSource(milestone);
     final hasPhoto = photoSource != null && photoSource.isNotEmpty;
+    final illustrationUrl =
+        (milestone['illustrationUrl'] ?? '').toString().trim();
+    final hasIllustration = illustrationUrl.isNotEmpty;
+    final memoryId = (milestone['id'] ?? '').toString();
+    final isGenerating =
+        !hasIllustration &&
+        memoryId.isNotEmpty &&
+        _generatingMemoryIds.contains(memoryId);
+    final note = (milestone['note'] ?? '').toString();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Timeline icon or photo thumbnail
-          GestureDetector(
-            onTap: () => _showMilestoneDetail(milestone),
+          // Timeline dot
+          Padding(
+            padding: const EdgeInsets.only(top: 22),
             child: Container(
-              width: 56,
-              height: 56,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(
-                color: const Color(0xFFE5E0F7),
-                borderRadius: BorderRadius.circular(16),
+                color: const Color(0xFFFFB4A2),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.15),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+                    blurRadius: 4,
                   ),
                 ],
               ),
-              child: hasPhoto
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: buildPlatformImage(
-                        photoSource,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Center(
-                              child: Icon(
-                                Icons.star,
-                                color: Color(0xFFFFB4A2),
-                                size: 28,
-                              ),
-                            ),
-                      ),
-                    )
-                  : const Center(
-                      child: Icon(
-                        Icons.star,
-                        color: Color(0xFFFFB4A2),
-                        size: 28,
-                      ),
-                    ),
             ),
           ),
-          const SizedBox(width: 14),
-          // Card content
+          const SizedBox(width: 16),
+          // Card
           Expanded(
             child: GestureDetector(
               onTap: () => _showMilestoneDetail(milestone),
               child: Container(
-                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(20),
@@ -436,156 +598,197 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                milestone['title'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF4A3E39),
-                                  height: 1.2,
-                                ),
+                    // Photo header (full-width, photo-first)
+                    if (hasPhoto)
+                      Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                            child: SizedBox(
+                              height: 148,
+                              width: double.infinity,
+                              child: buildPlatformImage(
+                                photoSource,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(
+                                      color: const Color(0xFFE5E0F7),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported_outlined,
+                                          color: Color(0xFFFFB4A2),
+                                          size: 32,
+                                        ),
+                                      ),
+                                    ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatDate(milestone['date'] as DateTime),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: const Color(
-                                    0xFF4A3E39,
-                                  ).withValues(alpha: 0.5),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                        // Overflow menu
-                        SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: PopupMenuButton<String>(
-                            icon: Icon(
-                              Icons.more_horiz,
-                              size: 18,
-                              color: const Color(
-                                0xFF4A3E39,
-                              ).withValues(alpha: 0.4),
+                          // Illustration state badge overlaid on photo
+                          if (hasIllustration || isGenerating)
+                            Positioned(
+                              bottom: 10,
+                              left: 12,
+                              child: _buildIllustrationBadge(
+                                isReady: hasIllustration,
+                                isGenerating: isGenerating,
+                                onPhoto: true,
+                              ),
                             ),
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            color: const Color(0xFFFFFBF5),
-                            onSelected: (value) {
-                              switch (value) {
-                                case 'edit':
-                                  _showEditMilestoneSheet(milestone);
-                                case 'share':
-                                  _shareMilestone(milestone);
-                                case 'delete':
-                                  _deleteMilestone(milestone);
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.edit_outlined,
-                                      size: 18,
-                                      color: Color(0xFF4A3E39),
+                        ],
+                      ),
+                    // Content row
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Badge above title when no photo
+                                if (!hasPhoto &&
+                                    (hasIllustration || isGenerating)) ...[
+                                  _buildIllustrationBadge(
+                                    isReady: hasIllustration,
+                                    isGenerating: isGenerating,
+                                  ),
+                                  const SizedBox(height: 6),
+                                ],
+                                Text(
+                                  milestone['title'] ?? '',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF4A3E39),
+                                    height: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  _formatDate(milestone['date'] as DateTime),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: const Color(
+                                      0xFF4A3E39,
+                                    ).withValues(alpha: 0.42),
+                                    letterSpacing: 0.1,
+                                  ),
+                                ),
+                                if (note.isNotEmpty) ...[
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    note,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: const Color(
+                                        0xFF4A3E39,
+                                      ).withValues(alpha: 0.6),
+                                      height: 1.4,
                                     ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      AppLocalizations.of(context)!.edit,
-                                      style: TextStyle(
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          // Overflow menu
+                          SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: PopupMenuButton<String>(
+                              icon: Icon(
+                                Icons.more_horiz,
+                                size: 18,
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.4),
+                              ),
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              color: const Color(0xFFFFFBF5),
+                              onSelected: (value) {
+                                switch (value) {
+                                  case 'edit':
+                                    _showEditMilestoneSheet(milestone);
+                                  case 'share':
+                                    _shareMilestone(milestone);
+                                  case 'delete':
+                                    _deleteMilestone(milestone);
+                                }
+                              },
+                              itemBuilder: (context) => [
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.edit_outlined,
+                                        size: 18,
                                         color: Color(0xFF4A3E39),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        AppLocalizations.of(context)!.edit,
+                                        style: const TextStyle(
+                                          color: Color(0xFF4A3E39),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              PopupMenuItem(
-                                value: 'share',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.share_outlined,
-                                      size: 18,
-                                      color: Color(0xFF4A3E39),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      AppLocalizations.of(context)!.share,
-                                      style: TextStyle(
+                                PopupMenuItem(
+                                  value: 'share',
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.share_outlined,
+                                        size: 18,
                                         color: Color(0xFF4A3E39),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        AppLocalizations.of(context)!.share,
+                                        style: const TextStyle(
+                                          color: Color(0xFF4A3E39),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.delete_outline,
-                                      size: 18,
-                                      color: Color(0xFFFF6B6B),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      AppLocalizations.of(context)!.delete,
-                                      style: TextStyle(
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.delete_outline,
+                                        size: 18,
                                         color: Color(0xFFFF6B6B),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 10),
+                                      Text(
+                                        AppLocalizations.of(context)!.delete,
+                                        style: const TextStyle(
+                                          color: Color(0xFFFF6B6B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    if (milestone['note'] != null &&
-                        (milestone['note'] as String).isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Text(
-                        milestone['note'],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                    if ((milestone['illustrationUrl'] ?? '')
-                        .toString()
-                        .trim()
-                        .isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          milestone['illustrationUrl'] as String,
-                          height: 72,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
@@ -613,8 +816,6 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   final ImagePicker _imagePicker = ImagePicker();
   DateTime _selectedDate = DateTime.now();
   String? _photoPath;
-  final PhotoStyle _photoStyle =
-      PhotoStyle.softIllustration; // Default: soft illustrated
   bool _isSaving = false;
 
   @override
@@ -698,27 +899,17 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
     setState(() => _isSaving = true);
     try {
       final milestones = VeriYonetici.getMilestones();
-      final isFirstMemory = milestones.isEmpty;
       milestones.insert(0, {
         'id': DateTime.now().millisecondsSinceEpoch.toString(),
         'title': _titleController.text,
         'date': _selectedDate,
         'note': _noteController.text,
         'photoPath': _photoPath,
-        'photoStyle': _photoStyle.name,
       });
 
       await VeriYonetici.saveMilestones(milestones);
       if (!mounted) return;
       widget.onSaved();
-
-      if (isFirstMemory && mounted) {
-        final saved = VeriYonetici.getMilestones();
-        await IllustrationUpsellSheet.show(
-          context,
-          saved.isNotEmpty ? saved.first : {},
-        );
-      }
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
@@ -920,50 +1111,19 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        Text(
-                          'Photos are stored only on this device (not synced yet).',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: const Color(
-                              0xFF4A3E39,
-                            ).withValues(alpha: 0.55),
+                        if (_shouldShowLocalOnlyMemoryPhotoNote()) ...[
+                          Text(
+                            'Photos are stored only on this device (not synced yet).',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.55),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Photo style selector (privacy-friendly)
-                        Text(
-                          'Photo style',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: const Color(
-                              0xFF4A3E39,
-                            ).withValues(alpha: 0.6),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            _buildStyleOption(
-                              PhotoStyle.original,
-                              'Original',
-                              Icons.photo,
-                            ),
-                            const SizedBox(width: 8),
-                            _buildStyleOption(
-                              PhotoStyle.softIllustration,
-                              'Soft',
-                              Icons.brush,
-                            ),
-                            const SizedBox(width: 8),
-                            _buildStyleOption(
-                              PhotoStyle.pastelBlur,
-                              'Blur',
-                              Icons.blur_on,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
+                          const SizedBox(height: 24),
+                        ] else
+                          const SizedBox(height: 20),
                         // Memory title
                         Text(
                           'Title',
@@ -1192,56 +1352,6 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
     );
   }
 
-  Widget _buildStyleOption(PhotoStyle style, String label, IconData icon) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Coming soon'),
-              duration: Duration(milliseconds: 1200),
-            ),
-          );
-        },
-        child: Opacity(
-          opacity: 0.55,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                Icon(
-                  icon,
-                  size: 20,
-                  color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
 // Edit Milestone Bottom Sheet
@@ -1674,14 +1784,16 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                         ),
                       ),
                     ),
-                  Text(
-                    'Photos are stored only on this device (not synced yet).',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: const Color(0xFF4A3E39).withValues(alpha: 0.55),
+                  if (_shouldShowLocalOnlyMemoryPhotoNote()) ...[
+                    Text(
+                      'Photos are stored only on this device (not synced yet).',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFF4A3E39).withValues(alpha: 0.55),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                  ],
                   // Title field
                   Text(
                     'Title',
@@ -1849,7 +1961,10 @@ class _SharePreviewSheet extends StatelessWidget {
 
   Future<void> _onIllustrationTap(BuildContext context) async {
     Navigator.pop(context); // close share sheet
-    await IllustrationUpsellSheet.show(context, milestone);
+    final style = await showMemoryIllustrationStyleSheet(context);
+    if (style != null && context.mounted) {
+      await IllustrationUpsellSheet.show(context, milestone, style: style);
+    }
   }
 
   Future<void> _doShare() async {
@@ -2502,6 +2617,13 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
     super.dispose();
   }
 
+  Future<void> _showStyleChooser(BuildContext context) async {
+    final style = await showMemoryIllustrationStyleSheet(context);
+    if (style != null && context.mounted) {
+      await IllustrationUpsellSheet.show(context, _milestone, style: style);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final illustrationUrl = (_milestone['illustrationUrl'] ?? '')
@@ -2585,7 +2707,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
     return Padding(
       padding: const EdgeInsets.only(top: 24),
       child: GestureDetector(
-        onTap: () => IllustrationUpsellSheet.show(context, _milestone),
+        onTap: () => _showStyleChooser(context),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
@@ -2604,7 +2726,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Turn this moment into an illustration',
+                AppLocalizations.of(context)!.illTurnIntoIllustration,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -2613,6 +2735,158 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Style chooser bottom sheet
+// ---------------------------------------------------------------------------
+
+class _IllustrationStyleChooserSheet extends StatelessWidget {
+  const _IllustrationStyleChooserSheet();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFFBF5),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE5E0F7),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Nilico Style option
+            _StyleOption(
+              icon: Icons.auto_fix_high_rounded,
+              iconColor: const Color(0xFFFFB4A2),
+              label: l10n.illNilicoStyle,
+              description: 'Soft children\'s book illustration',
+              onTap: () => Navigator.pop(context, 'default'),
+            ),
+            const Divider(
+              height: 1,
+              indent: 20,
+              endIndent: 20,
+              color: Color(0xFFE5E0F7),
+            ),
+            // Lo-Fi option
+            _StyleOption(
+              icon: Icons.brush_rounded,
+              iconColor: const Color(0xFF9C88CC),
+              label: l10n.illLofiIllustration,
+              description: 'Warm lo-fi anime style',
+              onTap: () => Navigator.pop(context, 'lofi'),
+            ),
+            const SizedBox(height: 8),
+            // Cancel
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(
+                    l10n.cancel,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.65),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StyleOption extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String description;
+  final VoidCallback onTap;
+
+  const _StyleOption({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.description,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4A3E39),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: const Color(0xFF4A3E39).withValues(alpha: 0.3),
+            ),
+          ],
         ),
       ),
     );

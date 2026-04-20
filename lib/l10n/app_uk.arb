@@ -725,5 +725,36 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "sharedBadge": "Спільний",
+  "notificationsDisabled": "Сповіщення вимкнено",
+  "permissionDenied": "Дозвіл відхилено",
+  "reminderScheduled": "Нагадування встановлено",
+  "signInToUseSharedParenting": "Увійдіть, щоб використовувати спільне батьківство.",
+  "babyCouldNotBeDeleted": "Не вдалося видалити дитину.",
+  "coParentLoggedActivity": "Батько зафіксував активність.",
+  "sharedBabyUpdateTitle": "Оновлення спільної дитини",
+  "allergiesTitle": "Алергії",
+  "addAllergy": "Додати алергію",
+  "allergyName": "Назва алергену",
+  "allergyNote": "Нотатка (необов'язково)",
+  "noAllergies": "Алергії не записано",
+  "deleteAllergy": "Видалити алергію",
+  "allergyAdded": "Алергію додано",
+
+  "memoriesFilterAll": "Усі",
+  "memoriesFilterPhotos": "Фото",
+  "memoriesFilterIllustrated": "Ілюстровані",
+  "memoriesEmptyFilter": "Немає спогадів за цим фільтром",
+  "illBadgeReady": "Проілюстровано",
+  "illBadgeGenerating": "Генерується\u2026",
+
+  "illTurnIntoIllustration": "Перетворити на ілюстрацію",
+  "turnIntoIllustration": "Перетворити на ілюстрацію",
+  "illNilicoStyle": "Стиль Nilico",
+  "nilicoStyle": "Стиль Nilico",
+  "illLofiIllustration": "Lo-Fi ілюстрація",
+  "lofiIllustration": "Lo-Fi ілюстрація",
+  "vazgec": "Скасувати"
 }

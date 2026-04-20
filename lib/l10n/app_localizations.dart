@@ -3380,6 +3380,120 @@ abstract class AppLocalizations {
   /// **'Unlock with Premium'**
   String get spUnlockPremium;
 
+  /// No description provided for @spJoinWithCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Join with code'**
+  String get spJoinWithCodeTitle;
+
+  /// No description provided for @spInviteCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter invite code'**
+  String get spInviteCodeHint;
+
+  /// No description provided for @spJoinWithCodeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Baby'**
+  String get spJoinWithCodeBtn;
+
+  /// No description provided for @spEnterInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an invite code.'**
+  String get spEnterInviteCode;
+
+  /// No description provided for @spInviteCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code'**
+  String get spInviteCodeTitle;
+
+  /// No description provided for @spInviteCodeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one secure code and share it with the other parent. The code links the baby to their signed-in account.'**
+  String get spInviteCodeDesc;
+
+  /// No description provided for @spCreateInviteCodeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Invite Code'**
+  String get spCreateInviteCodeBtn;
+
+  /// No description provided for @spInviteCodeCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code created: {code}'**
+  String spInviteCodeCreated(String code);
+
+  /// No description provided for @spInviteCodeReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code is ready: {code}'**
+  String spInviteCodeReady(String code);
+
+  /// No description provided for @spInviteCodeAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby linked successfully.'**
+  String get spInviteCodeAccepted;
+
+  /// No description provided for @spInviteCodeCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code copied.'**
+  String get spInviteCodeCopied;
+
+  /// No description provided for @spCopyCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get spCopyCode;
+
+  /// No description provided for @spShareCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get spShareCode;
+
+  /// No description provided for @spInviteCodeNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code not found.'**
+  String get spInviteCodeNotFound;
+
+  /// No description provided for @spInviteCodeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite code has expired.'**
+  String get spInviteCodeExpired;
+
+  /// No description provided for @spInviteCodeUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite code is no longer available.'**
+  String get spInviteCodeUnavailable;
+
+  /// No description provided for @spInviteCodeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'This code is active now.'**
+  String get spInviteCodeActive;
+
+  /// No description provided for @spInviteCodeExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires {date}'**
+  String spInviteCodeExpires(String date);
+
+  /// No description provided for @spInviteCodeShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Join {babyName} with this invite code: {code}'**
+  String spInviteCodeShareMessage(String babyName, String code);
+
   /// No description provided for @invInboxTitle.
   ///
   /// In en, this message translates to:
@@ -3733,6 +3847,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A special moment, illustrated.'**
   String get illShareFallback;
+
+  /// No description provided for @memoryStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Memory style'**
+  String get memoryStyle;
+
+  /// No description provided for @memoryStyleOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original'**
+  String get memoryStyleOriginal;
+
+  /// No description provided for @memoryStyleClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic Illustration'**
+  String get memoryStyleClassic;
+
+  /// No description provided for @memoryStyleLofi.
+  ///
+  /// In en, this message translates to:
+  /// **'Lo-Fi Illustration'**
+  String get memoryStyleLofi;
+
+  /// No description provided for @medicationReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Medication reminders'**
+  String get medicationReminders;
+
+  /// No description provided for @enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get enabled;
+
+  /// No description provided for @legalSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legalSection;
+
+  /// No description provided for @deleteBabyBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete baby'**
+  String get deleteBabyBtn;
+
+  /// No description provided for @deleteBabySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove baby profile and all baby records.'**
+  String get deleteBabySubtitle;
+
+  /// No description provided for @deleteBabyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete baby?'**
+  String get deleteBabyTitle;
+
+  /// No description provided for @deleteBabyDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This will remove {babyName} and all related records from this device. If you are signed in, it will also delete synced data from your account. This cannot be undone.'**
+  String deleteBabyDialogContent(String babyName);
+
+  /// No description provided for @customRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customRange;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date range'**
+  String get selectDateRange;
+
+  /// No description provided for @sharedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared'**
+  String get sharedBadge;
+
+  /// No description provided for @notificationsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications disabled'**
+  String get notificationsDisabled;
+
+  /// No description provided for @permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied'**
+  String get permissionDenied;
+
+  /// No description provided for @reminderScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder scheduled'**
+  String get reminderScheduled;
+
+  /// No description provided for @signInToUseSharedParenting.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to use Shared Parenting.'**
+  String get signInToUseSharedParenting;
+
+  /// No description provided for @babyCouldNotBeDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby could not be deleted.'**
+  String get babyCouldNotBeDeleted;
+
+  /// No description provided for @coParentLoggedActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'A co-parent logged an activity.'**
+  String get coParentLoggedActivity;
+
+  /// No description provided for @sharedBabyUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Baby Update'**
+  String get sharedBabyUpdateTitle;
+
+  /// No description provided for @allergiesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies'**
+  String get allergiesTitle;
+
+  /// No description provided for @addAllergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Allergy'**
+  String get addAllergy;
+
+  /// No description provided for @allergySectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep sensitivities and food reactions together in one calm place.'**
+  String get allergySectionSubtitle;
+
+  /// No description provided for @noAllergiesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'No allergy notes yet. Add one anytime if something needs attention.'**
+  String get noAllergiesSummary;
+
+  /// No description provided for @reportAllergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Report allergy'**
+  String get reportAllergy;
+
+  /// No description provided for @allergySheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a food, ingredient, or reaction note so it stays visible in the health view.'**
+  String get allergySheetSubtitle;
+
+  /// No description provided for @allergyActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get allergyActive;
+
+  /// No description provided for @allergyInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get allergyInactive;
+
+  /// No description provided for @healthOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today at a glance'**
+  String get healthOverviewTitle;
+
+  /// No description provided for @healthOverviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A softer snapshot of care, sleep, and daily health details.'**
+  String get healthOverviewSubtitle;
+
+  /// No description provided for @vaccineEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the national schedule or add a vaccine manually whenever you need one.'**
+  String get vaccineEmptySubtitle;
+
+  /// No description provided for @allergyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergen name'**
+  String get allergyName;
+
+  /// No description provided for @allergyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get allergyNote;
+
+  /// No description provided for @noAllergies.
+  ///
+  /// In en, this message translates to:
+  /// **'No allergies recorded yet'**
+  String get noAllergies;
+
+  /// No description provided for @deleteAllergy.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete allergy'**
+  String get deleteAllergy;
+
+  /// No description provided for @allergyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergy added'**
+  String get allergyAdded;
+
+  /// Filter chip: show all memories
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get memoriesFilterAll;
+
+  /// Filter chip: show memories with a photo
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get memoriesFilterPhotos;
+
+  /// Filter chip: show memories with an illustration
+  ///
+  /// In en, this message translates to:
+  /// **'Illustrated'**
+  String get memoriesFilterIllustrated;
+
+  /// Empty state when active filter has no results
+  ///
+  /// In en, this message translates to:
+  /// **'No memories match this filter'**
+  String get memoriesEmptyFilter;
+
+  /// Badge on memory card when illustration is ready
+  ///
+  /// In en, this message translates to:
+  /// **'Illustrated'**
+  String get illBadgeReady;
+
+  /// Badge on memory card while illustration is generating
+  ///
+  /// In en, this message translates to:
+  /// **'Generating…'**
+  String get illBadgeGenerating;
+
+  /// CTA label on detail screen to start illustration flow
+  ///
+  /// In en, this message translates to:
+  /// **'Turn into illustration'**
+  String get illTurnIntoIllustration;
+
+  /// Illustration style option: default children's book style
+  ///
+  /// In en, this message translates to:
+  /// **'Nilico Style'**
+  String get illNilicoStyle;
+
+  /// Illustration style option: lo-fi anime style
+  ///
+  /// In en, this message translates to:
+  /// **'Lo-Fi Illustration'**
+  String get illLofiIllustration;
+
+  /// No description provided for @buyIllustrations.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Illustrations'**
+  String get buyIllustrations;
+
+  /// No description provided for @buyIllustrationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration packs for extra memories'**
+  String get buyIllustrationsSubtitle;
+
+  /// No description provided for @illustrationReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get illustrationReady;
+
+  /// No description provided for @illustrationGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating'**
+  String get illustrationGenerating;
+
+  /// No description provided for @memoriesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your favorite little moments'**
+  String get memoriesEmptyTitle;
+
+  /// No description provided for @memoriesEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos, notes, and milestones all stay together here.\nYour first memory can be just a tap away.'**
+  String get memoriesEmptySubtitle;
+
+  /// No description provided for @addFirstMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first memory'**
+  String get addFirstMemory;
 }
 
 class _AppLocalizationsDelegate

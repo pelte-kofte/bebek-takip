@@ -20,8 +20,15 @@ class RaporScreen extends StatefulWidget {
   State<RaporScreen> createState() => _RaporScreenState();
 }
 
+// Range mode: 0 = weekly, 1 = monthly, 2 = custom
+const int _kWeekly = 0;
+const int _kMonthly = 1;
+const int _kCustom = 2;
+
 class _RaporScreenState extends State<RaporScreen> {
-  bool _isWeekly = true;
+  int _rangeMode = _kWeekly;
+  DateTime? _customStart;
+  DateTime? _customEnd;
   bool _isLoading = false;
   bool _isCapturing = false;
   final GlobalKey _repaintKey = GlobalKey();
@@ -33,17 +40,62 @@ class _RaporScreenState extends State<RaporScreen> {
   void initState() {
     super.initState();
     _calculateStats();
+    VeriYonetici.dataNotifier.addListener(_onDataChanged);
+  }
+
+  void _onDataChanged() {
+    if (mounted) _calculateStats();
+  }
+
+  @override
+  void dispose() {
+    VeriYonetici.dataNotifier.removeListener(_onDataChanged);
+    super.dispose();
+  }
+
+  /// Opens the Material date-range picker and stores the selection.
+  Future<void> _pickCustomRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 3),
+      lastDate: now,
+      initialDateRange: (_customStart != null && _customEnd != null)
+          ? DateTimeRange(start: _customStart!, end: _customEnd!)
+          : DateTimeRange(
+              start: now.subtract(const Duration(days: 30)),
+              end: now,
+            ),
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      _customStart = picked.start;
+      _customEnd = picked.end;
+      _rangeMode = _kCustom;
+    });
+    _calculateStats();
   }
 
   void _calculateStats() {
     final now = DateTime.now();
-    final startDate = _isWeekly
-        ? now.subtract(const Duration(days: 7))
-        : DateTime(now.year, now.month, 1); // Start of current month
+    final DateTime startDate;
+    if (_rangeMode == _kWeekly) {
+      startDate = now.subtract(const Duration(days: 7));
+    } else if (_rangeMode == _kMonthly) {
+      startDate = DateTime(now.year, now.month, 1);
+    } else {
+      startDate = _customStart ?? now.subtract(const Duration(days: 7));
+    }
+    final DateTime endDate = (_rangeMode == _kCustom && _customEnd != null)
+        ? _customEnd!
+        : now;
 
     // Mama kayitlari
     final mamaKayitlari = VeriYonetici.getMamaKayitlari()
-        .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
+        .where((k) {
+          final t = k['tarih'] as DateTime;
+          return t.isAfter(startDate) && !t.isAfter(endDate);
+        })
         .toList();
 
     // Emzirme istatistikleri
@@ -85,7 +137,10 @@ class _RaporScreenState extends State<RaporScreen> {
 
     // Bez kayitlari
     final kakaKayitlari = VeriYonetici.getKakaKayitlari()
-        .where((k) => (k['tarih'] as DateTime).isAfter(startDate))
+        .where((k) {
+          final t = k['tarih'] as DateTime;
+          return t.isAfter(startDate) && !t.isAfter(endDate);
+        })
         .toList();
     int islak = kakaKayitlari
         .where(
@@ -111,7 +166,10 @@ class _RaporScreenState extends State<RaporScreen> {
 
     // Uyku kayitlari
     final uykuKayitlari = VeriYonetici.getUykuKayitlari()
-        .where((k) => (k['bitis'] as DateTime).isAfter(startDate))
+        .where((k) {
+          final t = k['bitis'] as DateTime;
+          return t.isAfter(startDate) && !t.isAfter(endDate);
+        })
         .toList();
     int toplamUykuDakika = 0;
     int enUzunUykuDakika = 0;
@@ -135,12 +193,16 @@ class _RaporScreenState extends State<RaporScreen> {
       }
     }
 
-    final gunSayisi = _isWeekly ? 7 : now.day; // Days elapsed in current month
+    final gunSayisi = _rangeMode == _kWeekly
+        ? 7
+        : _rangeMode == _kMonthly
+            ? now.day
+            : endDate.difference(startDate).inDays.clamp(1, 999);
 
     setState(() {
       _stats = {
         'startDate': startDate,
-        'endDate': now,
+        'endDate': endDate,
         'gunSayisi': gunSayisi,
         // Emzirme
         'toplamEmzirme': toplamEmzirme,
@@ -313,7 +375,11 @@ class _RaporScreenState extends State<RaporScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
+                      _rangeMode == _kWeekly
+                          ? l10n.weeklyReport
+                          : _rangeMode == _kMonthly
+                              ? l10n.monthlyReport
+                              : l10n.customRange,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -367,7 +433,7 @@ class _RaporScreenState extends State<RaporScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          // Toggle Switch
+          // Range Toggle: Weekly | Monthly | Custom
           Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -376,87 +442,76 @@ class _RaporScreenState extends State<RaporScreen> {
             ),
             child: Row(
               children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      setState(() => _isWeekly = true);
-                      _calculateStats();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: _isWeekly
-                            ? (isDark ? const Color(0xFF4A4455) : Colors.white)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: _isWeekly
-                            ? [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        l10n.weekly,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: _isWeekly
-                              ? const Color(0xFFFF8AC1)
-                              : const Color(0xFF888888),
-                        ),
-                      ),
-                    ),
-                  ),
+                _buildRangeTab(
+                  label: l10n.weekly,
+                  mode: _kWeekly,
+                  isDark: isDark,
                 ),
                 const SizedBox(width: 4),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      setState(() => _isWeekly = false);
-                      _calculateStats();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      decoration: BoxDecoration(
-                        color: !_isWeekly
-                            ? (isDark ? const Color(0xFF4A4455) : Colors.white)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: !_isWeekly
-                            ? [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
-                      ),
-                      child: Text(
-                        l10n.monthly,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: !_isWeekly
-                              ? const Color(0xFFFF8AC1)
-                              : const Color(0xFF888888),
-                        ),
-                      ),
-                    ),
-                  ),
+                _buildRangeTab(
+                  label: l10n.monthly,
+                  mode: _kMonthly,
+                  isDark: isDark,
+                ),
+                const SizedBox(width: 4),
+                _buildRangeTab(
+                  label: l10n.customRange,
+                  mode: _kCustom,
+                  isDark: isDark,
+                  onTapOverride: _pickCustomRange,
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildRangeTab({
+    required String label,
+    required int mode,
+    required bool isDark,
+    VoidCallback? onTapOverride,
+  }) {
+    final isActive = _rangeMode == mode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTapOverride ??
+            () {
+              HapticFeedback.lightImpact();
+              setState(() => _rangeMode = mode);
+              _calculateStats();
+            },
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isActive
+                ? (isDark ? const Color(0xFF4A4455) : Colors.white)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: isActive
+                  ? const Color(0xFFFF8AC1)
+                  : const Color(0xFF888888),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1383,7 +1438,11 @@ class _RaporScreenState extends State<RaporScreen> {
       final dateRangeText = startDate == null || endDate == null
           ? '-'
           : '${_formatPdfDate(startDate, localeTag)} - ${_formatPdfDate(endDate, localeTag)}';
-      final reportType = _isWeekly ? l10n.weeklyReport : l10n.monthlyReport;
+      final reportType = _rangeMode == _kWeekly
+          ? l10n.weeklyReport
+          : _rangeMode == _kMonthly
+              ? l10n.monthlyReport
+              : l10n.customRange;
 
       final sectionTitleStyle = pw.TextStyle(
         fontSize: 14,
@@ -1653,7 +1712,11 @@ class _RaporScreenState extends State<RaporScreen> {
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          text: _isWeekly ? l10n.weeklyReport : l10n.monthlyReport,
+          text: _rangeMode == _kWeekly
+              ? l10n.weeklyReport
+              : _rangeMode == _kMonthly
+                  ? l10n.monthlyReport
+                  : l10n.customRange,
         ),
       );
     } catch (e) {

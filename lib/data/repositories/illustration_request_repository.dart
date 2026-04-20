@@ -46,6 +46,7 @@ class IllustrationRequestRepository {
     required String sourcePhotoUrl,
     required String requestType,
     required String promptVersion,
+    String style = IllustrationStyle.defaultStyle,
   }) async {
     if (_isAnonymousOrSignedOut()) {
       throw StateError('Illustration requests require a signed-in user.');
@@ -63,6 +64,7 @@ class IllustrationRequestRepository {
       status: IllustrationRequestStatus.pending,
       requestType: requestType,
       promptVersion: promptVersion,
+      style: IllustrationStyle.sanitize(style),
       resultStoragePath: null,
       resultImageUrl: null,
       errorCode: null,
@@ -74,7 +76,7 @@ class IllustrationRequestRepository {
     await doc.set(request.toMap());
     _log(
       'Created illustration request requestId=${request.id} '
-      'memoryId=$memoryId babyId=$babyId type=$requestType',
+      'memoryId=$memoryId babyId=$babyId type=$requestType style=$style',
     );
 
     // TODO(backend): Cloud Function worker should:

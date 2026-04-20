@@ -1,7 +1,7 @@
 name: bebek_takip
 description: "Bebek takip uygulaması"
 publish_to: 'none'
-version: 1.0.0+49
+version: 1.0.0+54
 
 environment:
   sdk: ^3.10.4

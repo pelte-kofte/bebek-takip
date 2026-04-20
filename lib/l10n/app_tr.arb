@@ -1986,6 +1986,46 @@
   "spGateBullet2": "Aynı bebek için senkronize kalın",
   "spGateBullet3": "Güncellemeleri tek yerde paylaşın",
   "spUnlockPremium": "Premium ile Aç",
+  "spJoinWithCodeTitle": "Kod ile katıl",
+  "spInviteCodeHint": "Davet kodunu gir",
+  "spJoinWithCodeBtn": "Bebeğe Katıl",
+  "spEnterInviteCode": "Lütfen bir davet kodu girin.",
+  "spInviteCodeTitle": "Davet kodu",
+  "spInviteCodeDesc": "Tek bir güvenli kod oluşturun ve diğer ebeveynle paylaşın. Kod, bebeği onların giriş yapmış hesabına bağlar.",
+  "spCreateInviteCodeBtn": "Davet Kodu Oluştur",
+  "spInviteCodeCreated": "Davet kodu oluşturuldu: {code}",
+  "@spInviteCodeCreated": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "spInviteCodeReady": "Davet kodu hazır: {code}",
+  "@spInviteCodeReady": {
+    "placeholders": {
+      "code": { "type": "String" }
+    }
+  },
+  "spInviteCodeAccepted": "Bebek başarıyla bağlandı.",
+  "spInviteCodeCopied": "Davet kodu kopyalandı.",
+  "spCopyCode": "Kopyala",
+  "spShareCode": "Paylaş",
+  "spInviteCodeNotFound": "Davet kodu bulunamadı.",
+  "spInviteCodeExpired": "Bu davet kodunun süresi dolmuş.",
+  "spInviteCodeUnavailable": "Bu davet kodu artık kullanılamıyor.",
+  "spInviteCodeActive": "Bu kod şu anda aktif.",
+  "spInviteCodeExpires": "Son gün {date}",
+  "@spInviteCodeExpires": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "spInviteCodeShareMessage": "{babyName} için bu davet kodunu kullan: {code}",
+  "@spInviteCodeShareMessage": {
+    "placeholders": {
+      "babyName": { "type": "String" },
+      "code": { "type": "String" }
+    }
+  },
 
   "invInboxTitle": "Alınan Davetler",
   "invAcceptedMsg": "Davet kabul edildi.",
@@ -2058,8 +2098,68 @@
   "illPackMostPopular": "En çok tercih edilen",
   "illPackLoversLabel": "Anı severler için",
   "illPackLoversSub": "25 illüstrasyon",
-  "illShareFallback": "Özel bir an, illüstre edildi."
+  "illShareFallback": "Özel bir an, illüstre edildi.",
+
+  "memoryStyle": "Anı stili",
+  "memoryStyleOriginal": "Orijinal",
+  "memoryStyleClassic": "Klasik Çizim",
+  "memoryStyleLofi": "Lo-Fi Çizim",
+
+  "medicationReminders": "İlaç hatırlatıcıları",
+  "enabled": "Açık",
+  "legalSection": "Yasal",
+  "deleteBabyBtn": "Bebeği sil",
+  "deleteBabySubtitle": "Bebek profilini ve tüm kayıtları kaldır.",
+  "deleteBabyTitle": "Bebek silinsin mi?",
+  "deleteBabyDialogContent": "Bu işlem {babyName} adlı bebek ve tüm ilgili kayıtlar bu cihazdan kaldırılacak. Giriş yapıldıysa, senkronize edilen veriler de hesabınızdan silinecek. Bu işlem geri alınamaz.",
+  "@deleteBabyDialogContent": {
+    "placeholders": {
+      "babyName": { "type": "String" }
+    }
+  },
+  "customRange": "Özel",
+  "selectDateRange": "Tarih aralığı seç",
+
+  "sharedBadge": "Paylaşılan",
+  "notificationsDisabled": "Bildirimler devre dışı",
+  "permissionDenied": "İzin reddedildi",
+  "reminderScheduled": "Hatırlatıcı ayarlandı",
+  "signInToUseSharedParenting": "Paylaşımlı Ebeveynliği kullanmak için giriş yapın.",
+  "babyCouldNotBeDeleted": "Bebek silinemedi.",
+  "coParentLoggedActivity": "Bir ebeveyn aktivite kaydetti.",
+  "sharedBabyUpdateTitle": "Paylaşılan Bebek Güncellemesi",
+  "allergiesTitle": "Alerjiler",
+  "addAllergy": "Alerji Ekle",
+  "allergySectionSubtitle": "Hassasiyetleri ve gıda reaksiyonlarını tek bir sakin alanda tutun.",
+  "noAllergiesSummary": "Henüz alerji notu yok. Dilerseniz istediğiniz zaman ekleyebilirsiniz.",
+  "reportAllergy": "Alerji Bildir",
+  "allergySheetSubtitle": "Sağlık görünümünde kolayca görünmesi için bir gıda, içerik veya reaksiyon notu ekleyin.",
+  "allergyActive": "Aktif",
+  "allergyInactive": "Pasif",
+  "healthOverviewTitle": "Bugüne hızlı bakış",
+  "healthOverviewSubtitle": "Bakım, uyku ve günlük sağlık detaylarının daha yumuşak bir özeti.",
+  "vaccineEmptySubtitle": "İsterseniz ulusal takvimle başlayın, isterseniz ihtiyacınız olduğunda aşıyı manuel ekleyin.",
+  "allergyName": "Alerjen adı",
+  "allergyNote": "Not (opsiyonel)",
+  "noAllergies": "Henüz alerji kaydedilmedi",
+  "deleteAllergy": "Alerjiyi sil",
+  "allergyAdded": "Alerji eklendi",
+
+  "memoriesFilterAll": "Tümü",
+  "memoriesFilterPhotos": "Fotoğraflar",
+  "memoriesFilterIllustrated": "Çizimli",
+  "memoriesEmptyFilter": "Bu filtreyle eşleşen anı yok",
+  "illBadgeReady": "Çizim hazır",
+  "illBadgeGenerating": "Oluşturuluyor\u2026",
+
+  "illTurnIntoIllustration": "Anıyı çizime dönüştür",
+  "illNilicoStyle": "Nilico Stili",
+  "illLofiIllustration": "Lo-Fi Çizim",
+  "buyIllustrations": "İllüstrasyon Satın Al",
+  "buyIllustrationsSubtitle": "Ek anılar için illüstrasyon paketleri",
+  "illustrationReady": "Hazır",
+  "illustrationGenerating": "Oluşuyor",
+  "memoriesEmptyTitle": "En sevdiğiniz küçük anları saklayın",
+  "memoriesEmptySubtitle": "Fotoğraflar, notlar ve dönüm noktaları burada birlikte kalır.\nİlk anınızı eklemek sadece bir dokunuş uzağınızda.",
+  "addFirstMemory": "İlk anını ekle"
 }
-
-
-

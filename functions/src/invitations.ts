@@ -1,4 +1,5 @@
 /* eslint-disable require-jsdoc */
+import {randomBytes} from "node:crypto";
 import {getApp, getApps, initializeApp} from "firebase-admin/app";
 import {FieldValue, getFirestore, Timestamp} from "firebase-admin/firestore";
 import {logger} from "firebase-functions";
@@ -15,6 +16,8 @@ const INVITATIONS_COLLECTION = "babyInvitations";
 const INVITATION_EXPIRY_HOURS = 48;
 const PREMIUM_ACCESS_LEVEL_ID = "premium";
 const ADAPTY_SECRET_API_KEY = defineSecret("ADAPTY_SECRET_API_KEY");
+const INVITE_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const INVITE_CODE_LENGTH = 8;
 
 type AdaptyProfileResponse = {
   data?: {
@@ -29,6 +32,19 @@ type AdaptyProfileResponse = {
 function isValidEmail(email: string): boolean {
   // RFC-5322 lite: local@domain.tld
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function normalizeInviteCode(value: string): string {
+  return value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+function generateInviteCode(): string {
+  const bytes = randomBytes(INVITE_CODE_LENGTH);
+  let out = "";
+  for (let i = 0; i < INVITE_CODE_LENGTH; i++) {
+    out += INVITE_CODE_ALPHABET[bytes[i] % INVITE_CODE_ALPHABET.length];
+  }
+  return out;
 }
 
 function parseAdaptyDate(value: string | null | undefined): Date | null {
@@ -267,6 +283,153 @@ export const sendInvitation = onCall(
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+async function ensureBabyOwnerAndPremium(
+  callerUid: string,
+  babyId: string
+): Promise<FirebaseFirestore.DocumentData> {
+  const db = getFirestore();
+  const babyRef = db.collection("babies").doc(babyId.trim());
+  const babySnap = await babyRef.get();
+
+  if (!babySnap.exists) {
+    throw new HttpsError("not-found", "Baby not found.");
+  }
+
+  const babyData = babySnap.data();
+  if (!babyData) {
+    throw new HttpsError("not-found", "Baby not found.");
+  }
+
+  if (babyData.ownerId !== callerUid) {
+    logger.error("ensureBabyOwnerAndPremium: ownership check failed", {
+      babyId,
+      callerUid,
+      recordedOwnerId: babyData.ownerId ?? null,
+    });
+    throw new HttpsError("permission-denied", "Not the baby owner.");
+  }
+
+  const userSnap = await db.collection("users").doc(callerUid).get();
+  const isPremium = userSnap.exists && userSnap.data()?.isPremium === true;
+  if (!isPremium) {
+    throw new HttpsError(
+      "permission-denied",
+      "Shared Parenting requires a premium subscription."
+    );
+  }
+
+  return babyData;
+}
+
+async function findExistingPendingCodeInvitation(
+  callerUid: string,
+  babyId: string
+): Promise<FirebaseFirestore.QueryDocumentSnapshot | null> {
+  const db = getFirestore();
+  const snap = await db
+    .collection(INVITATIONS_COLLECTION)
+    .where("ownerUid", "==", callerUid)
+    .where("babyId", "==", babyId)
+    .where("inviteType", "==", "code")
+    .where("status", "==", "pending")
+    .limit(1)
+    .get();
+
+  if (snap.empty) return null;
+  const doc = snap.docs[0];
+  const data = doc.data();
+  const expiresAt = data.expiresAt ? toDate(data.expiresAt) : null;
+  if (expiresAt != null && expiresAt > new Date()) {
+    return doc;
+  }
+  return null;
+}
+
+async function generateUniqueInviteCode(): Promise<string> {
+  const db = getFirestore();
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const code = generateInviteCode();
+    const duplicate = await db
+      .collection(INVITATIONS_COLLECTION)
+      .where("inviteCode", "==", code)
+      .where("status", "==", "pending")
+      .limit(1)
+      .get();
+    if (duplicate.empty) return code;
+  }
+  throw new HttpsError(
+    "aborted",
+    "Could not generate a unique invite code. Please try again."
+  );
+}
+
+export const createInviteCode = onCall(
+  {
+    region: "us-central1",
+    secrets: [ADAPTY_SECRET_API_KEY],
+  },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be signed in.");
+    }
+    const callerUid = request.auth.uid;
+    const {babyId} = request.data ?? {};
+
+    if (!babyId || typeof babyId !== "string" || babyId.trim() === "") {
+      throw new HttpsError("invalid-argument", "babyId is required.");
+    }
+
+    const normalizedBabyId = babyId.trim();
+    const babyData = await ensureBabyOwnerAndPremium(
+      callerUid,
+      normalizedBabyId
+    );
+    const existingInvitation = await findExistingPendingCodeInvitation(
+      callerUid,
+      normalizedBabyId
+    );
+
+    if (existingInvitation != null) {
+      const data = existingInvitation.data();
+      return {
+        success: true,
+        existingInvitation: true,
+        invitationId: existingInvitation.id,
+        inviteCode: data.inviteCode,
+        expiresAt: data.expiresAt ?? null,
+      };
+    }
+
+    const inviteCode = await generateUniqueInviteCode();
+    const expiresAt = new Date(
+      Date.now() + INVITATION_EXPIRY_HOURS * 60 * 60 * 1000
+    );
+
+    const docRef = await getFirestore().collection(INVITATIONS_COLLECTION).add({
+      babyId: normalizedBabyId,
+      babyName: babyData.name ?? null,
+      ownerUid: callerUid,
+      ownerDisplayName: request.auth.token.name ?? null,
+      inviteType: "code",
+      inviteCode,
+      inviteeEmail: null,
+      status: "pending",
+      createdAt: FieldValue.serverTimestamp(),
+      expiresAt,
+    });
+
+    return {
+      success: true,
+      existingInvitation: false,
+      invitationId: docRef.id,
+      inviteCode,
+      expiresAt,
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 /**
  * Parses a Firestore Timestamp or Date-like value into a JS Date.
  * @param {unknown} value Date-like value from Firestore.
@@ -307,6 +470,126 @@ function validateInvitationForCallee(
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+function validateInvitationPending(
+  inv: FirebaseFirestore.DocumentData
+): void {
+  if (inv.status !== "pending") {
+    throw new HttpsError(
+      "failed-precondition",
+      "Invitation is no longer pending."
+    );
+  }
+  if (toDate(inv.expiresAt) <= new Date()) {
+    throw new HttpsError("deadline-exceeded", "Invitation has expired.");
+  }
+}
+
+export const acceptInvitationCode = onCall(
+  {region: "us-central1"},
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be signed in.");
+    }
+    const callerUid = request.auth.uid;
+    const inviteCode = normalizeInviteCode(
+      typeof request.data?.inviteCode === "string" ?
+        request.data.inviteCode :
+        ""
+    );
+
+    if (!inviteCode) {
+      throw new HttpsError("invalid-argument", "inviteCode is required.");
+    }
+
+    const db = getFirestore();
+    const inviteQuery = await db
+      .collection(INVITATIONS_COLLECTION)
+      .where("inviteCode", "==", inviteCode)
+      .where("status", "==", "pending")
+      .limit(1)
+      .get();
+
+    if (inviteQuery.empty) {
+      throw new HttpsError("not-found", "Invite code not found.");
+    }
+
+    const invitationRef = inviteQuery.docs[0].ref;
+    const invData = inviteQuery.docs[0].data();
+    validateInvitationPending(invData);
+
+    if (invData.ownerUid === callerUid) {
+      throw new HttpsError(
+        "failed-precondition",
+        "You cannot use your own invite code."
+      );
+    }
+
+    const babyId: string = invData.babyId;
+    const babyRef = db.collection("babies").doc(babyId);
+    const callerDisplayName = request.auth.token.name ?? null;
+    const callerEmail = request.auth.token.email ?? null;
+
+    await db.runTransaction(async (tx) => {
+      const txInvitationSnap = await tx.get(invitationRef);
+      const txInvitation = txInvitationSnap.data();
+      if (!txInvitationSnap.exists || !txInvitation) {
+        throw new HttpsError("not-found", "Invitation not found.");
+      }
+      validateInvitationPending(txInvitation);
+      if (txInvitation.inviteCode !== inviteCode) {
+        throw new HttpsError("failed-precondition", "Invite code changed.");
+      }
+      if (txInvitation.ownerUid === callerUid) {
+        throw new HttpsError(
+          "failed-precondition",
+          "You cannot use your own invite code."
+        );
+      }
+
+      const babySnap = await tx.get(babyRef);
+      if (!babySnap.exists) {
+        throw new HttpsError("not-found", "Baby no longer exists.");
+      }
+
+      tx.update(babyRef, {
+        [`members.${callerUid}`]: {
+          role: "member",
+          joinedAt: FieldValue.serverTimestamp(),
+          displayName: callerDisplayName,
+          email: callerEmail,
+        },
+      });
+
+      const sharedBabyRef = db
+        .collection("users")
+        .doc(callerUid)
+        .collection("sharedBabies")
+        .doc(babyId);
+
+      tx.set(sharedBabyRef, {
+        babyId,
+        role: "member",
+        addedAt: FieldValue.serverTimestamp(),
+      });
+
+      tx.update(invitationRef, {
+        status: "accepted",
+        acceptedByUid: callerUid,
+      });
+    });
+
+    logger.info("acceptInvitationCode: accepted", {
+      inviteCode,
+      callerUid,
+      babyId,
+    });
+
+    return {success: true, babyId};
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const acceptInvitation = onCall(
   {region: "us-central1"},
   async (request) => {
@@ -322,6 +605,13 @@ export const acceptInvitation = onCall(
       throw new HttpsError(
         "failed-precondition",
         "Caller account has no verified email address."
+      );
+    }
+
+    if (!request.auth.token.email_verified) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Email address must be verified to accept invitations."
       );
     }
 
@@ -428,6 +718,57 @@ export const acceptInvitation = onCall(
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+export const cancelInvitation = onCall(
+  {region: "us-central1"},
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "Must be signed in.");
+    }
+    const callerUid = request.auth.uid;
+    const {invitationId} = request.data ?? {};
+
+    if (
+      !invitationId ||
+      typeof invitationId !== "string" ||
+      invitationId.trim() === ""
+    ) {
+      throw new HttpsError("invalid-argument", "invitationId is required.");
+    }
+
+    const db = getFirestore();
+    const invitationRef = db
+      .collection(INVITATIONS_COLLECTION)
+      .doc(invitationId.trim());
+    const invitationSnap = await invitationRef.get();
+
+    if (!invitationSnap.exists) {
+      throw new HttpsError("not-found", "Invitation not found.");
+    }
+
+    const invitation = invitationSnap.data();
+    if (!invitation) {
+      throw new HttpsError("not-found", "Invitation not found.");
+    }
+
+    if (invitation.ownerUid !== callerUid) {
+      throw new HttpsError(
+        "permission-denied",
+        "Only the inviter can cancel this invitation."
+      );
+    }
+
+    if (invitation.status !== "pending") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Invitation is no longer pending."
+      );
+    }
+
+    await invitationRef.delete();
+    return {success: true};
+  }
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
@@ -518,6 +859,13 @@ export const declineInvitation = onCall(
       throw new HttpsError(
         "failed-precondition",
         "Caller account has no verified email address."
+      );
+    }
+
+    if (!request.auth.token.email_verified) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Email address must be verified to decline invitations."
       );
     }
 

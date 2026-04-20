@@ -7,6 +7,7 @@ import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import 'allergies_screen.dart';
 import 'growth_screen.dart';
 import 'vaccines_screen.dart';
 
@@ -639,6 +640,20 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 12),
+                      _buildActionCard(
+                        isDark: isDark,
+                        cardColor: cardColor,
+                        icon: Icons.no_food_outlined,
+                        label: l10n.allergiesTitle,
+                        subtitleColor: subtitleColor,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AllergiesScreen(),
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 32),
 
                       // Save Button
@@ -834,7 +849,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Delete baby',
+                                      AppLocalizations.of(context)!.deleteBabyBtn,
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
@@ -845,7 +860,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      'Remove baby profile and all baby records.',
+                                      AppLocalizations.of(context)!.deleteBabySubtitle,
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: subtitleColor,
@@ -1042,7 +1057,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
             borderRadius: BorderRadius.circular(20),
           ),
           title: Text(
-            'Delete baby?',
+            AppLocalizations.of(context)!.deleteBabyTitle,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -1050,9 +1065,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
             ),
           ),
           content: Text(
-            'This will remove $babyName and all related records from this device. '
-            'If you are signed in, it will also delete synced data from your account. '
-            'This cannot be undone.',
+            AppLocalizations.of(context)!.deleteBabyDialogContent(babyName),
             style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
           ),
           actions: [
@@ -1079,8 +1092,8 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                           dialogNavigator.pop();
                           setState(() => _isDeletingBaby = false);
                           messenger.showSnackBar(
-                            const SnackBar(
-                              content: Text('Baby could not be deleted.'),
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.babyCouldNotBeDeleted),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -1093,8 +1106,8 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
 
                       if (!result.deleted) {
                         messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text('Baby could not be deleted.'),
+                          SnackBar(
+                            content: Text(AppLocalizations.of(context)!.babyCouldNotBeDeleted),
                             backgroundColor: Colors.red,
                           ),
                         );

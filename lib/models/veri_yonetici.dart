@@ -40,7 +40,6 @@ class VeriYonetici {
   // Singleton instance
   static SharedPreferences? _prefs;
   static LocalStore? _localStore;
-  static const Duration _bestEffortCloudSyncTimeout = Duration(seconds: 8);
   static const Duration _bestEffortWriteTimeout = Duration(seconds: 3);
   static const Duration _bestEffortPhotoStorageTimeout = Duration(seconds: 20);
 
@@ -81,6 +80,9 @@ class VeriYonetici {
   // IDs of babies that were shared with this user (not owned by them).
   // Populated after cloud sync. Used only for display labelling.
   static final Set<String> _sharedBabyIds = {};
+  // IDs of babies owned by this user that have at least one co-parent.
+  // Populated from RepositoryDataBundle.ownedBabyIdsWithMembers after sync.
+  static final Set<String> _ownedBabyIdsWithMembers = {};
   static const String _migrationKey = 'multi_baby_migrated';
   static const String diaperEventType = 'diaper';
   static final FirestoreStore _firestoreStore = FirestoreStore();
@@ -90,6 +92,12 @@ class VeriYonetici {
   static const bool _verboseSyncLogs = true;
   static final Map<String, String> _lastCloudFingerprintByKey = {};
   static final Map<String, DateTime> _lastCloudWriteAtByKey = {};
+
+  // Real-time listeners on shared-critical collections for each baby.
+  // Key = babyId:collection. Started after each sync; cancelled and
+  // restarted on refreshForCurrentUser() so the set stays accurate.
+  static final Map<String, StreamSubscription<QuerySnapshot<Map<String, dynamic>>>> _sharedCollectionListeners = {};
+  static Timer? _sharedRefreshDebounce;
 
   static const List<String> _timerKeysByBabyTemplate = <String>[
     'active_uyku_start_{babyId}',
@@ -481,6 +489,9 @@ class VeriYonetici {
       _anilar = merged.anilar;
       _ilacKayitlari = merged.ilacKayitlari;
       _ilacDozKayitlari = merged.ilacDozKayitlari;
+      _ownedBabyIdsWithMembers
+        ..clear()
+        ..addAll(remote.ownedBabyIdsWithMembers);
 
       await _saveBabies();
       if (didDedupeBabies) {
@@ -577,6 +588,109 @@ class VeriYonetici {
     }
   }
 
+  // ── Shared-baby real-time listeners ──────────────────────────────────────
+
+  /// Cancels all active shared-record listeners and clears the map.
+  static void _stopSharedRecordListeners() {
+    _sharedRefreshDebounce?.cancel();
+    _sharedRefreshDebounce = null;
+    for (final sub in _sharedCollectionListeners.values) {
+      sub.cancel();
+    }
+    _sharedCollectionListeners.clear();
+    _log('_stopSharedRecordListeners: all listeners cancelled');
+  }
+
+  static void _scheduleSharedRefresh(String reason) {
+    _sharedRefreshDebounce?.cancel();
+    _sharedRefreshDebounce = Timer(const Duration(seconds: 1), () {
+      _log(
+        '_sharedCollectionListener: triggering refreshForCurrentUser '
+        'reason=$reason',
+      );
+      refreshForCurrentUser().ignore();
+    });
+  }
+
+  static bool _shouldUseReliableSharedSync(String babyId) {
+    return babyId.isNotEmpty && isBabyVisiblyShared(babyId);
+  }
+
+  static Future<void> _syncSharedCriticalOrBestEffort({
+    required String babyId,
+    required String label,
+    required Future<void> Function() sync,
+    Duration timeout = _bestEffortWriteTimeout,
+  }) async {
+    if (_shouldUseReliableSharedSync(babyId)) {
+      await sync();
+      return;
+    }
+    _scheduleBestEffortCloudWrite(sync, label: label, timeout: timeout);
+  }
+
+  static void _syncCachedActiveBabyFields() {
+    if (_babies.isNotEmpty && _babies.any((b) => b.id == _activeBabyId)) {
+      final active = getActiveBaby();
+      _babyName = active.name;
+      _birthDate = active.birthDate;
+      _babyPhotoPath = active.photoPath;
+      return;
+    }
+    _babyName = 'Baby';
+    _birthDate = DateTime.now().subtract(const Duration(days: 30));
+    _babyPhotoPath = null;
+  }
+
+  static void _startSharedRecordListeners() {
+    _stopSharedRecordListeners();
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    final user = _currentUser;
+    if (user == null || user.isAnonymous) return;
+
+    // Include owned babies that have co-parents AND all shared babies.
+    // Using the combined _babies list filtered to those we know are shared;
+    // we also watch owned babies because a co-parent may write there.
+    // The simplest safe set: all babies currently in memory.
+    final babyIds = _babies.map((b) => b.id).toSet();
+    if (babyIds.isEmpty) return;
+
+    _log('_startSharedRecordListeners: watching ${babyIds.length} babies');
+
+    const collections = <String>['records', 'medications', 'medicationLogs'];
+    for (final babyId in babyIds) {
+      for (final collection in collections) {
+        final listenerKey = '$babyId:$collection';
+        var didReceiveInitialSnapshot = false;
+        final sub = FirebaseFirestore.instance
+            .collection('babies')
+            .doc(babyId)
+            .collection(collection)
+            .snapshots()
+            .listen(
+          (snap) {
+            if (!didReceiveInitialSnapshot) {
+              didReceiveInitialSnapshot = true;
+              return;
+            }
+            if (snap.docChanges.isEmpty) return;
+            _log(
+              '_sharedCollectionListener: remote change detected '
+              'babyId=$babyId collection=$collection changes=${snap.docChanges.length}',
+            );
+            _scheduleSharedRefresh('$babyId:$collection');
+          },
+          onError: (Object e) => _log(
+            '_sharedCollectionListener error babyId=$babyId '
+            'collection=$collection: $e',
+          ),
+        );
+        _sharedCollectionListeners[listenerKey] = sub;
+      }
+    }
+  }
+
   /// Parses a Firestore Timestamp or ISO-8601 string into a DateTime.
   static DateTime _parseBabyDate(dynamic value) {
     if (value is Timestamp) return value.toDate();
@@ -585,24 +699,6 @@ class VeriYonetici {
           DateTime.now().subtract(const Duration(days: 30));
     }
     return DateTime.now().subtract(const Duration(days: 30));
-  }
-
-  static Future<void> _syncActiveBabyRecordsToCloudBestEffort({
-    String? babyId,
-  }) async {
-    try {
-      await _syncActiveBabyRecordsToCloud(
-        babyId: babyId,
-      ).timeout(_bestEffortCloudSyncTimeout);
-    } on TimeoutException catch (e) {
-      _log(
-        'Best-effort cloud sync timed out for babyId=${babyId ?? _activeBabyId}: $e',
-      );
-    } catch (e) {
-      _log(
-        'Best-effort cloud sync failed for babyId=${babyId ?? _activeBabyId}: $e',
-      );
-    }
   }
 
   static void _scheduleBestEffortCloudWrite(
@@ -631,6 +727,21 @@ class VeriYonetici {
         }
       }
     }());
+  }
+
+  static Future<void> _syncMemoryPhotosAfterSave() async {
+    if (_canSyncWithCloud(
+      operation: '_syncMemoryPhotosAfterSave',
+      skipMessage: '[Sync] skip immediate photo storage sync: user is anonymous',
+    )) {
+      await _syncPhotosWithStorageBestEffort();
+      return;
+    }
+    _scheduleBestEffortCloudWrite(
+      _syncPhotosWithStorageBestEffort,
+      label: 'photo storage sync',
+      timeout: _bestEffortPhotoStorageTimeout,
+    );
   }
 
   static Future<void> _syncPhotosWithStorageBestEffort() async {
@@ -697,9 +808,13 @@ class VeriYonetici {
   }
 
   static Future<void> refreshForCurrentUser() async {
+    _log('refreshForCurrentUser: start');
     await _syncFromCloudIfSignedIn();
     _sharedBabyIds.clear();
     await _loadSharedBabiesFromCloud();
+    // (Re)start real-time listeners so both owner and co-parent see each
+    // other's writes without relying on notifications.
+    _startSharedRecordListeners();
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
@@ -709,15 +824,15 @@ class VeriYonetici {
       _activeBabyId = _babies.first.id;
       await _setLocalString('active_baby_id', _activeBabyId);
     }
-    if (_babies.isNotEmpty) {
-      final active = getActiveBaby();
-      _babyName = active.name;
-      _birthDate = active.birthDate;
-      _babyPhotoPath = active.photoPath;
-    } else {
+    if (_babies.isEmpty) {
       _activeBabyId = '';
       await _setLocalString('active_baby_id', _activeBabyId);
     }
+    _syncCachedActiveBabyFields();
+    // Notify UI that fresh data is available. This bumps _dataVersion so all
+    // ValueListenableBuilder widgets rebuild with the merged records.
+    _notifyDataChanged(reason: 'remote-sync');
+    _log('refreshForCurrentUser: done — UI notified');
   }
 
   static List<Map<String, dynamic>> _recordsForBundleBaby(
@@ -1339,6 +1454,8 @@ class VeriYonetici {
     await _syncFromCloudIfSignedIn();
     // Load shared babies (accepted invitations) and merge into _babies.
     await _loadSharedBabiesFromCloud();
+    // Start real-time listeners so shared activities appear without restart.
+    _startSharedRecordListeners();
     _scheduleBestEffortCloudWrite(
       _syncPhotosWithStorageBestEffort,
       label: 'photo storage sync',
@@ -1605,6 +1722,13 @@ class VeriYonetici {
   /// Returns true when [babyId] was shared with this user (not owned).
   static bool isSharedBaby(String babyId) => _sharedBabyIds.contains(babyId);
 
+  /// Returns true when [babyId] should show the Shared badge — covers both:
+  /// • babies shared *with* this user (_sharedBabyIds), AND
+  /// • babies *owned* by this user that have at least one co-parent member.
+  static bool isBabyVisiblyShared(String babyId) =>
+      _sharedBabyIds.contains(babyId) ||
+      _ownedBabyIdsWithMembers.contains(babyId);
+
   static bool hasActiveBaby() {
     return _activeBabyId.isNotEmpty &&
         _babies.any((b) => b.id == _activeBabyId);
@@ -1648,17 +1772,21 @@ class VeriYonetici {
   }) async {
     final babyId = id ?? Baby.generateId();
     final existingIndex = _babies.indexWhere((b) => b.id == babyId);
+    late final Baby baby;
     if (existingIndex >= 0) {
       final existing = _babies[existingIndex];
-      _babies[existingIndex] = Baby(
+      baby = Baby(
         id: existing.id,
         name: name,
         birthDate: birthDate,
         photoPath: photoPath ?? existing.photoPath,
+        photoStoragePath: existing.photoStoragePath,
+        photoUrl: existing.photoUrl,
         createdAt: existing.createdAt,
       );
+      _babies[existingIndex] = baby;
     } else {
-      final baby = Baby(
+      baby = Baby(
         id: babyId,
         name: name,
         birthDate: birthDate,
@@ -1672,8 +1800,23 @@ class VeriYonetici {
       await _setLocalString('active_baby_id', _activeBabyId);
     }
     await _saveBabies();
+    await _createBabyInCloud(baby);
     await _syncBabiesToCloud();
     return babyId;
+  }
+
+  static Future<void> _createBabyInCloud(Baby baby) async {
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_createBabyInCloud',
+      skipMessage: '[Sync] skip cloud write: user is anonymous',
+    )) {
+      return;
+    }
+    try {
+      await _firestoreStore.replaceBabies(uid, [baby]);
+    } catch (_) {}
   }
 
   static Future<BabyDeleteResult> deleteBaby(String babyId) async {
@@ -1960,7 +2103,11 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=feeding count=${kayitlar.length}');
     }
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'feeding sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
   }
 
   static Future<bool> updateMamaKaydiById(
@@ -2024,7 +2171,11 @@ class VeriYonetici {
       ),
     );
     _notifyDataChanged(reason: 'mama_kayitlari');
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'feeding delete sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
     return true;
   }
 
@@ -2116,7 +2267,11 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=diaper count=${kayitlar.length}');
     }
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'diaper sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
   }
 
   static Future<bool> updateKakaKaydiById(
@@ -2239,7 +2394,11 @@ class VeriYonetici {
       ),
     );
     _notifyDataChanged(reason: 'kaka_kayitlari');
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'diaper delete sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
     return true;
   }
 
@@ -2319,7 +2478,11 @@ class VeriYonetici {
     if (kDebugMode) {
       _log('record persisted type=sleep count=${kayitlar.length}');
     }
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'sleep sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
   }
 
   static Future<bool> updateUykuKaydiById(
@@ -2436,7 +2599,11 @@ class VeriYonetici {
       ),
     );
     _notifyDataChanged(reason: 'uyku_kayitlari');
-    unawaited(_syncActiveBabyRecordsToCloudBestEffort());
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'sleep delete sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+    );
     return true;
   }
 
@@ -2550,15 +2717,12 @@ class VeriYonetici {
       ),
     );
     await _persistAnilarToLocalStore();
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyMemoriesToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
       label: 'memory sync',
+      sync: () => _syncActiveBabyMemoriesToCloud(babyId: _activeBabyId),
     );
-    _scheduleBestEffortCloudWrite(
-      _syncPhotosWithStorageBestEffort,
-      label: 'photo storage sync',
-      timeout: _bestEffortPhotoStorageTimeout,
-    );
+    await _syncMemoryPhotosAfterSave();
     if (deletedRowsWithPhotos.isNotEmpty) {
       final rowsToDelete = deletedRowsWithPhotos;
       _scheduleBestEffortCloudWrite(() async {
@@ -2687,9 +2851,10 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('boykilo_kayitlari', jsonEncode(data));
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyRecordsToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
       label: 'growth sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
     );
   }
 
@@ -2813,12 +2978,12 @@ class VeriYonetici {
       ),
     );
     await _persistMilestonesToLocalStore();
-    await _syncActiveBabyMemoriesToCloud();
-    _scheduleBestEffortCloudWrite(
-      _syncPhotosWithStorageBestEffort,
-      label: 'photo storage sync',
-      timeout: _bestEffortPhotoStorageTimeout,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
+      label: 'milestone sync',
+      sync: () => _syncActiveBabyMemoriesToCloud(babyId: _activeBabyId),
     );
+    await _syncMemoryPhotosAfterSave();
     if (deletedRowsWithPhotos.isNotEmpty) {
       final rowsToDelete = deletedRowsWithPhotos;
       _scheduleBestEffortCloudWrite(() async {
@@ -2850,9 +3015,12 @@ class VeriYonetici {
     _milestones[idx]['updatedAt'] = now;
     _milestones[idx]['localUpdatedAt'] = now;
     await _persistMilestonesToLocalStore();
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyMemoriesToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: (_milestones[idx]['babyId'] ?? '').toString(),
       label: 'illustration url sync',
+      sync: () => _syncActiveBabyMemoriesToCloud(
+        babyId: (_milestones[idx]['babyId'] ?? '').toString(),
+      ),
     );
     _notifyDataChanged(reason: 'illustration-url-patched');
   }
@@ -2981,9 +3149,10 @@ class VeriYonetici {
         .toList();
     await _setLocalString('asi_kayitlari', jsonEncode(data));
     _vaccineVersion.value++;
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyRecordsToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
       label: 'vaccine sync',
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
     );
   }
 
@@ -3148,9 +3317,10 @@ class VeriYonetici {
         )
         .toList();
     await _setLocalString('ilac_kayitlari', jsonEncode(data));
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyMedicationsToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
       label: 'medication sync',
+      sync: () => _syncActiveBabyMedicationsToCloud(babyId: _activeBabyId),
     );
   }
 
@@ -3487,9 +3657,10 @@ class VeriYonetici {
             .toList(),
       ),
     );
-    _scheduleBestEffortCloudWrite(
-      _syncActiveBabyMedicationLogsToCloud,
+    await _syncSharedCriticalOrBestEffort(
+      babyId: _activeBabyId,
       label: 'medication log sync',
+      sync: () => _syncActiveBabyMedicationLogsToCloud(babyId: _activeBabyId),
     );
   }
 

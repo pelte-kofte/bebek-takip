@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // ── User-owned data ───────────────────────────────────────────────────────
+    // Each user can read and write only their own subtree.
+    match /users/{uid}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Shared baby photos ────────────────────────────────────────────────────
+    // Baby photos are stored under the owner's path:
+    //   users/{ownerUid}/babies/{babyId}/memories/...
+    // Accepted members need read access to the owner's baby subtree.
+    // Authorization mirrors Firestore babies/{babyId} rules.
+    match /users/{uid}/babies/{babyId}/{allPaths=**} {
+      function babyDoc() {
+        return firestore.get(
+          /databases/(default)/documents/babies/$(babyId)
+        );
+      }
+
+      // Owner: full read/write (also covered by the parent rule above).
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      // Members: read-only.
+      // babyDoc().data.ownerId == uid guards against a caller spoofing uid
+      // with an unrelated babyId they happen to be a member of elsewhere.
+      allow read: if request.auth != null
+                  && babyDoc().exists()
+                  && babyDoc().data.ownerId == uid
+                  && ('members' in babyDoc().data)
+                  && babyDoc().data.members[request.auth.uid] != null;
+    }
+
+    // ── Deny everything else ──────────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

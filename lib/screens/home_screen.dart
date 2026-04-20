@@ -549,28 +549,101 @@ class _HomeScreenState extends State<HomeScreen> {
                                     : null,
                               ),
                               const SizedBox(width: 12),
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _babyName,
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: textColor,
-                                      letterSpacing: -0.5,
+                              Expanded(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            _babyName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: textColor,
+                                              letterSpacing: -0.5,
+                                            ),
+                                          ),
+                                        ),
+                                        if (VeriYonetici.hasActiveBaby() &&
+                                            VeriYonetici.isBabyVisiblyShared(
+                                              VeriYonetici.getActiveBaby().id,
+                                            )) ...[
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: isDark
+                                                  ? const Color(0xFF6AADCF)
+                                                      .withValues(alpha: 0.14)
+                                                  : const Color(0xFFDCEFF7),
+                                              border: Border.all(
+                                                color: isDark
+                                                    ? const Color(0xFF9DCFE8)
+                                                        .withValues(alpha: 0.18)
+                                                    : const Color(0xFF6AADCF)
+                                                        .withValues(alpha: 0.16),
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Container(
+                                                  width: 5,
+                                                  height: 5,
+                                                  decoration: BoxDecoration(
+                                                    color: isDark
+                                                        ? const Color(
+                                                            0xFF9DCFE8,
+                                                          )
+                                                        : const Color(
+                                                            0xFF6AADCF,
+                                                          ),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 5),
+                                                Text(
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.sharedBadge,
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: isDark
+                                                        ? const Color(
+                                                            0xFF9DCFE8,
+                                                          )
+                                                        : const Color(
+                                                            0xFF6AADCF,
+                                                          ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
-                                  ),
-                                  Text(
-                                    ageString(context, _birthDate),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: subtitleColor,
+                                    Text(
+                                      ageString(context, _birthDate),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: subtitleColor,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -624,8 +697,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Feeding card
                         Expanded(
                           child: _buildTimerCard(
-                            icon: Icons.child_care,
-                            iconColor: const Color(0xFFFF998A),
                             label: l10n.feedingTimer,
                             time: _formatSaniye(_solSaniye + _sagSaniye),
                             lastActivity: '',
@@ -659,7 +730,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
-                                          letterSpacing: 1.2,
                                         ),
                                       ),
                                     ),
@@ -731,8 +801,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Sleeping card
                         Expanded(
                           child: _buildTimerCard(
-                            icon: Icons.bedtime,
-                            iconColor: const Color(0xFF7A749E),
                             label: l10n.sleepingTimer,
                             time: _formatSaniye(_uykuSaniye),
                             lastActivity: '',
@@ -857,7 +925,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+
+                  // DAILY TIP
+                  _buildDailyTipCard(l10n, isDark, textColor, subtitleColor),
+
+                  const SizedBox(height: 18),
 
                   // RECENT ACTIVITY HEADER
                   Padding(
@@ -914,12 +987,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
 
-                  const SizedBox(height: 24),
-
-                  // DAILY TIP
-                  _buildDailyTipCard(l10n, isDark, textColor, subtitleColor),
-
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 26),
 
                   // UPCOMING VACCINE
                   ValueListenableBuilder<int>(
@@ -951,8 +1019,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // TIMER CARD WIDGET
   Widget _buildTimerCard({
-    required IconData icon,
-    required Color iconColor,
     required String label,
     required String time,
     required String lastActivity,
@@ -962,7 +1028,7 @@ class _HomeScreenState extends State<HomeScreen> {
     String? activeSide,
   }) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
       decoration: BoxDecoration(
         color: isDark ? AppColors.bgDarkCard : const Color(0xFFF1D9F5),
         borderRadius: BorderRadius.circular(28),
@@ -984,17 +1050,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFFEBE8FF).withValues(alpha: 0.15)
-                  : const Color(0xFFEBE8FF),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 24),
-          ),
-          const SizedBox(height: 16),
           Text(
             label,
             style: TextStyle(
@@ -1052,7 +1107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           buttons,
         ],
       ),
@@ -1068,22 +1123,23 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isDark,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      constraints: const BoxConstraints(minHeight: 90),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.bgDarkCard : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.06)
-              : const Color(0xFFF0EBE8),
+              : const Color(0xFFF4EEEB),
         ),
         boxShadow: isDark
             ? null
             : const [
                 BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
+                  color: Color(0x14000000),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
                 ),
               ],
       ),
@@ -1103,37 +1159,43 @@ class _HomeScreenState extends State<HomeScreen> {
               widthFactor: progress,
               child: Container(
                 decoration: BoxDecoration(
-                  color: progressColor,
+                  color: progressColor.withValues(alpha: 0.92),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          // Label
+          const SizedBox(height: 10),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-              color:
-                  (isDark ? AppColors.textPrimaryDark : const Color(0xFF1D0E0C))
-                      .withValues(alpha: 0.5),
-            ),
-          ),
-          const SizedBox(height: 4),
-          // Value
-          Text(
-            value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: isDark
-                  ? AppColors.textPrimaryDark
-                  : const Color(0xFF1D0E0C),
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.35,
+              color:
+                  (isDark ? AppColors.textPrimaryDark : const Color(0xFF1D0E0C))
+                      .withValues(alpha: 0.44),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : const Color(0xFF1D0E0C),
+                ),
+              ),
             ),
           ),
         ],
@@ -1143,56 +1205,50 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ACTIVITY ITEM
   Widget _buildActivityItem({
-    required IconData icon,
-    required Color iconColor,
     required String title,
     required String subtitle,
+    required String trailingLabel,
     required bool isDark,
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
       decoration: BoxDecoration(
         color: (isDark ? AppColors.bgDarkCard : Colors.white).withValues(
-          alpha: isDark ? 0.8 : 0.6,
+          alpha: isDark ? 0.76 : 0.72,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : Colors.white.withValues(alpha: 0.4),
+              ? Colors.white.withValues(alpha: 0.04)
+              : const Color(0xFFF4EFEC),
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFFEBE8FF).withValues(alpha: 0.12)
-                  : const Color(0xFFEBE8FF),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: isDark ? Colors.white : const Color(0xFF2D1A18),
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 12,
+                    height: 1.15,
                     color: (isDark ? Colors.white : const Color(0xFF2D1A18))
                         .withValues(alpha: 0.5),
                   ),
@@ -1200,7 +1256,30 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: Colors.grey, size: 24),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                trailingLabel,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                  color: (isDark ? Colors.white : const Color(0xFF2D1A18))
+                      .withValues(alpha: 0.38),
+                ),
+              ),
+              const SizedBox(height: 1),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: (isDark ? Colors.white : const Color(0xFF2D1A18))
+                    .withValues(alpha: 0.26),
+                size: 16,
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -1275,15 +1354,11 @@ class _HomeScreenState extends State<HomeScreen> {
         final tarih = item['tarih'] as DateTime;
         final data = item['data'] as Map<String, dynamic>;
 
-        IconData icon;
-        Color iconColor;
         String title;
         String subtitle;
 
         switch (type) {
           case 'mama':
-            icon = Icons.restaurant;
-            iconColor = const Color(0xFFFF998A);
             final tur = data['tur'] as String? ?? '';
             final kategori = data['kategori'] as String? ?? 'Milk';
             if (tur == 'Anne Sütü') {
@@ -1303,8 +1378,6 @@ class _HomeScreenState extends State<HomeScreen> {
             }
             break;
           case 'kaka':
-            icon = Icons.water_drop;
-            iconColor = const Color(0xFF7A749E);
             title = l10n.diaperChange;
             subtitle = _localizedDiaperType(
               l10n,
@@ -1312,8 +1385,6 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             break;
           case 'uyku':
-            icon = Icons.bedtime;
-            iconColor = const Color(0xFF7A749E);
             title = l10n.sleep;
             final sure = data['sure'] as Duration;
             final hours = sure.inHours;
@@ -1323,21 +1394,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 : '$minutes${l10n.minAbbrev}';
             break;
           default:
-            icon = Icons.circle;
-            iconColor = Colors.grey;
             title = l10n.activities;
             subtitle = '';
         }
 
         return Padding(
           padding: EdgeInsets.only(
-            bottom: index < timeline.length - 1 ? 12 : 0,
+            bottom: index < timeline.length - 1 ? 10 : 0,
           ),
           child: _buildActivityItem(
-            icon: icon,
-            iconColor: iconColor,
-            title: '$title • ${_timeAgo(l10n, tarih)}',
+            title: title,
             subtitle: subtitle,
+            trailingLabel: _timeAgo(l10n, tarih),
             isDark: isDark,
           ),
         );
@@ -1667,7 +1735,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      letterSpacing: 0.5,
                     ),
                   ),
                 ),

@@ -954,53 +954,70 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   Widget _buildBabyInfoCard(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.bgDarkCard.withValues(alpha: 0.9)
             : Colors.white.withValues(alpha: 0.9),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+          color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.06),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            width: 64,
-            height: 64,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFDAB9),
-              borderRadius: BorderRadius.circular(16),
+              color: const Color(0xFFFFE8DE),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
               Icons.child_care,
               color: const Color(0xFFFFB4A2),
-              size: 36,
+              size: 24,
             ),
           ),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(_getBabyName(), style: AppTypography.h2(context)),
-              const SizedBox(height: 4),
-              Text(
-                _getChildAge(),
-                style: AppTypography.bodySmall(context).copyWith(
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : const Color(0xFF866F65),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _getBabyName(),
+                  style: AppTypography.h3(context).copyWith(fontSize: 17),
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                Text(
+                  _getChildAge(),
+                  style: AppTypography.bodySmall(context).copyWith(
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : const Color(0xFF866F65),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF2EC),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${_vaccines.length}',
+              style: AppTypography.h3(context).copyWith(fontSize: 15),
+            ),
           ),
         ],
       ),
@@ -1405,7 +1422,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final l10n = AppLocalizations.of(context)!;
     final showTurkishPresetByDefault = _showTurkishPresetByDefault;
     return Container(
-      padding: const EdgeInsets.all(32),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: isDark
             ? AppColors.bgDarkCard.withValues(alpha: 0.9)
@@ -1415,52 +1432,74 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.vaccines_outlined,
-            size: 64,
-            color: AppColors.primary.withValues(alpha: 0.5),
+          Container(
+            width: 88,
+            height: 88,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3EE),
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Icon(
+              Icons.vaccines_outlined,
+              size: 42,
+              color: AppColors.primary.withValues(alpha: 0.8),
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
             l10n.noVaccineRecords,
             style: AppTypography.h3(context),
             textAlign: TextAlign.center,
           ),
-          if (showTurkishPresetByDefault) ...[
-            const SizedBox(height: 8),
-            Text(
-              l10n.loadTurkishCalendar,
-              style: AppTypography.bodySmall(context),
-              textAlign: TextAlign.center,
-            ),
-          ],
+          const SizedBox(height: 8),
+          Text(
+            l10n.vaccineEmptySubtitle,
+            style: AppTypography.bodySmall(context).copyWith(height: 1.5),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 24),
-          if (showTurkishPresetByDefault)
-            OutlinedButton.icon(
-              onPressed: _initializeDefaultVaccines,
-              icon: const Icon(Icons.calendar_month),
-              label: Text(l10n.loadCalendarTitle),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                side: BorderSide(color: AppColors.primary),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+          FilledButton.icon(
+            onPressed: _initializeDefaultVaccines,
+            icon: Icon(
+              showTurkishPresetByDefault
+                  ? Icons.calendar_month_outlined
+                  : Icons.flag_outlined,
+            ),
+            label: Text(
+              showTurkishPresetByDefault
+                  ? l10n.loadCalendarTitle
+                  : l10n.loadTurkishVaccineCalendar,
+            ),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 22,
+                vertical: 14,
               ),
-            )
-          else
-            TextButton.icon(
-              onPressed: _initializeDefaultVaccines,
-              icon: const Icon(Icons.flag_outlined),
-              label: Text(l10n.loadTurkishVaccineCalendar),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
               ),
             ),
+          ),
+          const SizedBox(height: 10),
+          TextButton.icon(
+            onPressed: () async {
+              HapticFeedback.lightImpact();
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddVaccineScreen(),
+                ),
+              );
+              if (result == true) {
+                _loadVaccines();
+              }
+            },
+            icon: const Icon(Icons.add_circle_outline),
+            label: Text(l10n.addVaccine),
+            style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+          ),
         ],
       ),
     );

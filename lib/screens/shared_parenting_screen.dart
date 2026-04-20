@@ -2,10 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
-import 'invitation_inbox_screen.dart';
 import 'login_entry_screen.dart';
 import 'premium_screen.dart';
 import 'sent_invitations_screen.dart';
@@ -20,8 +21,9 @@ class SharedParentingScreen extends StatefulWidget {
 }
 
 class _SharedParentingScreenState extends State<SharedParentingScreen> {
-  final _emailController = TextEditingController();
-  bool _loading = false;
+  final _joinCodeController = TextEditingController();
+  bool _creatingCode = false;
+  bool _joiningCode = false;
   String? _successMessage;
   String? _errorMessage;
 
@@ -35,7 +37,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _joinCodeController.dispose();
     super.dispose();
   }
 
@@ -63,21 +65,13 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
     }
   }
 
-  Future<void> _sendInvite() async {
-    // Last-line premium guard — should not normally be reached because the
-    // gate sheet prevents non-premium users from seeing this form.
+  Future<void> _createInviteCode() async {
     if (!PremiumService.instance.isPremium) {
       await _SharedParentingGateSheet.show(context);
       return;
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      setState(() => _errorMessage = l10n.spEnterEmail);
-      return;
-    }
-
     final baby = VeriYonetici.getActiveBabyOrNull();
     if (baby == null) {
       setState(() => _errorMessage = l10n.spNoActiveBaby);
@@ -85,49 +79,116 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
     }
 
     setState(() {
-      _loading = true;
+      _creatingCode = true;
       _errorMessage = null;
       _successMessage = null;
     });
 
     try {
-      final result = await SharedParentingService.instance.sendInvitation(
+      final result = await SharedParentingService.instance.createInviteCode(
         babyId: baby.id,
-        inviteeEmail: email,
       );
       if (!mounted) return;
-      _emailController.clear();
       final l10nAfter = AppLocalizations.of(context)!;
       setState(() {
         _successMessage = result.existingInvitation
-            ? l10nAfter.spInvitePendingFor(email)
-            : l10nAfter.spInviteSentTo(email);
-        _loading = false;
+            ? l10nAfter.spInviteCodeReady(result.inviteCode)
+            : l10nAfter.spInviteCodeCreated(result.inviteCode);
+        _creatingCode = false;
       });
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
       final l10nErr = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = _friendlyError(e.code, l10nErr);
-        _loading = false;
+        _errorMessage = _friendlyCreateError(e.code, l10nErr);
+        _creatingCode = false;
       });
     } catch (_) {
       if (!mounted) return;
       setState(() {
         _errorMessage = AppLocalizations.of(context)!.genericErrorRetry;
-        _loading = false;
+        _creatingCode = false;
       });
     }
   }
 
-  String _friendlyError(String code, AppLocalizations l10n) {
+  Future<void> _joinWithCode() async {
+    final l10n = AppLocalizations.of(context)!;
+    final inviteCode = _joinCodeController.text.trim().toUpperCase();
+    if (inviteCode.isEmpty) {
+      setState(() => _errorMessage = l10n.spEnterInviteCode);
+      return;
+    }
+
+    setState(() {
+      _joiningCode = true;
+      _errorMessage = null;
+      _successMessage = null;
+    });
+
+    try {
+      final babyId = await SharedParentingService.instance.acceptInvitationCode(
+        inviteCode: inviteCode,
+      );
+      await VeriYonetici.refreshForCurrentUser();
+      await VeriYonetici.setActiveBaby(babyId);
+      if (!mounted) return;
+      _joinCodeController.clear();
+      setState(() {
+        _successMessage = l10n.spInviteCodeAccepted;
+        _joiningCode = false;
+      });
+    } on FirebaseFunctionsException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = _friendlyJoinError(e.code, l10n);
+        _joiningCode = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = l10n.genericErrorRetry;
+        _joiningCode = false;
+      });
+    }
+  }
+
+  Future<void> _copyInviteCode(String inviteCode) async {
+    await Clipboard.setData(ClipboardData(text: inviteCode));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.spInviteCodeCopied)),
+    );
+  }
+
+  Future<void> _shareInviteCode(String inviteCode, String babyName) async {
+    final l10n = AppLocalizations.of(context)!;
+    await SharePlus.instance.share(
+      ShareParams(text: l10n.spInviteCodeShareMessage(babyName, inviteCode)),
+    );
+  }
+
+  String _friendlyCreateError(String code, AppLocalizations l10n) {
     switch (code) {
       case 'permission-denied':
         return l10n.spPremiumRequired;
       case 'not-found':
         return l10n.spBabyNotFound;
       case 'invalid-argument':
-        return l10n.spInvalidEmail;
+        return l10n.spNoActiveBaby;
+      default:
+        return l10n.genericErrorRetry;
+    }
+  }
+
+  String _friendlyJoinError(String code, AppLocalizations l10n) {
+    switch (code) {
+      case 'not-found':
+        return l10n.spInviteCodeNotFound;
+      case 'deadline-exceeded':
+        return l10n.spInviteCodeExpired;
+      case 'failed-precondition':
+        return l10n.spInviteCodeUnavailable;
       default:
         return l10n.genericErrorRetry;
     }
@@ -216,19 +277,6 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                 children: [
                   Expanded(
                     child: _NavButton(
-                      label: l10n.spReceived,
-                      icon: Icons.inbox_rounded,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const InvitationInboxScreen(),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _NavButton(
                       label: l10n.spSentLabel,
                       icon: Icons.send_rounded,
                       onTap: () => Navigator.push(
@@ -244,9 +292,8 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
 
               const SizedBox(height: 28),
 
-              // Invite form
               Text(
-                l10n.spEmailLabel,
+                l10n.spJoinWithCodeTitle,
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -255,13 +302,13 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
+                controller: _joinCodeController,
                 autocorrect: false,
+                textCapitalization: TextCapitalization.characters,
                 textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _sendInvite(),
+                onSubmitted: (_) => _joinWithCode(),
                 decoration: InputDecoration(
-                  hintText: l10n.spEmailHint,
+                  hintText: l10n.spInviteCodeHint,
                   hintStyle: const TextStyle(color: Color(0xFFBDB5B0)),
                   filled: true,
                   fillColor: Colors.white,
@@ -286,7 +333,145 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: GestureDetector(
+                  onTap: _joiningCode ? null : _joinWithCode,
+                  child: AnimatedOpacity(
+                    opacity: _joiningCode ? 0.6 : 1.0,
+                    duration: const Duration(milliseconds: 150),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4A3E39),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: _joiningCode
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                l10n.spJoinWithCodeBtn,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              Text(
+                l10n.spInviteCodeTitle,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF4A3E39),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.spInviteCodeDesc,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF8A7C75),
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              if (baby != null)
+                StreamBuilder<List<InvitationItem>>(
+                  stream: SharedParentingService.instance.watchSentInvitations(),
+                  builder: (context, snap) {
+                    InvitationItem? currentCode;
+                    for (final item in snap.data ?? const <InvitationItem>[]) {
+                      if (item.babyId == baby.id &&
+                          item.status == 'pending' &&
+                          item.inviteType == 'code' &&
+                          (item.inviteCode ?? '').isNotEmpty) {
+                        currentCode = item;
+                        break;
+                      }
+                    }
+
+                    if (currentCode == null) {
+                      return const SizedBox.shrink();
+                    }
+                    final inviteCode = currentCode.inviteCode!;
+
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE8E0D8)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            inviteCode,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 3,
+                              color: Color(0xFF4A3E39),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            currentCode.expiresAt != null
+                                ? l10n.spInviteCodeExpires(
+                                    MaterialLocalizations.of(context)
+                                        .formatShortDate(currentCode.expiresAt!),
+                                  )
+                                : l10n.spInviteCodeActive,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF8A7C75),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () => _copyInviteCode(inviteCode),
+                                  child: Text(l10n.spCopyCode),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: FilledButton(
+                                  onPressed: () =>
+                                      _shareInviteCode(inviteCode, baby.name),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFF4A3E39),
+                                  ),
+                                  child: Text(l10n.spShareCode),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
 
               // Error / success feedback
               if (_errorMessage != null)
@@ -306,9 +491,9 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
               SizedBox(
                 width: double.infinity,
                 child: GestureDetector(
-                  onTap: _loading ? null : _sendInvite,
+                  onTap: _creatingCode ? null : _createInviteCode,
                   child: AnimatedOpacity(
-                    opacity: _loading ? 0.6 : 1.0,
+                    opacity: _creatingCode ? 0.6 : 1.0,
                     duration: const Duration(milliseconds: 150),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -317,7 +502,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(
-                        child: _loading
+                        child: _creatingCode
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
@@ -327,7 +512,7 @@ class _SharedParentingScreenState extends State<SharedParentingScreen> {
                                 ),
                               )
                             : Text(
-                                l10n.spInviteParentBtn,
+                                l10n.spCreateInviteCodeBtn,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -381,7 +566,10 @@ class _MembersSectionState extends State<_MembersSection> {
 
   /// Fetches users/{uid} from Firestore for any UID not already in the cache
   /// and updates state so the UI re-renders with the resolved label.
-  Future<void> _fetchMissingLabels(Set<String> uids) async {
+  Future<void> _fetchMissingLabels(
+    Set<String> uids, {
+    required String fallback,
+  }) async {
     final missing = uids.where((u) => !_profileLabelCache.containsKey(u)).toList();
     if (missing.isEmpty) return;
     for (final uid in missing) {
@@ -397,7 +585,7 @@ class _MembersSectionState extends State<_MembersSection> {
             ? name
             : email.isNotEmpty
                 ? email
-                : 'Co-parent';
+                : fallback;
         if (mounted) {
           setState(() => _profileLabelCache[uid] = label);
         }
@@ -411,6 +599,7 @@ class _MembersSectionState extends State<_MembersSection> {
     String memberUid,
     String displayLabel,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -418,22 +607,22 @@ class _MembersSectionState extends State<_MembersSection> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        title: const Text(
-          'Remove co-parent?',
-          style: TextStyle(
+        title: Text(
+          l10n.spRemoveDialog,
+          style: const TextStyle(
             color: Color(0xFF4A3E39),
             fontWeight: FontWeight.w700,
           ),
         ),
         content: Text(
-          '$displayLabel will lose access to this baby immediately.',
+          l10n.spRemoveContent(displayLabel),
           style: const TextStyle(color: Color(0xFF8A7C75)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(
                 color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
               ),
@@ -441,9 +630,9 @@ class _MembersSectionState extends State<_MembersSection> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Remove',
-              style: TextStyle(color: Color(0xFFB85C4A)),
+            child: Text(
+              l10n.remove,
+              style: const TextStyle(color: Color(0xFFB85C4A)),
             ),
           ),
         ],
@@ -462,17 +651,13 @@ class _MembersSectionState extends State<_MembersSection> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            e.message ?? 'Could not remove member. Please try again.',
-          ),
+          content: Text(e.message ?? l10n.spCouldNotRemove),
         ),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not remove member. Please try again.'),
-        ),
+        SnackBar(content: Text(l10n.spCouldNotRemove)),
       );
     } finally {
       if (mounted) setState(() => _removingUid = null);
@@ -521,7 +706,7 @@ class _MembersSectionState extends State<_MembersSection> {
             })
             .toSet();
         if (uidsNeedingFetch.isNotEmpty) {
-          _fetchMissingLabels(uidsNeedingFetch);
+          _fetchMissingLabels(uidsNeedingFetch, fallback: l10n.spCoparent);
         }
 
         final isOwner = snap.data?.data()?['ownerId'] == currentUid;

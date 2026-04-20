@@ -7,9 +7,11 @@ import 'package:flutter/cupertino.dart'
         CupertinoDatePickerMode,
         CupertinoSlidingSegmentedControl;
 import 'package:flutter/foundation.dart' show kDebugMode;
+import '../theme/app_theme.dart';
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
 import '../l10n/app_localizations.dart';
+import 'allergies_screen.dart';
 import '../utils/event_datetime_utils.dart';
 
 enum ActivityType { mama, bez, uyku }
@@ -463,9 +465,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         ),
                       ),
                     if (toplamDakika > 0 && toplamMl > 0)
-                      const Text(
+                      Text(
                         '•',
-                        style: TextStyle(color: Color(0xFF888888)),
+                        style: const TextStyle(color: Color(0xFF888888)),
                       ),
                     if (toplamMl > 0)
                       Text(
@@ -526,7 +528,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
               String title;
               String subtitle;
-              IconData icon = Icons.local_drink_outlined;
 
               final normalizedTur = tur.toLowerCase();
               final isSolid =
@@ -543,7 +544,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 } else {
                   subtitle = l10n.solidFood;
                 }
-                icon = Icons.restaurant_outlined;
               } else if (isNursing) {
                 title = l10n.breastfeeding;
                 final toplamDakika = sol + sag;
@@ -569,11 +569,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               }
 
               return _buildListItem(
-                icon: icon,
                 title: title,
                 subtitle: subtitle,
                 time: _formatTime(tarih),
-                color: const Color(0xFFE91E63),
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
@@ -586,6 +584,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         solidAciklama.isNotEmpty)
                     ? solidAciklama
                     : null,
+                secondaryActionLabel: l10n.reportAllergy,
+                onSecondaryAction: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AllergiesScreen()),
+                  );
+                },
               );
             },
           ),
@@ -709,26 +714,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 kayit['diaperType'] ?? kayit['tur'],
               );
 
-              // Map stored diaper type to icon and localized label
-              IconData diaperIcon = Icons.baby_changing_station_outlined;
               String diaperLabel = l10n.both;
               if (tur == 'wet') {
-                diaperIcon = Icons.water_drop_outlined;
                 diaperLabel = l10n.wet;
               } else if (tur == 'dirty') {
-                diaperIcon = Icons.cloud_outlined;
                 diaperLabel = l10n.dirty;
               } else if (tur == 'both') {
-                diaperIcon = Icons.baby_changing_station_outlined;
                 diaperLabel = l10n.both;
               }
 
               return _buildListItem(
-                icon: diaperIcon,
                 title: diaperLabel,
                 subtitle: l10n.diaperChange,
                 time: _formatTime(tarih),
-                color: const Color(0xFF9C27B0),
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
@@ -859,11 +857,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final sure = kayit['sure'] as Duration;
 
               return _buildListItem(
-                icon: Icons.bedtime_outlined,
                 title: _formatDuration(sure, l10n),
                 subtitle: '${_formatTime(baslangic)} - ${_formatTime(bitis)}',
                 time: '',
-                color: const Color(0xFF3F51B5),
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
@@ -883,14 +879,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         Text(
           '$count',
           style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
             color: Color(0xFF333333),
           ),
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF888888),
+          ),
           textAlign: TextAlign.center,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -1003,17 +1003,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildListItem({
-    required IconData icon,
     required String title,
     required String subtitle,
     required String time,
-    required Color color,
     required Color cardColor,
     required Color textColor,
     required Color subtitleColor,
     required VoidCallback onEdit,
     required VoidCallback onDelete,
     String? notes,
+    String? secondaryActionLabel,
+    VoidCallback? onSecondaryAction,
   }) {
     return Container(
       width: double.infinity,
@@ -1039,28 +1039,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           onTap: onEdit,
           borderRadius: BorderRadius.circular(18),
           child: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
             child: Row(
               children: [
-                // Icon with soft colored circular background
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.35),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(icon, size: 32, color: color),
-                ),
-                const SizedBox(width: 14),
-                // Title and subtitle
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1100,11 +1081,38 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
+                      if (secondaryActionLabel != null &&
+                          onSecondaryAction != null) ...[
+                        const SizedBox(height: 10),
+                        InkWell(
+                          onTap: onSecondaryAction,
+                          borderRadius: BorderRadius.circular(14),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(
+                                0xFFFFF1EC,
+                              ).withValues(alpha: 0.95),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Text(
+                              secondaryActionLabel,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFFD4897A),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                // Time badge and delete button
+                const SizedBox(width: 16),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -1248,10 +1256,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             decoration: BoxDecoration(
               color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
               borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
+                top: Radius.circular(28),
               ),
             ),
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
             child: AbsorbPointer(
               absorbing: isSaving,
               child: ConstrainedBox(
@@ -1260,23 +1268,44 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Container(
-                      width: 36,
-                      height: 4,
+                      width: 42,
+                      height: 5,
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(2),
+                        color: Colors.grey.withValues(alpha: 0.28),
+                        borderRadius: BorderRadius.circular(3),
                       ),
                     ),
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? Colors.white : const Color(0xFF1C1C1E),
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF1C1C1E),
+                            ),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(sheetContext).pop(),
+                          style: TextButton.styleFrom(
+                            foregroundColor: isDark
+                                ? AppColors.textSecondaryDark
+                                : const Color(0xFF8A8494),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 6,
+                            ),
+                          ),
+                          child: Text(l10n.cancel),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
                     Flexible(
                       child: SingleChildScrollView(
                         keyboardDismissBehavior:
@@ -1284,34 +1313,28 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         child: child,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextButton(
-                            onPressed: () => Navigator.of(sheetContext).pop(),
-                            child: Text(l10n.cancel),
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed: isSaving ? null : onSave,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFFE39A86),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: isSaving ? null : onSave,
-                            style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF4A90E2),
-                            ),
-                            child: isSaving
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  )
-                                : Text(l10n.save),
-                          ),
-                        ),
-                      ],
+                        child: isSaving
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(l10n.save),
+                      ),
                     ),
                   ],
                 ),
@@ -1329,15 +1352,172 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     required VoidCallback onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ListTile(
-      dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-      title: Text(title),
-      subtitle: Text(value),
-      trailing: const Icon(Icons.chevron_right),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      tileColor: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF8A8494),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSheetStepper({
+    required String title,
+    required String value,
+    required VoidCallback onDecrease,
+    required VoidCallback onIncrease,
+    IconData? leadingIcon,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          if (leadingIcon != null) ...[
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                leadingIcon,
+                size: 16,
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : const Color(0xFF8A8494),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : const Color(0xFF8A8494),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          _SheetCircleButton(icon: Icons.remove, onTap: onDecrease),
+          const SizedBox(width: 8),
+          _SheetCircleButton(icon: Icons.add, onTap: onIncrease),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSheetTextField({
+    required TextEditingController controller,
+    required String hintText,
+    int maxLines = 2,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: true,
+        fillColor: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.all(15),
+      ),
+    );
+  }
+
+  Widget _buildSegmentedField({required Widget child, String? label}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label != null) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 4, bottom: 10),
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : const Color(0xFF8A8494),
+                ),
+              ),
+            ),
+          ],
+          child,
+        ],
+      ),
     );
   }
 
@@ -1443,46 +1623,41 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           },
           child: Column(
             children: [
-              CupertinoSlidingSegmentedControl<String>(
-                groupValue: side,
-                children: <String, Widget>{
-                  'left': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.left),
-                  ),
-                  'right': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.right),
-                  ),
-                },
-                onValueChanged: (v) {
-                  if (v != null) setModalState(() => side = v);
-                },
-              ),
-              const SizedBox(height: 12),
-              ListTile(
-                dense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                title: Text(l10n.duration),
-                subtitle: Text('$duration ${l10n.minAbbrev}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () => setModalState(
-                        () => duration = (duration - 1).clamp(1, 180),
-                      ),
-                      icon: const Icon(Icons.remove_circle_outline),
+              _buildSegmentedField(
+                label: l10n.breastfeeding,
+                child: CupertinoSlidingSegmentedControl<String>(
+                  groupValue: side,
+                  backgroundColor: Colors.transparent,
+                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
+                      ? const Color(0xFF3A3A46)
+                      : Colors.white,
+                  children: <String, Widget>{
+                    'left': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.left),
                     ),
-                    IconButton(
-                      onPressed: () => setModalState(
-                        () => duration = (duration + 1).clamp(1, 180),
-                      ),
-                      icon: const Icon(Icons.add_circle_outline),
+                    'right': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.right),
                     ),
-                  ],
+                  },
+                  onValueChanged: (v) {
+                    if (v != null) setModalState(() => side = v);
+                  },
                 ),
               ),
+              const SizedBox(height: 16),
+              _buildSheetStepper(
+                title: l10n.duration,
+                value: '$duration ${l10n.minAbbrev}',
+                onDecrease: () => setModalState(
+                  () => duration = (duration - 1).clamp(1, 180),
+                ),
+                onIncrease: () => setModalState(
+                  () => duration = (duration + 1).clamp(1, 180),
+                ),
+              ),
+              const SizedBox(height: 12),
               _buildRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
@@ -1585,87 +1760,63 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           },
           child: Column(
             children: [
-              CupertinoSlidingSegmentedControl<String>(
-                groupValue: selectedType,
-                children: <String, Widget>{
-                  'formula': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.formula),
-                  ),
-                  'bottleMilk': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.bottleBreastMilk),
-                  ),
-                  'solid': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.solid),
-                  ),
-                },
-                onValueChanged: (v) {
-                  if (v != null) setModalState(() => selectedType = v);
-                },
+              _buildSegmentedField(
+                label: l10n.healthType,
+                child: CupertinoSlidingSegmentedControl<String>(
+                  groupValue: selectedType,
+                  backgroundColor: Colors.transparent,
+                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
+                      ? const Color(0xFF3A3A46)
+                      : Colors.white,
+                  children: <String, Widget>{
+                    'formula': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.formula),
+                    ),
+                    'bottleMilk': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.bottleBreastMilk),
+                    ),
+                    'solid': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.solid),
+                    ),
+                  },
+                  onValueChanged: (v) {
+                    if (v != null) setModalState(() => selectedType = v);
+                  },
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               if (selectedType == 'solid')
-                ListTile(
-                  dense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  title: Text(l10n.duration),
-                  subtitle: Text('$solidDuration ${l10n.minAbbrev}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => setModalState(
-                          () =>
-                              solidDuration = (solidDuration - 5).clamp(0, 180),
-                        ),
-                        icon: const Icon(Icons.remove_circle_outline),
-                      ),
-                      IconButton(
-                        onPressed: () => setModalState(
-                          () =>
-                              solidDuration = (solidDuration + 5).clamp(0, 180),
-                        ),
-                        icon: const Icon(Icons.add_circle_outline),
-                      ),
-                    ],
+                _buildSheetStepper(
+                  title: l10n.duration,
+                  value: '$solidDuration ${l10n.minAbbrev}',
+                  onDecrease: () => setModalState(
+                    () => solidDuration = (solidDuration - 5).clamp(0, 180),
+                  ),
+                  onIncrease: () => setModalState(
+                    () => solidDuration = (solidDuration + 5).clamp(0, 180),
                   ),
                 )
               else
-                ListTile(
-                  dense: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                  title: Text(l10n.amount),
-                  subtitle: Text('$amount ${l10n.mlAbbrev}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        onPressed: () => setModalState(
-                          () => amount = (amount - 10).clamp(0, 500),
-                        ),
-                        icon: const Icon(Icons.remove_circle_outline),
-                      ),
-                      IconButton(
-                        onPressed: () => setModalState(
-                          () => amount = (amount + 10).clamp(0, 500),
-                        ),
-                        icon: const Icon(Icons.add_circle_outline),
-                      ),
-                    ],
-                  ),
+                _buildSheetStepper(
+                  title: l10n.amount,
+                  value: '$amount ${l10n.mlAbbrev}',
+                  leadingIcon: Icons.local_drink_outlined,
+                  onDecrease: () =>
+                      setModalState(() => amount = (amount - 10).clamp(0, 500)),
+                  onIncrease: () =>
+                      setModalState(() => amount = (amount + 10).clamp(0, 500)),
                 ),
-              if (selectedType == 'solid')
-                TextField(
+              if (selectedType == 'solid') ...[
+                const SizedBox(height: 12),
+                _buildSheetTextField(
                   controller: noteController,
-                  decoration: InputDecoration(
-                    hintText: l10n.solidFoodHint,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 2,
+                  hintText: l10n.solidFoodHint,
                 ),
-              const SizedBox(height: 10),
+              ],
+              const SizedBox(height: 12),
               _buildRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
@@ -1739,27 +1890,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           },
           child: Column(
             children: [
-              CupertinoSlidingSegmentedControl<String>(
-                groupValue: type,
-                children: <String, Widget>{
-                  'wet': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.diaperWet),
-                  ),
-                  'dirty': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.diaperDirty),
-                  ),
-                  'both': Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Text(l10n.diaperBoth),
-                  ),
-                },
-                onValueChanged: (v) {
-                  if (v != null) setModalState(() => type = v);
-                },
+              _buildSegmentedField(
+                label: l10n.diaperChange,
+                child: CupertinoSlidingSegmentedControl<String>(
+                  groupValue: type,
+                  backgroundColor: Colors.transparent,
+                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
+                      ? const Color(0xFF3A3A46)
+                      : Colors.white,
+                  children: <String, Widget>{
+                    'wet': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.diaperWet),
+                    ),
+                    'dirty': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.diaperDirty),
+                    ),
+                    'both': Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Text(l10n.diaperBoth),
+                    ),
+                  },
+                  onValueChanged: (v) {
+                    if (v != null) setModalState(() => type = v);
+                  },
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               _buildRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
@@ -1768,14 +1926,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   if (picked != null) setModalState(() => eventTime = picked);
                 },
               ),
-              const SizedBox(height: 10),
-              TextField(
+              const SizedBox(height: 12),
+              _buildSheetTextField(
                 controller: noteController,
-                decoration: InputDecoration(
-                  hintText: l10n.addOptionalNote,
-                  border: const OutlineInputBorder(),
-                ),
-                maxLines: 2,
+                hintText: l10n.addOptionalNote,
               ),
             ],
           ),
@@ -1846,7 +2000,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   if (picked != null) setModalState(() => start = picked);
                 },
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _buildRowTile(
                 title: l10n.end,
                 value: _formatTime(end),
@@ -2023,4 +2177,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   String _formatDuration(Duration d, AppLocalizations l10n) => d.inHours > 0
       ? '${d.inHours} ${l10n.hourAbbrev} ${d.inMinutes % 60} ${l10n.minAbbrev}'
       : '${d.inMinutes} ${l10n.minAbbrev}';
+}
+
+class _SheetCircleButton extends StatelessWidget {
+  const _SheetCircleButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 34,
+        height: 34,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF3A3A46) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFE5E0F7).withValues(alpha: 0.7),
+          ),
+        ),
+        child: Icon(icon, size: 18),
+      ),
+    );
+  }
 }

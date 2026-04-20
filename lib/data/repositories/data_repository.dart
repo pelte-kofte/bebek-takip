@@ -11,6 +11,10 @@ class RepositoryDataBundle {
   final List<Map<String, dynamic>> anilar;
   final List<Map<String, dynamic>> ilacKayitlari;
   final List<Map<String, dynamic>> ilacDozKayitlari;
+  /// IDs of babies *owned* by this user that have at least one co-parent
+  /// (i.e., the babies/{babyId} doc has a non-empty `members` map).
+  /// Optional — defaults to empty so all existing call sites remain valid.
+  final Set<String> ownedBabyIdsWithMembers;
 
   const RepositoryDataBundle({
     required this.babies,
@@ -23,6 +27,7 @@ class RepositoryDataBundle {
     required this.anilar,
     required this.ilacKayitlari,
     required this.ilacDozKayitlari,
+    this.ownedBabyIdsWithMembers = const {},
   });
 
   bool get hasAnyData {

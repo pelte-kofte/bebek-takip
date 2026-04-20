@@ -7,6 +7,21 @@ class IllustrationRequestStatus {
   static const String failed = 'failed';
 }
 
+/// Illustration prompt style selector.
+/// The Cloud Function reads this field and picks the corresponding prompt.
+/// Fallback: any unknown value → "default".
+class IllustrationStyle {
+  static const String defaultStyle = 'default';
+  static const String lofi = 'lofi';
+
+  static bool isValid(String? value) =>
+      value == defaultStyle || value == lofi;
+
+  /// Returns [value] if valid, otherwise [defaultStyle].
+  static String sanitize(String? value) =>
+      isValid(value) ? value! : defaultStyle;
+}
+
 class IllustrationRequest {
   final String id;
   final String uid;
@@ -17,6 +32,9 @@ class IllustrationRequest {
   final String status;
   final String requestType;
   final String promptVersion;
+  /// Illustration style used for prompt selection. Defaults to "default".
+  /// See [IllustrationStyle] for valid values.
+  final String style;
   final String? resultStoragePath;
   final String? resultImageUrl;
   final String? errorCode;
@@ -34,6 +52,7 @@ class IllustrationRequest {
     required this.status,
     required this.requestType,
     required this.promptVersion,
+    this.style = IllustrationStyle.defaultStyle,
     required this.resultStoragePath,
     required this.resultImageUrl,
     required this.errorCode,
@@ -52,6 +71,7 @@ class IllustrationRequest {
       'status': status,
       'requestType': requestType,
       'promptVersion': promptVersion,
+      'style': style,
       'resultStoragePath': resultStoragePath,
       'resultImageUrl': resultImageUrl,
       'errorCode': errorCode,
@@ -75,6 +95,7 @@ class IllustrationRequest {
       status: (data['status'] ?? IllustrationRequestStatus.pending).toString(),
       requestType: (data['requestType'] ?? '').toString(),
       promptVersion: (data['promptVersion'] ?? '').toString(),
+      style: IllustrationStyle.sanitize(data['style']?.toString()),
       resultStoragePath: data['resultStoragePath']?.toString(),
       resultImageUrl: data['resultImageUrl']?.toString(),
       errorCode: data['errorCode']?.toString(),

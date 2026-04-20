@@ -5,6 +5,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../models/veri_yonetici.dart';
 
 /// Manages cross-device shared-baby activity notifications.
 ///
@@ -105,6 +106,13 @@ class ActivityNotificationService {
               _showNotification(data);
               // Best-effort mark as read so the next session skips it.
               change.doc.reference.update({'read': true}).ignore();
+              // Refresh in-memory cache so the co-parent's activity is visible
+              // immediately without requiring an app restart.
+              _log(
+                'inbox notification received — triggering data refresh '
+                'babyId=${data['babyId']} activityType=${data['activityType']}',
+              );
+              VeriYonetici.refreshForCurrentUser().ignore();
             }
           },
           onError: (Object e) => _log('stream error: $e'),
@@ -168,15 +176,22 @@ class ActivityNotificationService {
     try {
       final callable = FirebaseFunctions.instance
           .httpsCallable('notifySharedActivity');
-      await callable.call<void>({
+      _log(
+        'reportActivity calling notifySharedActivity '
+        'babyId=$babyId activityType=$activityType',
+      );
+      final result = await callable.call<Map<String, dynamic>>({
         'babyId': babyId,
         'activityType': activityType,
         'babyName': babyName,
       });
-      _log('reported activityType=$activityType babyId=$babyId');
-    } catch (e) {
+      _log(
+        'reportActivity done activityType=$activityType babyId=$babyId '
+        'notified=${result.data['notified']}',
+      );
+    } catch (e, st) {
       // Best-effort — notifications are non-critical; never surface to user.
-      _log('reportActivity error: $e');
+      _log('reportActivity error: $e\n$st');
     }
   }
 

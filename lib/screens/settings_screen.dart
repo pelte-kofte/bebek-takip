@@ -20,6 +20,7 @@ import 'premium_screen.dart';
 import '../services/shared_parenting_service.dart';
 import 'invitation_inbox_screen.dart';
 import 'shared_parenting_screen.dart';
+import '../widgets/illustration_upsell_sheet.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -131,6 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _toggleMedicationReminder(bool value) async {
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _medicationReminderEnabled = value);
     await VeriYonetici.setMedicationReminderEnabled(value);
     await _reminderService.initialize();
@@ -146,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       }
       if (mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Notifications disabled')),
+          SnackBar(content: Text(l10n.notificationsDisabled)),
         );
       }
       return;
@@ -156,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (!granted) {
       if (mounted) {
         messenger.showSnackBar(
-          const SnackBar(content: Text('Permission denied')),
+          SnackBar(content: Text(l10n.permissionDenied)),
         );
       }
       return;
@@ -183,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     if (mounted) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Reminder scheduled')),
+        SnackBar(content: Text(l10n.reminderScheduled)),
       );
     }
   }
@@ -381,6 +383,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     children: [
                       // PREMIUM Section
                       _buildPremiumSection(cardColor, textColor, subtitleColor),
+                      const SizedBox(height: 12),
+                      _buildBuyIllustrationsSection(
+                        cardColor,
+                        textColor,
+                        subtitleColor,
+                      ),
                       const SizedBox(height: 12),
 
                       // SHARED PARENTING Section
@@ -625,9 +633,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               icon: Icons.medication_outlined,
                               iconBgColor: const Color(0xFFE8F5E9),
                               iconColor: const Color(0xFF4CAF50),
-                              title: 'Medication reminders',
+                              title: l10n.medicationReminders,
                               subtitle: _medicationReminderEnabled
-                                  ? 'Enabled'
+                                  ? l10n.enabled
                                   : l10n.off,
                               value: _medicationReminderEnabled,
                               onChanged: _toggleMedicationReminder,
@@ -714,7 +722,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 24),
 
-                      _buildSectionHeader('Legal', subtitleColor),
+                      _buildSectionHeader(l10n.legalSection, subtitleColor),
                       const SizedBox(height: 12),
                       _buildCard(
                         cardColor: cardColor,
@@ -722,8 +730,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             _buildLegalTile(
                               icon: Icons.description_outlined,
-                              title: 'Terms of Service',
-                              subtitle: 'Read our terms',
+                              title: l10n.termsOfUse,
+                              subtitle: l10n.termsOfUseSubtitle,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () => _openInAppUrl(TERMS_URL),
@@ -734,8 +742,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                             _buildLegalTile(
                               icon: Icons.privacy_tip_outlined,
-                              title: 'Privacy Policy',
-                              subtitle: 'Read our privacy policy',
+                              title: l10n.privacyPolicy,
+                              subtitle: l10n.privacyPolicySubtitle,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () => _openInAppUrl(PRIVACY_URL),
@@ -950,8 +958,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           final user = FirebaseAuth.instance.currentUser;
           if (user == null || user.isAnonymous) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Please sign in to use Shared Parenting.'),
+              SnackBar(
+                content: Text(AppLocalizations.of(context)!.signInToUseSharedParenting),
               ),
             );
             await Navigator.push(
@@ -1027,6 +1035,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? "Share your baby's journey with another parent"
                         : 'Available with Premium',
                     style: TextStyle(fontSize: 13, color: subtitleColor),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBuyIllustrationsSection(
+    Color cardColor,
+    Color textColor,
+    Color subtitleColor,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    return _buildCard(
+      cardColor: cardColor,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => IllustrationUpsellSheet.showPurchase(context),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF1EC),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.shopping_bag_outlined,
+                color: Color(0xFFFFB4A2),
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.buyIllustrations,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.buyIllustrationsSubtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: subtitleColor,
+                    ),
                   ),
                 ],
               ),
@@ -1470,7 +1535,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: TextStyle(fontSize: 15, color: subtitleColor)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 15, color: subtitleColor),
+        ),
         Text(
           value,
           style: TextStyle(

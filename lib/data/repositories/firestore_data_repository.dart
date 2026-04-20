@@ -338,6 +338,7 @@ class FirestoreDataRepository implements DataRepository {
     final allRecordDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
     final allMedicationDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
     final allMedicationLogDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+    final ownedWithMembers = <String>{};
 
     for (final babyId in orderedBabyIds) {
       final legacyBabyDoc = legacyBabyDocsById[babyId];
@@ -351,10 +352,19 @@ class FirestoreDataRepository implements DataRepository {
       }
 
       final sharedBabySnap = await _sharedBabyRef(babyId).get();
-      final sharedOwnerId = sharedBabySnap.data()?['ownerId'] as String?;
+      final sharedBabyData = sharedBabySnap.data();
+      final sharedOwnerId = sharedBabyData?['ownerId'] as String?;
       final isOwnedByCurrentUser =
           (sharedOwnerId != null && sharedOwnerId == uid) ||
           legacyBabyDoc != null;
+
+      // Track owned babies that have co-parents so the UI can show a badge.
+      if (isOwnedByCurrentUser) {
+        final membersMap = sharedBabyData?['members'];
+        if (membersMap is Map && membersMap.isNotEmpty) {
+          ownedWithMembers.add(babyId);
+        }
+      }
 
       var sharedRecordsSnap = await _sharedBabyCollection(babyId, 'records')
           .orderBy('createdAt', descending: true)
@@ -700,6 +710,7 @@ class FirestoreDataRepository implements DataRepository {
       anilar: anilar,
       ilacKayitlari: ilaclar,
       ilacDozKayitlari: dozlar,
+      ownedBabyIdsWithMembers: ownedWithMembers,
     );
   }
 
@@ -1021,6 +1032,13 @@ class FirestoreDataRepository implements DataRepository {
         )
       else
         Future.value(0),
+      if (isOwner)
+        _deleteAllPaginated(
+          _sharedBabyCollection(babyId, 'allergies'),
+          operation: 'write:deleteBabyData:sharedAllergies',
+        )
+      else
+        Future.value(0),
     ]);
 
     try {
@@ -1042,7 +1060,8 @@ class FirestoreDataRepository implements DataRepository {
       'legacyRecords=${results[0]} legacyMedications=${results[1]} '
       'legacyMedicationLogs=${results[2]} legacyMemories=${results[3]} '
       'sharedRecords=${results[4]} sharedMedications=${results[5]} '
-      'sharedMedicationLogs=${results[6]} owner=$isOwner',
+      'sharedMedicationLogs=${results[6]} sharedAllergies=${results[7]} '
+      'owner=$isOwner',
     );
   }
 

@@ -7,8 +7,11 @@ export {
   grantPurchasedIllustrationCredits,
 } from "./illustrationRequests.js";
 export {
+  createInviteCode,
   sendInvitation,
+  acceptInvitationCode,
   acceptInvitation,
+  cancelInvitation,
   declineInvitation,
   removeMember,
   syncPremiumStatus,

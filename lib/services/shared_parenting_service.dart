@@ -8,7 +8,9 @@ class InvitationItem {
   final String babyId;
   final String? babyName;
   final String? ownerDisplayName;
-  final String inviteeEmail;
+  final String? inviteeEmail;
+  final String? inviteCode;
+  final String inviteType;
   final DateTime? expiresAt;
   final String status;
   final DateTime? createdAt;
@@ -18,7 +20,9 @@ class InvitationItem {
     required this.babyId,
     this.babyName,
     this.ownerDisplayName,
-    required this.inviteeEmail,
+    this.inviteeEmail,
+    this.inviteCode,
+    this.inviteType = 'email',
     this.expiresAt,
     this.status = 'pending',
     this.createdAt,
@@ -31,12 +35,28 @@ class InvitationItem {
       babyId: (d['babyId'] as String?) ?? '',
       babyName: d['babyName'] as String?,
       ownerDisplayName: d['ownerDisplayName'] as String?,
-      inviteeEmail: (d['inviteeEmail'] as String?) ?? '',
+      inviteeEmail: d['inviteeEmail'] as String?,
+      inviteCode: d['inviteCode'] as String?,
+      inviteType: (d['inviteType'] as String?) ?? 'email',
       expiresAt: (d['expiresAt'] as Timestamp?)?.toDate(),
       status: (d['status'] as String?) ?? 'pending',
       createdAt: (d['createdAt'] as Timestamp?)?.toDate(),
     );
   }
+}
+
+class CreateInviteCodeResult {
+  final String invitationId;
+  final String inviteCode;
+  final bool existingInvitation;
+  final DateTime? expiresAt;
+
+  const CreateInviteCodeResult({
+    required this.invitationId,
+    required this.inviteCode,
+    required this.existingInvitation,
+    this.expiresAt,
+  });
 }
 
 /// Result returned by [SharedParentingService.sendInvitation].
@@ -58,6 +78,12 @@ class SharedParentingService {
   SharedParentingService._();
   static final SharedParentingService instance = SharedParentingService._();
 
+  DateTime? _toDate(dynamic value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
   /// Sends an invitation to [inviteeEmail] to co-parent baby [babyId].
   ///
   /// Throws [FirebaseFunctionsException] on validation, ownership, or premium
@@ -77,6 +103,32 @@ class SharedParentingService {
       invitationId: data['invitationId'] as String,
       existingInvitation: data['existingInvitation'] as bool? ?? false,
     );
+  }
+
+  Future<CreateInviteCodeResult> createInviteCode({
+    required String babyId,
+  }) async {
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('createInviteCode');
+    final result = await callable.call<Map<String, dynamic>>({
+      'babyId': babyId,
+    });
+    final data = result.data;
+    return CreateInviteCodeResult(
+      invitationId: data['invitationId'] as String,
+      inviteCode: data['inviteCode'] as String,
+      existingInvitation: data['existingInvitation'] as bool? ?? false,
+      expiresAt: _toDate(data['expiresAt']),
+    );
+  }
+
+  Future<String> acceptInvitationCode({required String inviteCode}) async {
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('acceptInvitationCode');
+    final result = await callable.call<Map<String, dynamic>>({
+      'inviteCode': inviteCode,
+    });
+    return result.data['babyId'] as String;
   }
 
   /// Accepts a pending invitation by its [invitationId].
@@ -128,12 +180,11 @@ class SharedParentingService {
   /// Only the invitation owner can cancel, and only while status is 'pending'.
   /// The Firestore stream in [watchSentInvitations] will auto-update the UI.
   Future<void> cancelInvitation({required String invitationId}) async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) throw StateError('Not authenticated');
-    await FirebaseFirestore.instance
-        .collection('babyInvitations')
-        .doc(invitationId)
-        .delete();
+    final callable =
+        FirebaseFunctions.instance.httpsCallable('cancelInvitation');
+    await callable.call<Map<String, dynamic>>({
+      'invitationId': invitationId,
+    });
   }
 
   /// Live stream of pending invitations addressed to the current user.

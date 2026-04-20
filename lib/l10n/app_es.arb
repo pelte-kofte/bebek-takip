@@ -725,5 +725,36 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "sharedBadge": "Compartido",
+  "notificationsDisabled": "Notificaciones desactivadas",
+  "permissionDenied": "Permiso denegado",
+  "reminderScheduled": "Recordatorio programado",
+  "signInToUseSharedParenting": "Inicia sesión para usar Parentalidad compartida.",
+  "babyCouldNotBeDeleted": "No se pudo eliminar al bebé.",
+  "coParentLoggedActivity": "Un copadre registró una actividad.",
+  "sharedBabyUpdateTitle": "Actualización de bebé compartido",
+  "allergiesTitle": "Alergias",
+  "addAllergy": "Agregar Alergia",
+  "allergyName": "Nombre del alérgeno",
+  "allergyNote": "Nota (opcional)",
+  "noAllergies": "No hay alergias registradas",
+  "deleteAllergy": "Eliminar alergia",
+  "allergyAdded": "Alergia agregada",
+
+  "memoriesFilterAll": "Todo",
+  "memoriesFilterPhotos": "Fotos",
+  "memoriesFilterIllustrated": "Ilustradas",
+  "memoriesEmptyFilter": "Ningún recuerdo coincide con este filtro",
+  "illBadgeReady": "Ilustrado",
+  "illBadgeGenerating": "Generando\u2026",
+
+  "illTurnIntoIllustration": "Convertir en ilustración",
+  "turnIntoIllustration": "Convertir en ilustración",
+  "illNilicoStyle": "Estilo Nilico",
+  "nilicoStyle": "Estilo Nilico",
+  "illLofiIllustration": "Ilustración Lo-Fi",
+  "lofiIllustration": "Ilustración Lo-Fi",
+  "vazgec": "Cancelar"
 }

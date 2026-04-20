@@ -48,6 +48,7 @@ class IllustrationRequestService {
   /// Credits are only consumed when the Firestore write succeeds.
   Future<IllustrationRequest> createMemoryIllustrationRequest({
     required Map<String, dynamic> memory,
+    String style = IllustrationStyle.defaultStyle,
   }) async {
     final user = _auth.currentUser;
     if (user == null || user.isAnonymous) {
@@ -96,6 +97,7 @@ class IllustrationRequestService {
       sourcePhotoUrl: sourcePhotoUrl,
       requestType: memoryPhotoRequestType,
       promptVersion: memoryPhotoPromptVersion,
+      style: IllustrationStyle.sanitize(style),
     );
 
     return request;
@@ -111,6 +113,14 @@ class IllustrationRequestService {
       return const Stream<List<IllustrationRequest>>.empty();
     }
     return _repository.watchUserRequests(user.uid);
+  }
+
+  Future<UserIllustrationCredits> readMyCredits() async {
+    final user = _auth.currentUser;
+    if (user == null || user.isAnonymous) {
+      return UserIllustrationCredits.empty('');
+    }
+    return _repository.readCredits(user.uid);
   }
 
   Stream<UserIllustrationCredits> watchMyCredits() {

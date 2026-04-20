@@ -1827,6 +1827,72 @@ class AppLocalizationsTr extends AppLocalizations {
   String get spUnlockPremium => 'Premium ile Aç';
 
   @override
+  String get spJoinWithCodeTitle => 'Kod ile katıl';
+
+  @override
+  String get spInviteCodeHint => 'Davet kodunu gir';
+
+  @override
+  String get spJoinWithCodeBtn => 'Bebeğe Katıl';
+
+  @override
+  String get spEnterInviteCode => 'Lütfen bir davet kodu girin.';
+
+  @override
+  String get spInviteCodeTitle => 'Davet kodu';
+
+  @override
+  String get spInviteCodeDesc =>
+      'Tek bir güvenli kod oluşturun ve diğer ebeveynle paylaşın. Kod, bebeği onların giriş yapmış hesabına bağlar.';
+
+  @override
+  String get spCreateInviteCodeBtn => 'Davet Kodu Oluştur';
+
+  @override
+  String spInviteCodeCreated(String code) {
+    return 'Davet kodu oluşturuldu: $code';
+  }
+
+  @override
+  String spInviteCodeReady(String code) {
+    return 'Davet kodu hazır: $code';
+  }
+
+  @override
+  String get spInviteCodeAccepted => 'Bebek başarıyla bağlandı.';
+
+  @override
+  String get spInviteCodeCopied => 'Davet kodu kopyalandı.';
+
+  @override
+  String get spCopyCode => 'Kopyala';
+
+  @override
+  String get spShareCode => 'Paylaş';
+
+  @override
+  String get spInviteCodeNotFound => 'Davet kodu bulunamadı.';
+
+  @override
+  String get spInviteCodeExpired => 'Bu davet kodunun süresi dolmuş.';
+
+  @override
+  String get spInviteCodeUnavailable => 'Bu davet kodu artık kullanılamıyor.';
+
+  @override
+  String get spInviteCodeActive => 'Bu kod şu anda aktif.';
+
+  @override
+  String spInviteCodeExpires(String date) {
+    return 'Son gün $date';
+  }
+
+  @override
+  String spInviteCodeShareMessage(String babyName, String code) {
+    return '$babyName için bu davet kodunu kullan: $code';
+  }
+
+  @override
   String get invInboxTitle => 'Alınan Davetler';
 
   @override
@@ -2018,4 +2084,173 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get illShareFallback => 'Özel bir an, illüstre edildi.';
+
+  @override
+  String get memoryStyle => 'Anı stili';
+
+  @override
+  String get memoryStyleOriginal => 'Orijinal';
+
+  @override
+  String get memoryStyleClassic => 'Klasik Çizim';
+
+  @override
+  String get memoryStyleLofi => 'Lo-Fi Çizim';
+
+  @override
+  String get medicationReminders => 'İlaç hatırlatıcıları';
+
+  @override
+  String get enabled => 'Açık';
+
+  @override
+  String get legalSection => 'Yasal';
+
+  @override
+  String get deleteBabyBtn => 'Bebeği sil';
+
+  @override
+  String get deleteBabySubtitle => 'Bebek profilini ve tüm kayıtları kaldır.';
+
+  @override
+  String get deleteBabyTitle => 'Bebek silinsin mi?';
+
+  @override
+  String deleteBabyDialogContent(String babyName) {
+    return 'Bu işlem $babyName adlı bebek ve tüm ilgili kayıtlar bu cihazdan kaldırılacak. Giriş yapıldıysa, senkronize edilen veriler de hesabınızdan silinecek. Bu işlem geri alınamaz.';
+  }
+
+  @override
+  String get customRange => 'Özel';
+
+  @override
+  String get selectDateRange => 'Tarih aralığı seç';
+
+  @override
+  String get sharedBadge => 'Paylaşılan';
+
+  @override
+  String get notificationsDisabled => 'Bildirimler devre dışı';
+
+  @override
+  String get permissionDenied => 'İzin reddedildi';
+
+  @override
+  String get reminderScheduled => 'Hatırlatıcı ayarlandı';
+
+  @override
+  String get signInToUseSharedParenting =>
+      'Paylaşımlı Ebeveynliği kullanmak için giriş yapın.';
+
+  @override
+  String get babyCouldNotBeDeleted => 'Bebek silinemedi.';
+
+  @override
+  String get coParentLoggedActivity => 'Bir ebeveyn aktivite kaydetti.';
+
+  @override
+  String get sharedBabyUpdateTitle => 'Paylaşılan Bebek Güncellemesi';
+
+  @override
+  String get allergiesTitle => 'Alerjiler';
+
+  @override
+  String get addAllergy => 'Alerji Ekle';
+
+  @override
+  String get allergySectionSubtitle =>
+      'Hassasiyetleri ve gıda reaksiyonlarını tek bir sakin alanda tutun.';
+
+  @override
+  String get noAllergiesSummary =>
+      'Henüz alerji notu yok. Dilerseniz istediğiniz zaman ekleyebilirsiniz.';
+
+  @override
+  String get reportAllergy => 'Alerji Bildir';
+
+  @override
+  String get allergySheetSubtitle =>
+      'Sağlık görünümünde kolayca görünmesi için bir gıda, içerik veya reaksiyon notu ekleyin.';
+
+  @override
+  String get allergyActive => 'Aktif';
+
+  @override
+  String get allergyInactive => 'Pasif';
+
+  @override
+  String get healthOverviewTitle => 'Bugüne hızlı bakış';
+
+  @override
+  String get healthOverviewSubtitle =>
+      'Bakım, uyku ve günlük sağlık detaylarının daha yumuşak bir özeti.';
+
+  @override
+  String get vaccineEmptySubtitle =>
+      'İsterseniz ulusal takvimle başlayın, isterseniz ihtiyacınız olduğunda aşıyı manuel ekleyin.';
+
+  @override
+  String get allergyName => 'Alerjen adı';
+
+  @override
+  String get allergyNote => 'Not (opsiyonel)';
+
+  @override
+  String get noAllergies => 'Henüz alerji kaydedilmedi';
+
+  @override
+  String get deleteAllergy => 'Alerjiyi sil';
+
+  @override
+  String get allergyAdded => 'Alerji eklendi';
+
+  @override
+  String get memoriesFilterAll => 'Tümü';
+
+  @override
+  String get memoriesFilterPhotos => 'Fotoğraflar';
+
+  @override
+  String get memoriesFilterIllustrated => 'Çizimli';
+
+  @override
+  String get memoriesEmptyFilter => 'Bu filtreyle eşleşen anı yok';
+
+  @override
+  String get illBadgeReady => 'Çizim hazır';
+
+  @override
+  String get illBadgeGenerating => 'Oluşturuluyor…';
+
+  @override
+  String get illTurnIntoIllustration => 'Anıyı çizime dönüştür';
+
+  @override
+  String get illNilicoStyle => 'Nilico Stili';
+
+  @override
+  String get illLofiIllustration => 'Lo-Fi Çizim';
+
+  @override
+  String get buyIllustrations => 'İllüstrasyon Satın Al';
+
+  @override
+  String get buyIllustrationsSubtitle =>
+      'Ek anılar için illüstrasyon paketleri';
+
+  @override
+  String get illustrationReady => 'Hazır';
+
+  @override
+  String get illustrationGenerating => 'Oluşuyor';
+
+  @override
+  String get memoriesEmptyTitle => 'En sevdiğiniz küçük anları saklayın';
+
+  @override
+  String get memoriesEmptySubtitle =>
+      'Fotoğraflar, notlar ve dönüm noktaları burada birlikte kalır.\nİlk anınızı eklemek sadece bir dokunuş uzağınızda.';
+
+  @override
+  String get addFirstMemory => 'İlk anını ekle';
 }

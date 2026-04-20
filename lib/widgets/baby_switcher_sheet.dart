@@ -158,7 +158,7 @@ class BabySwitcherSheet extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (VeriYonetici.isSharedBaby(baby.id)) ...[
+                      if (VeriYonetici.isBabyVisiblyShared(baby.id)) ...[
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -169,9 +169,9 @@ class BabySwitcherSheet extends StatelessWidget {
                             color: const Color(0xFFDCEFF7),
                             borderRadius: BorderRadius.circular(6),
                           ),
-                          child: const Text(
-                            'Shared',
-                            style: TextStyle(
+                          child: Text(
+                            AppLocalizations.of(context)!.sharedBadge,
+                            style: const TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
                               color: Color(0xFF6AADCF),

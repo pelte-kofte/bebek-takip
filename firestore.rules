@@ -61,9 +61,14 @@ service cloud.firestore {
         return request.auth != null;
       }
 
-      // Protected fields that only the backend (admin SDK) may modify.
-      function isManagedField(key) {
-        return key in ['ownerId', 'members'];
+      // Legacy owner fallback: some older owner babies may still exist only
+      // under users/{uid}/babies/{babyId} until the top-level mirror is
+      // backfilled. Allow read/create/repair only for that exact owner.
+      function isLegacyOwner() {
+        return isSignedIn() &&
+               exists(
+                 /databases/$(database)/documents/users/$(request.auth.uid)/babies/$(babyId)
+               );
       }
 
       // True when the incoming write does not touch any protected fields.
@@ -85,24 +90,44 @@ service cloud.firestore {
                && resource.data.members[request.auth.uid] != null;
       }
 
+      function isLegacyOwnerRepairWrite() {
+        return isLegacyOwner()
+               && request.resource.data.ownerId == request.auth.uid
+               && !request.resource.data.diff(resource.data)
+                    .affectedKeys()
+                    .hasAny(['members'])
+               && request.resource.data.diff(resource.data)
+                    .affectedKeys()
+                    .hasOnly([
+                      'ownerId',
+                      'name',
+                      'birthDate',
+                      'photoUrl',
+                      'photoStoragePath',
+                      'createdAt',
+                    ]);
+      }
+
       // Owner may create the initial mirror document for their own baby.
-      allow create: if request.auth != null
+      allow create: if isLegacyOwner()
                     && request.resource.data.ownerId == request.auth.uid
                     && !('members' in request.resource.data);
 
-      // Owner can read and write everything (including membership management).
-      allow read, write: if isOwner();
+      // Owners, members, and legacy owners can read. Delete remains owner-only.
+      allow read: if isOwner() || isMember() || isLegacyOwner();
+      allow delete: if isOwner();
 
-      // Members can read the baby document.
-      allow read: if isMember();
+      // Owner can update normal baby data but cannot modify ownerId or members.
+      // Membership changes are backend-only via Cloud Functions (admin SDK).
+      allow update: if (isOwner() && touchesNoManagedFields()) ||
+                    (isMember() && touchesNoManagedFields()) ||
+                    isLegacyOwnerRepairWrite();
 
       // Members can update normal baby data, but cannot touch ownerId or members.
-      allow update: if isMember() && touchesNoManagedFields();
-
       // Shared baby journey data.
       match /{collection}/{docId} {
         function isSupportedSharedCollection() {
-          return collection in ['records', 'medications', 'medicationLogs'];
+          return collection in ['records', 'medications', 'medicationLogs', 'allergies'];
         }
 
         function babyDoc() {
@@ -162,6 +187,7 @@ service cloud.firestore {
 
       function isInvitationInvitee() {
         return normalizedAuthEmail() != null &&
+               request.auth.token.email_verified == true &&
                resource.data.inviteeEmail == normalizedAuthEmail();
       }
 

@@ -46,6 +46,14 @@ const ALLOWED_SOURCE_IMAGE_EXTENSIONS = new Set([
   "webp",
 ]);
 
+const ILLUSTRATION_STYLE_DEFAULT = "default";
+const ILLUSTRATION_STYLE_LOFI = "lofi";
+
+function sanitizeStyle(value: unknown): string {
+  if (value === ILLUSTRATION_STYLE_LOFI) return ILLUSTRATION_STYLE_LOFI;
+  return ILLUSTRATION_STYLE_DEFAULT;
+}
+
 type IllustrationRequestData = {
   uid: string;
   babyId: string;
@@ -55,6 +63,7 @@ type IllustrationRequestData = {
   status: string;
   requestType?: string | null;
   promptVersion?: string | null;
+  style?: string | null;
   resultStoragePath?: string | null;
   resultImageUrl?: string | null;
   errorCode?: string | null;
@@ -116,11 +125,11 @@ export const processIllustrationRequest = onDocumentCreated(
     }
 
     const request = validation.data;
-    if (request.status !== REQUEST_STATUS_PENDING) {
-      logger.info("Skipping illustration request with non-pending status.", {
-        requestId,
-        status: request.status,
-      });
+
+    // Atomically claim the request (pending → processing).
+    // Prevents double credit consumption on Cloud Function retries.
+    const claimed = await claimRequestOrSkip(requestRef, requestId);
+    if (!claimed) {
       return;
     }
 
@@ -131,6 +140,7 @@ export const processIllustrationRequest = onDocumentCreated(
       memoryId: request.memoryId,
       requestType: request.requestType,
       promptVersion: request.promptVersion,
+      style: request.style ?? ILLUSTRATION_STYLE_DEFAULT,
     });
     const workerDeadlineMs =
       Date.now() +
@@ -147,13 +157,6 @@ export const processIllustrationRequest = onDocumentCreated(
       // Atomically validate and consume one credit server-side.
       // This is the authoritative gate — client-side credit checks are UX only.
       consumedCreditBucket = await consumeCreditServerSide(request.uid);
-
-      await requestRef.update({
-        status: REQUEST_STATUS_PROCESSING,
-        updatedAt: FieldValue.serverTimestamp(),
-        errorCode: null,
-        errorMessage: null,
-      });
 
       const generationResult = await generateIllustrationFromSource({
         requestId,
@@ -244,6 +247,7 @@ function validateRequestData(
     status: toTrimmedString(rawData.status),
     requestType: toOptionalString(rawData.requestType),
     promptVersion: toOptionalString(rawData.promptVersion),
+    style: sanitizeStyle(rawData.style),
     resultStoragePath: toOptionalString(rawData.resultStoragePath),
     resultImageUrl: toOptionalString(rawData.resultImageUrl),
     errorCode: toOptionalString(rawData.errorCode),
@@ -270,6 +274,53 @@ function validateRequestData(
   }
 
   return {ok: true, data};
+}
+
+/**
+ * Atomically transitions the request status from "pending" to "processing"
+ * and stamps a unique workerId. Returns true if this worker won the claim;
+ * false if the request was already claimed or in a terminal state (which
+ * means a previous invocation already handled it — caller should exit).
+ * @param {FirebaseFirestore.DocumentReference} requestRef Reference to the
+ *   illustration request document to claim.
+ * @param {string} requestId Firestore document ID used for log context.
+ * @return {Promise<boolean>} True if this worker successfully claimed it.
+ */
+async function claimRequestOrSkip(
+  requestRef: FirebaseFirestore.DocumentReference,
+  requestId: string,
+): Promise<boolean> {
+  const db = getFirestore();
+  let claimed = false;
+
+  try {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(requestRef);
+      if (!snap.exists) {
+        logger.warn("claimRequestOrSkip: request doc not found.", {requestId});
+        return;
+      }
+      const currentStatus = (snap.data()?.status ?? "") as string;
+      if (currentStatus !== REQUEST_STATUS_PENDING) {
+        logger.info("claimRequestOrSkip: already claimed — skipping.", {
+          requestId,
+          currentStatus,
+        });
+        return;
+      }
+      tx.update(requestRef, {
+        status: REQUEST_STATUS_PROCESSING,
+        workerId: randomUUID(),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      claimed = true;
+    });
+  } catch (error) {
+    logger.error("claimRequestOrSkip: transaction failed.", {requestId, error});
+    return false;
+  }
+
+  return claimed;
 }
 
 async function markRequestFailed(
@@ -555,11 +606,17 @@ async function assertRequestOwnershipOrThrow(
 }
 
 function buildIllustrationPrompt(request: IllustrationRequestData): string {
+  const style = sanitizeStyle(request.style);
+  if (style === ILLUSTRATION_STYLE_LOFI) {
+    return buildLofiPrompt(request);
+  }
+  return buildDefaultPrompt(request);
+}
+
+function buildDefaultPrompt(request: IllustrationRequestData): string {
   const requestTypeHint = request.requestType || "memory-photo-illustration";
   const promptVersionHint = request.promptVersion || "memory-photo-v1";
 
-  // TODO(illustration-prompt): Replace this with the final hidden prompt once
-  // the art direction is approved. Keep all prompt construction server-side.
   return [
     "Transform this photo into a clean premium children's book illustration.",
     "COMPOSITION: keep every subject, pose, framing, and scene layout",
@@ -580,6 +637,38 @@ function buildIllustrationPrompt(request: IllustrationRequestData): string {
     "premium modern baby app illustration.",
     "Do not include text, logos, watermarks, extra limbs, distorted",
     "anatomy, or horror elements.",
+    `Internal request type: ${requestTypeHint}.`,
+    `Internal prompt version: ${promptVersionHint}.`,
+  ].join(" ");
+}
+
+function buildLofiPrompt(request: IllustrationRequestData): string {
+  const requestTypeHint = request.requestType || "memory-photo-illustration";
+  const promptVersionHint = request.promptVersion || "memory-photo-v1";
+
+  return [
+    "Create a high-quality image-to-image transformation based on the",
+    "provided input image.",
+    "Transform the subject into a soft, Lo-Fi 2D anime illustration while",
+    "preserving: original facial structure, identity, pose, composition.",
+    "STYLE REQUIREMENTS: clean, soft anime linework (not harsh, not overly",
+    "detailed). Flat cel-shading with very subtle gradients.",
+    "Warm, cozy, nostalgic aesthetic.",
+    "SKIN: smooth skin texture, warm peach and soft orange undertones,",
+    "subtle rosy blush on cheeks and nose tip,",
+    "very light natural grain texture.",
+    "HAIR: preserve original hairstyle and flow, add soft natural flyaway",
+    "strands, avoid overly sharp or artificial shapes.",
+    "LIGHTING: warm cinematic lighting, golden hour glow,",
+    "soft shadows, no harsh contrast.",
+    "COLOR PALETTE: warm terracotta, soft beige, muted orange tones,",
+    "overall warm harmony (no cold tones).",
+    "MOOD: cozy, emotional, nostalgic, calm and intimate atmosphere.",
+    "QUALITY: high resolution (4k), sharp but soft finish",
+    "(no over-sharpening).",
+    "IMPORTANT: do not distort facial identity,",
+    "do not exaggerate anime features too much,",
+    "avoid overly stylized or cartoonish output.",
     `Internal request type: ${requestTypeHint}.`,
     `Internal prompt version: ${promptVersionHint}.`,
   ].join(" ");

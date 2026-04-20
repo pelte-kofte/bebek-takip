@@ -29,23 +29,41 @@ class IllustrationUpsellSheet extends StatefulWidget {
   final Map<String, dynamic> memory;
   /// When non-null the sheet opens directly on the result view (re-open flow).
   final String? initialIllustrationUrl;
+  /// Illustration style to request. Defaults to [IllustrationStyle.defaultStyle].
+  final String style;
+  final bool startInPurchaseMode;
 
   const IllustrationUpsellSheet({
     super.key,
     required this.memory,
     this.initialIllustrationUrl,
+    this.style = IllustrationStyle.defaultStyle,
+    this.startInPurchaseMode = false,
   });
 
   /// Standard entry point — shows upsell/generation flow.
   static Future<void> show(
     BuildContext context,
-    Map<String, dynamic> memory,
-  ) {
+    Map<String, dynamic> memory, {
+    String style = IllustrationStyle.defaultStyle,
+  }) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => IllustrationUpsellSheet(memory: memory),
+      builder: (_) => IllustrationUpsellSheet(memory: memory, style: style),
+    );
+  }
+
+  static Future<void> showPurchase(BuildContext context) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const IllustrationUpsellSheet(
+        memory: <String, dynamic>{},
+        startInPurchaseMode: true,
+      ),
     );
   }
 
@@ -101,6 +119,7 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
   String? _resultImageUrl;
   String? _errorMessage;
   StreamSubscription<IllustrationRequest?>? _requestSub;
+  final IllustrationRequestService _service = IllustrationRequestService();
 
   // ---- pack purchase -------------------------------------------------------
   /// Non-null while a pack purchase is in progress. Holds the product ID of
@@ -124,10 +143,24 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     if (widget.initialIllustrationUrl != null) {
       _sheetState = _SheetState.result;
       _resultImageUrl = widget.initialIllustrationUrl;
+    } else if (widget.startInPurchaseMode) {
+      _sheetState = _SheetState.outOfCredits;
     } else {
       _sheetState = _SheetState.upsell;
+      _preloadCreditState();
     }
     _animCtrl.forward();
+  }
+
+  Future<void> _preloadCreditState() async {
+    if (!_isPremium || _isSharedBaby || widget.startInPurchaseMode) return;
+    final credits = await _service.readMyCredits();
+    final totalCredits =
+        credits.monthlyRemaining + credits.purchasedCreditsRemaining;
+    if (!mounted || _sheetState != _SheetState.upsell) return;
+    if (totalCredits == 0) {
+      setState(() => _sheetState = _SheetState.outOfCredits);
+    }
   }
 
   // ---- CTA handlers --------------------------------------------------------
@@ -135,6 +168,16 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
   Future<void> _onCreateIllustration() async {
     // Hard guards — should never be reachable via normal UI, but defend anyway.
     if (_isSharedBaby || !_isPremium) return;
+
+    final credits = await _service.readMyCredits();
+    final totalCredits =
+        credits.monthlyRemaining + credits.purchasedCreditsRemaining;
+    if (totalCredits == 0) {
+      if (mounted) {
+        setState(() => _sheetState = _SheetState.outOfCredits);
+      }
+      return;
+    }
 
     // Re-read the memory at tap-time so we get the latest photoStoragePath,
     // which may have been populated by the background photo-upload task that
@@ -165,12 +208,12 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     setState(() => _sheetState = _SheetState.loading);
 
     try {
-      final service = IllustrationRequestService();
-      final request = await service.createMemoryIllustrationRequest(
+      final request = await _service.createMemoryIllustrationRequest(
         memory: freshMemory,
+        style: IllustrationStyle.sanitize(widget.style),
       );
 
-      _requestSub = service.watchRequest(request.id).listen(
+      _requestSub = _service.watchRequest(request.id).listen(
         (updated) {
           if (!mounted || updated == null) return;
           if (updated.status == IllustrationRequestStatus.completed &&
@@ -412,7 +455,10 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
                     alignment: Alignment.topCenter,
                     children: [
                       ...previousChildren,
-                      if (currentChild != null) currentChild,
+                      ...?switch (currentChild) {
+                        null => null,
+                        final child => [child],
+                      },
                     ],
                   ),
                   child: _buildCurrentState(),
