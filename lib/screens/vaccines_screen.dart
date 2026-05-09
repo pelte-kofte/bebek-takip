@@ -19,37 +19,32 @@ class VaccinesScreen extends StatefulWidget {
 
 class _VaccinesScreenState extends State<VaccinesScreen> {
   List<Map<String, dynamic>> _vaccines = [];
-  int? _selectedMonth; // null means show all, 0-60 for specific month
-
-  // There is no baby country/preset field in the current model, so the
-  // Turkey vaccine calendar stays opt-in unless a future profile field exists.
-  bool get _showTurkishPresetByDefault => false;
+  late final VoidCallback _vaccineListener;
+  late final String _screenBabyId;
 
   @override
   void initState() {
     super.initState();
+    _screenBabyId = VeriYonetici.getActiveBabyId();
+    _vaccineListener = () {
+      if (mounted) _loadVaccines();
+    };
+    VeriYonetici.vaccineNotifier.addListener(_vaccineListener);
+    VeriYonetici.dataNotifier.addListener(_vaccineListener);
     _loadVaccines();
+  }
+
+  @override
+  void dispose() {
+    VeriYonetici.vaccineNotifier.removeListener(_vaccineListener);
+    VeriYonetici.dataNotifier.removeListener(_vaccineListener);
+    super.dispose();
   }
 
   void _loadVaccines() {
     setState(() {
-      _vaccines = VeriYonetici.getAsiKayitlari();
+      _vaccines = VeriYonetici.getAsiKayitlariForBaby(_screenBabyId);
     });
-  }
-
-  /// Extracts month number from 'donem' field
-  /// Returns null if cannot parse (e.g., "4-6 Yaş")
-  int? _getMonthFromDonem(String donem) {
-    return parseVaccineMonth(donem);
-  }
-
-  /// Returns vaccines filtered by selected month
-  List<Map<String, dynamic>> _getFilteredVaccines() {
-    if (_selectedMonth == null) return _vaccines;
-    return _vaccines.where((v) {
-      final month = _getMonthFromDonem(v['donem'] ?? '');
-      return month == _selectedMonth;
-    }).toList();
   }
 
   String _getChildAge() {
@@ -60,7 +55,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     return VeriYonetici.getBabyName();
   }
 
-  void _deleteVaccine(int index) async {
+  void _deleteVaccine(Map<String, dynamic> vaccine) async {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
@@ -81,18 +76,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
 
     if (confirmed == true) {
-      setState(() {
-        _vaccines.removeAt(index);
-      });
-      await VeriYonetici.saveAsiKayitlari(_vaccines);
+      _vaccines.removeWhere((item) => item['id'] == vaccine['id']);
+      await VeriYonetici.saveAsiKayitlariForBaby(_screenBabyId, _vaccines);
     }
   }
 
-  void _editVaccine(Map<String, dynamic> vaccine, int index) async {
+  void _editVaccine(Map<String, dynamic> vaccine) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AddVaccineScreen(vaccine: vaccine, index: index),
+        builder: (context) =>
+            AddVaccineScreen(vaccine: vaccine, babyId: _screenBabyId),
       ),
     );
 
@@ -118,7 +112,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
     final vaccineId = med['vaccineId'] as String?;
     if (vaccineId == null) return;
-    final vaccine = VeriYonetici.getAsiKayitlari()
+    final vaccine = VeriYonetici.getAsiKayitlariForBaby(_screenBabyId)
         .where((v) => v['id'] == vaccineId)
         .firstOrNull;
     final vaccineTime = vaccine?['tarih'] as DateTime?;
@@ -301,7 +295,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     }
   }
 
-  void _showVaccineOptions(Map<String, dynamic> vaccine, int index) {
+  void _showVaccineOptions(Map<String, dynamic> vaccine) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
@@ -330,7 +324,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 title: Text(l10n.edit),
                 onTap: () {
                   Navigator.pop(context);
-                  _editVaccine(vaccine, index);
+                  _editVaccine(vaccine);
                 },
               ),
               ListTile(
@@ -352,7 +346,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  _deleteVaccine(index);
+                  _deleteVaccine(vaccine);
                 },
               ),
             ],
@@ -374,7 +368,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       final item = _vaccines.removeAt(oldIndex);
       _vaccines.insert(newIndex, item);
     });
-    await VeriYonetici.saveAsiKayitlari(_vaccines);
+    await VeriYonetici.saveAsiKayitlariForBaby(_screenBabyId, _vaccines);
   }
 
   void _initializeDefaultVaccines() async {
@@ -399,7 +393,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
     if (confirmed == true) {
       final defaultVaccines = AsiVeri.getTurkiyeAsiTakvimi();
-      final existingVaccines = VeriYonetici.getAsiKayitlari();
+      final existingVaccines = VeriYonetici.getAsiKayitlariForBaby(
+        _screenBabyId,
+      );
 
       final existingIds = existingVaccines.map((v) => v['id']).toSet();
       final newVaccines = defaultVaccines
@@ -407,7 +403,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           .toList();
 
       existingVaccines.addAll(newVaccines);
-      await VeriYonetici.saveAsiKayitlari(existingVaccines);
+      await VeriYonetici.saveAsiKayitlariForBaby(
+        _screenBabyId,
+        existingVaccines,
+      );
       _loadVaccines();
 
       if (mounted) {
@@ -697,7 +696,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
                                 // Add vaccines with new unique IDs to avoid conflicts
                                 final existingVaccines =
-                                    VeriYonetici.getAsiKayitlari();
+                                    VeriYonetici.getAsiKayitlariForBaby(
+                                      _screenBabyId,
+                                    );
                                 for (final vaccine in toAdd) {
                                   final newVaccine = Map<String, dynamic>.from(
                                     vaccine,
@@ -708,7 +709,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                   existingVaccines.add(newVaccine);
                                 }
 
-                                await VeriYonetici.saveAsiKayitlari(
+                                await VeriYonetici.saveAsiKayitlariForBaby(
+                                  _screenBabyId,
                                   existingVaccines,
                                 );
                                 _loadVaccines();
@@ -756,7 +758,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   void _handleTurkishCalendarMenuAction(String value) {
-    if (value == 'selector') {
+    if (value == 'load_all') {
+      _initializeDefaultVaccines();
+    } else if (value == 'selector') {
       _showNationalVaccineSelector();
     }
   }
@@ -770,8 +774,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           Column(
             children: [
               _buildHeader(isDark),
-              _buildMonthSelector(isDark),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Expanded(
                 child: _vaccines.isEmpty
                     ? SingleChildScrollView(
@@ -780,7 +783,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _buildBabyInfoCard(isDark),
-                            const SizedBox(height: 32),
+                            const SizedBox(height: 20),
                             _buildEmptyState(isDark),
                           ],
                         ),
@@ -789,9 +792,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                         padding: const EdgeInsets.fromLTRB(24, 0, 24, 120),
                         buildDefaultDragHandles: false,
                         onReorder: _onReorder,
-                        itemCount: _getFilteredVaccines().length + 1,
+                        itemCount: _vaccines.length + 1,
                         itemBuilder: (context, index) {
-                          final filteredVaccines = _getFilteredVaccines();
                           if (index == 0) {
                             return Padding(
                               key: const ValueKey('baby_info'),
@@ -800,15 +802,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             );
                           }
                           final vaccineIndex = index - 1;
-                          final vaccine = filteredVaccines[vaccineIndex];
-                          final actualIndex = _vaccines.indexOf(vaccine);
+                          final vaccine = _vaccines[vaccineIndex];
                           final isCompleted = vaccine['durum'] == 'uygulandi';
                           return Padding(
-                            key: ValueKey(vaccine['id'] ?? actualIndex),
+                            key: ValueKey(vaccine['id'] ?? vaccineIndex),
                             padding: const EdgeInsets.only(bottom: 12),
                             child: _buildReorderableVaccineCard(
                               vaccine,
-                              actualIndex,
+                              vaccineIndex,
                               isDark,
                               isCompleted,
                             ),
@@ -844,6 +845,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   Widget _buildHeader(bool isDark) {
     final l10n = AppLocalizations.of(context)!;
+    if (widget.embedded) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+        child: Row(
+          children: [
+            const Spacer(),
+            _buildCalendarMenuButton(isDark, l10n),
+          ],
+        ),
+      );
+    }
     final canPop = Navigator.canPop(context);
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
@@ -882,72 +894,52 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           Expanded(
             child: Text(l10n.myVaccines, style: AppTypography.h1(context)),
           ),
-          // National vaccine selector button
-          if (_showTurkishPresetByDefault)
-            GestureDetector(
-            onTap: _showNationalVaccineSelector,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.bgDarkCard
-                    : const Color(0xFFFFDAB9).withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('🇹🇷', style: TextStyle(fontSize: 16)),
-                  const SizedBox(width: 6),
-                  Text(
-                    l10n.calendar,
-                    style: AppTypography.caption(context).copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-          else
-            PopupMenuButton<String>(
-              tooltip: l10n.loadTurkishVaccineCalendar,
-              onSelected: _handleTurkishCalendarMenuAction,
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'selector',
-                  child: Text(l10n.loadTurkishVaccineCalendar),
-                ),
-              ],
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.bgDarkCard : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: isDark
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                ),
-                child: Icon(
-                  Icons.more_horiz,
-                  color: isDark
-                      ? AppColors.textPrimaryDark
-                      : const Color(0xFF2D1A18),
-                ),
-              ),
-            ),
+          _buildCalendarMenuButton(isDark, l10n),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCalendarMenuButton(bool isDark, AppLocalizations l10n) {
+    return PopupMenuButton<String>(
+      tooltip: l10n.loadTurkishVaccineCalendar,
+      onSelected: _handleTurkishCalendarMenuAction,
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'load_all',
+          child: Text(l10n.loadTurkishVaccineCalendar),
+        ),
+        PopupMenuItem(value: 'selector', child: Text(l10n.selectVaccine)),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard
+              : const Color(0xFFFFF3EE).withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.12),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.calendar_month_outlined,
+              size: 16,
+              color: AppColors.primary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              l10n.calendar,
+              style: AppTypography.caption(context).copyWith(
+                color: AppColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1065,8 +1057,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         : '';
 
     return GestureDetector(
-      onTap: () => _editVaccine(vaccine, index),
-      onLongPress: () => _showVaccineOptions(vaccine, index),
+      onTap: () => _editVaccine(vaccine),
+      onLongPress: () => _showVaccineOptions(vaccine),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -1087,19 +1079,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         ),
         child: Row(
           children: [
-            // Only show drag handle when not filtering
-            if (_selectedMonth == null)
-              ReorderableDragStartListener(
-                index: index + 1,
-                child: Icon(
-                  Icons.drag_indicator,
-                  color: isDark
-                      ? AppColors.textSecondaryDark.withValues(alpha: 0.4)
-                      : const Color(0xFF866F65).withValues(alpha: 0.4),
-                  size: 20,
-                ),
+            ReorderableDragStartListener(
+              index: index + 1,
+              child: Icon(
+                Icons.drag_indicator,
+                color: isDark
+                    ? AppColors.textSecondaryDark.withValues(alpha: 0.4)
+                    : const Color(0xFF866F65).withValues(alpha: 0.4),
+                size: 20,
               ),
-            if (_selectedMonth == null) const SizedBox(width: 8),
+            ),
+            const SizedBox(width: 8),
             Container(
               width: 48,
               height: 48,
@@ -1184,8 +1174,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         : '';
 
     return GestureDetector(
-      onTap: () => _editVaccine(vaccine, index),
-      onLongPress: () => _showVaccineOptions(vaccine, index),
+      onTap: () => _editVaccine(vaccine),
+      onLongPress: () => _showVaccineOptions(vaccine),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -1285,8 +1275,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         : '';
 
     return GestureDetector(
-      onTap: () => _editVaccine(vaccine, index),
-      onLongPress: () => _showVaccineOptions(vaccine, index),
+      onTap: () => _editVaccine(vaccine),
+      onLongPress: () => _showVaccineOptions(vaccine),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -1356,71 +1346,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
   }
 
-  Widget _buildMonthSelector(bool isDark) {
-    final l10n = AppLocalizations.of(context)!;
-    // Month options: All, 0 (Doğumda), 1, 2, 4, 6, 9, 12, 18, 24, 48, 60
-    final monthOptions = <int?>[
-      null, // All
-      0, 1, 2, 4, 6, 9, 12, 18, 24, 48, 60,
-    ];
-
-    String getMonthLabel(int? month) {
-      if (month == null) return l10n.allLabel;
-      if (month == 0) return l10n.birth;
-      return l10n.monthNumber(month);
-    }
-
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        itemCount: monthOptions.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final month = monthOptions[index];
-          final isSelected = _selectedMonth == month;
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedMonth = month;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary
-                    : (isDark ? AppColors.bgDarkCard : Colors.white),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.primary.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Text(
-                getMonthLabel(month),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected
-                      ? Colors.white
-                      : (isDark
-                            ? AppColors.textSecondaryDark
-                            : const Color(0xFF866F65)),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   Widget _buildEmptyState(bool isDark) {
     final l10n = AppLocalizations.of(context)!;
-    final showTurkishPresetByDefault = _showTurkishPresetByDefault;
     return Container(
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
@@ -1457,49 +1384,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             style: AppTypography.bodySmall(context).copyWith(height: 1.5),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: _initializeDefaultVaccines,
-            icon: Icon(
-              showTurkishPresetByDefault
-                  ? Icons.calendar_month_outlined
-                  : Icons.flag_outlined,
-            ),
-            label: Text(
-              showTurkishPresetByDefault
-                  ? l10n.loadCalendarTitle
-                  : l10n.loadTurkishVaccineCalendar,
-            ),
-            style: FilledButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 22,
-                vertical: 14,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextButton.icon(
-            onPressed: () async {
-              HapticFeedback.lightImpact();
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AddVaccineScreen(),
-                ),
-              );
-              if (result == true) {
-                _loadVaccines();
-              }
-            },
-            icon: const Icon(Icons.add_circle_outline),
-            label: Text(l10n.addVaccine),
-            style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-          ),
         ],
       ),
     );
@@ -1509,12 +1393,12 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: AppColors.primary.withValues(alpha: 0.14),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -1523,7 +1407,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           HapticFeedback.lightImpact();
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AddVaccineScreen()),
+            MaterialPageRoute(
+              builder: (context) => AddVaccineScreen(babyId: _screenBabyId),
+            ),
           );
 
           if (result == true) {
@@ -1533,20 +1419,20 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 13),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
+            borderRadius: BorderRadius.circular(24),
           ),
           elevation: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_circle, size: 24),
+            const Icon(Icons.add_circle, size: 21),
             const SizedBox(width: 8),
             Text(
               l10n.addVaccine,
-              style: AppTypography.button().copyWith(fontSize: 18),
+              style: AppTypography.button().copyWith(fontSize: 16),
             ),
           ],
         ),

@@ -7,6 +7,7 @@ import '../models/timer_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
+import '../services/daily_tip_history_service.dart';
 import 'settings_screen.dart';
 import 'activities_screen.dart';
 import 'add_growth_screen.dart';
@@ -67,7 +68,9 @@ class _HomeScreenState extends State<HomeScreen> {
     _dataChangedListener = () {
       if (!mounted) return;
       if (kDebugMode) {
-        debugPrint('[HomeScreen] State notified → reloading baby info + recents');
+        debugPrint(
+          '[HomeScreen] State notified → reloading baby info + recents',
+        );
       }
       _loadBabyInfo();
     };
@@ -123,6 +126,25 @@ class _HomeScreenState extends State<HomeScreen> {
       _babyPhotoPath = baby.photoPath;
       _babyPhotoUrl = baby.photoUrl;
     });
+    unawaited(_recordAndSyncDailyTip());
+  }
+
+  Future<void> _recordAndSyncDailyTip() async {
+    final tip = DailyTip.todayForBaby(babyAgeInMonths);
+    await DailyTipHistoryService.instance.recordSeenTip(tip);
+    if (!VeriYonetici.isDailyTipReminderEnabled()) return;
+    final scheduledAt = _nextReminderDateTime(
+      TimeOfDay(
+        hour: VeriYonetici.getDailyTipReminderHour(),
+        minute: VeriYonetici.getDailyTipReminderMinute(),
+      ),
+    );
+    final reminderService = ReminderService();
+    await reminderService.initialize();
+    await reminderService.scheduleDailyTipReminderAt(
+      scheduledAt: scheduledAt,
+      babyAgeInMonths: babyAgeInMonths,
+    );
   }
 
   void _setupTimerListeners() {
@@ -256,6 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'sagDakika': sagDakika > 0 ? sagDakika : (sagSaniye > 0 ? 1 : 0),
       'miktar': 0,
     });
+    VeriYonetici.attachCreatorMetadataIfAbsent(kayitlar.first);
 
     try {
       if (kDebugMode) {
@@ -356,6 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
       'bitis': data['bitis'],
       'sure': data['sure'],
     });
+    VeriYonetici.attachCreatorMetadataIfAbsent(kayitlar.first);
 
     try {
       if (kDebugMode) {
@@ -421,8 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _babyPhotoPath != null &&
         _babyPhotoPath!.isNotEmpty &&
         File(_babyPhotoPath!).existsSync();
-    final hasRemotePhoto =
-        _babyPhotoUrl != null && _babyPhotoUrl!.isNotEmpty;
+    final hasRemotePhoto = _babyPhotoUrl != null && _babyPhotoUrl!.isNotEmpty;
     final hasValidPhoto = hasLocalPhoto || hasRemotePhoto;
 
     final mamaKayitlari = VeriYonetici.getMamaKayitlari();
@@ -530,7 +553,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? DecorationImage(
                                           image: hasLocalPhoto
                                               ? FileImage(File(_babyPhotoPath!))
-                                                  as ImageProvider
+                                                    as ImageProvider
                                               : NetworkImage(_babyPhotoUrl!),
                                           fit: BoxFit.cover,
                                         )
@@ -581,15 +604,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                             decoration: BoxDecoration(
                                               color: isDark
-                                                  ? const Color(0xFF6AADCF)
-                                                      .withValues(alpha: 0.14)
+                                                  ? const Color(
+                                                      0xFF6AADCF,
+                                                    ).withValues(alpha: 0.14)
                                                   : const Color(0xFFDCEFF7),
                                               border: Border.all(
                                                 color: isDark
-                                                    ? const Color(0xFF9DCFE8)
-                                                        .withValues(alpha: 0.18)
-                                                    : const Color(0xFF6AADCF)
-                                                        .withValues(alpha: 0.16),
+                                                    ? const Color(
+                                                        0xFF9DCFE8,
+                                                      ).withValues(alpha: 0.18)
+                                                    : const Color(
+                                                        0xFF6AADCF,
+                                                      ).withValues(alpha: 0.16),
                                               ),
                                               borderRadius:
                                                   BorderRadius.circular(999),
@@ -1424,126 +1450,137 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.bgDarkCard : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  const TipsArchiveScreen(showOnlySeen: true),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.bgDarkCard : Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : const Color(0xFFE5E0F7).withValues(alpha: 0.5),
+            ),
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
           ),
-          boxShadow: isDark
-              ? null
-              : [
-                  BoxShadow(
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.dailyTip,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
-                    color: textColor.withValues(alpha: 0.4),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    if (!PremiumService.instance.isPremium) {
-                      await PremiumScreen.show(context);
-                      return;
-                    }
-                    if (!context.mounted) return;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TipsArchiveScreen(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    l10n.allTips,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.dailyTip,
                     style: TextStyle(
                       fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? AppColors.accentLavender
-                          : const Color(0xFF7A749E),
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                      color: textColor.withValues(alpha: 0.4),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
-                        : const Color(0xFFE5E0F7).withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      tip.illustrationPath,
-                      width: 64,
-                      height: 64,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        Icons.lightbulb_outline,
+                  GestureDetector(
+                    onTap: () async {
+                      if (!PremiumService.instance.isPremium) {
+                        await PremiumScreen.show(context);
+                        return;
+                      }
+                      if (!context.mounted) return;
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TipsArchiveScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      l10n.allTips,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
                         color: isDark
                             ? AppColors.accentLavender
                             : const Color(0xFF7A749E),
-                        size: 28,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        tip.title(context),
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
+                          : const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        tip.illustrationPath,
+                        width: 64,
+                        height: 64,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.lightbulb_outline,
+                          color: isDark
+                              ? AppColors.accentLavender
+                              : const Color(0xFF7A749E),
+                          size: 28,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        tip.description(context),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: subtitleColor,
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tip.title(context),
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          tip.description(context),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: subtitleColor,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -2139,7 +2176,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               Center(
                 child: Text(
-                  'No baby yet',
+                  l10n.noBabyYet,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -2150,7 +2187,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               Center(
                 child: Text(
-                  'No baby profile found yet. Tap below to add one.',
+                  l10n.noBabyProfilePrompt,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
@@ -2165,7 +2202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: ElevatedButton.icon(
                   onPressed: _openAddBabySheet,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add baby'),
+                  label: Text(l10n.addBaby),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFFF998A),
                     foregroundColor: Colors.white,

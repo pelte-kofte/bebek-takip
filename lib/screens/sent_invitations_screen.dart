@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/shared_parenting_service.dart';
 
 class SentInvitationsScreen extends StatefulWidget {
@@ -40,7 +40,9 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not cancel invitation. Please try again.')),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.sentInvCancelError),
+          ),
         );
       }
     } finally {
@@ -48,14 +50,14 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
     }
   }
 
-  String _statusLabel(String status) {
+  String _statusLabel(String status, AppLocalizations l10n) {
     switch (status) {
       case 'pending':
-        return 'Pending';
+        return l10n.sentInvStatusPending;
       case 'accepted':
-        return 'Accepted';
+        return l10n.sentInvStatusAccepted;
       case 'declined':
-        return 'Declined';
+        return l10n.sentInvStatusDeclined;
       default:
         return status;
     }
@@ -74,6 +76,7 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBF5),
       appBar: AppBar(
@@ -83,9 +86,9 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF4A3E39)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Sent Invitations',
-          style: TextStyle(
+        title: Text(
+          l10n.sentInvTitle,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
@@ -98,23 +101,18 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFFFFB4A2),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFFFFB4A2)),
               );
             }
 
             if (snap.hasError) {
-              return const Center(
+              return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(32),
                   child: Text(
-                    'Could not load sent invitations.',
+                    l10n.sentInvLoadError,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Color(0xFF8A7C75),
-                    ),
+                    style: TextStyle(fontSize: 15, color: Color(0xFF8A7C75)),
                   ),
                 ),
               );
@@ -123,21 +121,21 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
             final items = snap.data ?? [];
 
             if (items.isEmpty) {
-              return const Center(
+              return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(32),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.send_rounded,
                         size: 48,
                         color: Color(0xFFBDB5B0),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
-                        'No invitations sent yet',
-                        style: TextStyle(
+                        l10n.sentInvNone,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF8A7C75),
@@ -155,14 +153,20 @@ class _SentInvitationsScreenState extends State<SentInvitationsScreen> {
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, i) {
                 final item = items[i];
-                final babyName = item.babyName ?? 'Baby';
-                final label = _statusLabel(item.status);
+                final babyName = item.babyName ?? l10n.babyFallbackName;
+                final label = _statusLabel(item.status, l10n);
                 final color = _statusColor(item.status);
                 final dateStr = item.createdAt != null
-                    ? DateFormat('MMM d, yyyy').format(item.createdAt!)
+                    ? MaterialLocalizations.of(
+                        context,
+                      ).formatShortDate(item.createdAt!)
                     : null;
                 final expiryStr = item.expiresAt != null
-                    ? 'Expires ${DateFormat('MMM d').format(item.expiresAt!)}'
+                    ? l10n.sentInvExpires(
+                        MaterialLocalizations.of(
+                          context,
+                        ).formatShortDate(item.expiresAt!),
+                      )
                     : null;
                 final destinationLabel = item.inviteType == 'code'
                     ? (item.inviteCode ?? '')

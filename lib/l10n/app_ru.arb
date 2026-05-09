@@ -624,6 +624,10 @@
   "logGivenNow": "Отметить как дано",
   "logDose": "Записать дозу",
   "givenNow": "Дать сейчас",
+  "medicationGiveNow": "Дать сейчас",
+  "medicationSetReminder": "Установить напоминание",
+  "repeatDaily": "Повторять ежедневно",
+  "medicationAlreadyMarkedHint": "Уже отмечено.",
   "allDoneToday": "На сегодня все",
   "notAvailable": "Недоступно",
   "before": "До",
@@ -729,6 +733,9 @@
 
   "sharedBadge": "Общий",
   "notificationsDisabled": "Уведомления отключены",
+  "noBabyYet": "Профиля малыша пока нет",
+  "noBabyProfilePrompt": "Профиль малыша пока не найден. Нажмите ниже, чтобы добавить его.",
+  "addBaby": "Добавить малыша",
   "permissionDenied": "Разрешение отклонено",
   "reminderScheduled": "Напоминание установлено",
   "signInToUseSharedParenting": "Войдите, чтобы использовать совместное воспитание.",
@@ -749,6 +756,20 @@
   "memoriesEmptyFilter": "Нет воспоминаний по этому фильтру",
   "illBadgeReady": "Иллюстрировано",
   "illBadgeGenerating": "Создаётся\u2026",
+  "tryAgain": "Попробовать снова",
+  "illCreditsLeft": "Осталось иллюстраций: {count}",
+  "@illCreditsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "illMonthlyCredits": "{count} / {total} в этом месяце",
+  "@illMonthlyCredits": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
 
   "illTurnIntoIllustration": "Создать иллюстрацию",
   "turnIntoIllustration": "Создать иллюстрацию",

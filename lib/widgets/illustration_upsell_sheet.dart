@@ -5,15 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/illustration_request.dart';
 import '../models/user_illustration_credits.dart';
 import '../models/veri_yonetici.dart';
 import '../screens/premium_screen.dart';
 import '../services/illustration_request_service.dart';
 import '../services/premium_service.dart'
-    show
-        IllustrationPackPurchaseException,
-        PremiumService;
+    show IllustrationPackPurchaseException, PremiumService;
 
 // ---------------------------------------------------------------------------
 // Sheet state machine
@@ -27,8 +26,10 @@ enum _SheetState { upsell, loading, result, error, outOfCredits }
 
 class IllustrationUpsellSheet extends StatefulWidget {
   final Map<String, dynamic> memory;
+
   /// When non-null the sheet opens directly on the result view (re-open flow).
   final String? initialIllustrationUrl;
+
   /// Illustration style to request. Defaults to [IllustrationStyle.defaultStyle].
   final String style;
   final bool startInPurchaseMode;
@@ -136,9 +137,10 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
       duration: const Duration(milliseconds: 360),
     );
     _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
-    _scaleAnim = Tween<double>(begin: 0.94, end: 1.0).animate(
-      CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack),
-    );
+    _scaleAnim = Tween<double>(
+      begin: 0.94,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutBack));
     // If re-opening an existing illustration, jump straight to result view.
     if (widget.initialIllustrationUrl != null) {
       _sheetState = _SheetState.result;
@@ -185,13 +187,15 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     final memoryId = (widget.memory['id'] ?? '').toString().trim();
     Map<String, dynamic> freshMemory = widget.memory;
     if (memoryId.isNotEmpty) {
-      final match = VeriYonetici.getMilestones()
-          .where((m) => m['id'] == memoryId);
+      final match = VeriYonetici.getMilestones().where(
+        (m) => m['id'] == memoryId,
+      );
       if (match.isNotEmpty) freshMemory = match.first;
     }
 
-    final storagePath =
-        (freshMemory['photoStoragePath'] ?? '').toString().trim();
+    final storagePath = (freshMemory['photoStoragePath'] ?? '')
+        .toString()
+        .trim();
     if (storagePath.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -213,56 +217,59 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
         style: IllustrationStyle.sanitize(widget.style),
       );
 
-      _requestSub = _service.watchRequest(request.id).listen(
-        (updated) {
-          if (!mounted || updated == null) return;
-          if (updated.status == IllustrationRequestStatus.completed &&
-              updated.resultImageUrl != null) {
-            _requestSub?.cancel();
-            // Persist the URL back into the milestone record so it survives
-            // sheet dismissal and can be re-opened from the detail screen.
-            final memoryId = (widget.memory['id'] ?? '').toString().trim();
-            if (memoryId.isNotEmpty) {
-              VeriYonetici.patchMilestoneIllustrationUrl(
-                memoryId,
-                updated.resultImageUrl!,
-              );
-            }
-            setState(() {
-              _resultImageUrl = updated.resultImageUrl;
-              _sheetState = _SheetState.result;
-            });
-          } else if (updated.status == IllustrationRequestStatus.failed) {
-            _requestSub?.cancel();
-            final isTimeout =
-                updated.errorCode == 'generation-timeout' ||
-                updated.errorCode == 'worker-deadline-exceeded' ||
-                (updated.errorMessage?.toLowerCase().contains('timeout') ??
-                    false) ||
-                (updated.errorMessage?.toLowerCase().contains('timed out') ??
-                    false);
-            setState(() {
-              _errorMessage = isTimeout
-                  ? 'This photo took too long to generate.\n'
-                      'Your credit has been refunded — please try again.'
-                  : (updated.errorMessage?.isNotEmpty == true
-                      ? updated.errorMessage
-                      : 'Something went wrong. Please try again.');
-              _sheetState = _SheetState.error;
-            });
-          }
-        },
-        onError: (_) {
-          if (mounted) {
-            setState(() {
-              _errorMessage =
-                  'Could not connect to the illustration service. '
-                  'Please try again later.';
-              _sheetState = _SheetState.error;
-            });
-          }
-        },
-      );
+      _requestSub = _service
+          .watchRequest(request.id)
+          .listen(
+            (updated) {
+              if (!mounted || updated == null) return;
+              if (updated.status == IllustrationRequestStatus.completed &&
+                  updated.resultImageUrl != null) {
+                _requestSub?.cancel();
+                // Persist the URL back into the milestone record so it survives
+                // sheet dismissal and can be re-opened from the detail screen.
+                final memoryId = (widget.memory['id'] ?? '').toString().trim();
+                if (memoryId.isNotEmpty) {
+                  VeriYonetici.patchMilestoneIllustrationUrl(
+                    memoryId,
+                    updated.resultImageUrl!,
+                  );
+                }
+                setState(() {
+                  _resultImageUrl = updated.resultImageUrl;
+                  _sheetState = _SheetState.result;
+                });
+              } else if (updated.status == IllustrationRequestStatus.failed) {
+                _requestSub?.cancel();
+                final isTimeout =
+                    updated.errorCode == 'generation-timeout' ||
+                    updated.errorCode == 'worker-deadline-exceeded' ||
+                    (updated.errorMessage?.toLowerCase().contains('timeout') ??
+                        false) ||
+                    (updated.errorMessage?.toLowerCase().contains(
+                          'timed out',
+                        ) ??
+                        false);
+                final l10n = AppLocalizations.of(context)!;
+                setState(() {
+                  _errorMessage = isTimeout
+                      ? l10n.illTimeoutError
+                      : (updated.errorMessage?.isNotEmpty == true
+                            ? updated.errorMessage
+                            : l10n.genericErrorRetry);
+                  _sheetState = _SheetState.error;
+                });
+              }
+            },
+            onError: (_) {
+              if (mounted) {
+                final l10n = AppLocalizations.of(context)!;
+                setState(() {
+                  _errorMessage = l10n.illConnectionError;
+                  _sheetState = _SheetState.error;
+                });
+              }
+            },
+          );
     } on IllustrationCreditException {
       if (mounted) {
         setState(() => _sheetState = _SheetState.outOfCredits);
@@ -277,8 +284,9 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     } catch (e, stack) {
       debugPrint('[IllustrationUpsellSheet] Unexpected error: $e\n$stack');
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         setState(() {
-          _errorMessage = 'Something went wrong. Please try again.';
+          _errorMessage = l10n.genericErrorRetry;
           _sheetState = _SheetState.error;
         });
       }
@@ -289,8 +297,9 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     if (_purchasingPackId != null) return; // already in-flight
     setState(() => _purchasingPackId = productId);
     try {
-      final success =
-          await PremiumService.instance.purchaseIllustrationPack(productId);
+      final success = await PremiumService.instance.purchaseIllustrationPack(
+        productId,
+      );
       if (!mounted) return;
       if (success) {
         // Credits arrive asynchronously via Adapty webhook → Firestore.
@@ -312,10 +321,11 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
     } catch (_) {
       if (!mounted) return;
       setState(() => _purchasingPackId = null);
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Purchase could not be completed. Please try again.'),
-          duration: Duration(seconds: 4),
+        SnackBar(
+          content: Text(l10n.illPurchaseError),
+          duration: const Duration(seconds: 4),
         ),
       );
     }
@@ -350,9 +360,7 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
       );
     } catch (_) {
       // Fallback: share the URL as plain text if download fails.
-      await SharePlus.instance.share(
-        ShareParams(text: url),
-      );
+      await SharePlus.instance.share(ShareParams(text: url));
     }
   }
 
@@ -492,6 +500,7 @@ class _UpsellContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -500,7 +509,7 @@ class _UpsellContent extends StatelessWidget {
         _SparkleIcon(),
         const SizedBox(height: 24),
         Text(
-          isPremium ? 'This memory feels special.' : 'Turn memories into art',
+          isPremium ? l10n.illMemoryFeelsSpecial : l10n.illTurnMemoriesIntoArt,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 22,
@@ -511,11 +520,7 @@ class _UpsellContent extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Text(
-          isPremium
-              ? 'Turn it into a soft illustration and keep it forever.\n'
-                  'Some memories deserve to be felt again.'
-              : 'Transform your baby\'s photos into beautiful soft illustrations.\n'
-                  'Available with Premium.',
+          isPremium ? l10n.illPremiumDesc : l10n.illFreeDesc,
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 15,
@@ -526,15 +531,15 @@ class _UpsellContent extends StatelessWidget {
         const SizedBox(height: 32),
         _PrimaryButton(
           loading: loadingCredits,
-          label: isPremium ? 'Create Illustration' : 'Upgrade to Premium',
+          label: isPremium ? l10n.illCreateBtn : l10n.illUpgradePremium,
           onPressed: onPrimary,
         ),
         const SizedBox(height: 6),
         TextButton(
           onPressed: onDismiss,
-          child: const Text(
-            'Maybe Later',
-            style: TextStyle(
+          child: Text(
+            l10n.maybeLater,
+            style: const TextStyle(
               fontSize: 14,
               color: Color(0xFF8A7C75),
               fontWeight: FontWeight.w500,
@@ -553,6 +558,7 @@ class _LoadingContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -567,20 +573,20 @@ class _LoadingContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 28),
-        const Text(
-          'Creating your illustration…',
+        Text(
+          l10n.illCreatingTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
           ),
         ),
         const SizedBox(height: 10),
-        const Text(
-          'This usually takes about a minute.\nWe\'ll show it right here when it\'s ready.',
+        Text(
+          l10n.illCreatingDesc,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 14,
             color: Color(0xFF8A7C75),
             height: 1.55,
@@ -589,9 +595,9 @@ class _LoadingContent extends StatelessWidget {
         const SizedBox(height: 28),
         TextButton(
           onPressed: onDismiss,
-          child: const Text(
-            'Dismiss — I\'ll check back later',
-            style: TextStyle(
+          child: Text(
+            l10n.illDismiss,
+            style: const TextStyle(
               fontSize: 14,
               color: Color(0xFF8A7C75),
               fontWeight: FontWeight.w500,
@@ -617,6 +623,7 @@ class _ResultContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -645,36 +652,33 @@ class _ResultContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Your illustration is ready.',
+        Text(
+          l10n.illReadyTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
-          'A soft memory, kept forever.',
+        Text(
+          l10n.illReadySubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF8A7C75),
-          ),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
         ),
         const SizedBox(height: 28),
         _PrimaryButton(
           loading: false,
-          label: 'Share with family \u{1F49B}',
+          label: l10n.illShareFamily,
           onPressed: onShare,
         ),
         const SizedBox(height: 6),
         TextButton(
           onPressed: onClose,
-          child: const Text(
-            'Close',
-            style: TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
+          child: Text(
+            l10n.close,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
           ),
         ),
       ],
@@ -696,6 +700,7 @@ class _ErrorContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -707,10 +712,10 @@ class _ErrorContent extends StatelessWidget {
           color: Color(0xFFFFB4A2),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Something went wrong.',
+        Text(
+          l10n.illSomethingWrong,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
@@ -727,13 +732,17 @@ class _ErrorContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 28),
-        _PrimaryButton(loading: false, label: 'Try Again', onPressed: onRetry),
+        _PrimaryButton(
+          loading: false,
+          label: l10n.tryAgain,
+          onPressed: onRetry,
+        ),
         const SizedBox(height: 6),
         TextButton(
           onPressed: onClose,
-          child: const Text(
-            'Close',
-            style: TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
+          child: Text(
+            l10n.close,
+            style: const TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
           ),
         ),
       ],
@@ -748,6 +757,7 @@ class _LockedSharedBabyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -767,10 +777,10 @@ class _LockedSharedBabyContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Illustrations are owner-only',
+        Text(
+          l10n.illOwnerOnlyTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
@@ -778,11 +788,10 @@ class _LockedSharedBabyContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Illustration generation is only available to the\n'
-          'baby owner. Ask the owner to create one.',
+        Text(
+          l10n.illOwnerOnlyDesc,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: Color(0xFF8A7C75),
             height: 1.6,
@@ -791,7 +800,7 @@ class _LockedSharedBabyContent extends StatelessWidget {
         const SizedBox(height: 32),
         _PrimaryButton(
           loading: false,
-          label: 'Got it',
+          label: l10n.illGotIt,
           onPressed: onDismiss,
         ),
         const SizedBox(height: 8),
@@ -834,31 +843,32 @@ class _OutOfCreditsContent extends StatelessWidget {
     required this.onDismiss,
   });
 
-  static const _packs = [
-    _PackOption(
-      productId: 'illustration_credits_3',
-      label: 'Quick pack',
-      sublabel: '3 illustrations',
-      price: r'$1.99',
-    ),
-    _PackOption(
-      productId: 'illustration_credits_10',
-      label: 'Best value',
-      sublabel: '10 illustrations',
-      price: r'$4.99',
-      badge: 'Most popular',
-      emphasized: true,
-    ),
-    _PackOption(
-      productId: 'illustration_credits_25',
-      label: 'For memory lovers',
-      sublabel: '25 illustrations',
-      price: r'$9.99',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final packs = [
+      _PackOption(
+        productId: 'illustration_credits_3',
+        label: l10n.illPackQuickLabel,
+        sublabel: l10n.illPackQuickSub,
+        price: r'$1.99',
+      ),
+      _PackOption(
+        productId: 'illustration_credits_10',
+        label: l10n.illPackBestLabel,
+        sublabel: l10n.illPackBestSub,
+        price: r'$4.99',
+        badge: l10n.illPackMostPopular,
+        emphasized: true,
+      ),
+      _PackOption(
+        productId: 'illustration_credits_25',
+        label: l10n.illPackLoversLabel,
+        sublabel: l10n.illPackLoversSub,
+        price: r'$9.99',
+      ),
+    ];
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -866,10 +876,10 @@ class _OutOfCreditsContent extends StatelessWidget {
         const SizedBox(height: 24),
         _SparkleIcon(),
         const SizedBox(height: 20),
-        const Text(
-          "You're out of illustrations",
+        Text(
+          l10n.illOutOfTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
@@ -877,22 +887,22 @@ class _OutOfCreditsContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        const Text(
-          'Turn your memories into beautiful artwork.',
+        Text(
+          l10n.illOutOfDesc,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 15,
             color: Color(0xFF8A7C75),
             height: 1.6,
           ),
         ),
         const SizedBox(height: 24),
-        for (final pack in _packs) ...[
+        for (final pack in packs) ...[
           _PackTile(
             pack: pack,
             loading: purchasingPackId == pack.productId,
-            disabled: purchasingPackId != null &&
-                purchasingPackId != pack.productId,
+            disabled:
+                purchasingPackId != null && purchasingPackId != pack.productId,
             onTap: () => onBuyPack(pack.productId),
           ),
           const SizedBox(height: 10),
@@ -900,9 +910,9 @@ class _OutOfCreditsContent extends StatelessWidget {
         const SizedBox(height: 6),
         TextButton(
           onPressed: purchasingPackId != null ? null : onDismiss,
-          child: const Text(
-            'Maybe later',
-            style: TextStyle(
+          child: Text(
+            l10n.maybeLater,
+            style: const TextStyle(
               fontSize: 14,
               color: Color(0xFF8A7C75),
               fontWeight: FontWeight.w500,
@@ -932,15 +942,11 @@ class _PackTile extends StatelessWidget {
     final bg = pack.emphasized
         ? const Color(0xFF9C88CC)
         : const Color(0xFFE5E0F7);
-    final labelColor = pack.emphasized
-        ? Colors.white
-        : const Color(0xFF4A3E39);
+    final labelColor = pack.emphasized ? Colors.white : const Color(0xFF4A3E39);
     final sublabelColor = pack.emphasized
         ? Colors.white.withValues(alpha: 0.75)
         : const Color(0xFF8A7C75);
-    final priceColor = pack.emphasized
-        ? Colors.white
-        : const Color(0xFF9C88CC);
+    final priceColor = pack.emphasized ? Colors.white : const Color(0xFF9C88CC);
 
     return Opacity(
       opacity: disabled ? 0.45 : 1.0,
@@ -1008,10 +1014,7 @@ class _PackTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       pack.sublabel,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: sublabelColor,
-                      ),
+                      style: TextStyle(fontSize: 13, color: sublabelColor),
                     ),
                   ],
                 ),
@@ -1174,6 +1177,7 @@ class _IllustrationCreditChipState extends State<IllustrationCreditChip> {
   @override
   Widget build(BuildContext context) {
     if (!PremiumService.instance.isPremium) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context)!;
 
     return StreamBuilder<UserIllustrationCredits>(
       stream: _service.watchMyCredits(),
@@ -1183,19 +1187,23 @@ class _IllustrationCreditChipState extends State<IllustrationCreditChip> {
 
         final monthly = credits.monthlyRemaining;
         final purchased = credits.purchasedCreditsRemaining;
-        final total = credits.monthlyRemaining + credits.purchasedCreditsRemaining;
+        final total =
+            credits.monthlyRemaining + credits.purchasedCreditsRemaining;
         final isEmpty = total == 0;
 
         final String label;
         if (purchased > 0 && monthly == 0) {
-          label = '✨ $purchased illustrations left';
+          label = l10n.illCreditsLeft(purchased);
         } else {
-          label = '✨ $monthly / ${UserIllustrationCredits.monthlyIncludedLimit} this month';
+          label = l10n.illMonthlyCredits(
+            monthly,
+            UserIllustrationCredits.monthlyIncludedLimit,
+          );
         }
 
         final color = isEmpty
-            ? const Color(0xFFF59E0B)   // amber warning
-            : const Color(0xFF9C88CC);  // lavender default
+            ? const Color(0xFFF59E0B) // amber warning
+            : const Color(0xFF9C88CC); // lavender default
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

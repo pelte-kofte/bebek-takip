@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -36,6 +37,16 @@ class MedicationDoseMarkResult {
   });
 }
 
+class _SharedBabyTruthCacheEntry {
+  const _SharedBabyTruthCacheEntry({
+    required this.isShared,
+    required this.checkedAt,
+  });
+
+  final bool isShared;
+  final DateTime checkedAt;
+}
+
 class VeriYonetici {
   // Singleton instance
   static SharedPreferences? _prefs;
@@ -64,11 +75,14 @@ class VeriYonetici {
   static int _feedingReminderInterval = 180; // 3 hours default
   static bool _diaperReminderEnabled = false;
   static int _diaperReminderInterval = 120; // 2 hours default
+  static bool _dailyTipReminderEnabled = false;
   static bool _medicationRemindersEnabled = true;
   static int _feedingReminderHour = 14;
   static int _feedingReminderMinute = 0;
   static int _diaperReminderHour = 14;
   static int _diaperReminderMinute = 0;
+  static int _dailyTipReminderHour = 10;
+  static int _dailyTipReminderMinute = 0;
 
   static String _babyName = 'Sofia';
   static DateTime _birthDate = DateTime(2024, 9, 17);
@@ -92,12 +106,16 @@ class VeriYonetici {
   static const bool _verboseSyncLogs = true;
   static final Map<String, String> _lastCloudFingerprintByKey = {};
   static final Map<String, DateTime> _lastCloudWriteAtByKey = {};
+  static final Map<String, _SharedBabyTruthCacheEntry>
+  _sharedBabyTruthCacheByBabyId = {};
+  static const Duration _sharedBabyTruthCacheTtl = Duration(minutes: 3);
 
   // Real-time listeners on shared-critical collections for each baby.
   // Key = babyId:collection. Started after each sync; cancelled and
   // restarted on refreshForCurrentUser() so the set stays accurate.
-  static final Map<String, StreamSubscription<QuerySnapshot<Map<String, dynamic>>>> _sharedCollectionListeners = {};
-  static Timer? _sharedRefreshDebounce;
+  static final Map<String, StreamSubscription<dynamic>> _sharedListeners = {};
+  static final Map<String, Timer> _sharedRefreshDebounceByBabyId = {};
+  static const String _lastAuthScopeKey = 'last_auth_scope_key';
 
   static const List<String> _timerKeysByBabyTemplate = <String>[
     'active_uyku_start_{babyId}',
@@ -145,6 +163,17 @@ class VeriYonetici {
   static String? get _currentUid => FirebaseAuth.instance.currentUser?.uid;
   static User? get _currentUser => FirebaseAuth.instance.currentUser;
 
+  static String get currentUserDisplayName =>
+      _currentUser?.displayName?.trim() ?? '';
+
+  static void attachCreatorMetadataIfAbsent(Map<String, dynamic> row) {
+    if ((row['createdBy'] ?? '').toString().trim().isNotEmpty) return;
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    row['createdBy'] = uid;
+    row['createdByName'] = currentUserDisplayName;
+  }
+
   static String? _getLocalString(String key) {
     return _localStore?.getString(key) ?? _prefs?.getString(key);
   }
@@ -181,6 +210,12 @@ class VeriYonetici {
     _log('UI refresh triggered (data changed signal fired) reason=$reason');
   }
 
+  static String _sharedRecordPath(String babyId, String recordId) =>
+      'babies/$babyId/records/$recordId';
+
+  static String _sharedCollectionPath(String babyId, String collection) =>
+      'babies/$babyId/$collection';
+
   static dynamic _canonicalize(dynamic value) {
     if (value is Map) {
       final keys = value.keys.map((k) => k.toString()).toList()..sort();
@@ -194,12 +229,16 @@ class VeriYonetici {
       return value.map(_canonicalize).toList();
     }
     if (value is DateTime) return value.toUtc().toIso8601String();
+    if (value is Timestamp) return value.toDate().toUtc().toIso8601String();
     if (value is Duration) return value.inMilliseconds;
     return value;
   }
 
-  static bool _shouldSkipDuplicateCloudWrite(String key, dynamic payload) {
-    final fp = jsonEncode(_canonicalize(payload));
+  static String _cloudWriteFingerprint(dynamic payload) {
+    return jsonEncode(_canonicalize(payload));
+  }
+
+  static bool _shouldSkipDuplicateCloudWrite(String key, String fp) {
     final now = DateTime.now();
     final lastFp = _lastCloudFingerprintByKey[key];
     final lastAt = _lastCloudWriteAtByKey[key];
@@ -209,9 +248,13 @@ class VeriYonetici {
       _log('Skipping duplicate cloud write for key=$key');
       return true;
     }
+    return false;
+  }
+
+  static void _rememberSuccessfulCloudWrite(String key, String fp) {
+    final now = DateTime.now();
     _lastCloudFingerprintByKey[key] = fp;
     _lastCloudWriteAtByKey[key] = now;
-    return false;
   }
 
   static Future<void> _withIdempotentCloudWrite(
@@ -219,8 +262,62 @@ class VeriYonetici {
     dynamic payload,
     Future<void> Function() action,
   ) async {
-    if (_shouldSkipDuplicateCloudWrite(key, payload)) return;
+    final fp = _cloudWriteFingerprint(payload);
+    if (_shouldSkipDuplicateCloudWrite(key, fp)) return;
     await action();
+    _rememberSuccessfulCloudWrite(key, fp);
+  }
+
+  static String _authScopeKeyForUser(User? user) {
+    if (user == null) return 'signed_out';
+    if (user.isAnonymous) return 'anonymous:${user.uid}';
+    return 'user:${user.uid}';
+  }
+
+  static Future<void> _resetLocalCachesForAuthScopeChange({
+    required String fromScope,
+    required String toScope,
+  }) async {
+    _log(
+      'Auth scope changed from $fromScope to $toScope; clearing local caches',
+    );
+    _stopSharedRecordListeners();
+    _babies = [];
+    _mamaKayitlari = [];
+    _kakaKayitlari = [];
+    _uykuKayitlari = [];
+    _anilar = [];
+    _boyKiloKayitlari = [];
+    _milestones = [];
+    _asiKayitlari = [];
+    _ilacKayitlari = [];
+    _ilacDozKayitlari = [];
+    _activeBabyId = '';
+    _sharedBabyIds.clear();
+    _ownedBabyIdsWithMembers.clear();
+    _sharedBabyTruthCacheByBabyId.clear();
+    _lastCloudFingerprintByKey.clear();
+    _lastCloudWriteAtByKey.clear();
+    await _saveBabies();
+    await _saveAllCollections();
+    await _setLocalString('active_baby_id', '');
+    await _setLocalString(_lastAuthScopeKey, toScope);
+    _syncCachedActiveBabyFields();
+    _notifyDataChanged(reason: 'auth-scope-reset');
+  }
+
+  static Future<void> _pruneLocalCachesForAuthScopeIfNeeded() async {
+    final currentScope = _authScopeKeyForUser(_currentUser);
+    final previousScope = _getLocalString(_lastAuthScopeKey);
+    if (previousScope == null || previousScope.isEmpty) {
+      await _setLocalString(_lastAuthScopeKey, currentScope);
+      return;
+    }
+    if (previousScope == currentScope) return;
+    await _resetLocalCachesForAuthScopeChange(
+      fromScope: previousScope,
+      toScope: currentScope,
+    );
   }
 
   static RepositoryDataBundle _currentCoreBundle() {
@@ -252,6 +349,47 @@ class VeriYonetici {
     );
   }
 
+  static Future<void> _restoreCoreBundle(
+    RepositoryDataBundle bundle, {
+    required String reason,
+  }) async {
+    _babies = _dedupeBabiesById(List<Baby>.from(bundle.babies));
+    _mamaKayitlari = bundle.mamaKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _kakaKayitlari = bundle.kakaKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _uykuKayitlari = bundle.uykuKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _boyKiloKayitlari = bundle.boyKiloKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _asiKayitlari = bundle.asiKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _milestones = bundle.milestones
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _anilar = bundle.anilar.map((e) => Map<String, dynamic>.from(e)).toList();
+    _ilacKayitlari = bundle.ilacKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    _ilacDozKayitlari = bundle.ilacDozKayitlari
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    if (_activeBabyId.isNotEmpty &&
+        !_babies.any((b) => b.id == _activeBabyId)) {
+      _activeBabyId = _babies.isNotEmpty ? _babies.first.id : '';
+      await _setLocalString('active_baby_id', _activeBabyId);
+    }
+    await _saveBabies();
+    await _saveAllCollections();
+    _syncCachedActiveBabyFields();
+    _notifyDataChanged(reason: reason);
+  }
+
   static String _deterministicDocId({
     required String babyId,
     required String type,
@@ -271,6 +409,19 @@ class VeriYonetici {
     return dt.toUtc().toIso8601String();
   }
 
+  static bool _isNursingMamaRow(Map<String, dynamic> row) {
+    final explicitType = (row['type'] ?? '').toString().trim().toLowerCase();
+    if (explicitType == 'nursing') return true;
+    final kategori = (row['kategori'] ?? 'Milk')
+        .toString()
+        .trim()
+        .toLowerCase();
+    final tur = (row['tur'] ?? '').toString().trim().toLowerCase();
+    return kategori != 'solid' &&
+        tur.contains('anne') &&
+        !tur.contains('biberon');
+  }
+
   static String _repairNaturalKeyFor(String entity, Map<String, dynamic> row) {
     final babyId = (row['babyId'] ?? _activeBabyId).toString();
     switch (entity) {
@@ -279,10 +430,9 @@ class VeriYonetici {
             .toString()
             .trim()
             .toLowerCase();
-        final tur = (row['tur'] ?? '').toString().trim().toLowerCase();
         final type = explicitType.isNotEmpty
             ? explicitType
-            : (tur == 'anne' ? 'nursing' : 'feeding');
+            : (_isNursingMamaRow(row) ? 'nursing' : 'feeding');
         final tarih = _stableDateToken(row['tarih'] ?? row['date']);
         return 'feeding|$babyId|$type|$tarih|${row['miktar'] ?? ''}|${row['solDakika'] ?? ''}|${row['sagDakika'] ?? ''}|${row['kategori'] ?? ''}';
       case 'diaper':
@@ -592,41 +742,862 @@ class VeriYonetici {
 
   /// Cancels all active shared-record listeners and clears the map.
   static void _stopSharedRecordListeners() {
-    _sharedRefreshDebounce?.cancel();
-    _sharedRefreshDebounce = null;
-    for (final sub in _sharedCollectionListeners.values) {
+    for (final timer in _sharedRefreshDebounceByBabyId.values) {
+      timer.cancel();
+    }
+    _sharedRefreshDebounceByBabyId.clear();
+    for (final sub in _sharedListeners.values) {
       sub.cancel();
     }
-    _sharedCollectionListeners.clear();
+    _sharedListeners.clear();
     _log('_stopSharedRecordListeners: all listeners cancelled');
   }
 
-  static void _scheduleSharedRefresh(String reason) {
-    _sharedRefreshDebounce?.cancel();
-    _sharedRefreshDebounce = Timer(const Duration(seconds: 1), () {
-      _log(
-        '_sharedCollectionListener: triggering refreshForCurrentUser '
-        'reason=$reason',
-      );
-      refreshForCurrentUser().ignore();
-    });
+  static void _scheduleSharedBabyRefresh(
+    String babyId, {
+    required String reason,
+  }) {
+    final existing = _sharedRefreshDebounceByBabyId.remove(babyId);
+    existing?.cancel();
+    _sharedRefreshDebounceByBabyId[babyId] = Timer(
+      const Duration(milliseconds: 400),
+      () async {
+        _sharedRefreshDebounceByBabyId.remove(babyId);
+        _log(
+          '_sharedCollectionListener: applying scoped refresh '
+          'babyId=$babyId reason=$reason',
+        );
+        try {
+          await _refreshSharedBabyFromCloud(babyId);
+        } catch (e, st) {
+          _log('_refreshSharedBabyFromCloud failed babyId=$babyId: $e');
+          if (kDebugMode) {
+            _log('_refreshSharedBabyFromCloud stack: $st');
+          }
+          refreshForCurrentUser().ignore();
+        }
+      },
+    );
   }
 
-  static bool _shouldUseReliableSharedSync(String babyId) {
-    return babyId.isNotEmpty && isBabyVisiblyShared(babyId);
+  static void _cacheSharedBabyTruth(String babyId, bool isShared) {
+    if (babyId.isEmpty) return;
+    _sharedBabyTruthCacheByBabyId[babyId] = _SharedBabyTruthCacheEntry(
+      isShared: isShared,
+      checkedAt: DateTime.now(),
+    );
+  }
+
+  static void _invalidateSharedBabyTruth(String babyId) {
+    if (babyId.isEmpty) return;
+    _sharedBabyTruthCacheByBabyId.remove(babyId);
+  }
+
+  static _SharedBabyTruthCacheEntry? _sharedBabyTruthCacheEntryFor(
+    String babyId,
+  ) {
+    final entry = _sharedBabyTruthCacheByBabyId[babyId];
+    if (entry == null) return null;
+    if (DateTime.now().difference(entry.checkedAt) <=
+        _sharedBabyTruthCacheTtl) {
+      return entry;
+    }
+    _sharedBabyTruthCacheByBabyId.remove(babyId);
+    return null;
+  }
+
+  static Future<bool> _isSharedBabyUsingCloudTruth(String babyId) async {
+    if (babyId.isEmpty) return false;
+    if (isBabyVisiblyShared(babyId)) {
+      _cacheSharedBabyTruth(babyId, true);
+      return true;
+    }
+
+    final cached = _sharedBabyTruthCacheEntryFor(babyId);
+    if (cached != null) return cached.isShared;
+
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return false;
+    final user = _currentUser;
+    if (user == null || user.isAnonymous) return false;
+
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .get();
+      if (!snap.exists) {
+        _cacheSharedBabyTruth(babyId, false);
+        return false;
+      }
+
+      final data = snap.data() ?? const <String, dynamic>{};
+      final ownerId = (data['ownerId'] ?? '').toString().trim();
+      final members = data['members'];
+      final hasCoParentMembers = members is Map && members.isNotEmpty;
+      final isSharedMember = ownerId.isNotEmpty && ownerId != uid;
+      final isOwnerOfSharedBaby = ownerId == uid && hasCoParentMembers;
+      final isShared = isSharedMember || isOwnerOfSharedBaby;
+      if (isSharedMember) {
+        _sharedBabyIds.add(babyId);
+      }
+      if (isOwnerOfSharedBaby) {
+        _ownedBabyIdsWithMembers.add(babyId);
+      } else {
+        _ownedBabyIdsWithMembers.remove(babyId);
+      }
+      if (!isSharedMember) {
+        _sharedBabyIds.remove(babyId);
+      }
+      _cacheSharedBabyTruth(babyId, isShared);
+      return isShared;
+    } catch (e, st) {
+      _log('_isSharedBabyUsingCloudTruth failed babyId=$babyId: $e');
+      if (kDebugMode) {
+        _log('_isSharedBabyUsingCloudTruth stack: $st');
+      }
+      return false;
+    }
+  }
+
+  static Set<String> _activeIdsFromRows(Iterable<Map<String, dynamic>> rows) {
+    return rows
+        .where((row) => !_rowIsDeleted(row))
+        .map((row) => (row['id'] ?? '').toString().trim())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+  }
+
+  static Future<void> _notifySharedActivityIfNeeded({
+    required String babyId,
+    required String activityType,
+    required bool createdNewRecord,
+  }) async {
+    if (!createdNewRecord || babyId.isEmpty) return;
+    if (!await _isSharedBabyUsingCloudTruth(babyId)) return;
+
+    final babyName = _babies
+        .firstWhere(
+          (baby) => baby.id == babyId,
+          orElse: () =>
+              Baby(id: babyId, name: 'Baby', birthDate: DateTime.now()),
+        )
+        .name;
+
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('notifySharedActivity')
+          .call<Map<String, dynamic>>({
+            'babyId': babyId,
+            'activityType': activityType,
+            'babyName': babyName,
+          });
+    } catch (e, st) {
+      _log(
+        '_notifySharedActivityIfNeeded failed '
+        'babyId=$babyId activityType=$activityType error=$e',
+      );
+      if (kDebugMode) {
+        _log('_notifySharedActivityIfNeeded stack: $st');
+      }
+    }
+  }
+
+  static void _scheduleSharedActivityNotificationIfNeeded({
+    required String babyId,
+    required String activityType,
+    required bool createdNewRecord,
+  }) {
+    _scheduleBestEffortCloudWrite(
+      () => _notifySharedActivityIfNeeded(
+        babyId: babyId,
+        activityType: activityType,
+        createdNewRecord: createdNewRecord,
+      ),
+      label: '$activityType notification',
+    );
   }
 
   static Future<void> _syncSharedCriticalOrBestEffort({
     required String babyId,
     required String label,
     required Future<void> Function() sync,
+    bool? isSharedBaby,
+    Future<void> Function(Object error, StackTrace st)? onSharedSyncFailure,
     Duration timeout = _bestEffortWriteTimeout,
   }) async {
-    if (_shouldUseReliableSharedSync(babyId)) {
-      await sync();
+    final shared = isSharedBaby ?? await _isSharedBabyUsingCloudTruth(babyId);
+    if (shared) {
+      try {
+        await sync();
+      } catch (e, st) {
+        _log('Shared sync failed label=$label babyId=$babyId error=$e');
+        if (kDebugMode) {
+          _log('Shared sync stack label=$label babyId=$babyId: $st');
+        }
+        if (onSharedSyncFailure != null) {
+          await onSharedSyncFailure(e, st);
+        }
+        rethrow;
+      }
       return;
     }
     _scheduleBestEffortCloudWrite(sync, label: label, timeout: timeout);
+  }
+
+  static Object? _canonicalRowValue(dynamic value) {
+    if (value is DateTime) return value.toUtc().toIso8601String();
+    if (value is Timestamp) return value.toDate().toUtc().toIso8601String();
+    if (value is Duration) return value.inMicroseconds;
+    if (value is List) {
+      return value.map(_canonicalRowValue).toList(growable: false);
+    }
+    if (value is Map) {
+      final out = <String, Object?>{};
+      final keys = value.keys.map((k) => k.toString()).toList()..sort();
+      for (final key in keys) {
+        out[key] = _canonicalRowValue(value[key]);
+      }
+      return out;
+    }
+    return value;
+  }
+
+  static String _rowComparableSignature(Map<String, dynamic> row) {
+    final comparable = Map<String, dynamic>.from(row)
+      ..remove('updatedAt')
+      ..remove('localUpdatedAt')
+      ..remove('deletedAt')
+      ..remove('createdAt');
+    return jsonEncode(_canonicalRowValue(comparable));
+  }
+
+  static String _rowsFingerprint(List<Map<String, dynamic>> rows) {
+    final normalized = rows.map((row) {
+      final map = Map<String, dynamic>.from(row)
+        ..remove('updatedAt')
+        ..remove('localUpdatedAt')
+        ..remove('createdAt');
+      return _canonicalRowValue(map);
+    }).toList()..sort((a, b) => jsonEncode(a).compareTo(jsonEncode(b)));
+    return jsonEncode(normalized);
+  }
+
+  static bool _replaceRowsForBaby(
+    List<Map<String, dynamic>> target,
+    String babyId,
+    List<Map<String, dynamic>> incoming,
+  ) {
+    final before = target
+        .where((row) => row['babyId'] == babyId)
+        .map((row) => Map<String, dynamic>.from(row))
+        .toList();
+    final beforeFingerprint = _rowsFingerprint(before);
+    final incomingCopies = incoming
+        .map((row) => Map<String, dynamic>.from(row))
+        .toList();
+    final afterFingerprint = _rowsFingerprint(incomingCopies);
+    final changed = beforeFingerprint != afterFingerprint;
+    if (!changed) return false;
+    target.removeWhere((row) => row['babyId'] == babyId);
+    target.addAll(incomingCopies);
+    return true;
+  }
+
+  static Map<String, dynamic> _recordDocRowForCloud(Map<String, dynamic> row) {
+    final doc = Map<String, dynamic>.from(row);
+    if (doc.containsKey('baslangic') || doc.containsKey('bitis')) {
+      doc['type'] = 'sleep';
+      doc['startAt'] = doc['baslangic'];
+      doc['endAt'] = doc['bitis'];
+      doc['durationMinutes'] = (doc['sure'] as Duration).inMinutes;
+      return doc;
+    }
+    if (doc.containsKey('diaperType') || doc.containsKey('notlar')) {
+      doc['type'] = 'diaper';
+      doc['date'] = doc['tarih'];
+      return doc;
+    }
+    doc['type'] = _isNursingMamaRow(doc) ? 'nursing' : 'feeding';
+    doc['date'] = doc['tarih'];
+    return doc;
+  }
+
+  static String _recordActivityTypeForLogs(Map<String, dynamic> row) {
+    final explicit = (row['type'] ?? '').toString().trim().toLowerCase();
+    if (explicit.isNotEmpty) return explicit;
+    if (row.containsKey('baslangic') || row.containsKey('bitis')) {
+      return 'sleep';
+    }
+    if (row.containsKey('diaperType') || row.containsKey('notlar')) {
+      return 'diaper';
+    }
+    return _isNursingMamaRow(row) ? 'nursing' : 'feeding';
+  }
+
+  static Future<void> _syncScopedRecordRowsToCloud({
+    required String babyId,
+    required List<Map<String, dynamic>> rows,
+    required bool shared,
+  }) async {
+    if (rows.isEmpty) return;
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: '_syncScopedRecordRowsToCloud',
+      skipMessage: '[Sync] skip scoped record write: user is anonymous',
+    )) {
+      return;
+    }
+
+    String ownerId = '';
+    if (kDebugMode) {
+      try {
+        final babySnap = await FirebaseFirestore.instance
+            .collection('babies')
+            .doc(babyId)
+            .get();
+        ownerId = (babySnap.data()?['ownerId'] ?? '').toString().trim();
+      } catch (e) {
+        _log(
+          'scoped record write owner lookup failed babyId=$babyId uid=$uid '
+          'error=$e',
+        );
+      }
+    }
+
+    for (final row in rows) {
+      final doc = _recordDocRowForCloud(row);
+      final recordId = (doc['id'] ?? '').toString();
+      if (recordId.isEmpty) continue;
+      final activityType = _recordActivityTypeForLogs(doc);
+      final path = _sharedRecordPath(babyId, recordId);
+      final createdBy = (doc['createdBy'] ?? '').toString().trim();
+      final stopwatch = Stopwatch()..start();
+      if (kDebugMode) {
+        _log(
+          'scoped record write start babyId=$babyId uid=$uid '
+          'isSharedBaby=$shared ownerId=$ownerId createdBy=$createdBy '
+          'activityType=$activityType recordId=$recordId path=$path '
+          'isDeleted=${doc['isDeleted'] == true}',
+        );
+      }
+      try {
+        await _firestoreStore.upsertRecordForBaby(
+          uid,
+          babyId: babyId,
+          record: doc,
+        );
+        if (kDebugMode) {
+          _log(
+            'scoped record write success babyId=$babyId uid=$uid '
+            'isSharedBaby=$shared ownerId=$ownerId createdBy=$createdBy '
+            'activityType=$activityType recordId=$recordId path=$path '
+            'elapsedMs=${stopwatch.elapsedMilliseconds}',
+          );
+        }
+      } catch (e, st) {
+        final code = e is FirebaseException ? e.code : 'unknown';
+        final message = e is FirebaseException
+            ? e.message ?? e.toString()
+            : e.toString();
+        if (kDebugMode) {
+          _log(
+            'scoped record write failed babyId=$babyId uid=$uid '
+            'isSharedBaby=$shared ownerId=$ownerId createdBy=$createdBy '
+            'activityType=$activityType recordId=$recordId path=$path '
+            'elapsedMs=${stopwatch.elapsedMilliseconds} '
+            'firestoreCode=$code firestoreMessage=$message',
+          );
+          _log('scoped record write stack path=$path: $st');
+        }
+        rethrow;
+      } finally {
+        stopwatch.stop();
+      }
+    }
+  }
+
+  static Future<void> ensureBabySharedCloudSync(String babyId) async {
+    if (babyId.isEmpty) return;
+    await _repairMissingIdsAndPersistIfNeeded();
+    final uid = _currentUid;
+    if (uid == null || uid.isEmpty) return;
+    if (!_canSyncWithCloud(
+      operation: 'ensureBabySharedCloudSync',
+      skipMessage: '[Sync] skip shared baby flush: user is anonymous',
+    )) {
+      return;
+    }
+
+    try {
+      await _syncBabiesToCloud();
+      await _syncActiveBabyRecordsToCloud(babyId: babyId);
+      await _syncActiveBabyMemoriesToCloud(babyId: babyId);
+      await _syncActiveBabyMedicationsToCloud(babyId: babyId);
+      await _syncActiveBabyMedicationLogsToCloud(babyId: babyId);
+      _log('ensureBabySharedCloudSync completed babyId=$babyId uid=$uid');
+    } catch (e, st) {
+      _log('ensureBabySharedCloudSync failed babyId=$babyId uid=$uid: $e');
+      if (kDebugMode) {
+        _log('ensureBabySharedCloudSync stack: $st');
+      }
+      rethrow;
+    }
+  }
+
+  static Future<void> _pruneBabyLocally(
+    String babyId, {
+    required String reason,
+    bool notify = true,
+  }) async {
+    final listenerKeys = _sharedListeners.keys
+        .where((key) => key.startsWith('$babyId:'))
+        .toList(growable: false);
+    for (final key in listenerKeys) {
+      final sub = _sharedListeners.remove(key);
+      if (sub != null) {
+        await sub.cancel();
+      }
+    }
+    _sharedRefreshDebounceByBabyId.remove(babyId)?.cancel();
+    final removed = <String, int>{};
+    _babies.removeWhere((baby) => baby.id == babyId);
+    removed['mama'] = _removeRowsForBaby(_mamaKayitlari, babyId);
+    removed['kaka'] = _removeRowsForBaby(_kakaKayitlari, babyId);
+    removed['uyku'] = _removeRowsForBaby(_uykuKayitlari, babyId);
+    removed['anilar'] = _removeRowsForBaby(_anilar, babyId);
+    removed['boykilo'] = _removeRowsForBaby(_boyKiloKayitlari, babyId);
+    removed['milestones'] = _removeRowsForBaby(_milestones, babyId);
+    removed['asi'] = _removeRowsForBaby(_asiKayitlari, babyId);
+    removed['ilac'] = _removeRowsForBaby(_ilacKayitlari, babyId);
+    removed['ilac_doz'] = _removeRowsForBaby(_ilacDozKayitlari, babyId);
+    _sharedBabyIds.remove(babyId);
+    _ownedBabyIdsWithMembers.remove(babyId);
+    _invalidateSharedBabyTruth(babyId);
+    if (_activeBabyId == babyId) {
+      _activeBabyId = _babies.isNotEmpty ? _babies.first.id : '';
+      await _setLocalString('active_baby_id', _activeBabyId);
+    }
+    _syncCachedActiveBabyFields();
+    await _saveBabies();
+    await _saveAllCollections();
+    _log('Pruned local babyId=$babyId reason=$reason removed=$removed');
+    if (notify) {
+      _notifyDataChanged(reason: 'prune:$reason');
+    }
+  }
+
+  static Future<void> _pruneInaccessibleBabiesForCurrentUser() async {
+    final uid = _currentUid;
+    final user = _currentUser;
+    if (uid == null || uid.isEmpty || user == null || user.isAnonymous) return;
+
+    final ownedSnap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('babies')
+        .get();
+    final sharedSnap = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('sharedBabies')
+        .get();
+
+    final allowedIds = <String>{
+      ...ownedSnap.docs.map((doc) => doc.id),
+      ...sharedSnap.docs.map(
+        (doc) => (doc.data()['babyId'] as String?) ?? doc.id,
+      ),
+    }..removeWhere((id) => id.trim().isEmpty);
+
+    final staleLocalIds = _babies
+        .map((baby) => baby.id)
+        .where((babyId) => !allowedIds.contains(babyId))
+        .toList();
+    if (staleLocalIds.isEmpty) return;
+
+    var prunedAny = false;
+    for (final babyId in staleLocalIds) {
+      try {
+        final topLevelSnap = await FirebaseFirestore.instance
+            .collection('babies')
+            .doc(babyId)
+            .get();
+        final ownerId = (topLevelSnap.data()?['ownerId'] ?? '')
+            .toString()
+            .trim();
+        final shouldKeepOwnedBaby = ownerId.isNotEmpty && ownerId == uid;
+        if (shouldKeepOwnedBaby) continue;
+      } catch (_) {
+        // If the caller cannot read the baby anymore, treat it as stale.
+      }
+      await _pruneBabyLocally(
+        babyId,
+        reason: 'membership-refresh',
+        notify: false,
+      );
+      prunedAny = true;
+    }
+
+    if (prunedAny) {
+      _notifyDataChanged(reason: 'membership-refresh');
+    }
+  }
+
+  static DateTime _sharedDocDateTime(dynamic value, {DateTime? fallback}) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) {
+      return DateTime.tryParse(value) ?? (fallback ?? DateTime.now());
+    }
+    return fallback ?? DateTime.now();
+  }
+
+  static DateTime? _sharedDocOptionalDateTime(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  static bool _applySharedRecordDocs(
+    String babyId,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final mama = <Map<String, dynamic>>[];
+    final kaka = <Map<String, dynamic>>[];
+    final uyku = <Map<String, dynamic>>[];
+    final boyKilo = <Map<String, dynamic>>[];
+    final asilar = <Map<String, dynamic>>[];
+    final milestones = <Map<String, dynamic>>[];
+    final anilar = <Map<String, dynamic>>[];
+
+    for (final doc in docs) {
+      final row = doc.data();
+      final type = (row['type'] ?? '').toString();
+      final id = (row['id'] ?? doc.id).toString();
+      final updatedAt = _sharedDocDateTime(
+        row['updatedAt'] ?? row['createdAt'],
+      );
+      final data = Map<String, dynamic>.from((row['data'] as Map?) ?? {});
+      final isDeleted = data['isDeleted'] == true || row['isDeleted'] == true;
+      final deletedAt = _sharedDocOptionalDateTime(
+        data['deletedAt'] ?? row['deletedAt'],
+      );
+
+      if (type == 'feeding' || type == 'nursing') {
+        mama.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'tur':
+              data['tur'] ?? (type == 'nursing' ? 'anne' : data['tur'] ?? ''),
+          'tarih': _sharedDocDateTime(
+            data['tarih'] ?? data['date'] ?? updatedAt,
+          ),
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'diaper') {
+        kaka.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'tarih': _sharedDocDateTime(
+            data['tarih'] ?? data['date'] ?? updatedAt,
+          ),
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'sleep') {
+        final start = _sharedDocDateTime(data['baslangic'] ?? data['startAt']);
+        final end = _sharedDocDateTime(
+          data['bitis'] ?? data['endAt'] ?? updatedAt,
+        );
+        uyku.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'baslangic': start,
+          'bitis': end,
+          'sure': Duration(
+            minutes:
+                (data['durationMinutes'] as num?)?.toInt() ??
+                end.difference(start).inMinutes,
+          ),
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'growth') {
+        boyKilo.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'tarih': _sharedDocDateTime(
+            data['tarih'] ?? data['date'] ?? updatedAt,
+          ),
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'vaccine') {
+        asilar.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'tarih': data['tarih'] != null
+              ? _sharedDocDateTime(data['tarih'])
+              : null,
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'milestone') {
+        milestones.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'date': _sharedDocDateTime(
+            data['date'] ?? data['tarih'] ?? updatedAt,
+          ),
+          'photoPath': data['photoLocalPath'] ?? data['photoPath'],
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      } else if (type == 'memory') {
+        anilar.add({
+          ...data,
+          'id': id,
+          'babyId': babyId,
+          'tarih': _sharedDocDateTime(
+            data['tarih'] ?? data['date'] ?? updatedAt,
+          ),
+          'baslik': data['baslik'] ?? data['title'],
+          'not': data['not'] ?? data['note'],
+          'photoPath': data['photoLocalPath'] ?? data['photoPath'],
+          'updatedAt': updatedAt,
+          'localUpdatedAt': updatedAt,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+        });
+      }
+    }
+
+    final changed =
+        _replaceRowsForBaby(_mamaKayitlari, babyId, mama) |
+        _replaceRowsForBaby(_kakaKayitlari, babyId, kaka) |
+        _replaceRowsForBaby(_uykuKayitlari, babyId, uyku) |
+        _replaceRowsForBaby(_boyKiloKayitlari, babyId, boyKilo) |
+        _replaceRowsForBaby(_asiKayitlari, babyId, asilar) |
+        _replaceRowsForBaby(_milestones, babyId, milestones) |
+        _replaceRowsForBaby(_anilar, babyId, anilar);
+    if (kDebugMode) {
+      _log(
+        '_applySharedRecordDocs babyId=$babyId docs=${docs.length} '
+        'changed=$changed feeding=${mama.length} diaper=${kaka.length} '
+        'sleep=${uyku.length} growth=${boyKilo.length} vaccine=${asilar.length} '
+        'milestone=${milestones.length} memory=${anilar.length}',
+      );
+    }
+    return changed;
+  }
+
+  static bool _applySharedMedicationDocs(
+    String babyId,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final meds = docs.map((doc) {
+      final row = doc.data();
+      final data = Map<String, dynamic>.from((row['data'] as Map?) ?? {});
+      final updatedAt = _sharedDocDateTime(
+        row['updatedAt'] ?? row['createdAt'],
+      );
+      return <String, dynamic>{
+        ...data,
+        'id': (row['id'] ?? doc.id).toString(),
+        'babyId': babyId,
+        'createdAt': _sharedDocDateTime(row['createdAt'], fallback: updatedAt),
+        'updatedAt': updatedAt,
+        'localUpdatedAt': updatedAt,
+        'isDeleted': data['isDeleted'] == true || row['isDeleted'] == true,
+        'deletedAt': _sharedDocOptionalDateTime(
+          data['deletedAt'] ?? row['deletedAt'],
+        ),
+      };
+    }).toList();
+    final changed = _replaceRowsForBaby(_ilacKayitlari, babyId, meds);
+    if (kDebugMode) {
+      _log(
+        '_applySharedMedicationDocs babyId=$babyId docs=${docs.length} '
+        'changed=$changed rows=${meds.length}',
+      );
+    }
+    return changed;
+  }
+
+  static bool _applySharedMedicationLogDocs(
+    String babyId,
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final logs = docs.map((doc) {
+      final row = doc.data();
+      final data = Map<String, dynamic>.from((row['data'] as Map?) ?? {});
+      final updatedAt = _sharedDocDateTime(
+        row['updatedAt'] ?? row['createdAt'],
+      );
+      return <String, dynamic>{
+        ...data,
+        'id': (row['id'] ?? doc.id).toString(),
+        'babyId': babyId,
+        'medicationId': row['medicationId'] ?? data['medicationId'],
+        'givenAt': _sharedDocDateTime(
+          data['givenAt'] ?? row['createdAt'] ?? updatedAt,
+        ),
+        'updatedAt': updatedAt,
+        'localUpdatedAt': updatedAt,
+        'isDeleted': data['isDeleted'] == true || row['isDeleted'] == true,
+        'deletedAt': _sharedDocOptionalDateTime(
+          data['deletedAt'] ?? row['deletedAt'],
+        ),
+      };
+    }).toList();
+    final changed = _replaceRowsForBaby(_ilacDozKayitlari, babyId, logs);
+    if (kDebugMode) {
+      _log(
+        '_applySharedMedicationLogDocs babyId=$babyId docs=${docs.length} '
+        'changed=$changed rows=${logs.length}',
+      );
+    }
+    return changed;
+  }
+
+  static Future<void> _refreshSharedBabyFromCloud(String babyId) async {
+    final uid = _currentUid;
+    final user = _currentUser;
+    if (uid == null || uid.isEmpty || user == null || user.isAnonymous) return;
+    final stopwatch = Stopwatch()..start();
+    if (kDebugMode) {
+      _log(
+        'shared refresh start uid=$uid babyId=$babyId '
+        'metadataPath=babies/$babyId recordsPath=${_sharedCollectionPath(babyId, 'records')} '
+        'medicationsPath=${_sharedCollectionPath(babyId, 'medications')} '
+        'medicationLogsPath=${_sharedCollectionPath(babyId, 'medicationLogs')}',
+      );
+    }
+
+    try {
+      final babySnap = await FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .get();
+      if (!babySnap.exists) {
+        await _pruneBabyLocally(babyId, reason: 'remote-baby-missing');
+        return;
+      }
+
+      final data = babySnap.data() ?? const <String, dynamic>{};
+      final ownerId = (data['ownerId'] ?? '').toString().trim();
+      final members = data['members'];
+      final hasMemberAccess = members is Map && members[uid] != null;
+      final isOwner = ownerId == uid;
+      if (!isOwner && !hasMemberAccess) {
+        await _pruneBabyLocally(babyId, reason: 'remote-access-revoked');
+        return;
+      }
+
+      final hasCoParentMembers = members is Map && members.isNotEmpty;
+      if (isOwner && hasCoParentMembers) {
+        _ownedBabyIdsWithMembers.add(babyId);
+        _sharedBabyIds.remove(babyId);
+      } else if (!isOwner) {
+        _sharedBabyIds.add(babyId);
+        _ownedBabyIdsWithMembers.remove(babyId);
+      } else {
+        _sharedBabyIds.remove(babyId);
+        _ownedBabyIdsWithMembers.remove(babyId);
+      }
+
+      final baby = Baby(
+        id: babyId,
+        name: (data['name'] as String?) ?? 'Baby',
+        birthDate: _parseBabyDate(data['birthDate']),
+        photoStoragePath: data['photoStoragePath'] as String?,
+        photoUrl: data['photoUrl'] as String?,
+      );
+      final existingIdx = _babies.indexWhere((b) => b.id == babyId);
+      if (existingIdx >= 0) {
+        _babies[existingIdx] = baby;
+      } else {
+        _babies.add(baby);
+      }
+
+      final recordsSnap = await FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .collection('records')
+          .orderBy('createdAt', descending: true)
+          .get();
+      final medsSnap = await FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .collection('medications')
+          .orderBy('createdAt', descending: true)
+          .get();
+      final medLogsSnap = await FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .collection('medicationLogs')
+          .orderBy('createdAt', descending: true)
+          .get();
+
+      final recordsChanged = _applySharedRecordDocs(babyId, recordsSnap.docs);
+      final medsChanged = _applySharedMedicationDocs(babyId, medsSnap.docs);
+      final logsChanged = _applySharedMedicationLogDocs(
+        babyId,
+        medLogsSnap.docs,
+      );
+      await _saveBabies();
+      await _saveAllCollections();
+      _syncCachedActiveBabyFields();
+      _notifyDataChanged(reason: 'scoped-shared-refresh');
+      if (kDebugMode) {
+        _log(
+          'shared refresh success uid=$uid babyId=$babyId ownerId=$ownerId '
+          'recordsPath=${_sharedCollectionPath(babyId, 'records')} records=${recordsSnap.docs.length} '
+          'medications=${medsSnap.docs.length} medicationLogs=${medLogsSnap.docs.length} '
+          'recordsChanged=$recordsChanged medsChanged=$medsChanged logsChanged=$logsChanged '
+          'elapsedMs=${stopwatch.elapsedMilliseconds}',
+        );
+      }
+    } catch (e, st) {
+      final code = e is FirebaseException ? e.code : 'unknown';
+      final message = e is FirebaseException
+          ? (e.message ?? e.toString())
+          : e.toString();
+      if (kDebugMode) {
+        _log(
+          'shared refresh failed uid=$uid babyId=$babyId '
+          'elapsedMs=${stopwatch.elapsedMilliseconds} firestoreCode=$code '
+          'firestoreMessage=$message',
+        );
+        _log('shared refresh stack babyId=$babyId: $st');
+      }
+      rethrow;
+    } finally {
+      stopwatch.stop();
+    }
   }
 
   static void _syncCachedActiveBabyFields() {
@@ -642,6 +1613,95 @@ class VeriYonetici {
     _babyPhotoPath = null;
   }
 
+  static Future<void> _applySharedCollectionSnapshot(
+    String babyId, {
+    required String collection,
+    required QuerySnapshot<Map<String, dynamic>> snap,
+  }) async {
+    final changedDocIds = snap.docChanges
+        .map((change) => change.doc.id)
+        .toList(growable: false);
+    final changeTypes = snap.docChanges
+        .map((change) => change.type.name)
+        .toList(growable: false);
+    if (kDebugMode) {
+      _log(
+        'shared listener snapshot babyId=$babyId '
+        'collectionPath=${_sharedCollectionPath(babyId, collection)} '
+        'docCount=${snap.docs.length} changedDocIds=$changedDocIds '
+        'changeTypes=$changeTypes',
+      );
+    }
+
+    final isOwnerSharedBaby =
+        _ownedBabyIdsWithMembers.contains(babyId) &&
+        !_sharedBabyIds.contains(babyId);
+    final hasLocalRowsForCollection = switch (collection) {
+      'records' =>
+        _mamaKayitlari.any((row) => row['babyId'] == babyId) ||
+            _kakaKayitlari.any((row) => row['babyId'] == babyId) ||
+            _uykuKayitlari.any((row) => row['babyId'] == babyId) ||
+            _boyKiloKayitlari.any((row) => row['babyId'] == babyId) ||
+            _asiKayitlari.any((row) => row['babyId'] == babyId) ||
+            _milestones.any((row) => row['babyId'] == babyId) ||
+            _anilar.any((row) => row['babyId'] == babyId),
+      'medications' => _ilacKayitlari.any((row) => row['babyId'] == babyId),
+      'medicationLogs' => _ilacDozKayitlari.any(
+        (row) => row['babyId'] == babyId,
+      ),
+      _ => false,
+    };
+    if (snap.docs.isEmpty && isOwnerSharedBaby && hasLocalRowsForCollection) {
+      if (kDebugMode) {
+        _log(
+          'shared listener snapshot skipped local wipe babyId=$babyId '
+          'collection=$collection reason=owner-local-data-awaiting-cloud-sync',
+        );
+      }
+      _scheduleBestEffortCloudWrite(
+        () => ensureBabySharedCloudSync(babyId),
+        label: 'shared listener heal:$babyId:$collection',
+        timeout: const Duration(seconds: 20),
+      );
+      return;
+    }
+
+    bool changed = false;
+    switch (collection) {
+      case 'records':
+        changed = _applySharedRecordDocs(babyId, snap.docs);
+        break;
+      case 'medications':
+        changed = _applySharedMedicationDocs(babyId, snap.docs);
+        break;
+      case 'medicationLogs':
+        changed = _applySharedMedicationLogDocs(babyId, snap.docs);
+        break;
+      default:
+        return;
+    }
+
+    if (!changed) {
+      if (kDebugMode) {
+        _log(
+          'shared listener apply skipped notify babyId=$babyId '
+          'collection=$collection changed=false',
+        );
+      }
+      return;
+    }
+
+    await _saveAllCollections();
+    _syncCachedActiveBabyFields();
+    _notifyDataChanged(reason: 'shared-listener:$collection');
+    if (kDebugMode) {
+      _log(
+        'shared listener apply updated local state babyId=$babyId '
+        'collection=$collection dataNotifierFired=true',
+      );
+    }
+  }
+
   static void _startSharedRecordListeners() {
     _stopSharedRecordListeners();
     final uid = _currentUid;
@@ -649,44 +1709,166 @@ class VeriYonetici {
     final user = _currentUser;
     if (user == null || user.isAnonymous) return;
 
-    // Include owned babies that have co-parents AND all shared babies.
-    // Using the combined _babies list filtered to those we know are shared;
-    // we also watch owned babies because a co-parent may write there.
-    // The simplest safe set: all babies currently in memory.
-    final babyIds = _babies.map((b) => b.id).toSet();
-    if (babyIds.isEmpty) return;
+    final metadataBabyIds = _babies.map((baby) => baby.id).toSet();
+    final sharedBabyIds = _babies
+        .where((baby) => isBabyVisiblyShared(baby.id))
+        .map((baby) => baby.id)
+        .toSet();
+    if (metadataBabyIds.isEmpty) return;
 
-    _log('_startSharedRecordListeners: watching ${babyIds.length} babies');
+    _log(
+      '_startSharedRecordListeners: metadata=${metadataBabyIds.length} '
+      'sharedCollections=${sharedBabyIds.length}',
+    );
 
-    const collections = <String>['records', 'medications', 'medicationLogs'];
-    for (final babyId in babyIds) {
+    for (final babyId in metadataBabyIds) {
+      final babyListenerKey = '$babyId:metadata';
+      final babySub = FirebaseFirestore.instance
+          .collection('babies')
+          .doc(babyId)
+          .snapshots()
+          .listen(
+            (snap) {
+              _log(
+                '_sharedBabyListener: metadata change detected '
+                'babyId=$babyId exists=${snap.exists}',
+              );
+              _invalidateSharedBabyTruth(babyId);
+              final wasVisiblyShared = isBabyVisiblyShared(babyId);
+              final wasOwnedWithMembers = _ownedBabyIdsWithMembers.contains(
+                babyId,
+              );
+              if (!snap.exists) {
+                _sharedBabyIds.remove(babyId);
+                _ownedBabyIdsWithMembers.remove(babyId);
+                _pruneBabyLocally(
+                  babyId,
+                  reason: 'metadata-listener-missing',
+                ).ignore();
+                return;
+              } else {
+                final data = snap.data();
+                final ownerId = (data?['ownerId'] ?? '').toString().trim();
+                final members = data?['members'];
+                final hasCoParentMembers = members is Map && members.isNotEmpty;
+                final hasMemberAccess = members is Map && members[uid] != null;
+                if (ownerId.isNotEmpty && ownerId != uid) {
+                  _sharedBabyIds.add(babyId);
+                } else {
+                  _sharedBabyIds.remove(babyId);
+                }
+                if (ownerId == uid && hasCoParentMembers) {
+                  _ownedBabyIdsWithMembers.add(babyId);
+                } else {
+                  _ownedBabyIdsWithMembers.remove(babyId);
+                }
+                final becameOwnerOfSharedBaby =
+                    !wasOwnedWithMembers &&
+                    ownerId == uid &&
+                    hasCoParentMembers;
+                final accessRevoked = ownerId != uid && !hasMemberAccess;
+                if (becameOwnerOfSharedBaby) {
+                  _scheduleBestEffortCloudWrite(
+                    () => ensureBabySharedCloudSync(babyId),
+                    label: 'shared baby activation sync:$babyId',
+                    timeout: const Duration(seconds: 20),
+                  );
+                }
+                if (accessRevoked) {
+                  _pruneBabyLocally(
+                    babyId,
+                    reason: 'metadata-listener-access-revoked',
+                  ).ignore();
+                  return;
+                }
+              }
+              final isNowVisiblyShared = isBabyVisiblyShared(babyId);
+              if (wasVisiblyShared != isNowVisiblyShared) {
+                _log(
+                  '_sharedBabyListener: visibility changed babyId=$babyId '
+                  'before=$wasVisiblyShared after=$isNowVisiblyShared '
+                  'restarting listeners',
+                );
+                Future<void>.microtask(_startSharedRecordListeners);
+              }
+              if (!isNowVisiblyShared) {
+                return;
+              }
+              _scheduleSharedBabyRefresh(babyId, reason: 'metadata');
+            },
+            onError: (Object e) =>
+                _log('_sharedBabyListener error babyId=$babyId: $e'),
+          );
+      _sharedListeners[babyListenerKey] = babySub;
+      if (kDebugMode) {
+        _log(
+          'shared listener start babyId=$babyId collectionPath=babies/$babyId '
+          'kind=metadata',
+        );
+      }
+    }
+
+    for (final babyId in sharedBabyIds) {
+      const collections = <String>[
+        'records',
+        'medications',
+        'medicationLogs',
+        'allergies',
+      ];
       for (final collection in collections) {
         final listenerKey = '$babyId:$collection';
-        var didReceiveInitialSnapshot = false;
         final sub = FirebaseFirestore.instance
             .collection('babies')
             .doc(babyId)
             .collection(collection)
             .snapshots()
             .listen(
-          (snap) {
-            if (!didReceiveInitialSnapshot) {
-              didReceiveInitialSnapshot = true;
-              return;
-            }
-            if (snap.docChanges.isEmpty) return;
-            _log(
-              '_sharedCollectionListener: remote change detected '
-              'babyId=$babyId collection=$collection changes=${snap.docChanges.length}',
+              (snap) async {
+                if (collection == 'allergies') {
+                  if (snap.docChanges.isEmpty) return;
+                  _log(
+                    '_sharedCollectionListener: remote change detected '
+                    'babyId=$babyId collection=$collection changes=${snap.docChanges.length}',
+                  );
+                  _scheduleSharedBabyRefresh(babyId, reason: collection);
+                  return;
+                }
+                try {
+                  await _applySharedCollectionSnapshot(
+                    babyId,
+                    collection: collection,
+                    snap: snap,
+                  );
+                } catch (e, st) {
+                  _log(
+                    '_sharedCollectionListener apply failed babyId=$babyId '
+                    'collection=$collection error=$e',
+                  );
+                  if (kDebugMode) {
+                    _log(
+                      '_sharedCollectionListener apply stack babyId=$babyId '
+                      'collection=$collection: $st',
+                    );
+                  }
+                  _scheduleSharedBabyRefresh(
+                    babyId,
+                    reason: '$collection-fallback',
+                  );
+                }
+              },
+              onError: (Object e) => _log(
+                '_sharedCollectionListener error babyId=$babyId '
+                'collection=$collection: $e',
+              ),
             );
-            _scheduleSharedRefresh('$babyId:$collection');
-          },
-          onError: (Object e) => _log(
-            '_sharedCollectionListener error babyId=$babyId '
-            'collection=$collection: $e',
-          ),
-        );
-        _sharedCollectionListeners[listenerKey] = sub;
+        _sharedListeners[listenerKey] = sub;
+        if (kDebugMode) {
+          _log(
+            'shared listener start babyId=$babyId '
+            'collectionPath=${_sharedCollectionPath(babyId, collection)} '
+            'kind=$collection',
+          );
+        }
       }
     }
   }
@@ -732,7 +1914,8 @@ class VeriYonetici {
   static Future<void> _syncMemoryPhotosAfterSave() async {
     if (_canSyncWithCloud(
       operation: '_syncMemoryPhotosAfterSave',
-      skipMessage: '[Sync] skip immediate photo storage sync: user is anonymous',
+      skipMessage:
+          '[Sync] skip immediate photo storage sync: user is anonymous',
     )) {
       await _syncPhotosWithStorageBestEffort();
       return;
@@ -809,9 +1992,12 @@ class VeriYonetici {
 
   static Future<void> refreshForCurrentUser() async {
     _log('refreshForCurrentUser: start');
+    await _pruneLocalCachesForAuthScopeIfNeeded();
     await _syncFromCloudIfSignedIn();
     _sharedBabyIds.clear();
+    _ownedBabyIdsWithMembers.clear();
     await _loadSharedBabiesFromCloud();
+    await _pruneInaccessibleBabiesForCurrentUser();
     // (Re)start real-time listeners so both owner and co-parent see each
     // other's writes without relying on notifications.
     _startSharedRecordListeners();
@@ -843,8 +2029,7 @@ class VeriYonetici {
     records.addAll(
       bundle.mamaKayitlari.where((r) => r['babyId'] == babyId).map((r) {
         final map = Map<String, dynamic>.from(r);
-        final tur = (map['tur'] ?? '').toString().trim().toLowerCase();
-        map['type'] = tur == 'anne' ? 'nursing' : 'feeding';
+        map['type'] = _isNursingMamaRow(map) ? 'nursing' : 'feeding';
         map['date'] = map['tarih'];
         return map;
       }),
@@ -1132,7 +2317,12 @@ class VeriYonetici {
       await _withIdempotentCloudWrite('babies:$uid', _babies, () async {
         await _firestoreStore.replaceBabies(uid, _babies);
       });
-    } catch (_) {}
+    } catch (e, st) {
+      _log('_syncBabiesToCloud failed uid=$uid: $e');
+      if (kDebugMode) {
+        _log('_syncBabiesToCloud stack: $st');
+      }
+    }
   }
 
   static Future<void> _syncActiveBabyRecordsToCloud({String? babyId}) async {
@@ -1151,9 +2341,7 @@ class VeriYonetici {
       final mama = _mamaKayitlari.where((r) => r['babyId'] == targetBabyId).map(
         (r) {
           final map = Map<String, dynamic>.from(r);
-          final tur = (map['tur'] ?? '').toString().trim().toLowerCase();
-          final type = tur == 'anne' ? 'nursing' : 'feeding';
-          map['type'] = type;
+          map['type'] = _isNursingMamaRow(map) ? 'nursing' : 'feeding';
           map['date'] = map['tarih'];
           return map;
         },
@@ -1259,7 +2447,13 @@ class VeriYonetici {
           );
         },
       );
-    } catch (_) {}
+    } catch (e, st) {
+      _log('_syncActiveBabyRecordsToCloud failed babyId=$targetBabyId: $e');
+      if (kDebugMode) {
+        _log('_syncActiveBabyRecordsToCloud stack: $st');
+      }
+      if (await _isSharedBabyUsingCloudTruth(targetBabyId)) rethrow;
+    }
   }
 
   static List<Map<String, dynamic>> _memoryDocsForBaby(String babyId) {
@@ -1331,7 +2525,13 @@ class VeriYonetici {
           );
         },
       );
-    } catch (_) {}
+    } catch (e, st) {
+      _log('_syncActiveBabyMemoriesToCloud failed babyId=$targetBabyId: $e');
+      if (kDebugMode) {
+        _log('_syncActiveBabyMemoriesToCloud stack: $st');
+      }
+      if (await _isSharedBabyUsingCloudTruth(targetBabyId)) rethrow;
+    }
   }
 
   static Future<void> _syncActiveBabyMedicationsToCloud({
@@ -1363,7 +2563,13 @@ class VeriYonetici {
           );
         },
       );
-    } catch (_) {}
+    } catch (e, st) {
+      _log('_syncActiveBabyMedicationsToCloud failed babyId=$targetBabyId: $e');
+      if (kDebugMode) {
+        _log('_syncActiveBabyMedicationsToCloud stack: $st');
+      }
+      if (await _isSharedBabyUsingCloudTruth(targetBabyId)) rethrow;
+    }
   }
 
   static Future<void> _syncActiveBabyMedicationLogsToCloud({
@@ -1395,7 +2601,16 @@ class VeriYonetici {
           );
         },
       );
-    } catch (_) {}
+    } catch (e, st) {
+      _log(
+        '_syncActiveBabyMedicationLogsToCloud failed '
+        'babyId=$targetBabyId: $e',
+      );
+      if (kDebugMode) {
+        _log('_syncActiveBabyMedicationLogsToCloud stack: $st');
+      }
+      if (await _isSharedBabyUsingCloudTruth(targetBabyId)) rethrow;
+    }
   }
 
   // Initialize - must be called before using any other methods
@@ -1406,6 +2621,7 @@ class VeriYonetici {
       localStore: _localStore!,
       firestoreStore: _firestoreStore,
     );
+    await _pruneLocalCachesForAuthScopeIfNeeded();
 
     // Run one-time migration if needed
     final migrated = _prefs!.getBool(_migrationKey) ?? false;
@@ -1420,7 +2636,8 @@ class VeriYonetici {
       await _saveBabies();
       await _syncBabiesToCloud();
     }
-    _activeBabyId = _getLocalString('active_baby_id') ?? '';
+    final storedActiveBabyId = _getLocalString('active_baby_id') ?? '';
+    _activeBabyId = storedActiveBabyId;
 
     if (_babies.isNotEmpty && !_babies.any((b) => b.id == _activeBabyId)) {
       // Babies exist but active ID is invalid - use first baby
@@ -1453,7 +2670,14 @@ class VeriYonetici {
     // If signed in, prefer Firestore-backed data scoped to current uid.
     await _syncFromCloudIfSignedIn();
     // Load shared babies (accepted invitations) and merge into _babies.
+    _sharedBabyIds.clear();
     await _loadSharedBabiesFromCloud();
+    await _pruneInaccessibleBabiesForCurrentUser();
+    if (storedActiveBabyId.isNotEmpty &&
+        _babies.any((b) => b.id == storedActiveBabyId)) {
+      _activeBabyId = storedActiveBabyId;
+      await _setLocalString('active_baby_id', _activeBabyId);
+    }
     // Start real-time listeners so shared activities appear without restart.
     _startSharedRecordListeners();
     _scheduleBestEffortCloudWrite(
@@ -1475,12 +2699,16 @@ class VeriYonetici {
     _diaperReminderEnabled =
         _prefs!.getBool('diaper_reminder_enabled') ?? false;
     _diaperReminderInterval = _prefs!.getInt('diaper_reminder_interval') ?? 120;
+    _dailyTipReminderEnabled =
+        _prefs!.getBool('daily_tip_reminder_enabled') ?? false;
     _medicationRemindersEnabled =
         _prefs!.getBool('medication_reminder_enabled') ?? true;
     _feedingReminderHour = _prefs!.getInt('feeding_reminder_time_h') ?? 14;
     _feedingReminderMinute = _prefs!.getInt('feeding_reminder_time_m') ?? 0;
     _diaperReminderHour = _prefs!.getInt('diaper_reminder_time_h') ?? 14;
     _diaperReminderMinute = _prefs!.getInt('diaper_reminder_time_m') ?? 0;
+    _dailyTipReminderHour = _prefs!.getInt('daily_tip_reminder_time_h') ?? 10;
+    _dailyTipReminderMinute = _prefs!.getInt('daily_tip_reminder_time_m') ?? 0;
 
     // Sync cached baby fields from active baby
     // After our guarantees above, this should always succeed
@@ -1956,8 +3184,8 @@ class VeriYonetici {
     final index = _babies.indexWhere((b) => b.id == babyId);
     if (index == -1) return;
     final previousPhotoPath = _babies[index].photoPath;
-    final previousPhotoStoragePath =
-        (_babies[index].photoStoragePath ?? '').trim();
+    final previousPhotoStoragePath = (_babies[index].photoStoragePath ?? '')
+        .trim();
     String? profilePhotoDeletePath;
     if (name != null) _babies[index].name = name;
     if (birthDate != null) _babies[index].birthDate = birthDate;
@@ -1999,18 +3227,20 @@ class VeriYonetici {
     );
     if ((profilePhotoDeletePath ?? '').isNotEmpty) {
       final storagePathToDelete = profilePhotoDeletePath!;
-      _scheduleBestEffortCloudWrite(() async {
-        final uid = _currentUid;
-        if (uid == null || uid.isEmpty) return;
-        await _photoStorageSyncService.deleteBabyPhoto(
-          uid: uid,
-          babyId: babyId,
-          storagePath: storagePathToDelete,
-          log: _log,
-        );
-      },
-      label: 'profile photo delete',
-      timeout: _bestEffortPhotoStorageTimeout);
+      _scheduleBestEffortCloudWrite(
+        () async {
+          final uid = _currentUid;
+          if (uid == null || uid.isEmpty) return;
+          await _photoStorageSyncService.deleteBabyPhoto(
+            uid: uid,
+            babyId: babyId,
+            storagePath: storagePathToDelete,
+            log: _log,
+          );
+        },
+        label: 'profile photo delete',
+        timeout: _bestEffortPhotoStorageTimeout,
+      );
     }
     if (babyId == _activeBabyId) {
       _babyName = _babies[index].name;
@@ -2038,6 +3268,8 @@ class VeriYonetici {
               'kategori': e['kategori'] ?? 'Milk',
               'solidAciklama': e['solidAciklama'],
               'babyId': e['babyId'] ?? _activeBabyId,
+              'createdBy': (e['createdBy'] ?? '').toString(),
+              'createdByName': (e['createdByName'] ?? '').toString(),
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
                   : DateTime.parse(e['tarih']),
@@ -2063,20 +3295,78 @@ class VeriYonetici {
   }
 
   static Future<void> saveMamaKayitlari(
-    List<Map<String, dynamic>> kayitlar,
-  ) async {
+    List<Map<String, dynamic>> kayitlar, {
+    String? sharedNoopHealRecordId,
+  }) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final existingFeedings = _mamaKayitlari
+        .where((r) => r['babyId'] == targetBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final existingById = <String, Map<String, dynamic>>{
+      for (final row in existingFeedings)
+        (row['id'] ?? '').toString(): Map<String, dynamic>.from(row),
+    };
+    final beforeIds = _activeIdsFromRows(existingFeedings);
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
+    final changedRows = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
-      _ensureStableIdForRow(r, entity: 'feeding');
-      r['updatedAt'] = now;
-      r['localUpdatedAt'] = now;
-      r['isDeleted'] = r['isDeleted'] == true;
-      if (r['isDeleted'] != true) r['deletedAt'] = null;
+      r['babyId'] = targetBabyId;
+      final id = _ensureStableIdForRow(r, entity: 'feeding');
+      final existing = existingById[id];
+      final preparedRow = Map<String, dynamic>.from(r);
+      final changed =
+          existing == null ||
+          _rowIsDeleted(existing) ||
+          _rowComparableSignature(existing) !=
+              _rowComparableSignature(preparedRow);
+      preparedRow['updatedAt'] = changed ? now : existing['updatedAt'] ?? now;
+      preparedRow['localUpdatedAt'] = changed
+          ? now
+          : existing['localUpdatedAt'] ?? existing['updatedAt'] ?? now;
+      preparedRow['isDeleted'] = false;
+      preparedRow['deletedAt'] = null;
+      prepared.add(preparedRow);
+      if (changed) {
+        changedRows.add(Map<String, dynamic>.from(preparedRow));
+      }
     }
 
-    _mamaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _mamaKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final generatedTombstones = existingFeedings
+        .where((r) => !_rowIsDeleted(r))
+        .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+        .map((r) => _tombstoneRowFrom(r, now: now))
+        .toList();
+    changedRows.addAll(
+      generatedTombstones.map((e) => Map<String, dynamic>.from(e)),
+    );
+    if (isSharedBaby &&
+        changedRows.isEmpty &&
+        sharedNoopHealRecordId != null &&
+        sharedNoopHealRecordId.trim().isNotEmpty) {
+      final healId = sharedNoopHealRecordId.trim();
+      final healRow = prepared.where(
+        (row) => (row['id'] ?? '').toString().trim() == healId,
+      );
+      changedRows.addAll(healRow.map((row) => Map<String, dynamic>.from(row)));
+    }
+
+    _mamaKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
+    _mamaKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: targetBabyId,
+        existingAll: existingFeedings,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
     _notifyDataChanged(reason: 'mama_kayitlari');
 
     final data = _mamaKayitlari
@@ -2091,6 +3381,8 @@ class VeriYonetici {
             'kategori': e['kategori'] ?? 'Milk',
             'solidAciklama': e['solidAciklama'],
             'babyId': e['babyId'],
+            'createdBy': e['createdBy'] ?? '',
+            'createdByName': e['createdByName'] ?? '',
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
@@ -2104,9 +3396,35 @@ class VeriYonetici {
       _log('record persisted type=feeding count=${kayitlar.length}');
     }
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'feeding sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:feeding-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: changedRows,
+        shared: isSharedBaby,
+      ),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    final createdIds = afterIds.difference(beforeIds);
+    final createdRows = prepared
+        .where((row) => createdIds.contains((row['id'] ?? '').toString()))
+        .toList();
+    final notificationActivityType =
+        createdRows.isNotEmpty &&
+            createdRows.every((row) => _isNursingMamaRow(row))
+        ? 'nursing'
+        : 'feeding';
+    _scheduleSharedActivityNotificationIfNeeded(
+      babyId: _activeBabyId,
+      activityType: notificationActivityType,
+      createdNewRecord: createdIds.isNotEmpty,
     );
   }
 
@@ -2137,8 +3455,11 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteMamaKaydiById(String id) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final idx = _mamaKayitlari.indexWhere(
-      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+      (k) => k['babyId'] == targetBabyId && k['id'] == id && !_rowIsDeleted(k),
     );
     if (idx == -1) return false;
     _mamaKayitlari[idx] = _tombstoneRowFrom(
@@ -2160,6 +3481,8 @@ class VeriYonetici {
                 'kategori': e['kategori'] ?? 'Milk',
                 'solidAciklama': e['solidAciklama'],
                 'babyId': e['babyId'],
+                'createdBy': e['createdBy'] ?? '',
+                'createdByName': e['createdByName'] ?? '',
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
@@ -2172,9 +3495,20 @@ class VeriYonetici {
     );
     _notifyDataChanged(reason: 'mama_kayitlari');
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'feeding delete sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:feeding-delete-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: [_mamaKayitlari[idx]],
+        shared: isSharedBaby,
+      ),
     );
     return true;
   }
@@ -2198,6 +3532,8 @@ class VeriYonetici {
               ),
               'notlar': e['notlar'] ?? '',
               'babyId': e['babyId'] ?? _activeBabyId,
+              'createdBy': (e['createdBy'] ?? '').toString(),
+              'createdByName': (e['createdByName'] ?? '').toString(),
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
                   : DateTime.parse(e['tarih']),
@@ -2223,24 +3559,82 @@ class VeriYonetici {
   }
 
   static Future<void> saveKakaKayitlari(
-    List<Map<String, dynamic>> kayitlar,
-  ) async {
+    List<Map<String, dynamic>> kayitlar, {
+    String? sharedNoopHealRecordId,
+  }) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final existingDiapers = _kakaKayitlari
+        .where((r) => r['babyId'] == targetBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final existingById = <String, Map<String, dynamic>>{
+      for (final row in existingDiapers)
+        (row['id'] ?? '').toString(): Map<String, dynamic>.from(row),
+    };
+    final beforeIds = _activeIdsFromRows(existingDiapers);
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
+    final changedRows = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
-      _ensureStableIdForRow(r, entity: 'diaper');
+      r['babyId'] = targetBabyId;
+      final id = _ensureStableIdForRow(r, entity: 'diaper');
       final normalizedType = normalizeDiaperType(r['diaperType'] ?? r['tur']);
-      r['tur'] = normalizedType;
-      r['diaperType'] = normalizedType;
-      r['eventType'] = diaperEventType;
-      r['updatedAt'] = now;
-      r['localUpdatedAt'] = now;
-      r['isDeleted'] = r['isDeleted'] == true;
-      if (r['isDeleted'] != true) r['deletedAt'] = null;
+      final existing = existingById[id];
+      final preparedRow = Map<String, dynamic>.from(r);
+      preparedRow['tur'] = normalizedType;
+      preparedRow['diaperType'] = normalizedType;
+      preparedRow['eventType'] = diaperEventType;
+      final changed =
+          existing == null ||
+          _rowIsDeleted(existing) ||
+          _rowComparableSignature(existing) !=
+              _rowComparableSignature(preparedRow);
+      preparedRow['updatedAt'] = changed ? now : existing['updatedAt'] ?? now;
+      preparedRow['localUpdatedAt'] = changed
+          ? now
+          : existing['localUpdatedAt'] ?? existing['updatedAt'] ?? now;
+      preparedRow['isDeleted'] = false;
+      preparedRow['deletedAt'] = null;
+      prepared.add(preparedRow);
+      if (changed) {
+        changedRows.add(Map<String, dynamic>.from(preparedRow));
+      }
     }
 
-    _kakaKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _kakaKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final generatedTombstones = existingDiapers
+        .where((r) => !_rowIsDeleted(r))
+        .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+        .map((r) => _tombstoneRowFrom(r, now: now))
+        .toList();
+    changedRows.addAll(
+      generatedTombstones.map((e) => Map<String, dynamic>.from(e)),
+    );
+    if (isSharedBaby &&
+        changedRows.isEmpty &&
+        sharedNoopHealRecordId != null &&
+        sharedNoopHealRecordId.trim().isNotEmpty) {
+      final healId = sharedNoopHealRecordId.trim();
+      final healRow = prepared.where(
+        (row) => (row['id'] ?? '').toString().trim() == healId,
+      );
+      changedRows.addAll(healRow.map((row) => Map<String, dynamic>.from(row)));
+    }
+
+    _kakaKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
+    _kakaKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: targetBabyId,
+        existingAll: existingDiapers,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
     _notifyDataChanged(reason: 'kaka_kayitlari');
 
     final data = _kakaKayitlari
@@ -2255,6 +3649,8 @@ class VeriYonetici {
             ),
             'notlar': e['notlar'] ?? '',
             'babyId': e['babyId'],
+            'createdBy': e['createdBy'] ?? '',
+            'createdByName': e['createdByName'] ?? '',
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
@@ -2268,9 +3664,26 @@ class VeriYonetici {
       _log('record persisted type=diaper count=${kayitlar.length}');
     }
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'diaper sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:diaper-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: changedRows,
+        shared: isSharedBaby,
+      ),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    _scheduleSharedActivityNotificationIfNeeded(
+      babyId: _activeBabyId,
+      activityType: 'diaper',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
   }
 
@@ -2348,7 +3761,7 @@ class VeriYonetici {
       updated['id'] = matchedId;
       updated['babyId'] = _activeBabyId;
       kayitlar[index] = updated;
-      await saveKakaKayitlari(kayitlar);
+      await saveKakaKayitlari(kayitlar, sharedNoopHealRecordId: matchedId);
       _log(
         'updateKakaKaydiById result=true rawId="$rawId" matchedId="$matchedId"',
       );
@@ -2360,8 +3773,11 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteKakaKaydiById(String id) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final idx = _kakaKayitlari.indexWhere(
-      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+      (k) => k['babyId'] == targetBabyId && k['id'] == id && !_rowIsDeleted(k),
     );
     if (idx == -1) return false;
     _kakaKayitlari[idx] = _tombstoneRowFrom(
@@ -2383,6 +3799,8 @@ class VeriYonetici {
                 ),
                 'notlar': e['notlar'] ?? '',
                 'babyId': e['babyId'],
+                'createdBy': e['createdBy'] ?? '',
+                'createdByName': e['createdByName'] ?? '',
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
@@ -2395,9 +3813,20 @@ class VeriYonetici {
     );
     _notifyDataChanged(reason: 'kaka_kayitlari');
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'diaper delete sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:diaper-delete-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: [_kakaKayitlari[idx]],
+        shared: isSharedBaby,
+      ),
     );
     return true;
   }
@@ -2417,6 +3846,8 @@ class VeriYonetici {
               'id': (e['id'] ?? '').toString(),
               'sure': Duration(minutes: e['sure']),
               'babyId': e['babyId'] ?? _activeBabyId,
+              'createdBy': (e['createdBy'] ?? '').toString(),
+              'createdByName': (e['createdByName'] ?? '').toString(),
               'updatedAt': e['updatedAt'] != null
                   ? DateTime.parse(e['updatedAt'])
                   : DateTime.parse(e['bitis']),
@@ -2442,20 +3873,78 @@ class VeriYonetici {
   }
 
   static Future<void> saveUykuKayitlari(
-    List<Map<String, dynamic>> kayitlar,
-  ) async {
+    List<Map<String, dynamic>> kayitlar, {
+    String? sharedNoopHealRecordId,
+  }) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final existingSleeps = _uykuKayitlari
+        .where((r) => r['babyId'] == targetBabyId)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+    final existingById = <String, Map<String, dynamic>>{
+      for (final row in existingSleeps)
+        (row['id'] ?? '').toString(): Map<String, dynamic>.from(row),
+    };
+    final beforeIds = _activeIdsFromRows(existingSleeps);
     final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
+    final changedRows = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
-      _ensureStableIdForRow(r, entity: 'sleep');
-      r['updatedAt'] = now;
-      r['localUpdatedAt'] = now;
-      r['isDeleted'] = r['isDeleted'] == true;
-      if (r['isDeleted'] != true) r['deletedAt'] = null;
+      r['babyId'] = targetBabyId;
+      final id = _ensureStableIdForRow(r, entity: 'sleep');
+      final existing = existingById[id];
+      final preparedRow = Map<String, dynamic>.from(r);
+      final changed =
+          existing == null ||
+          _rowIsDeleted(existing) ||
+          _rowComparableSignature(existing) !=
+              _rowComparableSignature(preparedRow);
+      preparedRow['updatedAt'] = changed ? now : existing['updatedAt'] ?? now;
+      preparedRow['localUpdatedAt'] = changed
+          ? now
+          : existing['localUpdatedAt'] ?? existing['updatedAt'] ?? now;
+      preparedRow['isDeleted'] = false;
+      preparedRow['deletedAt'] = null;
+      prepared.add(preparedRow);
+      if (changed) {
+        changedRows.add(Map<String, dynamic>.from(preparedRow));
+      }
     }
 
-    _uykuKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
-    _uykuKayitlari.addAll(kayitlar.map((e) => Map<String, dynamic>.from(e)));
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final generatedTombstones = existingSleeps
+        .where((r) => !_rowIsDeleted(r))
+        .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+        .map((r) => _tombstoneRowFrom(r, now: now))
+        .toList();
+    changedRows.addAll(
+      generatedTombstones.map((e) => Map<String, dynamic>.from(e)),
+    );
+    if (isSharedBaby &&
+        changedRows.isEmpty &&
+        sharedNoopHealRecordId != null &&
+        sharedNoopHealRecordId.trim().isNotEmpty) {
+      final healId = sharedNoopHealRecordId.trim();
+      final healRow = prepared.where(
+        (row) => (row['id'] ?? '').toString().trim() == healId,
+      );
+      changedRows.addAll(healRow.map((row) => Map<String, dynamic>.from(row)));
+    }
+
+    _uykuKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
+    _uykuKayitlari.addAll(
+      _mergeActiveRowsWithTombstones(
+        babyId: targetBabyId,
+        existingAll: existingSleeps,
+        incomingActive: prepared,
+        now: now,
+      ),
+    );
     _notifyDataChanged(reason: 'uyku_kayitlari');
 
     final data = _uykuKayitlari
@@ -2466,6 +3955,8 @@ class VeriYonetici {
             'id': e['id'],
             'sure': (e['sure'] as Duration).inMinutes,
             'babyId': e['babyId'],
+            'createdBy': e['createdBy'] ?? '',
+            'createdByName': e['createdByName'] ?? '',
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),
@@ -2479,9 +3970,26 @@ class VeriYonetici {
       _log('record persisted type=sleep count=${kayitlar.length}');
     }
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'sleep sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:sleep-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: changedRows,
+        shared: isSharedBaby,
+      ),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    _scheduleSharedActivityNotificationIfNeeded(
+      babyId: _activeBabyId,
+      activityType: 'sleep',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
   }
 
@@ -2557,7 +4065,7 @@ class VeriYonetici {
       updated['id'] = matchedId;
       updated['babyId'] = _activeBabyId;
       kayitlar[index] = updated;
-      await saveUykuKayitlari(kayitlar);
+      await saveUykuKayitlari(kayitlar, sharedNoopHealRecordId: matchedId);
       _log(
         'updateUykuKaydiById result=true rawId="$rawId" matchedId="$matchedId"',
       );
@@ -2569,8 +4077,11 @@ class VeriYonetici {
   }
 
   static Future<bool> deleteUykuKaydiById(String id) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final idx = _uykuKayitlari.indexWhere(
-      (k) => k['babyId'] == _activeBabyId && k['id'] == id && !_rowIsDeleted(k),
+      (k) => k['babyId'] == targetBabyId && k['id'] == id && !_rowIsDeleted(k),
     );
     if (idx == -1) return false;
     _uykuKayitlari[idx] = _tombstoneRowFrom(
@@ -2588,6 +4099,8 @@ class VeriYonetici {
                 'id': e['id'],
                 'sure': (e['sure'] as Duration).inMinutes,
                 'babyId': e['babyId'],
+                'createdBy': e['createdBy'] ?? '',
+                'createdByName': e['createdByName'] ?? '',
                 'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
                 'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                     ?.toIso8601String(),
@@ -2600,9 +4113,20 @@ class VeriYonetici {
     );
     _notifyDataChanged(reason: 'uyku_kayitlari');
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'sleep delete sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:sleep-delete-sync',
+            ),
+      sync: () => _syncScopedRecordRowsToCloud(
+        babyId: targetBabyId,
+        rows: [_uykuKayitlari[idx]],
+        shared: isSharedBaby,
+      ),
     );
     return true;
   }
@@ -2666,12 +4190,21 @@ class VeriYonetici {
   }
 
   static Future<void> saveAnilar(List<Map<String, dynamic>> anilar) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
+    final beforeIds = _activeIdsFromRows(
+      _anilar
+          .where((r) => r['babyId'] == targetBabyId)
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
     for (final r in anilar) {
-      final normalizedPhotoPath =
-          (r['photoPath'] ?? r['photoLocalPath'] ?? '').toString().trim();
-      r['babyId'] = _activeBabyId;
+      final normalizedPhotoPath = (r['photoPath'] ?? r['photoLocalPath'] ?? '')
+          .toString()
+          .trim();
+      r['babyId'] = targetBabyId;
       _ensureStableIdForRow(r, entity: 'memory');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
@@ -2690,7 +4223,7 @@ class VeriYonetici {
     }
 
     final existingAnilar = _anilar
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
     final incomingIds = prepared
@@ -2700,17 +4233,17 @@ class VeriYonetici {
     final deletedRowsWithPhotos = existingAnilar
         .where(
           (r) =>
-              r['babyId'] == _activeBabyId &&
+              r['babyId'] == targetBabyId &&
               !_rowIsDeleted(r) &&
               !incomingIds.contains((r['id'] ?? '').toString()) &&
               (r['photoStoragePath'] ?? '').toString().trim().isNotEmpty,
         )
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
-    _anilar.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _anilar.removeWhere((r) => r['babyId'] == targetBabyId);
     _anilar.addAll(
       _mergeActiveRowsWithTombstones(
-        babyId: _activeBabyId,
+        babyId: targetBabyId,
         existingAll: existingAnilar,
         incomingActive: prepared,
         now: now,
@@ -2718,24 +4251,39 @@ class VeriYonetici {
     );
     await _persistAnilarToLocalStore();
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'memory sync',
-      sync: () => _syncActiveBabyMemoriesToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:memory-sync',
+            ),
+      sync: () => _syncActiveBabyMemoriesToCloud(babyId: targetBabyId),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    await _notifySharedActivityIfNeeded(
+      babyId: targetBabyId,
+      activityType: 'memory',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
     await _syncMemoryPhotosAfterSave();
     if (deletedRowsWithPhotos.isNotEmpty) {
       final rowsToDelete = deletedRowsWithPhotos;
-      _scheduleBestEffortCloudWrite(() async {
-        final uid = _currentUid;
-        if (uid == null || uid.isEmpty) return;
-        await _photoStorageSyncService.deleteMemoryPhotos(
-          uid: uid,
-          rows: rowsToDelete,
-          log: _log,
-        );
-      },
-      label: 'memory photo delete',
-      timeout: _bestEffortPhotoStorageTimeout);
+      _scheduleBestEffortCloudWrite(
+        () async {
+          final uid = _currentUid;
+          if (uid == null || uid.isEmpty) return;
+          await _photoStorageSyncService.deleteMemoryPhotos(
+            uid: uid,
+            rows: rowsToDelete,
+            log: _log,
+          );
+        },
+        label: 'memory photo delete',
+        timeout: _bestEffortPhotoStorageTimeout,
+      );
     }
   }
 
@@ -2807,10 +4355,18 @@ class VeriYonetici {
   static Future<void> saveBoyKiloKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final beforeIds = _activeIdsFromRows(
+      _boyKiloKayitlari
+          .where((r) => r['babyId'] == targetBabyId)
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
+      r['babyId'] = targetBabyId;
       _ensureStableIdForRow(r, entity: 'growth');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
@@ -2820,13 +4376,13 @@ class VeriYonetici {
     }
 
     final existingGrowth = _boyKiloKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
-    _boyKiloKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _boyKiloKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
     _boyKiloKayitlari.addAll(
       _mergeActiveRowsWithTombstones(
-        babyId: _activeBabyId,
+        babyId: targetBabyId,
         existingAll: existingGrowth,
         incomingActive: prepared,
         now: now,
@@ -2852,9 +4408,22 @@ class VeriYonetici {
         .toList();
     await _setLocalString('boykilo_kayitlari', jsonEncode(data));
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'growth sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:growth-sync',
+            ),
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: targetBabyId),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    await _notifySharedActivityIfNeeded(
+      babyId: targetBabyId,
+      activityType: 'growth',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
   }
 
@@ -2934,10 +4503,18 @@ class VeriYonetici {
   static Future<void> saveMilestones(
     List<Map<String, dynamic>> milestones,
   ) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
+    final beforeIds = _activeIdsFromRows(
+      _milestones
+          .where((r) => r['babyId'] == targetBabyId)
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
     for (final r in milestones) {
-      r['babyId'] = _activeBabyId;
+      r['babyId'] = targetBabyId;
       _ensureStableIdForRow(r, entity: 'milestone');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
@@ -2951,7 +4528,7 @@ class VeriYonetici {
     }
 
     final existingMilestones = _milestones
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
     final incomingIds = prepared
@@ -2961,17 +4538,17 @@ class VeriYonetici {
     final deletedRowsWithPhotos = existingMilestones
         .where(
           (r) =>
-              r['babyId'] == _activeBabyId &&
+              r['babyId'] == targetBabyId &&
               !_rowIsDeleted(r) &&
               !incomingIds.contains((r['id'] ?? '').toString()) &&
               (r['photoStoragePath'] ?? '').toString().trim().isNotEmpty,
         )
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
-    _milestones.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _milestones.removeWhere((r) => r['babyId'] == targetBabyId);
     _milestones.addAll(
       _mergeActiveRowsWithTombstones(
-        babyId: _activeBabyId,
+        babyId: targetBabyId,
         existingAll: existingMilestones,
         incomingActive: prepared,
         now: now,
@@ -2979,24 +4556,39 @@ class VeriYonetici {
     );
     await _persistMilestonesToLocalStore();
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'milestone sync',
-      sync: () => _syncActiveBabyMemoriesToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:milestone-sync',
+            ),
+      sync: () => _syncActiveBabyMemoriesToCloud(babyId: targetBabyId),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    await _notifySharedActivityIfNeeded(
+      babyId: targetBabyId,
+      activityType: 'milestone',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
     await _syncMemoryPhotosAfterSave();
     if (deletedRowsWithPhotos.isNotEmpty) {
       final rowsToDelete = deletedRowsWithPhotos;
-      _scheduleBestEffortCloudWrite(() async {
-        final uid = _currentUid;
-        if (uid == null || uid.isEmpty) return;
-        await _photoStorageSyncService.deleteMemoryPhotos(
-          uid: uid,
-          rows: rowsToDelete,
-          log: _log,
-        );
-      },
-      label: 'memory photo delete',
-      timeout: _bestEffortPhotoStorageTimeout);
+      _scheduleBestEffortCloudWrite(
+        () async {
+          final uid = _currentUid;
+          if (uid == null || uid.isEmpty) return;
+          await _photoStorageSyncService.deleteMemoryPhotos(
+            uid: uid,
+            rows: rowsToDelete,
+            log: _log,
+          );
+        },
+        label: 'memory photo delete',
+        timeout: _bestEffortPhotoStorageTimeout,
+      );
     }
   }
 
@@ -3090,8 +4682,12 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAsiKayitlari() {
+    return getAsiKayitlariForBaby(_activeBabyId);
+  }
+
+  static List<Map<String, dynamic>> getAsiKayitlariForBaby(String babyId) {
     return _asiKayitlari
-        .where((r) => r['babyId'] == _activeBabyId && !_rowIsDeleted(r))
+        .where((r) => r['babyId'] == babyId && !_rowIsDeleted(r))
         .toList();
   }
 
@@ -3101,10 +4697,28 @@ class VeriYonetici {
   static Future<void> saveAsiKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    await saveAsiKayitlariForBaby(_activeBabyId, kayitlar);
+  }
+
+  static Future<void> saveAsiKayitlariForBaby(
+    String babyId,
+    List<Map<String, dynamic>> kayitlar,
+  ) async {
+    final targetBabyId = babyId.trim();
+    if (targetBabyId.isEmpty) {
+      throw StateError('No active baby selected.');
+    }
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final beforeIds = _activeIdsFromRows(
+      _asiKayitlari
+          .where((r) => r['babyId'] == targetBabyId)
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
+      r['babyId'] = targetBabyId;
       _ensureStableIdForRow(r, entity: 'vaccine');
       r['updatedAt'] = now;
       r['localUpdatedAt'] = now;
@@ -3114,18 +4728,21 @@ class VeriYonetici {
     }
 
     final existingVaccines = _asiKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
-    _asiKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _asiKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
     _asiKayitlari.addAll(
       _mergeActiveRowsWithTombstones(
-        babyId: _activeBabyId,
+        babyId: targetBabyId,
         existingAll: existingVaccines,
         incomingActive: prepared,
         now: now,
       ),
     );
+    if (targetBabyId == _activeBabyId) {
+      _notifyDataChanged(reason: 'asi_kayitlari');
+    }
 
     final data = _asiKayitlari
         .map(
@@ -3150,9 +4767,22 @@ class VeriYonetici {
     await _setLocalString('asi_kayitlari', jsonEncode(data));
     _vaccineVersion.value++;
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'vaccine sync',
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:vaccine-sync',
+            ),
+      sync: () => _syncActiveBabyRecordsToCloud(babyId: targetBabyId),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    await _notifySharedActivityIfNeeded(
+      babyId: targetBabyId,
+      activityType: 'vaccine',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
   }
 
@@ -3261,10 +4891,18 @@ class VeriYonetici {
   static Future<void> saveIlacKayitlari(
     List<Map<String, dynamic>> kayitlar,
   ) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final beforeIds = _activeIdsFromRows(
+      _ilacKayitlari
+          .where((r) => r['babyId'] == targetBabyId)
+          .map((e) => Map<String, dynamic>.from(e)),
+    );
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
-      r['babyId'] = _activeBabyId;
+      r['babyId'] = targetBabyId;
       final createdAt = (r['createdAt'] as DateTime?) ?? now;
       _ensureStableIdForRow(r, entity: 'medication');
       r['createdAt'] = createdAt;
@@ -3276,13 +4914,13 @@ class VeriYonetici {
     }
 
     final existingMedications = _ilacKayitlari
-        .where((r) => r['babyId'] == _activeBabyId)
+        .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
-    _ilacKayitlari.removeWhere((r) => r['babyId'] == _activeBabyId);
+    _ilacKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
     _ilacKayitlari.addAll(
       _mergeActiveRowsWithTombstones(
-        babyId: _activeBabyId,
+        babyId: targetBabyId,
         existingAll: existingMedications,
         incomingActive: prepared,
         now: now,
@@ -3318,9 +4956,22 @@ class VeriYonetici {
         .toList();
     await _setLocalString('ilac_kayitlari', jsonEncode(data));
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'medication sync',
-      sync: () => _syncActiveBabyMedicationsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:medication-sync',
+            ),
+      sync: () => _syncActiveBabyMedicationsToCloud(babyId: targetBabyId),
+    );
+    final afterIds = _activeIdsFromRows(prepared);
+    await _notifySharedActivityIfNeeded(
+      babyId: targetBabyId,
+      activityType: 'medication',
+      createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
     );
   }
 
@@ -3388,6 +5039,9 @@ class VeriYonetici {
     final targetAt = givenAt ?? now;
     final normalizedDose = _normalizeDoseIndex(doseIndex);
     final normalizedStep = protocolStep?.trim().toLowerCase();
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final id = _medicationDoseSlotLogId(
       medicationId: medicationId,
       dayRef: targetAt,
@@ -3397,7 +5051,7 @@ class VeriYonetici {
     );
     _ilacDozKayitlari.insert(0, {
       'id': id,
-      'babyId': _activeBabyId,
+      'babyId': targetBabyId,
       'medicationId': medicationId,
       'vaccineId': vaccineId,
       'givenAt': targetAt,
@@ -3411,7 +5065,15 @@ class VeriYonetici {
       'isDeleted': false,
       'deletedAt': null,
     });
-    await _saveIlacDozKayitlari();
+    await _saveIlacDozKayitlari(
+      rollbackBundle: rollbackBundle,
+      isSharedBaby: isSharedBaby,
+    );
+    await _notifySharedActivityIfNeeded(
+      babyId: _activeBabyId,
+      activityType: 'medication_log',
+      createdNewRecord: true,
+    );
     return id;
   }
 
@@ -3476,6 +5138,9 @@ class VeriYonetici {
     final normalizedDose = _normalizeDoseIndex(doseIndex);
     final normalizedStep = protocolStep?.trim().toLowerCase();
     final scheduledKey = _scheduledTimeKey(scheduledTime);
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final logId = _medicationDoseSlotLogId(
       medicationId: medicationId,
       dayRef: targetGivenAt,
@@ -3485,7 +5150,7 @@ class VeriYonetici {
     );
 
     final exists = _ilacDozKayitlari.any(
-      (r) => r['babyId'] == _activeBabyId && r['id'] == logId,
+      (r) => r['babyId'] == targetBabyId && r['id'] == logId,
     );
     _log(
       'Medication onTap logId=$logId exists=$exists '
@@ -3498,7 +5163,7 @@ class VeriYonetici {
     final now = DateTime.now();
     _ilacDozKayitlari.insert(0, {
       'id': logId,
-      'babyId': _activeBabyId,
+      'babyId': targetBabyId,
       'medicationId': medicationId,
       'vaccineId': vaccineId,
       'givenAt': targetGivenAt,
@@ -3510,7 +5175,15 @@ class VeriYonetici {
       'updatedAt': now,
       'localUpdatedAt': now,
     });
-    await _saveIlacDozKayitlari();
+    await _saveIlacDozKayitlari(
+      rollbackBundle: rollbackBundle,
+      isSharedBaby: isSharedBaby,
+    );
+    await _notifySharedActivityIfNeeded(
+      babyId: _activeBabyId,
+      activityType: 'medication_log',
+      createdNewRecord: true,
+    );
     return MedicationDoseMarkResult(logId: logId, alreadyMarked: false);
   }
 
@@ -3553,10 +5226,13 @@ class VeriYonetici {
     final targetGivenAt = givenAt ?? DateTime.now();
     final targetDoseIndex = _normalizeDoseIndex(doseIndex);
     final targetProtocolStep = protocolStep?.trim().toLowerCase();
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final matchingIndexes = <int>[];
     for (int i = 0; i < _ilacDozKayitlari.length; i++) {
       final r = _ilacDozKayitlari[i];
-      if (r['babyId'] != _activeBabyId) continue;
+      if (r['babyId'] != targetBabyId) continue;
       if (r['medicationId'] != medicationId) continue;
       final existingGivenAt = r['givenAt'] as DateTime?;
       if (existingGivenAt == null) continue;
@@ -3593,7 +5269,10 @@ class VeriYonetici {
       existing['note'] = note;
       existing['updatedAt'] = DateTime.now();
       existing['localUpdatedAt'] = DateTime.now();
-      await _saveIlacDozKayitlari();
+      await _saveIlacDozKayitlari(
+        rollbackBundle: rollbackBundle,
+        isSharedBaby: isSharedBaby,
+      );
       return existing['id'] as String;
     }
 
@@ -3609,21 +5288,29 @@ class VeriYonetici {
   }
 
   static Future<void> deleteIlacDozKaydi(String doseId) async {
+    final targetBabyId = _activeBabyId;
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final idx = _ilacDozKayitlari.indexWhere(
       (r) =>
-          r['babyId'] == _activeBabyId &&
-          r['id'] == doseId &&
-          !_rowIsDeleted(r),
+          r['babyId'] == targetBabyId && r['id'] == doseId && !_rowIsDeleted(r),
     );
     if (idx == -1) return;
     _ilacDozKayitlari[idx] = _tombstoneRowFrom(
       _ilacDozKayitlari[idx],
       now: DateTime.now(),
     );
-    await _saveIlacDozKayitlari();
+    await _saveIlacDozKayitlari(
+      rollbackBundle: rollbackBundle,
+      isSharedBaby: isSharedBaby,
+    );
   }
 
-  static Future<void> _saveIlacDozKayitlari() async {
+  static Future<void> _saveIlacDozKayitlari({
+    RepositoryDataBundle? rollbackBundle,
+    bool? isSharedBaby,
+  }) async {
+    final targetBabyId = _activeBabyId;
     final now = DateTime.now();
     for (final row in _ilacDozKayitlari) {
       row['updatedAt'] = row['updatedAt'] ?? now;
@@ -3658,9 +5345,16 @@ class VeriYonetici {
       ),
     );
     await _syncSharedCriticalOrBestEffort(
-      babyId: _activeBabyId,
+      babyId: targetBabyId,
       label: 'medication log sync',
-      sync: () => _syncActiveBabyMedicationLogsToCloud(babyId: _activeBabyId),
+      isSharedBaby: isSharedBaby,
+      onSharedSyncFailure: rollbackBundle == null
+          ? null
+          : (error, st) => _restoreCoreBundle(
+              rollbackBundle,
+              reason: 'rollback:medication-log-sync',
+            ),
+      sync: () => _syncActiveBabyMedicationLogsToCloud(babyId: targetBabyId),
     );
   }
 
@@ -3727,6 +5421,13 @@ class VeriYonetici {
     await _prefs!.setBool('diaper_reminder_enabled', value);
   }
 
+  static bool isDailyTipReminderEnabled() => _dailyTipReminderEnabled;
+
+  static Future<void> setDailyTipReminderEnabled(bool value) async {
+    _dailyTipReminderEnabled = value;
+    await _prefs!.setBool('daily_tip_reminder_enabled', value);
+  }
+
   static bool isMedicationReminderEnabled() => _medicationRemindersEnabled;
 
   static Future<void> setMedicationReminderEnabled(bool value) async {
@@ -3750,6 +5451,17 @@ class VeriYonetici {
     _diaperReminderMinute = minute;
     await _prefs!.setInt('diaper_reminder_time_h', hour);
     await _prefs!.setInt('diaper_reminder_time_m', minute);
+  }
+
+  static int getDailyTipReminderHour() => _dailyTipReminderHour;
+
+  static int getDailyTipReminderMinute() => _dailyTipReminderMinute;
+
+  static Future<void> setDailyTipReminderTime(int hour, int minute) async {
+    _dailyTipReminderHour = hour;
+    _dailyTipReminderMinute = minute;
+    await _prefs!.setInt('daily_tip_reminder_time_h', hour);
+    await _prefs!.setInt('daily_tip_reminder_time_m', minute);
   }
 
   // ============ BABY NAME & BIRTH DATE ============

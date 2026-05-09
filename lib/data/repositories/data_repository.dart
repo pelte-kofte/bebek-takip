@@ -56,6 +56,12 @@ abstract class DataRepository {
     required List<Map<String, dynamic>> records,
   });
 
+  Future<void> upsertRecordForBaby(
+    String uid, {
+    required String babyId,
+    required Map<String, dynamic> record,
+  });
+
   Future<void> replaceMedicationsForBaby(
     String uid, {
     required String babyId,

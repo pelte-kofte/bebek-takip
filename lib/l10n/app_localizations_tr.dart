@@ -101,6 +101,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get share => 'Paylaş';
 
   @override
+  String get titleLabel => 'Başlık';
+
+  @override
+  String get dateLabel => 'Tarih';
+
+  @override
   String get mlAbbrev => 'ml';
 
   @override
@@ -125,6 +131,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get saveFailedTryAgain => 'Kaydedilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get recordCouldNotBeUpdated => 'Kayıt güncellenemedi.';
 
   @override
   String get allDataDeleted => 'Tüm veriler silindi';
@@ -1533,6 +1542,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get givenNow => 'Simdi verildi';
 
   @override
+  String get medicationGiveNow => 'Simdi ver';
+
+  @override
+  String get medicationSetReminder => 'Hatirlatici kur';
+
+  @override
+  String get repeatDaily => 'Her gun tekrarla';
+
+  @override
+  String get medicationAlreadyMarkedHint => 'Zaten isaretlendi.';
+
+  @override
   String get allDoneToday => 'Bugun tamamlandi';
 
   @override
@@ -1560,7 +1581,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get medicationDoseLogged => 'Dose logged';
+  String get medicationDoseLogged => 'Doz kaydedildi';
 
   @override
   String get scheduleType => 'Kullanım türü';
@@ -1572,19 +1593,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get prnSchedule => 'Gerektikçe';
 
   @override
-  String get dailyTimeRequired => 'Add at least one daily time';
+  String get dailyTimeRequired => 'En az bir günlük saat ekleyin';
 
   @override
-  String get activate => 'Activate';
+  String get activate => 'Etkinleştir';
 
   @override
-  String get deactivate => 'Deactivate';
+  String get deactivate => 'Devre dışı bırak';
 
   @override
-  String get active => 'Active';
+  String get active => 'Aktif';
 
   @override
-  String get inactive => 'Inactive';
+  String get inactive => 'Pasif';
 
   @override
   String medicationReminderTitle(String name) {
@@ -1735,6 +1756,9 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get maybeLater => 'Belki sonra';
+
+  @override
+  String get tryAgain => 'Tekrar dene';
 
   @override
   String get genericErrorRetry =>
@@ -1971,6 +1995,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumIsActive => 'Premium aktif.';
 
   @override
+  String get premiumFeatureTeaser =>
+      'İllüstrasyonlar, ortak ebeveynlik ve daha fazlası';
+
+  @override
+  String get availableWithPremium => 'Premium ile kullanılabilir';
+
+  @override
   String get premiumActiveDesc =>
       'Anı illüstrasyonlarına ve tüm premium özelliklere tam erişiminiz var.';
 
@@ -2086,6 +2117,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get illShareFallback => 'Özel bir an, illüstre edildi.';
 
   @override
+  String illCreditsLeft(int count) {
+    return '$count illüstrasyon kaldı';
+  }
+
+  @override
+  String illMonthlyCredits(int count, int total) {
+    return 'Bu ay $count / $total';
+  }
+
+  @override
   String get memoryStyle => 'Anı stili';
 
   @override
@@ -2133,6 +2174,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get notificationsDisabled => 'Bildirimler devre dışı';
 
   @override
+  String get noBabyYet => 'Henüz bebek yok';
+
+  @override
+  String get noBabyProfilePrompt =>
+      'Henüz bebek profili bulunamadı. Eklemek için aşağıya dokunun.';
+
+  @override
+  String get addBaby => 'Bebek ekle';
+
+  @override
+  String get cropPhoto => 'Fotoğrafı Kırp';
+
+  @override
   String get permissionDenied => 'İzin reddedildi';
 
   @override
@@ -2160,6 +2214,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get allergySectionSubtitle =>
       'Hassasiyetleri ve gıda reaksiyonlarını tek bir sakin alanda tutun.';
+
+  @override
+  String get allergyTipTitle => 'Alerji ipucu';
+
+  @override
+  String get allergyTipBody =>
+      'Yeni besinleri tek tek deneyin ve başka bir besine geçmeden önce 3–5 gün bekleyin.';
 
   @override
   String get noAllergiesSummary =>
@@ -2253,4 +2314,48 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get addFirstMemory => 'İlk anını ekle';
+
+  @override
+  String get addMemory => 'Anı Ekle';
+
+  @override
+  String get editMemory => 'Anıyı Düzenle';
+
+  @override
+  String get saveMemory => 'Anıyı Kaydet';
+
+  @override
+  String get memoryDeleteTitle => 'Anı silinsin mi?';
+
+  @override
+  String get memoryDeleteMessage => 'Bu anı kalıcı olarak silinecek.';
+
+  @override
+  String get memoryPhotoPlaceholder => 'Bu ana ait bir fotoğraf ekle';
+
+  @override
+  String get memoryPhotosLocalOnly =>
+      'Fotoğraflar yalnızca bu cihazda saklanır (henüz senkronize edilmiyor).';
+
+  @override
+  String get illustrationSectionTitle => 'İllüstrasyon';
+
+  @override
+  String get illustrationTapToView => 'Tam illüstrasyonu görmek için dokunun';
+
+  @override
+  String get illStyleDefaultDescription => 'Yumuşak çocuk kitabı illüstrasyonu';
+
+  @override
+  String get illStyleLofiDescription => 'Sıcak lo-fi anime tarzı';
+
+  @override
+  String get pendingInvitationsTitle => 'Bekleyen Davetler';
+
+  @override
+  String get pendingInvitationsSubtitle =>
+      'Size gönderilen davetleri gözden geçirin';
+
+  @override
+  String get notSignedIn => 'Giriş yapılmadı';
 }

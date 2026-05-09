@@ -9,9 +9,9 @@ import '../widgets/decorative_background.dart';
 
 class AddVaccineScreen extends StatefulWidget {
   final Map<String, dynamic>? vaccine;
-  final int? index;
+  final String? babyId;
 
-  const AddVaccineScreen({super.key, this.vaccine, this.index});
+  const AddVaccineScreen({super.key, this.vaccine, this.babyId});
 
   @override
   State<AddVaccineScreen> createState() => _AddVaccineScreenState();
@@ -24,6 +24,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   String _selectedStatus = 'bekleniyor';
   DateTime? _selectedDate;
   bool _isSaving = false;
+  late final String _targetBabyId;
 
   final List<String> _periods = [
     'Doğumda',
@@ -38,6 +39,10 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   @override
   void initState() {
     super.initState();
+    _targetBabyId =
+        widget.vaccine?['babyId']?.toString() ??
+        widget.babyId?.trim() ??
+        VeriYonetici.getActiveBabyId();
     if (widget.vaccine != null) {
       _nameController.text = widget.vaccine!['ad'] ?? '';
       _notesController.text = widget.vaccine!['notlar'] ?? '';
@@ -66,11 +71,15 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final vaccines = VeriYonetici.getAsiKayitlari();
+      if (_targetBabyId.isEmpty) {
+        throw StateError(l10n.spNoActiveBaby);
+      }
+      final vaccines = VeriYonetici.getAsiKayitlariForBaby(_targetBabyId);
       final newVaccine = {
         'id':
             widget.vaccine?['id'] ??
-            DateTime.now().millisecondsSinceEpoch.toString(),
+            'vaccine_${DateTime.now().microsecondsSinceEpoch}',
+        'babyId': _targetBabyId,
         'ad': _nameController.text.trim(),
         'donem': _selectedPeriod,
         'durum': _selectedStatus,
@@ -78,13 +87,22 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         'notlar': _notesController.text.trim(),
       };
 
-      if (widget.index != null) {
-        vaccines[widget.index!] = newVaccine;
+      final existingIndex = vaccines.indexWhere(
+        (v) => v['id'] == widget.vaccine?['id'],
+      );
+      if (existingIndex >= 0) {
+        vaccines[existingIndex] = newVaccine;
       } else {
         vaccines.add(newVaccine);
       }
 
-      await VeriYonetici.saveAsiKayitlari(vaccines);
+      await VeriYonetici.saveAsiKayitlariForBaby(_targetBabyId, vaccines);
+      final persisted = VeriYonetici.getAsiKayitlariForBaby(
+        _targetBabyId,
+      ).any((v) => v['id'] == newVaccine['id']);
+      if (!persisted) {
+        throw StateError(l10n.saveFailedTryAgain);
+      }
       HapticFeedback.lightImpact();
       if (!mounted) return;
       Navigator.pop(context, true);

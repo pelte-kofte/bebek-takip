@@ -41,6 +41,31 @@ class FirestoreDataRepository implements DataRepository {
     return true;
   }
 
+  Future<void> _acquireDocWriteLockOrThrow(
+    String key, {
+    Duration retryWindow = const Duration(milliseconds: 1200),
+    Duration pollInterval = const Duration(milliseconds: 80),
+  }) async {
+    final deadline = DateTime.now().add(retryWindow);
+    while (true) {
+      if (_acquireDocWriteLock(key)) return;
+      final now = DateTime.now();
+      if (!now.isBefore(deadline)) {
+        throw StateError(
+          'Scoped shared record write skipped by duplicate lock for $key',
+        );
+      }
+      final remaining = deadline.difference(now);
+      final delay = remaining < pollInterval ? remaining : pollInterval;
+      if (delay <= Duration.zero) {
+        throw StateError(
+          'Scoped shared record write skipped by duplicate lock for $key',
+        );
+      }
+      await Future<void>.delayed(delay);
+    }
+  }
+
   CollectionReference<Map<String, dynamic>> _userCollection(
     String uid,
     String path,
@@ -82,6 +107,19 @@ class FirestoreDataRepository implements DataRepository {
     return fallback;
   }
 
+  dynamic _normalizeFirestoreValue(dynamic value) {
+    if (value is Duration) return value.inMilliseconds;
+    if (value is List) {
+      return value.map(_normalizeFirestoreValue).toList(growable: false);
+    }
+    if (value is Map) {
+      return value.map(
+        (key, item) => MapEntry(key.toString(), _normalizeFirestoreValue(item)),
+      );
+    }
+    return value;
+  }
+
   Map<String, dynamic> _recordDataPayload(Map<String, dynamic> raw) {
     final payload = Map<String, dynamic>.from(raw);
     payload.remove('id');
@@ -90,8 +128,20 @@ class FirestoreDataRepository implements DataRepository {
     payload.remove('createdAt');
     payload.remove('updatedAt');
     payload.remove('localUpdatedAt');
-    return payload;
+    final duration = payload['sure'];
+    if (duration is Duration) {
+      payload['durationMinutes'] = duration.inMinutes;
+      payload['durationSeconds'] = duration.inSeconds;
+      payload['durationMs'] = duration.inMilliseconds;
+      payload.remove('sure');
+    }
+    return payload.map(
+      (key, value) => MapEntry(key, _normalizeFirestoreValue(value)),
+    );
   }
+
+  String _sharedRecordPath(String babyId, String recordId) =>
+      'babies/$babyId/records/$recordId';
 
   Future<int> _deleteAllPaginated(
     Query<Map<String, dynamic>> query, {
@@ -182,7 +232,15 @@ class FirestoreDataRepository implements DataRepository {
     if (row.containsKey('baslik') || row.containsKey('emoji')) return 'memory';
 
     final tur = (row['tur'] ?? '').toString().trim().toLowerCase();
-    if (tur == 'anne') return 'nursing';
+    final kategori = (row['kategori'] ?? 'Milk')
+        .toString()
+        .trim()
+        .toLowerCase();
+    if (kategori != 'solid' &&
+        tur.contains('anne') &&
+        !tur.contains('biberon')) {
+      return 'nursing';
+    }
     return 'feeding';
   }
 
@@ -190,6 +248,7 @@ class FirestoreDataRepository implements DataRepository {
     String uid, {
     required String babyId,
     required List<Map<String, dynamic>> records,
+    bool throwOnLockedDuplicate = false,
   }) async {
     if (_isAnonymousOrSignedOut()) {
       _skip('write:_upsertRecordDocs');
@@ -197,23 +256,84 @@ class FirestoreDataRepository implements DataRepository {
     }
     if (records.isEmpty) return;
     final col = _sharedBabyCollection(babyId, 'records');
+    String ownerId = '';
+    if (kDebugMode) {
+      try {
+        final babySnap = await _sharedBabyRef(babyId).get();
+        ownerId = (babySnap.data()?['ownerId'] ?? '').toString().trim();
+      } catch (e) {
+        _log(
+          'shared record write owner lookup failed babyId=$babyId uid=$uid '
+          'error=$e',
+        );
+      }
+    }
 
     for (final row in records) {
       final id = (row['id'] ?? '').toString();
       if (id.isEmpty) continue;
       final lockKey = 'records:$id';
-      if (!_acquireDocWriteLock(lockKey)) continue;
+      if (throwOnLockedDuplicate) {
+        await _acquireDocWriteLockOrThrow(lockKey);
+      } else if (!_acquireDocWriteLock(lockKey)) {
+        continue;
+      }
 
       final type = _resolveRecordType(row);
       final payload = _recordDataPayload(row);
       final ref = col.doc(id);
+      final path = _sharedRecordPath(babyId, id);
+      final createdBy = (row['createdBy'] ?? payload['createdBy'] ?? '')
+          .toString()
+          .trim();
+      final isDeleted =
+          row['isDeleted'] == true || payload['isDeleted'] == true;
+      final deletedAt = row['deletedAt'] ?? payload['deletedAt'];
+      final stopwatch = Stopwatch()..start();
 
-      await _setWithServerTimestamps(ref, {
-        'id': id,
-        'babyId': babyId,
-        'type': type,
-        'data': payload,
-      });
+      if (kDebugMode) {
+        _log(
+          'shared record write start uid=$uid babyId=$babyId '
+          'ownerId=$ownerId createdBy=$createdBy recordId=$id type=$type '
+          'path=$path isDeleted=$isDeleted',
+        );
+      }
+
+      try {
+        await _setWithServerTimestamps(ref, {
+          'id': id,
+          'babyId': babyId,
+          'type': type,
+          'createdBy': createdBy,
+          'isDeleted': isDeleted,
+          'deletedAt': deletedAt,
+          'data': payload,
+        });
+        if (kDebugMode) {
+          _log(
+            'shared record write success uid=$uid babyId=$babyId '
+            'ownerId=$ownerId createdBy=$createdBy recordId=$id type=$type '
+            'path=$path elapsedMs=${stopwatch.elapsedMilliseconds}',
+          );
+        }
+      } catch (e, st) {
+        final code = e is FirebaseException ? e.code : 'unknown';
+        final message = e is FirebaseException
+            ? (e.message ?? e.toString())
+            : e.toString();
+        if (kDebugMode) {
+          _log(
+            'shared record write failed uid=$uid babyId=$babyId '
+            'ownerId=$ownerId createdBy=$createdBy recordId=$id type=$type '
+            'path=$path elapsedMs=${stopwatch.elapsedMilliseconds} '
+            'firestoreCode=$code firestoreMessage=$message',
+          );
+          _log('shared record write stack path=$path: $st');
+        }
+        rethrow;
+      } finally {
+        stopwatch.stop();
+      }
     }
   }
 
@@ -337,7 +457,8 @@ class FirestoreDataRepository implements DataRepository {
     final babies = <Baby>[];
     final allRecordDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
     final allMedicationDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
-    final allMedicationLogDocs = <QueryDocumentSnapshot<Map<String, dynamic>>>[];
+    final allMedicationLogDocs =
+        <QueryDocumentSnapshot<Map<String, dynamic>>>[];
     final ownedWithMembers = <String>{};
 
     for (final babyId in orderedBabyIds) {
@@ -366,9 +487,10 @@ class FirestoreDataRepository implements DataRepository {
         }
       }
 
-      var sharedRecordsSnap = await _sharedBabyCollection(babyId, 'records')
-          .orderBy('createdAt', descending: true)
-          .get();
+      var sharedRecordsSnap = await _sharedBabyCollection(
+        babyId,
+        'records',
+      ).orderBy('createdAt', descending: true).get();
       var sharedMedicationsSnap = await _sharedBabyCollection(
         babyId,
         'medications',
@@ -428,9 +550,10 @@ class FirestoreDataRepository implements DataRepository {
             );
           }
 
-          sharedRecordsSnap = await _sharedBabyCollection(babyId, 'records')
-              .orderBy('createdAt', descending: true)
-              .get();
+          sharedRecordsSnap = await _sharedBabyCollection(
+            babyId,
+            'records',
+          ).orderBy('createdAt', descending: true).get();
           sharedMedicationsSnap = await _sharedBabyCollection(
             babyId,
             'medications',
@@ -749,11 +872,7 @@ class FirestoreDataRepository implements DataRepository {
         await _writeOwnershipFieldsIfMissing(uid, baby.id);
       }
 
-      await _writeBabyMirrorDoc(
-        uid,
-        baby,
-        ownerId: sharedOwnerId ?? uid,
-      );
+      await _writeBabyMirrorDoc(uid, baby, ownerId: sharedOwnerId ?? uid);
     }
   }
 
@@ -784,10 +903,7 @@ class FirestoreDataRepository implements DataRepository {
   /// Writes ownerId and members map on the baby document only when they are
   /// absent. Safe to call on every sync — uses set(merge:true) with a
   /// transaction that no-ops if the fields already exist.
-  Future<void> _writeOwnershipFieldsIfMissing(
-    String uid,
-    String babyId,
-  ) async {
+  Future<void> _writeOwnershipFieldsIfMissing(String uid, String babyId) async {
     if (_isAnonymousOrSignedOut()) return;
     final ref = _userCollection(uid, 'babies').doc(babyId);
     try {
@@ -803,10 +919,7 @@ class FirestoreDataRepository implements DataRepository {
         if (!hasOwner) patch['ownerId'] = uid;
         if (!hasMembers) {
           patch['members'] = {
-            uid: {
-              'role': 'owner',
-              'joinedAt': FieldValue.serverTimestamp(),
-            },
+            uid: {'role': 'owner', 'joinedAt': FieldValue.serverTimestamp()},
           };
         }
         tx.set(ref, patch, SetOptions(merge: true));
@@ -871,6 +984,24 @@ class FirestoreDataRepository implements DataRepository {
       return;
     }
     await _upsertRecordDocs(uid, babyId: babyId, records: filtered);
+  }
+
+  @override
+  Future<void> upsertRecordForBaby(
+    String uid, {
+    required String babyId,
+    required Map<String, dynamic> record,
+  }) async {
+    if (_isAnonymousOrSignedOut()) {
+      _skip('write:upsertRecordForBaby');
+      return;
+    }
+    await _upsertRecordDocs(
+      uid,
+      babyId: babyId,
+      records: [record],
+      throwOnLockedDuplicate: true,
+    );
   }
 
   @override
@@ -1002,9 +1133,7 @@ class FirestoreDataRepository implements DataRepository {
         operation: 'write:deleteBabyData:legacyMedications',
       ),
       _deleteAllPaginated(
-        userRef
-            .collection('medicationLogs')
-            .where('babyId', isEqualTo: babyId),
+        userRef.collection('medicationLogs').where('babyId', isEqualTo: babyId),
         operation: 'write:deleteBabyData:legacyMedicationLogs',
       ),
       _deleteAllPaginated(

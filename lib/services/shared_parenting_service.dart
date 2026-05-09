@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/veri_yonetici.dart';
+
 /// A baby invitation (received or sent).
 class InvitationItem {
   final String id;
@@ -93,6 +95,7 @@ class SharedParentingService {
     required String babyId,
     required String inviteeEmail,
   }) async {
+    await VeriYonetici.ensureBabySharedCloudSync(babyId);
     final callable = FirebaseFunctions.instance.httpsCallable('sendInvitation');
     final result = await callable.call<Map<String, dynamic>>({
       'babyId': babyId,
@@ -108,6 +111,7 @@ class SharedParentingService {
   Future<CreateInviteCodeResult> createInviteCode({
     required String babyId,
   }) async {
+    await VeriYonetici.ensureBabySharedCloudSync(babyId);
     final callable =
         FirebaseFunctions.instance.httpsCallable('createInviteCode');
     final result = await callable.call<Map<String, dynamic>>({

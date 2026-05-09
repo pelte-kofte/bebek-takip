@@ -101,6 +101,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get share => 'Compartir';
 
   @override
+  String get titleLabel => 'Title';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
   String get mlAbbrev => 'ml';
 
   @override
@@ -125,6 +131,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveFailedTryAgain => 'Couldn\'t save. Please try again.';
+
+  @override
+  String get recordCouldNotBeUpdated => 'Record could not be updated.';
 
   @override
   String get allDataDeleted => 'Todos los datos eliminados';
@@ -1569,6 +1578,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get givenNow => 'Dar ahora';
 
   @override
+  String get medicationGiveNow => 'Dar ahora';
+
+  @override
+  String get medicationSetReminder => 'Configurar recordatorio';
+
+  @override
+  String get repeatDaily => 'Repetir a diario';
+
+  @override
+  String get medicationAlreadyMarkedHint => 'Ya está marcado.';
+
+  @override
   String get allDoneToday => 'Todo listo hoy';
 
   @override
@@ -1772,6 +1793,9 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get maybeLater => 'Maybe later';
+
+  @override
+  String get tryAgain => 'Intentar de nuevo';
 
   @override
   String get genericErrorRetry => 'Something went wrong. Please try again.';
@@ -2007,6 +2031,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get premiumIsActive => 'Premium is active.';
 
   @override
+  String get premiumFeatureTeaser =>
+      'Illustrations, shared parenting, and more';
+
+  @override
+  String get availableWithPremium => 'Available with Premium';
+
+  @override
   String get premiumActiveDesc =>
       'You have full access to memory illustrations\nand all premium features.';
 
@@ -2121,6 +2152,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get illShareFallback => 'A special moment, illustrated.';
 
   @override
+  String illCreditsLeft(int count) {
+    return 'Quedan $count ilustraciones';
+  }
+
+  @override
+  String illMonthlyCredits(int count, int total) {
+    return '$count / $total este mes';
+  }
+
+  @override
   String get memoryStyle => 'Memory style';
 
   @override
@@ -2168,6 +2209,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get notificationsDisabled => 'Notificaciones desactivadas';
 
   @override
+  String get noBabyYet => 'Aún no hay bebé';
+
+  @override
+  String get noBabyProfilePrompt =>
+      'Aún no se encontró un perfil de bebé. Toca abajo para añadir uno.';
+
+  @override
+  String get addBaby => 'Añadir bebé';
+
+  @override
+  String get cropPhoto => 'Crop Photo';
+
+  @override
   String get permissionDenied => 'Permiso denegado';
 
   @override
@@ -2195,6 +2249,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get allergySectionSubtitle =>
       'Keep sensitivities and food reactions together in one calm place.';
+
+  @override
+  String get allergyTipTitle => 'Allergy tip';
+
+  @override
+  String get allergyTipBody =>
+      'Introduce new foods one at a time and wait 3–5 days before trying another.';
 
   @override
   String get noAllergiesSummary =>
@@ -2288,4 +2349,47 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get addFirstMemory => 'Add your first memory';
+
+  @override
+  String get addMemory => 'Add Memory';
+
+  @override
+  String get editMemory => 'Edit Memory';
+
+  @override
+  String get saveMemory => 'Save Memory';
+
+  @override
+  String get memoryDeleteTitle => 'Delete memory?';
+
+  @override
+  String get memoryDeleteMessage => 'This memory will be permanently deleted.';
+
+  @override
+  String get memoryPhotoPlaceholder => 'Add a photo of the moment';
+
+  @override
+  String get memoryPhotosLocalOnly =>
+      'Photos are stored only on this device (not synced yet).';
+
+  @override
+  String get illustrationSectionTitle => 'Illustration';
+
+  @override
+  String get illustrationTapToView => 'Tap to view full illustration';
+
+  @override
+  String get illStyleDefaultDescription => 'Soft children\'s book illustration';
+
+  @override
+  String get illStyleLofiDescription => 'Warm lo-fi anime style';
+
+  @override
+  String get pendingInvitationsTitle => 'Pending Invitations';
+
+  @override
+  String get pendingInvitationsSubtitle => 'Review invitations sent to you';
+
+  @override
+  String get notSignedIn => 'Not signed in';
 }

@@ -624,6 +624,10 @@
   "logGivenNow": "Registrar ahora",
   "logDose": "Registrar dosis",
   "givenNow": "Dar ahora",
+  "medicationGiveNow": "Dar ahora",
+  "medicationSetReminder": "Configurar recordatorio",
+  "repeatDaily": "Repetir a diario",
+  "medicationAlreadyMarkedHint": "Ya está marcado.",
   "allDoneToday": "Todo listo hoy",
   "notAvailable": "No disponible",
   "before": "Antes",
@@ -729,6 +733,9 @@
 
   "sharedBadge": "Compartido",
   "notificationsDisabled": "Notificaciones desactivadas",
+  "noBabyYet": "Aún no hay bebé",
+  "noBabyProfilePrompt": "Aún no se encontró un perfil de bebé. Toca abajo para añadir uno.",
+  "addBaby": "Añadir bebé",
   "permissionDenied": "Permiso denegado",
   "reminderScheduled": "Recordatorio programado",
   "signInToUseSharedParenting": "Inicia sesión para usar Parentalidad compartida.",
@@ -749,6 +756,20 @@
   "memoriesEmptyFilter": "Ningún recuerdo coincide con este filtro",
   "illBadgeReady": "Ilustrado",
   "illBadgeGenerating": "Generando\u2026",
+  "tryAgain": "Intentar de nuevo",
+  "illCreditsLeft": "Quedan {count} ilustraciones",
+  "@illCreditsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "illMonthlyCredits": "{count} / {total} este mes",
+  "@illMonthlyCredits": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
 
   "illTurnIntoIllustration": "Convertir en ilustración",
   "turnIntoIllustration": "Convertir en ilustración",

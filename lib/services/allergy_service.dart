@@ -149,17 +149,39 @@ class AllergyService {
     String babyId,
     String uid,
   ) async {
+    await _ensureOwnedBabyAnchor(babyId, uid);
+    await doc.set(_ownedBabyPayload(babyId, uid: uid), SetOptions(merge: true));
+  }
+
+  Future<void> _ensureOwnedBabyAnchor(String babyId, String uid) async {
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('babies')
+        .doc(babyId)
+        .set(
+          _ownedBabyPayload(babyId, includeOwner: false),
+          SetOptions(merge: true),
+        );
+  }
+
+  Map<String, dynamic> _ownedBabyPayload(
+    String babyId, {
+    String? uid,
+    bool includeOwner = true,
+  }) {
     final baby = _babyForId(babyId) ?? VeriYonetici.getActiveBabyOrNull();
-    await doc.set({
+    final data = <String, dynamic>{
       'name': baby?.name ?? VeriYonetici.getBabyName(),
       'birthDate': Timestamp.fromDate(
         baby?.birthDate ?? VeriYonetici.getBirthDate(),
       ),
       'photoUrl': baby?.photoUrl,
       'photoStoragePath': baby?.photoStoragePath,
-      'ownerId': uid,
       'createdAt': FieldValue.serverTimestamp(),
-    }, SetOptions(merge: true));
+    };
+    if (includeOwner && uid != null) data['ownerId'] = uid;
+    return data;
   }
 
   Stream<List<Allergy>> watchAllergies(String babyId) async* {

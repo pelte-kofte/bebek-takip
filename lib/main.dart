@@ -201,8 +201,8 @@ class _MainScreenState extends State<MainScreen> {
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        isDismissible: false,
-        enableDrag: false,
+        isDismissible: true,
+        enableDrag: true,
         backgroundColor: Colors.transparent,
         builder: (context) => AddScreen(onSaved: _refresh),
       );

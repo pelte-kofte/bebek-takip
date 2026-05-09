@@ -24,8 +24,16 @@ class DailyTip {
     return _localizedValue(l10n, titleKey);
   }
 
+  String titleForLocalizations(AppLocalizations l10n) {
+    return _localizedValue(l10n, titleKey);
+  }
+
   String description(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    return _localizedValue(l10n, descriptionKey);
+  }
+
+  String descriptionForLocalizations(AppLocalizations l10n) {
     return _localizedValue(l10n, descriptionKey);
   }
 

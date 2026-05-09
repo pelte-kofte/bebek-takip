@@ -8,6 +8,12 @@ A new Flutter project.
   `Authentication` -> `Sign-in method` -> `Anonymous` -> `Enable`.
 - Keep Apple and Google providers enabled for account linking from guest mode.
 
+## Engineering Notes
+
+- Shared sync audit: `docs/shared_sync_audit.md`
+- Firestore cost risks: `docs/firestore_cost_risks.md`
+- Startup launch audit: `docs/startup_launch_audit.md`
+
 ## about
 soft lavanta + şeftali
 warm cream background

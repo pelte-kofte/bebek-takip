@@ -55,7 +55,8 @@ class ActivityNotificationService {
       // Create the Android notification channel.
       await _plugin
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(
             const AndroidNotificationChannel(
               _channelId,
@@ -89,34 +90,32 @@ class ActivityNotificationService {
         .orderBy('createdAt', descending: true)
         .limit(10)
         .snapshots()
-        .listen(
-          (snap) {
-            for (final change in snap.docChanges) {
-              if (change.type != DocumentChangeType.added) continue;
-              final data = change.doc.data();
-              if (data == null || data['read'] == true) continue;
+        .listen((snap) {
+          for (final change in snap.docChanges) {
+            if (change.type != DocumentChangeType.added) continue;
+            final data = change.doc.data();
+            if (data == null || data['read'] == true) continue;
 
-              // Skip docs that existed before this session (app restart).
-              final createdAt = (data['createdAt'] as Timestamp?)?.toDate();
-              final start = _sessionStart;
-              if (createdAt == null || (start != null && createdAt.isBefore(start))) {
-                continue;
-              }
-
-              _showNotification(data);
-              // Best-effort mark as read so the next session skips it.
-              change.doc.reference.update({'read': true}).ignore();
-              // Refresh in-memory cache so the co-parent's activity is visible
-              // immediately without requiring an app restart.
-              _log(
-                'inbox notification received — triggering data refresh '
-                'babyId=${data['babyId']} activityType=${data['activityType']}',
-              );
-              VeriYonetici.refreshForCurrentUser().ignore();
+            // Skip docs that existed before this session (app restart).
+            final createdAt = (data['createdAt'] as Timestamp?)?.toDate();
+            final start = _sessionStart;
+            if (createdAt == null ||
+                (start != null && createdAt.isBefore(start))) {
+              continue;
             }
-          },
-          onError: (Object e) => _log('stream error: $e'),
-        );
+
+            _showNotification(data);
+            // Best-effort mark as read so the next session skips it.
+            change.doc.reference.update({'read': true}).ignore();
+            // Refresh in-memory cache so the co-parent's activity is visible
+            // immediately without requiring an app restart.
+            _log(
+              'inbox notification received — triggering data refresh '
+              'babyId=${data['babyId']} activityType=${data['activityType']}',
+            );
+            VeriYonetici.refreshForCurrentUser().ignore();
+          }
+        }, onError: (Object e) => _log('stream error: $e'));
   }
 
   void _stopListening() {
@@ -134,8 +133,7 @@ class ActivityNotificationService {
   // ── Local notification display ───────────────────────────────────────────
 
   Future<void> _showNotification(Map<String, dynamic> data) async {
-    final body =
-        (data['body'] as String?)?.trim().isNotEmpty == true
+    final body = (data['body'] as String?)?.trim().isNotEmpty == true
         ? data['body'] as String
         : 'A co-parent logged an activity.';
     try {
@@ -166,7 +164,9 @@ class ActivityNotificationService {
   /// {notified: 0} if the baby has no co-parents, so there is no wasted work
   /// on non-shared babies beyond a single cheap callable invocation.
   ///
-  /// Supported [activityType] values: `feeding`, `sleep`, `diaper`, `medication`.
+  /// Supported [activityType] values include `feeding`, `nursing`, `sleep`,
+  /// `diaper`, `growth`, `vaccine`, `milestone`, `memory`, `medication`,
+  /// and `medication_log`.
   Future<void> reportActivity({
     required String babyId,
     required String activityType,
@@ -174,8 +174,9 @@ class ActivityNotificationService {
   }) async {
     if (babyId.isEmpty) return;
     try {
-      final callable = FirebaseFunctions.instance
-          .httpsCallable('notifySharedActivity');
+      final callable = FirebaseFunctions.instance.httpsCallable(
+        'notifySharedActivity',
+      );
       _log(
         'reportActivity calling notifySharedActivity '
         'babyId=$babyId activityType=$activityType',

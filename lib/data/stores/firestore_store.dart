@@ -26,6 +26,12 @@ class FirestoreStore {
     records: records,
   );
 
+  Future<void> upsertRecordForBaby(
+    String uid, {
+    required String babyId,
+    required Map<String, dynamic> record,
+  }) => _repository.upsertRecordForBaby(uid, babyId: babyId, record: record);
+
   Future<void> replaceMedicationsForBaby(
     String uid, {
     required String babyId,

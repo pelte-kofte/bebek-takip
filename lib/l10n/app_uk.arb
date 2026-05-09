@@ -624,6 +624,10 @@
   "logGivenNow": "Позначити як дано",
   "logDose": "Записати дозу",
   "givenNow": "Дати зараз",
+  "medicationGiveNow": "Дати зараз",
+  "medicationSetReminder": "Установити нагадування",
+  "repeatDaily": "Повторювати щодня",
+  "medicationAlreadyMarkedHint": "Уже позначено.",
   "allDoneToday": "На сьогодні все",
   "notAvailable": "Недоступно",
   "before": "До",
@@ -729,6 +733,9 @@
 
   "sharedBadge": "Спільний",
   "notificationsDisabled": "Сповіщення вимкнено",
+  "noBabyYet": "Профілю малюка ще немає",
+  "noBabyProfilePrompt": "Профіль малюка ще не знайдено. Натисніть нижче, щоб додати його.",
+  "addBaby": "Додати малюка",
   "permissionDenied": "Дозвіл відхилено",
   "reminderScheduled": "Нагадування встановлено",
   "signInToUseSharedParenting": "Увійдіть, щоб використовувати спільне батьківство.",
@@ -749,6 +756,20 @@
   "memoriesEmptyFilter": "Немає спогадів за цим фільтром",
   "illBadgeReady": "Проілюстровано",
   "illBadgeGenerating": "Генерується\u2026",
+  "tryAgain": "Спробувати ще раз",
+  "illCreditsLeft": "Залишилося ілюстрацій: {count}",
+  "@illCreditsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "illMonthlyCredits": "{count} / {total} цього місяця",
+  "@illMonthlyCredits": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
 
   "illTurnIntoIllustration": "Перетворити на ілюстрацію",
   "turnIntoIllustration": "Перетворити на ілюстрацію",

@@ -11,14 +11,29 @@ if (getApps().length === 0) {
 }
 
 const VALID_ACTIVITY_TYPES = new Set([
-  "feeding", "sleep", "diaper", "medication",
+  "feeding",
+  "nursing",
+  "sleep",
+  "diaper",
+  "growth",
+  "vaccine",
+  "milestone",
+  "memory",
+  "medication",
+  "medication_log",
 ]);
 
 const ACTIVITY_LABELS: Record<string, string> = {
   feeding: "a feeding",
+  nursing: "a nursing session",
   sleep: "sleep",
   diaper: "a diaper change",
+  growth: "a growth entry",
+  vaccine: "a vaccine update",
+  milestone: "a milestone",
+  memory: "a memory",
   medication: "medication",
+  medication_log: "a medication dose",
 };
 
 /**

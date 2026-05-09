@@ -29,6 +29,8 @@
   "yes": "Yes",
   "no": "No",
   "share": "Share",
+  "titleLabel": "Title",
+  "dateLabel": "Date",
   "mlAbbrev": "ml",
   "selectTime": "Select time",
   "tapToSetTime": "Set time",
@@ -37,6 +39,7 @@
   "signedOutSuccessfully": "Signed out successfully",
   "errorWithMessage": "Error: {message}",
   "saveFailedTryAgain": "Couldn't save. Please try again.",
+  "recordCouldNotBeUpdated": "Record could not be updated.",
   "@errorWithMessage": {
     "placeholders": {
       "message": {
@@ -694,6 +697,10 @@
   "logGivenNow": "Log given now",
   "logDose": "Log dose",
   "givenNow": "Given now",
+  "medicationGiveNow": "Give now",
+  "medicationSetReminder": "Set reminder",
+  "repeatDaily": "Repeat daily",
+  "medicationAlreadyMarkedHint": "Already marked.",
   "allDoneToday": "All done today",
   "notAvailable": "Not available",
   "before": "Before",
@@ -2041,6 +2048,7 @@
   "close": "Close",
   "remove": "Remove",
   "maybeLater": "Maybe later",
+  "tryAgain": "Try again",
   "genericErrorRetry": "Something went wrong. Please try again.",
   "babyFallbackName": "Baby",
 
@@ -2162,6 +2170,8 @@
 
   "premiumSignInRequired": "Please sign in to use premium features.",
   "premiumIsActive": "Premium is active.",
+  "premiumFeatureTeaser": "Illustrations, shared parenting, and more",
+  "availableWithPremium": "Available with Premium",
   "premiumActiveDesc": "You have full access to memory illustrations\nand all premium features.",
   "premiumManageSubscription": "Manage Subscription",
   "premiumRestorePurchases": "Restore Purchases",
@@ -2198,6 +2208,19 @@
   "illPackLoversLabel": "For memory lovers",
   "illPackLoversSub": "25 illustrations",
   "illShareFallback": "A special moment, illustrated.",
+  "illCreditsLeft": "{count} illustrations left",
+  "@illCreditsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "illMonthlyCredits": "{count} / {total} this month",
+  "@illMonthlyCredits": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
 
   "memoryStyle": "Memory style",
   "memoryStyleOriginal": "Original",
@@ -2221,6 +2244,10 @@
 
   "sharedBadge": "Shared",
   "notificationsDisabled": "Notifications disabled",
+  "noBabyYet": "No baby yet",
+  "noBabyProfilePrompt": "No baby profile found yet. Tap below to add one.",
+  "addBaby": "Add baby",
+  "cropPhoto": "Crop Photo",
   "permissionDenied": "Permission denied",
   "reminderScheduled": "Reminder scheduled",
   "signInToUseSharedParenting": "Please sign in to use Shared Parenting.",
@@ -2230,6 +2257,8 @@
   "allergiesTitle": "Allergies",
   "addAllergy": "Add Allergy",
   "allergySectionSubtitle": "Keep sensitivities and food reactions together in one calm place.",
+  "allergyTipTitle": "Allergy tip",
+  "allergyTipBody": "Introduce new foods one at a time and wait 3–5 days before trying another.",
   "noAllergiesSummary": "No allergy notes yet. Add one anytime if something needs attention.",
   "reportAllergy": "Report allergy",
   "allergySheetSubtitle": "Add a food, ingredient, or reaction note so it stays visible in the health view.",
@@ -2269,5 +2298,19 @@
   "illustrationGenerating": "Generating",
   "memoriesEmptyTitle": "Save your favorite little moments",
   "memoriesEmptySubtitle": "Photos, notes, and milestones all stay together here.\nYour first memory can be just a tap away.",
-  "addFirstMemory": "Add your first memory"
+  "addFirstMemory": "Add your first memory",
+  "addMemory": "Add Memory",
+  "editMemory": "Edit Memory",
+  "saveMemory": "Save Memory",
+  "memoryDeleteTitle": "Delete memory?",
+  "memoryDeleteMessage": "This memory will be permanently deleted.",
+  "memoryPhotoPlaceholder": "Add a photo of the moment",
+  "memoryPhotosLocalOnly": "Photos are stored only on this device (not synced yet).",
+  "illustrationSectionTitle": "Illustration",
+  "illustrationTapToView": "Tap to view full illustration",
+  "illStyleDefaultDescription": "Soft children's book illustration",
+  "illStyleLofiDescription": "Warm lo-fi anime style",
+  "pendingInvitationsTitle": "Pending Invitations",
+  "pendingInvitationsSubtitle": "Review invitations sent to you",
+  "notSignedIn": "Not signed in"
 }

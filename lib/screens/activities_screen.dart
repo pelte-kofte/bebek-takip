@@ -1,11 +1,11 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
     show
         CupertinoDatePicker,
-        CupertinoDatePickerMode,
-        CupertinoSlidingSegmentedControl;
+        CupertinoDatePickerMode;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import '../theme/app_theme.dart';
 import '../models/veri_yonetici.dart';
@@ -38,6 +38,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   DateTime _selectedDate = DateTime.now();
   late ActivityType _activeType;
   bool _loggedNursingSeparatorSample = false;
+  String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
+
+  String _saveErrorMessage(AppLocalizations l10n, Object error) {
+    final message = error.toString().trim();
+    if (message.isEmpty) return l10n.saveFailedTryAgain;
+    return l10n.errorWithMessage(message);
+  }
 
   @override
   void initState() {
@@ -81,6 +88,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       a.year == b.year && a.month == b.month && a.day == b.day;
 
   bool _isToday(DateTime date) => _isSameDay(date, DateTime.now());
+
+  Color _creatorColorFor(String uid) {
+    if (uid.isEmpty) return AppColors.lavender;
+    if (uid == _currentUid) return AppColors.peach;
+    const others = <Color>[AppColors.lavender, AppColors.mint];
+    final index = uid.hashCode.abs() % others.length;
+    return others[index];
+  }
+
+  String? _creatorLabelFor(Map<String, dynamic> kayit) {
+    final createdBy = (kayit['createdBy'] ?? '').toString().trim();
+    if (createdBy.isEmpty) return null;
+    if (createdBy == _currentUid) return 'Sen';
+    final createdByName = (kayit['createdByName'] ?? '').toString().trim();
+    return createdByName.isNotEmpty ? createdByName : 'Diğer';
+  }
 
   String _formatDateHeader(DateTime date, AppLocalizations l10n) {
     final monthNames = [
@@ -532,9 +555,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final normalizedTur = tur.toLowerCase();
               final isSolid =
                   kategori == 'Solid' || normalizedTur.contains('kat');
-              final isNursing =
-                  normalizedTur.contains('anne') &&
-                  !normalizedTur.contains('biberon');
+              final isNursing = _isNursingMamaRecord(kayit);
+              final isBottleFeeding = !isSolid && !isNursing && miktar > 0;
+              final showAllergyAction = isSolid || isBottleFeeding;
               if (isSolid) {
                 final solidDakika = kayit['solidDakika'] as int? ?? 0;
                 title = l10n.solid;
@@ -547,28 +570,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               } else if (isNursing) {
                 title = l10n.breastfeeding;
                 final toplamDakika = sol + sag;
-                if (sag == 0 && sol > 0) {
-                  // New format: total duration stored in solDakika
-                  subtitle = '${l10n.total}: $sol${l10n.minAbbrev}';
-                } else {
-                  // Old format: left/right split
-                  subtitle =
-                      '${l10n.left} $sol${l10n.minAbbrev} • ${l10n.right} $sag${l10n.minAbbrev} (${l10n.total}: $toplamDakika${l10n.minAbbrev})';
-                  if (kDebugMode && !_loggedNursingSeparatorSample) {
-                    _loggedNursingSeparatorSample = true;
-                    debugPrint(
-                      '[ActivitiesScreen] nursing subtitle="$subtitle"',
-                    );
-                  }
+                subtitle = '${l10n.total}: $toplamDakika ${l10n.minAbbrev}';
+                if (kDebugMode && !_loggedNursingSeparatorSample) {
+                  _loggedNursingSeparatorSample = true;
+                  debugPrint(
+                    '[ActivitiesScreen] nursing subtitle="$subtitle"',
+                  );
                 }
               } else {
-                title = '$miktar ${l10n.mlAbbrev}';
-                subtitle = normalizedTur.contains('form')
+                title = normalizedTur.contains('form')
                     ? l10n.formula
                     : l10n.bottleBreastMilk;
+                subtitle = '$miktar ${l10n.mlAbbrev}';
               }
 
               return _buildListItem(
+                kayit: kayit,
                 title: title,
                 subtitle: subtitle,
                 time: _formatTime(tarih),
@@ -584,13 +601,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         solidAciklama.isNotEmpty)
                     ? solidAciklama
                     : null,
-                secondaryActionLabel: l10n.reportAllergy,
-                onSecondaryAction: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AllergiesScreen()),
-                  );
-                },
+                secondaryActionLabel: showAllergyAction
+                    ? l10n.reportAllergy
+                    : null,
+                onSecondaryAction: showAllergyAction
+                    ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AllergiesScreen(),
+                          ),
+                        );
+                      }
+                    : null,
               );
             },
           ),
@@ -724,6 +747,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               }
 
               return _buildListItem(
+                kayit: kayit,
                 title: diaperLabel,
                 subtitle: l10n.diaperChange,
                 time: _formatTime(tarih),
@@ -857,9 +881,11 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               final sure = kayit['sure'] as Duration;
 
               return _buildListItem(
-                title: _formatDuration(sure, l10n),
-                subtitle: '${_formatTime(baslangic)} - ${_formatTime(bitis)}',
-                time: '',
+                kayit: kayit,
+                title: l10n.sleep,
+                subtitle:
+                    '${_formatDuration(sure, l10n)} • ${_formatTime(baslangic)} - ${_formatTime(bitis)}',
+                time: _formatTime(bitis),
                 cardColor: cardColor,
                 textColor: textColor,
                 subtitleColor: subtitleColor,
@@ -1003,6 +1029,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }
 
   Widget _buildListItem({
+    required Map<String, dynamic> kayit,
     required String title,
     required String subtitle,
     required String time,
@@ -1015,149 +1042,219 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     String? secondaryActionLabel,
     VoidCallback? onSecondaryAction,
   }) {
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFE5E0F7).withValues(alpha: 0.2),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onEdit,
+    final createdBy = (kayit['createdBy'] ?? '').toString().trim();
+    final creatorLabel = _creatorLabelFor(kayit);
+    return Dismissible(
+      key: ValueKey('$title|$subtitle|$time|${notes ?? ''}'),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) async {
+        onDelete();
+        return false;
+      },
+      background: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 22),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFF6B6B).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(18),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
-                          color: textColor,
-                          letterSpacing: -0.2,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: subtitleColor.withValues(alpha: 0.7),
-                          fontSize: 13,
-                          height: 1.3,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (notes != null && notes.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+        ),
+        child: const Icon(
+          Icons.delete_outline_rounded,
+          color: Color(0xFFFF6B6B),
+          size: 22,
+        ),
+      ),
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: cardColor,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: const Color(0xFFE5E0F7).withValues(alpha: 0.38),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.12),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onEdit,
+            borderRadius: BorderRadius.circular(18),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          notes,
+                          title,
                           style: TextStyle(
-                            color: subtitleColor.withValues(alpha: 0.6),
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: textColor,
+                            letterSpacing: -0.2,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 3),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            color: subtitleColor.withValues(alpha: 0.76),
+                            fontSize: 12.5,
+                            height: 1.3,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (notes != null && notes.isNotEmpty) ...[
+                          const SizedBox(height: 3),
+                          Text(
+                            notes,
+                            style: TextStyle(
+                              color: subtitleColor.withValues(alpha: 0.58),
+                              fontSize: 11.5,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        if (creatorLabel != null ||
+                            (secondaryActionLabel != null &&
+                                onSecondaryAction != null)) ...[
+                          const SizedBox(height: 7),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              if (creatorLabel != null)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: BoxDecoration(
+                                        color: _creatorColorFor(createdBy),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 110,
+                                      ),
+                                      child: Text(
+                                        creatorLabel,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: subtitleColor.withValues(
+                                            alpha: 0.66,
+                                          ),
+                                          fontSize: 10.5,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              if (secondaryActionLabel != null &&
+                                  onSecondaryAction != null)
+                                InkWell(
+                                  onTap: onSecondaryAction,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(
+                                        0xFFFFF3EE,
+                                      ).withValues(alpha: 0.95),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: const Color(
+                                          0xFFFFD8C0,
+                                        ).withValues(alpha: 0.65),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      secondaryActionLabel,
+                                      style: const TextStyle(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFFD4897A),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ],
-                      if (secondaryActionLabel != null &&
-                          onSecondaryAction != null) ...[
-                        const SizedBox(height: 10),
-                        InkWell(
-                          onTap: onSecondaryAction,
-                          borderRadius: BorderRadius.circular(14),
-                          child: Container(
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  SizedBox(
+                    width: 58,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (time.isNotEmpty)
+                          Container(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 8,
+                              horizontal: 8,
+                              vertical: 4,
                             ),
                             decoration: BoxDecoration(
                               color: const Color(
-                                0xFFFFF1EC,
+                                0xFFF7F1F6,
                               ).withValues(alpha: 0.95),
-                              borderRadius: BorderRadius.circular(14),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(
+                                  0xFFE5E0F7,
+                                ).withValues(alpha: 0.55),
+                              ),
                             ),
                             child: Text(
-                              secondaryActionLabel,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFD4897A),
+                              time,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: subtitleColor.withValues(alpha: 0.68),
+                                fontSize: 11,
                               ),
                             ),
                           ),
+                        const SizedBox(height: 8),
+                        Icon(
+                          Icons.chevron_right_rounded,
+                          size: 18,
+                          color: subtitleColor.withValues(alpha: 0.24),
                         ),
                       ],
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    if (time.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFFFB4A2,
-                          ).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          time,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFD4897A),
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    const SizedBox(height: 4),
-                    GestureDetector(
-                      onTap: onDelete,
-                      child: Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: Color(0xFFFF6B6B),
-                          size: 18,
-                        ),
-                      ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -1168,11 +1265,85 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   // ============ EDIT & DELETE FUNCTIONS ============
 
   _CareEditType _resolveMamaEditType(Map<String, dynamic> kayit) {
-    final kategori = (kayit['kategori'] ?? 'Milk').toString().toLowerCase();
-    final tur = (kayit['tur'] ?? '').toString().toLowerCase();
-    final isNursing =
-        kategori != 'solid' && tur.contains('anne') && !tur.contains('biberon');
-    return isNursing ? _CareEditType.nursing : _CareEditType.feeding;
+    return _isNursingMamaRecord(kayit)
+        ? _CareEditType.nursing
+        : _CareEditType.feeding;
+  }
+
+  bool _isNursingMamaRecord(Map<String, dynamic> kayit) {
+    final explicitType = (kayit['type'] ?? '').toString().trim().toLowerCase();
+    if (explicitType == 'nursing') return true;
+
+    final kategori = (kayit['kategori'] ?? 'Milk')
+        .toString()
+        .trim()
+        .toLowerCase();
+    if (kategori == 'solid') return false;
+
+    final tur = (kayit['tur'] ?? '').toString().trim().toLowerCase();
+    final hasNursingSignal =
+        tur.contains('anne') ||
+        tur.contains('emzir') ||
+        tur.contains('nursing') ||
+        tur.contains('breastfeeding');
+    final isBottle = tur.contains('biberon') || tur.contains('bottle');
+    return hasNursingSignal && !isBottle;
+  }
+
+  bool _sameDateTimeValue(dynamic a, dynamic b) {
+    if (a is DateTime && b is DateTime) return a.isAtSameMomentAs(b);
+    return a == b;
+  }
+
+  bool _sameMamaIdentity(
+    Map<String, dynamic> candidate,
+    Map<String, dynamic> original,
+  ) {
+    return _sameDateTimeValue(candidate['tarih'], original['tarih']) &&
+        (candidate['tur'] ?? '').toString() ==
+            (original['tur'] ?? '').toString() &&
+        (candidate['kategori'] ?? 'Milk').toString() ==
+            (original['kategori'] ?? 'Milk').toString() &&
+        (candidate['solDakika'] ?? 0) == (original['solDakika'] ?? 0) &&
+        (candidate['sagDakika'] ?? 0) == (original['sagDakika'] ?? 0) &&
+        (candidate['miktar'] ?? 0) == (original['miktar'] ?? 0);
+  }
+
+  Future<bool> _updateMamaRecordPreservingIdentity({
+    required String recordId,
+    required Map<String, dynamic> original,
+    required Map<String, dynamic> updated,
+  }) async {
+    final kayitlar = VeriYonetici.getMamaKayitlari();
+    final normalizedId = recordId.trim();
+    var index = normalizedId.isEmpty
+        ? -1
+        : kayitlar.indexWhere(
+            (k) => (k['id'] ?? '').toString().trim() == normalizedId,
+          );
+    if (index == -1) {
+      index = kayitlar.indexWhere((k) => _sameMamaIdentity(k, original));
+    }
+    if (index == -1) {
+      debugPrint(
+        '[ActivitiesScreen] mama_edit failed: id=$normalizedId original=$original',
+      );
+      return false;
+    }
+
+    final existing = kayitlar[index];
+    final existingId = (existing['id'] ?? normalizedId).toString().trim();
+    kayitlar[index] = {
+      ...existing,
+      ...updated,
+      if (existingId.isNotEmpty) 'id': existingId,
+      'babyId': existing['babyId'],
+    };
+    await VeriYonetici.saveMamaKayitlari(
+      kayitlar,
+      sharedNoopHealRecordId: existingId,
+    );
+    return true;
   }
 
   void _openEditForRecord(_CareEditType type, Map<String, dynamic> kayit) {
@@ -1233,16 +1404,53 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     return candidate;
   }
 
+  Future<DateTime?> _pickEventDate(DateTime initial) async {
+    final l10n = AppLocalizations.of(context)!;
+    final now = DateTime.now();
+    final earliest = now.subtract(const Duration(hours: 48));
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initial.isAfter(now) ? now : initial,
+      firstDate: DateTime(
+        earliest.year,
+        earliest.month,
+        earliest.day,
+      ).subtract(const Duration(days: 2)),
+      lastDate: DateTime(now.year, now.month, now.day),
+      helpText: l10n.selectDate,
+    );
+    if (pickedDate == null) return null;
+    final candidate = DateTime(
+      pickedDate.year,
+      pickedDate.month,
+      pickedDate.day,
+      initial.hour,
+      initial.minute,
+    );
+    if (!isWithinRollingWindow(now: now, candidate: candidate)) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.eventTimeTooOld)));
+      }
+      return null;
+    }
+    return candidate;
+  }
+
   Widget _buildSheetScaffold({
     required BuildContext sheetContext,
     required String title,
     required Widget child,
     required VoidCallback onSave,
     required bool isSaving,
+    bool useFeedingBubbles = false,
+    double contentTopSpacing = 10,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final media = MediaQuery.of(sheetContext);
+    final sheetColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
     return SafeArea(
       top: false,
       child: AnimatedPadding(
@@ -1254,143 +1462,313 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           onTap: () => FocusScope.of(sheetContext).unfocus(),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+              color: sheetColor,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(28),
               ),
-            ),
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-            child: AbsorbPointer(
-              absorbing: isSaving,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: media.size.height * 0.9),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 5,
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.28),
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              color: isDark
-                                  ? Colors.white
-                                  : const Color(0xFF1C1C1E),
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.of(sheetContext).pop(),
-                          style: TextButton.styleFrom(
-                            foregroundColor: isDark
-                                ? AppColors.textSecondaryDark
-                                : const Color(0xFF8A8494),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 6,
-                            ),
-                          ),
-                          child: Text(l10n.cancel),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Flexible(
-                      child: SingleChildScrollView(
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
-                        child: child,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    SizedBox(
-                      width: double.infinity,
-                      child: FilledButton(
-                        onPressed: isSaving ? null : onSave,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFFE39A86),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: isSaving
-                            ? const SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(l10n.save),
-                      ),
-                    ),
-                  ],
+              border: Border(
+                top: BorderSide(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : const Color(0xFFFFB4A2).withValues(alpha: 0.18),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRowTile({
-    required String title,
-    required String value,
-    required VoidCallback onTap,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              child: Stack(
                 children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : const Color(0xFF8A8494),
+                  if (useFeedingBubbles) ...[
+                    Positioned(
+                      top: -70,
+                      right: -44,
+                      child: _SheetGlow(
+                        size: 156,
+                        color: const Color(
+                          0xFFFFB4A2,
+                        ).withValues(alpha: isDark ? 0.06 : 0.12),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    value,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                    Positioned(
+                      top: 76,
+                      left: -52,
+                      child: _SheetGlow(
+                        size: 132,
+                        color: const Color(
+                          0xFFE5E0F7,
+                        ).withValues(alpha: isDark ? 0.05 : 0.14),
+                      ),
+                    ),
+                    Positioned(
+                      top: 188,
+                      right: -18,
+                      child: _SheetGlow(
+                        size: 84,
+                        color: const Color(
+                          0xFFFFF4E5,
+                        ).withValues(alpha: isDark ? 0.03 : 0.09),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 92,
+                      left: 24,
+                      child: _SheetGlow(
+                        size: 82,
+                        color: const Color(
+                          0xFFDCEEF2,
+                        ).withValues(alpha: isDark ? 0.04 : 0.1),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -64,
+                      right: 64,
+                      child: _SheetGlow(
+                        size: 122,
+                        color: const Color(
+                          0xFFF6E4B8,
+                        ).withValues(alpha: isDark ? 0.035 : 0.085),
+                      ),
+                    ),
+                  ] else ...[
+                    Positioned(
+                      top: -56,
+                      right: -38,
+                      child: _SheetGlow(
+                        size: 138,
+                        color: const Color(
+                          0xFFFFB4A2,
+                        ).withValues(alpha: isDark ? 0.07 : 0.13),
+                      ),
+                    ),
+                    Positioned(
+                      top: 70,
+                      left: -50,
+                      child: _SheetGlow(
+                        size: 124,
+                        color: const Color(
+                          0xFFE5E0F7,
+                        ).withValues(alpha: isDark ? 0.06 : 0.16),
+                      ),
+                    ),
+                    Positioned(
+                      top: 142,
+                      left: media.size.width * 0.26,
+                      child: _SheetGlow(
+                        size: 116,
+                        color: const Color(
+                          0xFFF7E9F2,
+                        ).withValues(alpha: isDark ? 0.04 : 0.12),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 92,
+                      left: 24,
+                      child: _SheetGlow(
+                        size: 72,
+                        color: const Color(
+                          0xFFDCEEF2,
+                        ).withValues(alpha: isDark ? 0.045 : 0.11),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -54,
+                      right: 62,
+                      child: _SheetGlow(
+                        size: 108,
+                        color: const Color(
+                          0xFFF6E4B8,
+                        ).withValues(alpha: isDark ? 0.04 : 0.09),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 34,
+                      right: 92,
+                      child: _SheetGlow(
+                        size: 144,
+                        color: const Color(
+                          0xFFFFE9DD,
+                        ).withValues(alpha: isDark ? 0.035 : 0.11),
+                      ),
+                    ),
+                  ],
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, contentTopSpacing, 20, 20),
+                    child: AbsorbPointer(
+                      absorbing: isSaving,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: media.size.height * 0.9,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 6,
+                              margin: const EdgeInsets.only(bottom: 14),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    (isDark
+                                            ? Colors.white
+                                            : const Color(0xFFF2D9D0))
+                                        .withValues(alpha: isDark ? 0.2 : 0.92),
+                                    (isDark
+                                            ? Colors.white
+                                            : const Color(0xFFE6C3B8))
+                                        .withValues(alpha: isDark ? 0.08 : 0.76),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(999),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: (isDark
+                                            ? Colors.black
+                                            : const Color(0xFFE6C8BF))
+                                        .withValues(alpha: isDark ? 0.26 : 0.28),
+                                    blurRadius: 18,
+                                    offset: const Offset(0, 6),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: -0.2,
+                                      height: 1.1,
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF1C1C1E),
+                                    ),
+                                  ),
+                                ),
+                                TextButton.icon(
+                                  onPressed: () =>
+                                      Navigator.of(sheetContext).pop(),
+                                  icon: Icon(
+                                    Icons.close_rounded,
+                                    size: 16,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.72)
+                                        : const Color(0xFF918998),
+                                  ),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: isDark
+                                        ? AppColors.textSecondaryDark
+                                        : const Color(0xFF8A8494),
+                                    backgroundColor: isDark
+                                        ? Colors.white.withValues(alpha: 0.04)
+                                        : Colors.white.withValues(alpha: 0.56),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 10,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                      side: BorderSide(
+                                        color: isDark
+                                            ? Colors.white.withValues(alpha: 0.06)
+                                            : const Color(
+                                                0xFFEEDFD9,
+                                              ).withValues(alpha: 0.92),
+                                      ),
+                                    ),
+                                  ),
+                                  label: Text(
+                                    l10n.cancel,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.72)
+                                          : const Color(0xFF918998),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Flexible(
+                              child: SingleChildScrollView(
+                                keyboardDismissBehavior:
+                                    ScrollViewKeyboardDismissBehavior.onDrag,
+                                child: child,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFFE39A86,
+                                    ).withValues(alpha: isDark ? 0.16 : 0.24),
+                                    blurRadius: 24,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.white.withValues(
+                                      alpha: isDark ? 0.0 : 0.32,
+                                    ),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, -2),
+                                  ),
+                                ],
+                              ),
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: FilledButton(
+                                  onPressed: isSaving ? null : onSave,
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: const Color(0xFFE39A86),
+                                    foregroundColor: Colors.white,
+                                    disabledBackgroundColor: const Color(
+                                      0xFFE39A86,
+                                    ).withValues(alpha: 0.42),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 15,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: isSaving
+                                      ? const SizedBox(
+                                          width: 16,
+                                          height: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : Text(
+                                          l10n.save,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.2,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded),
-          ],
+          ),
         ),
       ),
     );
@@ -1405,32 +1783,46 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFFFFCF8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF2E5E1),
+        ),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.22),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
       ),
       child: Row(
         children: [
           if (leadingIcon != null) ...[
             Container(
-              width: 30,
-              height: 30,
+              width: 42,
+              height: 42,
               decoration: BoxDecoration(
                 color: isDark
                     ? Colors.white.withValues(alpha: 0.06)
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                    : const Color(0xFFFFF4EE),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 leadingIcon,
-                size: 16,
+                size: 20,
                 color: isDark
-                    ? AppColors.textSecondaryDark
-                    : const Color(0xFF8A8494),
+                    ? Colors.white70
+                    : const Color(0xFFCF866F),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
           ],
           Expanded(
             child: Column(
@@ -1438,29 +1830,57 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isDark
-                        ? AppColors.textSecondaryDark
-                        : const Color(0xFF8A8494),
-                  ),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : const Color(0xFF8F8796),
                 ),
-                const SizedBox(height: 4),
+              ),
+                const SizedBox(height: 6),
                 Text(
                   value,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 24,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+                    color: isDark ? Colors.white : const Color(0xFF4A3F3F),
                   ),
                 ),
               ],
             ),
           ),
-          _SheetCircleButton(icon: Icons.remove, onTap: onDecrease),
+          _SheetCircleButton(
+            icon: Icons.remove_rounded,
+            onTap: onDecrease,
+            backgroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFFCF9),
+            foregroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.78)
+                : const Color(0xFF8A8393),
+            borderColor: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFF0E4E1),
+            shadowColor: !isDark
+                ? const Color(0xFFE6D7D2).withValues(alpha: 0.18)
+                : null,
+          ),
           const SizedBox(width: 8),
-          _SheetCircleButton(icon: Icons.add, onTap: onIncrease),
+          _SheetCircleButton(
+            icon: Icons.add_rounded,
+            onTap: onIncrease,
+            backgroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFFCF9),
+            foregroundColor: const Color(0xFFE08F78),
+            borderColor: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFF0E4E1),
+            shadowColor: !isDark
+                ? const Color(0xFFE6D7D2).withValues(alpha: 0.18)
+                : null,
+          ),
         ],
       ),
     );
@@ -1472,18 +1892,45 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     int maxLines = 2,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return TextField(
-      controller: controller,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        hintText: hintText,
-        filled: true,
-        fillColor: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide.none,
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFFFFCF8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF2E5E1),
         ),
-        contentPadding: const EdgeInsets.all(15),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.22),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+      ),
+      child: TextField(
+        controller: controller,
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          hintText: hintText,
+          hintStyle: TextStyle(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.3)
+                : const Color(0xFF4A3F3F).withValues(alpha: 0.32),
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.all(16),
+        ),
+        style: TextStyle(
+          fontSize: 14,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.84)
+              : const Color(0xFF4A3F3F).withValues(alpha: 0.84),
+        ),
       ),
     );
   }
@@ -1492,10 +1939,31 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFF7F7FA),
-        borderRadius: BorderRadius.circular(16),
+        color: isDark
+            ? const Color(0xFF2B2B2B)
+            : const Color(0xFFFFFCF8).withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF2E5E1),
+        ),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.2),
+                  blurRadius: 22,
+                  offset: const Offset(0, 10),
+                ),
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1510,13 +1978,384 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   fontWeight: FontWeight.w600,
                   color: isDark
                       ? AppColors.textSecondaryDark
-                      : const Color(0xFF8A8494),
+                      : const Color(0xFF8F8796),
                 ),
               ),
             ),
           ],
           child,
         ],
+      ),
+    );
+  }
+
+  Widget _buildFeedingSheetSegmentedControl({
+    required BuildContext context,
+    required String groupValue,
+    required Map<String, String> labels,
+    required ValueChanged<String?> onChanged,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF252530) : const Color(0xFFF6EFF2),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.16),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.72),
+                  blurRadius: 10,
+                  offset: const Offset(0, -2),
+                ),
+              ],
+      ),
+      child: Row(
+        children: labels.entries.map((entry) {
+          final value = entry.key;
+          final label = entry.value;
+          final isSelected = groupValue == value;
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: GestureDetector(
+                onTap: () => onChanged(value),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(999),
+                    gradient: isSelected && !isDark
+                        ? const LinearGradient(
+                            colors: [Color(0xFFFFFEFB), Color(0xFFFFF5EF)],
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                          )
+                        : null,
+                    color: isSelected
+                        ? (isDark
+                              ? const Color(0xFF3A3A46)
+                              : const Color(0xFFFFFCF7))
+                        : Colors.transparent,
+                    border: isSelected && !isDark
+                        ? Border.all(color: const Color(0xFFF3E2D6))
+                        : null,
+                    boxShadow: isSelected && !isDark
+                        ? [
+                            BoxShadow(
+                              color: const Color(
+                                0xFFDFC7BE,
+                              ).withValues(alpha: 0.22),
+                              blurRadius: 14,
+                              offset: const Offset(0, 5),
+                            ),
+                            BoxShadow(
+                              color: Colors.white.withValues(alpha: 0.78),
+                              blurRadius: 8,
+                              offset: const Offset(0, -1),
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                      color: isSelected
+                          ? const Color(0xFFB86E5A)
+                          : isDark
+                          ? Colors.white.withValues(alpha: 0.74)
+                          : const Color(0xFF6F6878),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(growable: false),
+      ),
+    );
+  }
+
+  String _formatInlineDate(DateTime value) {
+    final l10n = AppLocalizations.of(context)!;
+    if (_isToday(value)) return l10n.today;
+    return MaterialLocalizations.of(context).formatMediumDate(value);
+  }
+
+  Widget _buildInlineDateButton({
+    required DateTime value,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 34,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFFFF4EE),
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFF0E4E1),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.calendar_today_rounded,
+              size: 15,
+              color: isDark ? Colors.white70 : const Color(0xFFCF866F),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              _formatInlineDate(value),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.82)
+                    : const Color(0xFF866F65),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeedingSheetStepper({
+    required String title,
+    required String value,
+    required VoidCallback onDecrease,
+    required VoidCallback onIncrease,
+    IconData? leadingIcon,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFFFFCF8),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF2E5E1),
+        ),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.22),
+                  blurRadius: 18,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+      ),
+      child: Row(
+        children: [
+          _SheetCircleButton(
+            icon: Icons.remove_rounded,
+            onTap: onDecrease,
+            backgroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFFCF9),
+            foregroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.78)
+                : const Color(0xFF8A8393),
+            borderColor: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFF0E4E1),
+            shadowColor: !isDark
+                ? const Color(0xFFE6D7D2).withValues(alpha: 0.18)
+                : null,
+          ),
+          const SizedBox(width: 14),
+          if (leadingIcon != null) ...[
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : const Color(0xFFFFF4EE),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                leadingIcon,
+                size: 20,
+                color: isDark ? Colors.white70 : const Color(0xFFCF866F),
+              ),
+            ),
+            const SizedBox(width: 14),
+          ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : const Color(0xFF8F8796),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF4A3F3F),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          _SheetCircleButton(
+            icon: Icons.add_rounded,
+            onTap: onIncrease,
+            backgroundColor: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFFCF9),
+            foregroundColor: const Color(0xFFE08F78),
+            borderColor: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFF0E4E1),
+            shadowColor: !isDark
+                ? const Color(0xFFE6D7D2).withValues(alpha: 0.18)
+                : null,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeedingSheetRowTile({
+    required String title,
+    required String value,
+    required VoidCallback onTap,
+    String? subtitle,
+    Widget? trailingAccessory,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF2B2B2B) : const Color(0xFFFFFCF8),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFF2E5E1),
+          ),
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: const Color(0xFFE7D4CE).withValues(alpha: 0.22),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : const Color(0xFFFFF4EE),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.schedule_rounded,
+                size: 20,
+                color: isDark ? Colors.white70 : const Color(0xFFCF866F),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF8F8796),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? Colors.white : const Color(0xFF4A3F3F),
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.6)
+                            : const Color(0xFF8F8796),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (trailingAccessory != null) ...[
+              const SizedBox(width: 10),
+              trailingAccessory,
+            ],
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.48)
+                  : const Color(0xFFB2A7AE),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1533,6 +2372,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     required AppLocalizations l10n,
   }) async {
     if (isSaving) return;
+    messenger.hideCurrentSnackBar();
 
     void safeSetSaving(bool value) {
       if (!sheetContext.mounted) return;
@@ -1549,12 +2389,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       debugPrint(
         '[ActivitiesScreen] care_edit_save start type=$recordType id=$recordId',
       );
-      final saved = await action().timeout(const Duration(seconds: 3));
+      final saved = await action();
       debugPrint(
         '[ActivitiesScreen] care_edit_save result type=$recordType id=$recordId saved=$saved',
       );
       if (!saved) {
-        throw StateError('Record could not be updated.');
+        throw StateError(l10n.recordCouldNotBeUpdated);
       }
       if (!mounted || !sheetContext.mounted) return;
       safeSetSaving(false);
@@ -1565,7 +2405,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         '[ActivitiesScreen] care_edit_save error type=$recordType id=$recordId error=$e\n$st',
       );
       if (!mounted || !sheetContext.mounted) return;
-      messenger.showSnackBar(SnackBar(content: Text(l10n.saveFailedTryAgain)));
+      messenger.showSnackBar(
+        SnackBar(content: Text(_saveErrorMessage(l10n, e))),
+      );
     } finally {
       if (sheetContext.mounted && !didPop) {
         safeSetSaving(false);
@@ -1588,8 +2430,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
+      isDismissible: true,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1611,13 +2453,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 final updated = {
                   'id': recordId,
                   'tarih': eventTime,
+                  'type': 'nursing',
                   'tur': 'Anne Sütü',
                   'solDakika': side == 'left' ? duration : 0,
                   'sagDakika': side == 'right' ? duration : 0,
                   'miktar': 0,
                   'kategori': 'Milk',
                 };
-                return VeriYonetici.updateMamaKaydiById(recordId, updated);
+                return _updateMamaRecordPreservingIdentity(
+                  recordId: recordId,
+                  original: kayit,
+                  updated: updated,
+                );
               },
             );
           },
@@ -1625,23 +2472,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             children: [
               _buildSegmentedField(
                 label: l10n.breastfeeding,
-                child: CupertinoSlidingSegmentedControl<String>(
+                child: _buildFeedingSheetSegmentedControl(
+                  context: ctx,
                   groupValue: side,
-                  backgroundColor: Colors.transparent,
-                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
-                      ? const Color(0xFF3A3A46)
-                      : Colors.white,
-                  children: <String, Widget>{
-                    'left': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.left),
-                    ),
-                    'right': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.right),
-                    ),
+                  labels: <String, String>{
+                    'left': l10n.left,
+                    'right': l10n.right,
                   },
-                  onValueChanged: (v) {
+                  onChanged: (v) {
                     if (v != null) setModalState(() => side = v);
                   },
                 ),
@@ -1658,7 +2496,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              _buildRowTile(
+              _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
                 onTap: () async {
@@ -1702,14 +2540,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
+      isDismissible: true,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
           sheetContext: ctx,
           title: l10n.editTitleFeeding,
           isSaving: isSaving,
+          useFeedingBubbles: true,
+          contentTopSpacing: 14,
           onSave: () async {
             await _runCareEntrySave(
               recordType: 'feeding',
@@ -1754,40 +2594,33 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     'kategori': 'Milk',
                   });
                 }
-                return VeriYonetici.updateMamaKaydiById(recordId, updated);
+                return _updateMamaRecordPreservingIdentity(
+                  recordId: recordId,
+                  original: kayit,
+                  updated: updated,
+                );
               },
             );
           },
           child: Column(
             children: [
+              const SizedBox(height: 4),
               _buildSegmentedField(
                 label: l10n.healthType,
-                child: CupertinoSlidingSegmentedControl<String>(
+                child: _buildFeedingSheetSegmentedControl(
+                  context: ctx,
                   groupValue: selectedType,
-                  backgroundColor: Colors.transparent,
-                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
-                      ? const Color(0xFF3A3A46)
-                      : Colors.white,
-                  children: <String, Widget>{
-                    'formula': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.formula),
-                    ),
-                    'bottleMilk': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.bottleBreastMilk),
-                    ),
-                    'solid': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.solid),
-                    ),
+                  labels: <String, String>{
+                    'formula': l10n.formula,
+                    'bottleMilk': l10n.breastMilk,
+                    'solid': l10n.solid,
                   },
-                  onValueChanged: (v) {
+                  onChanged: (v) {
                     if (v != null) setModalState(() => selectedType = v);
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               if (selectedType == 'solid')
                 _buildSheetStepper(
                   title: l10n.duration,
@@ -1800,7 +2633,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   ),
                 )
               else
-                _buildSheetStepper(
+                _buildFeedingSheetStepper(
                   title: l10n.amount,
                   value: '$amount ${l10n.mlAbbrev}',
                   leadingIcon: Icons.local_drink_outlined,
@@ -1810,14 +2643,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       setModalState(() => amount = (amount + 10).clamp(0, 500)),
                 ),
               if (selectedType == 'solid') ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 _buildSheetTextField(
                   controller: noteController,
                   hintText: l10n.solidFoodHint,
                 ),
               ],
-              const SizedBox(height: 12),
-              _buildRowTile(
+              const SizedBox(height: 14),
+              _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
                 onTap: () async {
@@ -1852,8 +2685,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
+      isDismissible: true,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1892,33 +2725,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             children: [
               _buildSegmentedField(
                 label: l10n.diaperChange,
-                child: CupertinoSlidingSegmentedControl<String>(
+                child: _buildFeedingSheetSegmentedControl(
+                  context: ctx,
                   groupValue: type,
-                  backgroundColor: Colors.transparent,
-                  thumbColor: Theme.of(ctx).brightness == Brightness.dark
-                      ? const Color(0xFF3A3A46)
-                      : Colors.white,
-                  children: <String, Widget>{
-                    'wet': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.diaperWet),
-                    ),
-                    'dirty': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.diaperDirty),
-                    ),
-                    'both': Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Text(l10n.diaperBoth),
-                    ),
+                  labels: <String, String>{
+                    'wet': l10n.diaperWet,
+                    'dirty': l10n.diaperDirty,
+                    'both': l10n.diaperBoth,
                   },
-                  onValueChanged: (v) {
+                  onChanged: (v) {
                     if (v != null) setModalState(() => type = v);
                   },
                 ),
               ),
               const SizedBox(height: 16),
-              _buildRowTile(
+              _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
                 onTap: () async {
@@ -1953,8 +2774,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
+      isDismissible: true,
+      enableDrag: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setModalState) => _buildSheetScaffold(
@@ -1992,18 +2813,34 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           },
           child: Column(
             children: [
-              _buildRowTile(
+              _buildFeedingSheetRowTile(
                 title: l10n.start,
                 value: _formatTime(start),
+                subtitle: _formatInlineDate(start),
+                trailingAccessory: _buildInlineDateButton(
+                  value: start,
+                  onTap: () async {
+                    final picked = await _pickEventDate(start);
+                    if (picked != null) setModalState(() => start = picked);
+                  },
+                ),
                 onTap: () async {
                   final picked = await _pickNormalizedDateTime(start);
                   if (picked != null) setModalState(() => start = picked);
                 },
               ),
               const SizedBox(height: 12),
-              _buildRowTile(
+              _buildFeedingSheetRowTile(
                 title: l10n.end,
                 value: _formatTime(end),
+                subtitle: _formatInlineDate(end),
+                trailingAccessory: _buildInlineDateButton(
+                  value: end,
+                  onTap: () async {
+                    final picked = await _pickEventDate(end);
+                    if (picked != null) setModalState(() => end = picked);
+                  },
+                ),
                 onTap: () async {
                   final picked = await _pickNormalizedDateTime(end);
                   if (picked != null) setModalState(() => end = picked);
@@ -2145,7 +2982,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          '??? ${l10n.delete}',
+          l10n.delete,
           style: TextStyle(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(
@@ -2179,11 +3016,40 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       : '${d.inMinutes} ${l10n.minAbbrev}';
 }
 
+class _SheetGlow extends StatelessWidget {
+  const _SheetGlow({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      ),
+    );
+  }
+}
+
 class _SheetCircleButton extends StatelessWidget {
-  const _SheetCircleButton({required this.icon, required this.onTap});
+  const _SheetCircleButton({
+    required this.icon,
+    required this.onTap,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderColor,
+    this.shadowColor,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final Color? borderColor;
+  final Color? shadowColor;
 
   @override
   Widget build(BuildContext context) {
@@ -2195,15 +3061,34 @@ class _SheetCircleButton extends StatelessWidget {
         width: 34,
         height: 34,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF3A3A46) : Colors.white,
+          color:
+              backgroundColor ??
+              (isDark ? const Color(0xFF3A3A46) : Colors.white),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark
-                ? Colors.white.withValues(alpha: 0.06)
-                : const Color(0xFFE5E0F7).withValues(alpha: 0.7),
+            color:
+                borderColor ??
+                (isDark
+                    ? Colors.white.withValues(alpha: 0.06)
+                    : const Color(0xFFE5E0F7).withValues(alpha: 0.7)),
           ),
+          boxShadow: shadowColor != null
+              ? [
+                  BoxShadow(
+                    color: shadowColor!,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
-        child: Icon(icon, size: 18),
+        child: Icon(
+          icon,
+          size: 18,
+          color:
+              foregroundColor ??
+              (isDark ? Colors.white : const Color(0xFF6F6F6F)),
+        ),
       ),
     );
   }

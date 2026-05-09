@@ -23,6 +23,9 @@ class AppColors {
   static const Color accentPeach = Color(0xFFFFD8C0);
   static const Color accentLavender = Color(0xFFD4C4E8);
   static const Color accentYellow = Color(0xFFFFF0B8);
+  static const Color peach = accentPeach;
+  static const Color lavender = accentLavender;
+  static const Color mint = accentGreen;
 
   // Text - Light
   static const Color textPrimaryLight = Color(0xFF4A4458);

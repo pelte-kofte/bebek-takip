@@ -240,6 +240,91 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
     );
   }
 
+  Widget _buildAllergyTipCard(
+    BuildContext context, {
+    required bool isDark,
+    required Color textColor,
+    required Color subtitleColor,
+    required bool compact,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      margin: EdgeInsets.fromLTRB(24, compact ? 8 : 12, 24, compact ? 12 : 16),
+      padding: EdgeInsets.symmetric(
+        horizontal: compact ? 14 : 16,
+        vertical: compact ? 12 : 14,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: isDark
+              ? [const Color(0xFF2D2934), const Color(0xFF2B2730)]
+              : [const Color(0xFFFFF4EE), const Color(0xFFF6F0FB)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFEBDCE5),
+        ),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFFE8D8D2).withValues(alpha: 0.18),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : Colors.white.withValues(alpha: 0.72),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.lightbulb_outline_rounded,
+              size: 19,
+              color: isDark ? const Color(0xFFFFC79E) : const Color(0xFFE39A86),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.allergyTipTitle,
+                  style: AppTypography.label(
+                    context,
+                  ).copyWith(color: textColor, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  l10n.allergyTipBody,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySmall(
+                    context,
+                  ).copyWith(color: subtitleColor, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _confirmDelete(BuildContext context, Allergy allergy) async {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -315,12 +400,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
             padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    l10n.allergiesTitle,
-                    style: AppTypography.h1(context).copyWith(color: textColor),
-                  ),
-                ),
+                const Spacer(),
                 GestureDetector(
                   onTap: () => _showAddSheet(context),
                   child: Container(
@@ -429,61 +509,82 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         final allergies = snap.data ?? [];
 
         if (allergies.isEmpty) {
-          return Center(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(24),
+          return ListView(
+            padding: const EdgeInsets.only(bottom: 24),
+            children: [
+              _buildAllergyTipCard(
+                context,
+                isDark: isDark,
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                compact: widget.embedded,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF1EC),
-                      borderRadius: BorderRadius.circular(24),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF1EC),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Icon(
+                        Icons.no_food_outlined,
+                        size: 34,
+                        color: subtitleColor.withValues(alpha: 0.7),
+                      ),
                     ),
-                    child: Icon(
-                      Icons.no_food_outlined,
-                      size: 34,
-                      color: subtitleColor.withValues(alpha: 0.7),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noAllergies,
+                      style: AppTypography.h2(context).copyWith(color: textColor),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.noAllergies,
-                    style: AppTypography.h2(context).copyWith(color: textColor),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    l10n.noAllergiesSummary,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodySmall(
-                      context,
-                    ).copyWith(color: subtitleColor),
-                  ),
-                  const SizedBox(height: 18),
-                  FilledButton.tonalIcon(
-                    onPressed: () => _showAddSheet(context),
-                    icon: const Icon(Icons.add),
-                    label: Text(l10n.addAllergy),
-                  ),
-                ],
+                    const SizedBox(height: 6),
+                    Text(
+                      l10n.noAllergiesSummary,
+                      textAlign: TextAlign.center,
+                      style: AppTypography.bodySmall(
+                        context,
+                      ).copyWith(color: subtitleColor),
+                    ),
+                    const SizedBox(height: 18),
+                    FilledButton.tonalIcon(
+                      onPressed: () => _showAddSheet(context),
+                      icon: const Icon(Icons.add),
+                      label: Text(l10n.addAllergy),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
           );
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-          itemCount: allergies.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          itemCount: allergies.length + 1,
+          separatorBuilder: (_, index) =>
+              index == 0 ? const SizedBox.shrink() : const SizedBox(height: 10),
           itemBuilder: (context, index) {
-            final allergy = allergies[index];
+            if (index == 0) {
+              return _buildAllergyTipCard(
+                context,
+                isDark: isDark,
+                textColor: textColor,
+                subtitleColor: subtitleColor,
+                compact: widget.embedded,
+              );
+            }
+
+            final allergy = allergies[index - 1];
             return Dismissible(
               key: ValueKey(allergy.id),
               direction: DismissDirection.endToStart,

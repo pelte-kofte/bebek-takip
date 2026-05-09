@@ -278,6 +278,18 @@ abstract class AppLocalizations {
   /// **'Share'**
   String get share;
 
+  /// No description provided for @titleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get titleLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
   /// UI text
   ///
   /// In en, this message translates to:
@@ -325,6 +337,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t save. Please try again.'**
   String get saveFailedTryAgain;
+
+  /// No description provided for @recordCouldNotBeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Record could not be updated.'**
+  String get recordCouldNotBeUpdated;
 
   /// UI text
   ///
@@ -2858,6 +2876,30 @@ abstract class AppLocalizations {
   /// **'Given now'**
   String get givenNow;
 
+  /// No description provided for @medicationGiveNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Give now'**
+  String get medicationGiveNow;
+
+  /// No description provided for @medicationSetReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Set reminder'**
+  String get medicationSetReminder;
+
+  /// No description provided for @repeatDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat daily'**
+  String get repeatDaily;
+
+  /// No description provided for @medicationAlreadyMarkedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Already marked.'**
+  String get medicationAlreadyMarkedHint;
+
   /// No description provided for @allDoneToday.
   ///
   /// In en, this message translates to:
@@ -3217,6 +3259,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Maybe later'**
   String get maybeLater;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
 
   /// No description provided for @genericErrorRetry.
   ///
@@ -3638,6 +3686,18 @@ abstract class AppLocalizations {
   /// **'Premium is active.'**
   String get premiumIsActive;
 
+  /// No description provided for @premiumFeatureTeaser.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustrations, shared parenting, and more'**
+  String get premiumFeatureTeaser;
+
+  /// No description provided for @availableWithPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Available with Premium'**
+  String get availableWithPremium;
+
   /// No description provided for @premiumActiveDesc.
   ///
   /// In en, this message translates to:
@@ -3848,6 +3908,18 @@ abstract class AppLocalizations {
   /// **'A special moment, illustrated.'**
   String get illShareFallback;
 
+  /// No description provided for @illCreditsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} illustrations left'**
+  String illCreditsLeft(int count);
+
+  /// No description provided for @illMonthlyCredits.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} / {total} this month'**
+  String illMonthlyCredits(int count, int total);
+
   /// No description provided for @memoryStyle.
   ///
   /// In en, this message translates to:
@@ -3938,6 +4010,30 @@ abstract class AppLocalizations {
   /// **'Notifications disabled'**
   String get notificationsDisabled;
 
+  /// No description provided for @noBabyYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No baby yet'**
+  String get noBabyYet;
+
+  /// No description provided for @noBabyProfilePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'No baby profile found yet. Tap below to add one.'**
+  String get noBabyProfilePrompt;
+
+  /// No description provided for @addBaby.
+  ///
+  /// In en, this message translates to:
+  /// **'Add baby'**
+  String get addBaby;
+
+  /// No description provided for @cropPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Photo'**
+  String get cropPhoto;
+
   /// No description provided for @permissionDenied.
   ///
   /// In en, this message translates to:
@@ -3991,6 +4087,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Keep sensitivities and food reactions together in one calm place.'**
   String get allergySectionSubtitle;
+
+  /// No description provided for @allergyTipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergy tip'**
+  String get allergyTipTitle;
+
+  /// No description provided for @allergyTipBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduce new foods one at a time and wait 3–5 days before trying another.'**
+  String get allergyTipBody;
 
   /// No description provided for @noAllergiesSummary.
   ///
@@ -4165,6 +4273,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add your first memory'**
   String get addFirstMemory;
+
+  /// No description provided for @addMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Memory'**
+  String get addMemory;
+
+  /// No description provided for @editMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Memory'**
+  String get editMemory;
+
+  /// No description provided for @saveMemory.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Memory'**
+  String get saveMemory;
+
+  /// No description provided for @memoryDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete memory?'**
+  String get memoryDeleteTitle;
+
+  /// No description provided for @memoryDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This memory will be permanently deleted.'**
+  String get memoryDeleteMessage;
+
+  /// No description provided for @memoryPhotoPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a photo of the moment'**
+  String get memoryPhotoPlaceholder;
+
+  /// No description provided for @memoryPhotosLocalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos are stored only on this device (not synced yet).'**
+  String get memoryPhotosLocalOnly;
+
+  /// No description provided for @illustrationSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration'**
+  String get illustrationSectionTitle;
+
+  /// No description provided for @illustrationTapToView.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view full illustration'**
+  String get illustrationTapToView;
+
+  /// No description provided for @illStyleDefaultDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Soft children\'s book illustration'**
+  String get illStyleDefaultDescription;
+
+  /// No description provided for @illStyleLofiDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm lo-fi anime style'**
+  String get illStyleLofiDescription;
+
+  /// No description provided for @pendingInvitationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Invitations'**
+  String get pendingInvitationsTitle;
+
+  /// No description provided for @pendingInvitationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review invitations sent to you'**
+  String get pendingInvitationsSubtitle;
+
+  /// No description provided for @notSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get notSignedIn;
 }
 
 class _AppLocalizationsDelegate

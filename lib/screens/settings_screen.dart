@@ -34,9 +34,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool _feedingReminderEnabled = false;
   bool _diaperReminderEnabled = false;
-  bool _medicationReminderEnabled = true;
+  bool _dailyTipReminderEnabled = false;
   TimeOfDay _feedingReminderTime = const TimeOfDay(hour: 14, minute: 0);
   TimeOfDay _diaperReminderTime = const TimeOfDay(hour: 14, minute: 0);
+  TimeOfDay _dailyTipReminderTime = const TimeOfDay(hour: 10, minute: 0);
 
   @override
   void initState() {
@@ -52,7 +53,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _feedingReminderEnabled = VeriYonetici.isFeedingReminderEnabled();
       _diaperReminderEnabled = VeriYonetici.isDiaperReminderEnabled();
-      _medicationReminderEnabled = VeriYonetici.isMedicationReminderEnabled();
+      _dailyTipReminderEnabled = VeriYonetici.isDailyTipReminderEnabled();
       _feedingReminderTime = TimeOfDay(
         hour: VeriYonetici.getFeedingReminderHour(),
         minute: VeriYonetici.getFeedingReminderMinute(),
@@ -61,7 +62,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
         hour: VeriYonetici.getDiaperReminderHour(),
         minute: VeriYonetici.getDiaperReminderMinute(),
       );
+      _dailyTipReminderTime = TimeOfDay(
+        hour: VeriYonetici.getDailyTipReminderHour(),
+        minute: VeriYonetici.getDailyTipReminderMinute(),
+      );
     });
+  }
+
+  int _babyAgeInMonths() {
+    final birthDate = VeriYonetici.getBirthDate();
+    final now = DateTime.now();
+    int months =
+        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    if (now.day < birthDate.day) {
+      months -= 1;
+    }
+    return months < 0 ? 0 : months;
   }
 
   DateTime _nextReminderDateTime(TimeOfDay time) {
@@ -130,81 +146,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  Future<void> _toggleMedicationReminder(bool value) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    setState(() => _medicationReminderEnabled = value);
-    await VeriYonetici.setMedicationReminderEnabled(value);
-    await _reminderService.initialize();
-    final meds = VeriYonetici.getIlacKayitlari();
-    if (!value) {
-      for (final med in meds) {
-        await _reminderService.cancelMedicationReminders(
-          med['id'] as String,
-          dailyTimes: _dailyTimesForReminder(med),
-          protocolOffsets: _protocolOffsetsForReminder(med),
-          vaccineId: med['vaccineId'] as String?,
-        );
-      }
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.notificationsDisabled)),
-        );
-      }
-      return;
-    }
-
-    final granted = await _reminderService.requestPermission();
-    if (!granted) {
-      if (mounted) {
-        messenger.showSnackBar(
-          SnackBar(content: Text(l10n.permissionDenied)),
-        );
-      }
-      return;
-    }
-
-    for (final med in meds) {
-      if (med['isActive'] != true || med['remindersEnabled'] != true) continue;
-      final scheduleType = (med['scheduleType'] as String?) ?? 'prn';
-      if (scheduleType == 'prn') continue;
-      DateTime? vaccineDate;
-      if (scheduleType == 'vaccine_protocol') {
-        final vaccineId = med['vaccineId'] as String?;
-        if (vaccineId != null) {
-          final vaccine = VeriYonetici.getAsiKayitlari()
-              .where((v) => v['id'] == vaccineId)
-              .firstOrNull;
-          vaccineDate = vaccine?['tarih'] as DateTime?;
-        }
-      }
-      await _reminderService.scheduleMedicationReminders(
-        med,
-        vaccineDate: vaccineDate,
+  Future<void> _toggleDailyTipReminder(bool value) async {
+    setState(() => _dailyTipReminderEnabled = value);
+    await VeriYonetici.setDailyTipReminderEnabled(value);
+    if (value) {
+      await _reminderService.initialize();
+      final scheduledAt = _nextReminderDateTime(_dailyTipReminderTime);
+      await _reminderService.scheduleDailyTipReminderAt(
+        scheduledAt: scheduledAt,
+        babyAgeInMonths: _babyAgeInMonths(),
       );
+    } else {
+      await _reminderService.cancelDailyTipReminder();
     }
-    if (mounted) {
-      messenger.showSnackBar(
-        SnackBar(content: Text(l10n.reminderScheduled)),
-      );
-    }
-  }
-
-  List<String> _dailyTimesForReminder(Map<String, dynamic> med) {
-    final raw = med['dailyTimes'];
-    if (raw is! List) return const <String>[];
-    return raw
-        .map((e) => e?.toString() ?? '')
-        .where((e) => RegExp(r'^\d{2}:\d{2}$').hasMatch(e))
-        .toList();
-  }
-
-  List<Map<String, dynamic>> _protocolOffsetsForReminder(
-    Map<String, dynamic> med,
-  ) {
-    final raw = med['protocolOffsets'];
-    if (raw is! List) return const <Map<String, dynamic>>[];
-    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
   }
 
   void _showTimePicker({
@@ -320,22 +274,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                padding: const EdgeInsets.fromLTRB(24, 14, 24, 14),
                 child: Row(
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Container(
-                        width: 40,
-                        height: 40,
+                        width: 38,
+                        height: 38,
                         decoration: BoxDecoration(
                           color: cardColor,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(13),
+                          border: Border.all(
+                            color: subtitleColor.withValues(alpha: 0.08),
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                              color: Colors.black.withValues(alpha: 0.035),
+                              blurRadius: 14,
+                              offset: const Offset(0, 6),
                             ),
                           ],
                         ),
@@ -353,17 +310,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Text(
                           l10n.settings,
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: textColor,
-                            letterSpacing: -0.5,
+                            letterSpacing: -0.35,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           l10n.appPreferences,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 13,
                             color: subtitleColor,
                             letterSpacing: 0.2,
                           ),
@@ -377,7 +334,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Content
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  padding: const EdgeInsets.fromLTRB(24, 6, 24, 28),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -405,11 +362,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         textColor,
                         subtitleColor,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
                       // HESAP Section
                       _buildAccountSection(cardColor, textColor, subtitleColor),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
                       // GÖRÜNÜM Section
                       _buildSectionHeader(l10n.appearance, subtitleColor),
@@ -458,7 +415,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
                       // BİLDİRİMLER Section
                       _buildSectionHeader(l10n.notifications, subtitleColor),
@@ -472,79 +429,97 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               iconBgColor: const Color(0xFFFFE5E0),
                               iconColor: const Color(0xFFFFB4A2),
                               title: l10n.feedingReminder,
-                              subtitle: _feedingReminderEnabled
-                                  ? '${l10n.selectTime}: ${_formatTime(_feedingReminderTime)}'
-                                  : l10n.off,
+                              subtitle: _feedingReminderEnabled ? '' : l10n.off,
                               value: _feedingReminderEnabled,
                               onChanged: _toggleFeedingReminder,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
-                            ),
-                            if (_feedingReminderEnabled) ...[
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () => _showTimePicker(
-                                  title: l10n.reminderTime,
-                                  currentValue: _feedingReminderTime,
-                                  onSelected: (value) async {
-                                    setState(
-                                      () => _feedingReminderTime = value,
-                                    );
-                                    await VeriYonetici.setFeedingReminderTime(
-                                      value.hour,
-                                      value.minute,
-                                    );
-                                    if (_feedingReminderEnabled) {
-                                      await _reminderService.initialize();
-                                      final scheduledAt = _nextReminderDateTime(
-                                        value,
-                                      );
-                                      await _reminderService
-                                          .scheduleFeedingReminderAt(
-                                            scheduledAt,
+                              trailing: _feedingReminderEnabled
+                                  ? _buildReminderTimePill(
+                                      label: _formatTime(_feedingReminderTime),
+                                      onTap: () => _showTimePicker(
+                                        title: l10n.reminderTime,
+                                        currentValue: _feedingReminderTime,
+                                        onSelected: (value) async {
+                                          setState(
+                                            () => _feedingReminderTime = value,
                                           );
-                                    }
-                                  },
-                                ),
-                                child: Container(
-                                  margin: const EdgeInsets.only(left: 60),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFFFFB4A2,
-                                    ).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.schedule,
-                                        size: 16,
-                                        color: const Color(0xFFFFB4A2),
+                                          await VeriYonetici.setFeedingReminderTime(
+                                            value.hour,
+                                            value.minute,
+                                          );
+                                          if (_feedingReminderEnabled) {
+                                            await _reminderService.initialize();
+                                            final scheduledAt =
+                                                _nextReminderDateTime(value);
+                                            await _reminderService
+                                                .scheduleFeedingReminderAt(
+                                                  scheduledAt,
+                                                );
+                                          }
+                                        },
                                       ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        _formatTime(_feedingReminderTime),
-                                        style: const TextStyle(
-                                          color: Color(0xFFFFB4A2),
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                      bgColor: const Color(
+                                        0xFFFFB4A2,
+                                      ).withValues(alpha: 0.14),
+                                      fgColor: const Color(0xFFE08F78),
+                                      borderColor: const Color(
+                                        0xFFFFB4A2,
+                                      ).withValues(alpha: 0.18),
+                                    )
+                                  : null,
+                            ),
+                            Divider(
+                              color: subtitleColor.withValues(alpha: 0.1),
+                              height: 24,
+                            ),
+                            _buildSwitchTile(
+                              icon: Icons.lightbulb_outline_rounded,
+                              iconBgColor: const Color(0xFFFFF0D9),
+                              iconColor: const Color(0xFFDAA520),
+                              title: l10n.dailyTip,
+                              subtitle: _dailyTipReminderEnabled ? '' : l10n.off,
+                              value: _dailyTipReminderEnabled,
+                              onChanged: _toggleDailyTipReminder,
+                              textColor: textColor,
+                              subtitleColor: subtitleColor,
+                              trailing: _dailyTipReminderEnabled
+                                  ? _buildReminderTimePill(
+                                      label: _formatTime(_dailyTipReminderTime),
+                                      onTap: () => _showTimePicker(
+                                        title: l10n.dailyTip,
+                                        currentValue: _dailyTipReminderTime,
+                                        onSelected: (value) async {
+                                          setState(
+                                            () => _dailyTipReminderTime = value,
+                                          );
+                                          await VeriYonetici.setDailyTipReminderTime(
+                                            value.hour,
+                                            value.minute,
+                                          );
+                                          if (_dailyTipReminderEnabled) {
+                                            await _reminderService.initialize();
+                                            final scheduledAt =
+                                                _nextReminderDateTime(value);
+                                            await _reminderService
+                                                .scheduleDailyTipReminderAt(
+                                                  scheduledAt: scheduledAt,
+                                                  babyAgeInMonths:
+                                                      _babyAgeInMonths(),
+                                                );
+                                          }
+                                        },
                                       ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.expand_more,
-                                        size: 16,
-                                        color: const Color(0xFFFFB4A2),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+                                      bgColor: const Color(
+                                        0xFFFFF0D9,
+                                      ).withValues(alpha: 0.95),
+                                      fgColor: const Color(0xFFDAA520),
+                                      borderColor: const Color(
+                                        0xFFDAA520,
+                                      ).withValues(alpha: 0.16),
+                                    )
+                                  : null,
+                            ),
                             Divider(
                               color: subtitleColor.withValues(alpha: 0.1),
                               height: 24,
@@ -554,93 +529,45 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               iconBgColor: const Color(0xFFE5E0F7),
                               iconColor: subtitleColor,
                               title: l10n.diaperReminder,
-                              subtitle: _diaperReminderEnabled
-                                  ? '${l10n.selectTime}: ${_formatTime(_diaperReminderTime)}'
-                                  : l10n.off,
+                              subtitle: _diaperReminderEnabled ? '' : l10n.off,
                               value: _diaperReminderEnabled,
                               onChanged: _toggleDiaperReminder,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
-                            ),
-                            if (_diaperReminderEnabled) ...[
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () => _showTimePicker(
-                                  title: l10n.reminderTime,
-                                  currentValue: _diaperReminderTime,
-                                  onSelected: (value) async {
-                                    setState(() => _diaperReminderTime = value);
-                                    await VeriYonetici.setDiaperReminderTime(
-                                      value.hour,
-                                      value.minute,
-                                    );
-                                    if (_diaperReminderEnabled) {
-                                      await _reminderService.initialize();
-                                      final scheduledAt = _nextReminderDateTime(
-                                        value,
-                                      );
-                                      await _reminderService
-                                          .scheduleDiaperReminderAt(
-                                            scheduledAt,
+                              trailing: _diaperReminderEnabled
+                                  ? _buildReminderTimePill(
+                                      label: _formatTime(_diaperReminderTime),
+                                      onTap: () => _showTimePicker(
+                                        title: l10n.reminderTime,
+                                        currentValue: _diaperReminderTime,
+                                        onSelected: (value) async {
+                                          setState(
+                                            () => _diaperReminderTime = value,
                                           );
-                                    }
-                                  },
-                                ),
-                                child: Container(
-                                  margin: const EdgeInsets.only(left: 60),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 8,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFFE5E0F7,
-                                    ).withValues(alpha: 0.3),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.schedule,
-                                        size: 16,
-                                        color: subtitleColor,
+                                          await VeriYonetici.setDiaperReminderTime(
+                                            value.hour,
+                                            value.minute,
+                                          );
+                                          if (_diaperReminderEnabled) {
+                                            await _reminderService.initialize();
+                                            final scheduledAt =
+                                                _nextReminderDateTime(value);
+                                            await _reminderService
+                                                .scheduleDiaperReminderAt(
+                                                  scheduledAt,
+                                                );
+                                          }
+                                        },
                                       ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        _formatTime(_diaperReminderTime),
-                                        style: TextStyle(
-                                          color: subtitleColor,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                      bgColor: const Color(
+                                        0xFFE5E0F7,
+                                      ).withValues(alpha: 0.38),
+                                      fgColor: subtitleColor,
+                                      borderColor: subtitleColor.withValues(
+                                        alpha: 0.12,
                                       ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.expand_more,
-                                        size: 16,
-                                        color: subtitleColor,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                            Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
-                            ),
-                            _buildSwitchTile(
-                              icon: Icons.medication_outlined,
-                              iconBgColor: const Color(0xFFE8F5E9),
-                              iconColor: const Color(0xFF4CAF50),
-                              title: l10n.medicationReminders,
-                              subtitle: _medicationReminderEnabled
-                                  ? l10n.enabled
-                                  : l10n.off,
-                              value: _medicationReminderEnabled,
-                              onChanged: _toggleMedicationReminder,
-                              textColor: textColor,
-                              subtitleColor: subtitleColor,
+                                    )
+                                  : null,
                             ),
                           ],
                         ),
@@ -817,7 +744,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   await svc.requestPermissions();
                                   await svc.showNursingNotification(
                                     DateTime.now(),
-                                    'sol',
+                                    l10n.left.toLowerCase(),
                                   );
                                   if (mounted) {
                                     messenger.showSnackBar(
@@ -852,7 +779,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Text(
       title.toUpperCase(),
       style: TextStyle(
-        fontSize: 12,
+        fontSize: 11,
         fontWeight: FontWeight.bold,
         color: subtitleColor,
         letterSpacing: 1.0,
@@ -865,6 +792,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return ValueListenableBuilder<bool>(
       valueListenable: PremiumService.instance.isPremiumNotifier,
       builder: (context, isPremium, _) {
@@ -904,8 +832,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       const SizedBox(height: 2),
                       Text(
                         isPremium
-                            ? 'Premium is active'
-                            : 'Illustrations, shared parenting, and more',
+                            ? l10n.premiumIsActive
+                            : l10n.premiumFeatureTeaser,
                         style: TextStyle(
                           fontSize: 13,
                           color: isPremium
@@ -926,8 +854,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       color: const Color(0xFFE5E0F7),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text(
-                      'Active',
+                    child: Text(
+                      l10n.active,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -950,6 +878,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return _buildCard(
       cardColor: cardColor,
       child: GestureDetector(
@@ -959,7 +888,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           if (user == null || user.isAnonymous) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(AppLocalizations.of(context)!.signInToUseSharedParenting),
+                content: Text(
+                  AppLocalizations.of(context)!.signInToUseSharedParenting,
+                ),
               ),
             );
             await Navigator.push(
@@ -971,9 +902,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const SharedParentingScreen(),
-            ),
+            MaterialPageRoute(builder: (_) => const SharedParentingScreen()),
           );
         },
         child: Row(
@@ -999,7 +928,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Row(
                     children: [
                       Text(
-                        'Shared Parenting',
+                        l10n.spTitle,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1032,8 +961,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 2),
                   Text(
                     PremiumService.instance.isPremium
-                        ? "Share your baby's journey with another parent"
-                        : 'Available with Premium',
+                        ? l10n.spGateTitle
+                        : l10n.availableWithPremium,
                     style: TextStyle(fontSize: 13, color: subtitleColor),
                   ),
                 ],
@@ -1088,10 +1017,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(height: 2),
                   Text(
                     l10n.buyIllustrationsSubtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: subtitleColor,
-                    ),
+                    style: TextStyle(fontSize: 13, color: subtitleColor),
                   ),
                 ],
               ),
@@ -1108,6 +1034,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return StreamBuilder<List<InvitationItem>>(
       stream: SharedParentingService.instance.watchPendingInvitations(),
       builder: (context, snap) {
@@ -1164,7 +1091,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Pending Invitations',
+                            l10n.pendingInvitationsTitle,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -1173,7 +1100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            'Review invites sent to you',
+                            l10n.pendingInvitationsSubtitle,
                             style: TextStyle(
                               fontSize: 13,
                               color: subtitleColor,
@@ -1232,7 +1159,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color actionTextColor;
 
     if (!hasSession) {
-      titleText = 'Not signed in';
+      titleText = l10n.notSignedIn;
       detailText = l10n.signInToProtectData;
       actionIcon = Icons.login;
       actionLabel = l10n.signIn;
@@ -1406,15 +1333,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildCard({required Color cardColor, required Widget child}) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.06),
+        ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFFB4A2).withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: const Color(0xFFFFB4A2).withValues(alpha: 0.06),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.22),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -1432,19 +1367,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required ValueChanged<bool> onChanged,
     required Color textColor,
     required Color subtitleColor,
+    Widget? trailing,
   }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 44,
-          height: 44,
+          width: 42,
+          height: 42,
           decoration: BoxDecoration(
             color: iconBgColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(icon, color: iconColor, size: 22),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1452,26 +1389,81 @@ class _SettingsScreenState extends State<SettingsScreen> {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 15,
                   fontWeight: FontWeight.w600,
                   color: textColor,
                 ),
               ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: TextStyle(fontSize: 13, color: subtitleColor),
-              ),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(height: 3),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 12.5, color: subtitleColor),
+                ),
+              ],
             ],
           ),
         ),
-        Switch(
-          value: value,
-          onChanged: onChanged,
-          activeThumbColor: const Color(0xFFFFB4A2),
-          activeTrackColor: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+        if (trailing != null) ...[
+          const SizedBox(width: 10),
+          trailing,
+        ],
+        const SizedBox(width: 10),
+        Container(
+          padding: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            color: iconBgColor.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: subtitleColor.withValues(alpha: 0.08),
+            ),
+          ),
+          child: Switch(
+            value: value,
+            onChanged: onChanged,
+            activeThumbColor: const Color(0xFFFFB4A2),
+            activeTrackColor: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+          ),
         ),
       ],
+    );
+  }
+
+  Widget _buildReminderTimePill({
+    required String label,
+    required VoidCallback onTap,
+    required Color bgColor,
+    required Color fgColor,
+    required Color borderColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 36,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: borderColor),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.schedule_rounded, size: 15, color: fgColor),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: fgColor,
+                fontWeight: FontWeight.w700,
+                fontSize: 12.5,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.expand_more_rounded, size: 16, color: fgColor),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1491,15 +1483,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 42,
+            height: 42,
             decoration: BoxDecoration(
               color: iconBgColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1507,20 +1499,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                     color: textColor,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 13, color: subtitleColor),
+                  style: TextStyle(fontSize: 12.5, color: subtitleColor),
                 ),
               ],
             ),
           ),
-          Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+          Icon(Icons.chevron_right_rounded, color: subtitleColor, size: 20),
         ],
       ),
     );
@@ -1535,14 +1527,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(fontSize: 15, color: subtitleColor),
-        ),
+        Text(label, style: TextStyle(fontSize: 14, color: subtitleColor)),
         Text(
           value,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: textColor,
           ),
@@ -1561,22 +1550,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: subtitleColor, size: 22),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: subtitleColor.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(icon, color: subtitleColor, size: 20),
+      ),
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
           color: textColor,
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(fontSize: 13, color: subtitleColor),
+        style: TextStyle(fontSize: 12.5, color: subtitleColor),
       ),
-      trailing: Icon(Icons.chevron_right, color: subtitleColor, size: 22),
+      trailing: Icon(Icons.chevron_right_rounded, color: subtitleColor, size: 20),
       onTap: onTap,
-      visualDensity: const VisualDensity(vertical: -2),
+      visualDensity: const VisualDensity(vertical: -3),
     );
   }
 

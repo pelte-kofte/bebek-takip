@@ -6,6 +6,7 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 import '../l10n/app_localizations.dart';
+import '../models/daily_tip.dart';
 import 'locale_service.dart';
 
 class ReminderService {
@@ -22,6 +23,7 @@ class ReminderService {
 
   static const int feedingReminderId = 2001;
   static const int diaperReminderId = 2002;
+  static const int dailyTipReminderId = 2003;
   static const int medicationReminderBaseId = 30000;
 
   static const String _feedingTitleKey = 'feeding_reminder_title';
@@ -196,6 +198,57 @@ class ReminderService {
     );
   }
 
+  Future<void> scheduleDailyTipReminderAt({
+    required DateTime scheduledAt,
+    required int babyAgeInMonths,
+  }) async {
+    if (!_initialized) await initialize();
+
+    await cancelDailyTipReminder();
+    if (scheduledAt.isBefore(DateTime.now())) return;
+
+    final l10n = await _loadLocalization();
+    final tip = DailyTip.todayForBaby(babyAgeInMonths);
+    final title = l10n.dailyTipsTitle;
+    final body = tip.titleForLocalizations(l10n);
+
+    final androidDetails = AndroidNotificationDetails(
+      'daily_tip_reminder_channel',
+      'Daily Tips',
+      channelDescription: 'Daily tip reminder notifications',
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+      autoCancel: true,
+      icon: '@mipmap/ic_launcher',
+    );
+    final iosDetails = _buildIosNotificationDetails();
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    _logNotificationDebug(
+      operation: 'zonedSchedule',
+      id: dailyTipReminderId,
+      localeCode: await _savedLocaleCode(),
+      title: title,
+      body: body,
+      details: iosDetails,
+    );
+
+    await _notifications.zonedSchedule(
+      dailyTipReminderId,
+      title,
+      body,
+      tz.TZDateTime.from(scheduledAt, tz.local),
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
   Future<void> _scheduleReminder({
     required int id,
     required String title,
@@ -338,10 +391,15 @@ class ReminderService {
     await _notifications.cancel(diaperReminderId);
   }
 
+  Future<void> cancelDailyTipReminder() async {
+    await _notifications.cancel(dailyTipReminderId);
+  }
+
   /// Cancel all reminders
   Future<void> cancelAllReminders() async {
     await cancelFeedingReminder();
     await cancelDiaperReminder();
+    await cancelDailyTipReminder();
   }
 
   Future<void> scheduleMedicationReminderDaily({

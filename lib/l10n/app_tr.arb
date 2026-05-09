@@ -29,6 +29,8 @@
   "yes": "Evet",
   "no": "Hayır",
   "share": "Paylaş",
+  "titleLabel": "Başlık",
+  "dateLabel": "Tarih",
   "mlAbbrev": "ml",
   "selectTime": "Saat seç",
   "tapToSetTime": "Saat seç",
@@ -37,6 +39,7 @@
   "signedOutSuccessfully": "Çıkış yapıldı",
   "errorWithMessage": "Hata: {message}",
   "saveFailedTryAgain": "Kaydedilemedi. Lütfen tekrar deneyin.",
+  "recordCouldNotBeUpdated": "Kayıt güncellenemedi.",
   "@errorWithMessage": {
     "placeholders": {
       "message": {
@@ -532,6 +535,10 @@
   "logGivenNow": "Verildi olarak kaydet",
   "logDose": "Doz kaydet",
   "givenNow": "Simdi verildi",
+  "medicationGiveNow": "Simdi ver",
+  "medicationSetReminder": "Hatirlatici kur",
+  "repeatDaily": "Her gun tekrarla",
+  "medicationAlreadyMarkedHint": "Zaten isaretlendi.",
   "allDoneToday": "Bugun tamamlandi",
   "notAvailable": "Yok",
   "before": "Once",
@@ -563,15 +570,15 @@
       }
     }
   },
-  "medicationDoseLogged": "Dose logged",
+  "medicationDoseLogged": "Doz kaydedildi",
   "scheduleType": "Kullanım türü",
   "dailySchedule": "Günlük",
   "prnSchedule": "Gerektikçe",
-  "dailyTimeRequired": "Add at least one daily time",
-  "activate": "Activate",
-  "deactivate": "Deactivate",
-  "active": "Active",
-  "inactive": "Inactive",
+  "dailyTimeRequired": "En az bir günlük saat ekleyin",
+  "activate": "Etkinleştir",
+  "deactivate": "Devre dışı bırak",
+  "active": "Aktif",
+  "inactive": "Pasif",
   "medicationReminderTitle": "{name} hatırlatıcısı",
   "@medicationReminderTitle": {
     "placeholders": {
@@ -1942,6 +1949,7 @@
   "close": "Kapat",
   "remove": "Kaldır",
   "maybeLater": "Belki sonra",
+  "tryAgain": "Tekrar dene",
   "genericErrorRetry": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "babyFallbackName": "Bebek",
 
@@ -2063,6 +2071,8 @@
 
   "premiumSignInRequired": "Premium özellikleri kullanmak için giriş yapın.",
   "premiumIsActive": "Premium aktif.",
+  "premiumFeatureTeaser": "İllüstrasyonlar, ortak ebeveynlik ve daha fazlası",
+  "availableWithPremium": "Premium ile kullanılabilir",
   "premiumActiveDesc": "Anı illüstrasyonlarına ve tüm premium özelliklere tam erişiminiz var.",
   "premiumManageSubscription": "Aboneliği Yönet",
   "premiumRestorePurchases": "Satın Almaları Geri Yükle",
@@ -2099,6 +2109,19 @@
   "illPackLoversLabel": "Anı severler için",
   "illPackLoversSub": "25 illüstrasyon",
   "illShareFallback": "Özel bir an, illüstre edildi.",
+  "illCreditsLeft": "{count} illüstrasyon kaldı",
+  "@illCreditsLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "illMonthlyCredits": "Bu ay {count} / {total}",
+  "@illMonthlyCredits": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
 
   "memoryStyle": "Anı stili",
   "memoryStyleOriginal": "Orijinal",
@@ -2122,6 +2145,10 @@
 
   "sharedBadge": "Paylaşılan",
   "notificationsDisabled": "Bildirimler devre dışı",
+  "noBabyYet": "Henüz bebek yok",
+  "noBabyProfilePrompt": "Henüz bebek profili bulunamadı. Eklemek için aşağıya dokunun.",
+  "addBaby": "Bebek ekle",
+  "cropPhoto": "Fotoğrafı Kırp",
   "permissionDenied": "İzin reddedildi",
   "reminderScheduled": "Hatırlatıcı ayarlandı",
   "signInToUseSharedParenting": "Paylaşımlı Ebeveynliği kullanmak için giriş yapın.",
@@ -2131,6 +2158,8 @@
   "allergiesTitle": "Alerjiler",
   "addAllergy": "Alerji Ekle",
   "allergySectionSubtitle": "Hassasiyetleri ve gıda reaksiyonlarını tek bir sakin alanda tutun.",
+  "allergyTipTitle": "Alerji ipucu",
+  "allergyTipBody": "Yeni besinleri tek tek deneyin ve başka bir besine geçmeden önce 3–5 gün bekleyin.",
   "noAllergiesSummary": "Henüz alerji notu yok. Dilerseniz istediğiniz zaman ekleyebilirsiniz.",
   "reportAllergy": "Alerji Bildir",
   "allergySheetSubtitle": "Sağlık görünümünde kolayca görünmesi için bir gıda, içerik veya reaksiyon notu ekleyin.",
@@ -2161,5 +2190,19 @@
   "illustrationGenerating": "Oluşuyor",
   "memoriesEmptyTitle": "En sevdiğiniz küçük anları saklayın",
   "memoriesEmptySubtitle": "Fotoğraflar, notlar ve dönüm noktaları burada birlikte kalır.\nİlk anınızı eklemek sadece bir dokunuş uzağınızda.",
-  "addFirstMemory": "İlk anını ekle"
+  "addFirstMemory": "İlk anını ekle",
+  "addMemory": "Anı Ekle",
+  "editMemory": "Anıyı Düzenle",
+  "saveMemory": "Anıyı Kaydet",
+  "memoryDeleteTitle": "Anı silinsin mi?",
+  "memoryDeleteMessage": "Bu anı kalıcı olarak silinecek.",
+  "memoryPhotoPlaceholder": "Bu ana ait bir fotoğraf ekle",
+  "memoryPhotosLocalOnly": "Fotoğraflar yalnızca bu cihazda saklanır (henüz senkronize edilmiyor).",
+  "illustrationSectionTitle": "İllüstrasyon",
+  "illustrationTapToView": "Tam illüstrasyonu görmek için dokunun",
+  "illStyleDefaultDescription": "Yumuşak çocuk kitabı illüstrasyonu",
+  "illStyleLofiDescription": "Sıcak lo-fi anime tarzı",
+  "pendingInvitationsTitle": "Bekleyen Davetler",
+  "pendingInvitationsSubtitle": "Size gönderilen davetleri gözden geçirin",
+  "notSignedIn": "Giriş yapılmadı"
 }

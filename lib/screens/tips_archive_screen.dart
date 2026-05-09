@@ -2,31 +2,66 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../models/daily_tip.dart';
 import '../models/veri_yonetici.dart';
+import '../services/daily_tip_history_service.dart';
 import '../services/premium_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import 'premium_screen.dart';
 
 class TipsArchiveScreen extends StatefulWidget {
-  const TipsArchiveScreen({super.key});
+  final bool showOnlySeen;
+
+  const TipsArchiveScreen({super.key, this.showOnlySeen = false});
 
   @override
   State<TipsArchiveScreen> createState() => _TipsArchiveScreenState();
 }
 
 class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
+  List<DailyTip> _tips = const <DailyTip>[];
+  bool _loading = true;
+
   @override
   void initState() {
     super.initState();
-    // Gate: non-premium users cannot browse the archive.
-    // Pop immediately and show paywall so the back-stack is clean.
-    if (!PremiumService.instance.isPremium) {
+    _loadTips();
+    if (!widget.showOnlySeen && !PremiumService.instance.isPremium) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) return;
         Navigator.of(context).pop();
         await PremiumScreen.show(context);
       });
     }
+  }
+
+  Future<void> _loadTips() async {
+    if (widget.showOnlySeen) {
+      final tips = await DailyTipHistoryService.instance.loadSeenTips(
+        fallbackBabyAgeInMonths: _babyAgeInMonths(),
+      );
+      if (!mounted) return;
+      setState(() {
+        _tips = tips;
+        _loading = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _tips = DailyTip.tips;
+      _loading = false;
+    });
+  }
+
+  int _babyAgeInMonths() {
+    final birthDate = VeriYonetici.getBirthDate();
+    final now = DateTime.now();
+    int months =
+        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    if (now.day < birthDate.day) {
+      months -= 1;
+    }
+    return months < 0 ? 0 : months;
   }
 
   @override
@@ -42,20 +77,13 @@ class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
     final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
 
     // Compute baby age for today's tip highlight only
-    final birthDate = VeriYonetici.getBirthDate();
-    final now = DateTime.now();
-    int months = (now.year - birthDate.year) * 12 + now.month - birthDate.month;
-    // Subtract 1 if we haven't reached the birth day yet this month
-    if (now.day < birthDate.day) {
-      months -= 1;
-    }
-    final babyAgeInMonths = months < 0 ? 0 : months;
+    final babyAgeInMonths = _babyAgeInMonths();
 
     // Get today's tip (age-filtered) for highlighting
     final todayTip = DailyTip.todayForBaby(babyAgeInMonths);
 
     // Show ALL tips in archive (no age filtering)
-    final allTips = DailyTip.tips;
+    final displayedTips = _tips;
 
     return DecorativeBackground(
       preset: BackgroundPreset.home,
@@ -115,12 +143,14 @@ class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
 
               // Tips list
               Expanded(
-                child: ListView.separated(
+                child: _loading
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  itemCount: allTips.length,
+                  itemCount: displayedTips.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    final tip = allTips[index];
+                    final tip = displayedTips[index];
                     final isToday = tip.id == todayTip.id;
 
                     return Container(
@@ -257,4 +287,3 @@ class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
     );
   }
 }
-

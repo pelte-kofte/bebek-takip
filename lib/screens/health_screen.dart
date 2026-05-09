@@ -60,7 +60,7 @@ class HealthScreen extends StatelessWidget {
                     children: [
                       AllergiesScreen(embedded: true),
                       VaccinesScreen(embedded: true),
-                      IlaclarScreen(),
+                      IlaclarScreen(embedded: true),
                     ],
                   ),
                 ),

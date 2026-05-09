@@ -1,8 +1,8 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../services/shared_parenting_service.dart';
 
@@ -34,17 +34,19 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
   Future<void> _accept(InvitationItem item) async {
     setState(() => _loadingIds.add(item.id));
     try {
-      await SharedParentingService.instance
-          .acceptInvitation(invitationId: item.id);
+      final babyId = await SharedParentingService.instance.acceptInvitation(
+        invitationId: item.id,
+      );
       await VeriYonetici.refreshForCurrentUser();
+      await VeriYonetici.setActiveBaby(babyId);
       if (!mounted) return;
-      _showSuccess('Invitation accepted.');
+      _showSuccess(AppLocalizations.of(context)!.invAcceptedMsg);
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
       _showError(_friendlyError(e.code));
     } catch (_) {
       if (!mounted) return;
-      _showError('Something went wrong. Please try again.');
+      _showError(AppLocalizations.of(context)!.genericErrorRetry);
     } finally {
       if (mounted) setState(() => _loadingIds.remove(item.id));
     }
@@ -53,16 +55,17 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
   Future<void> _decline(InvitationItem item) async {
     setState(() => _loadingIds.add(item.id));
     try {
-      await SharedParentingService.instance
-          .declineInvitation(invitationId: item.id);
+      await SharedParentingService.instance.declineInvitation(
+        invitationId: item.id,
+      );
       if (!mounted) return;
-      _showSuccess('Invitation declined.');
+      _showSuccess(AppLocalizations.of(context)!.invDeclinedMsg);
     } on FirebaseFunctionsException catch (e) {
       if (!mounted) return;
       _showError(_friendlyError(e.code));
     } catch (_) {
       if (!mounted) return;
-      _showError('Something went wrong. Please try again.');
+      _showError(AppLocalizations.of(context)!.genericErrorRetry);
     } finally {
       if (mounted) setState(() => _loadingIds.remove(item.id));
     }
@@ -91,22 +94,24 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
   }
 
   String _friendlyError(String code) {
+    final l10n = AppLocalizations.of(context)!;
     switch (code) {
       case 'not-found':
-        return 'Invitation not found.';
+        return l10n.invNotFound;
       case 'deadline-exceeded':
-        return 'This invitation has expired.';
+        return l10n.invExpired;
       case 'permission-denied':
-        return 'This invitation is not addressed to you.';
+        return l10n.invNotForYou;
       case 'failed-precondition':
-        return 'This invitation is no longer pending.';
+        return l10n.invNoLongerPending;
       default:
-        return 'Something went wrong. Please try again.';
+        return l10n.genericErrorRetry;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBF5),
       appBar: AppBar(
@@ -116,9 +121,9 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF4A3E39)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Received Invitations',
-          style: TextStyle(
+        title: Text(
+          l10n.invInboxTitle,
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w700,
             color: Color(0xFF4A3E39),
@@ -127,14 +132,11 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
       ),
       body: SafeArea(
         child: StreamBuilder<List<InvitationItem>>(
-          stream:
-              SharedParentingService.instance.watchAllReceivedInvitations(),
+          stream: SharedParentingService.instance.watchAllReceivedInvitations(),
           builder: (context, snap) {
             if (snap.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(
-                  color: Color(0xFFFFB4A2),
-                ),
+                child: CircularProgressIndicator(color: Color(0xFFFFB4A2)),
               );
             }
 
@@ -143,7 +145,7 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
                 child: Padding(
                   padding: const EdgeInsets.all(32),
                   child: Text(
-                    'Could not load invitations. Please try again.',
+                    l10n.invLoadError,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 15,
@@ -157,21 +159,21 @@ class _InvitationInboxScreenState extends State<InvitationInboxScreen> {
             final invitations = snap.data ?? [];
 
             if (invitations.isEmpty) {
-              return const Center(
+              return Center(
                 child: Padding(
-                  padding: EdgeInsets.all(32),
+                  padding: const EdgeInsets.all(32),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.mail_outline_rounded,
                         size: 48,
                         color: Color(0xFFBDB5B0),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
-                        'No invitations received',
-                        style: TextStyle(
+                        l10n.invNoneReceived,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFF8A7C75),
@@ -221,7 +223,8 @@ class _InvitationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final babyName = item.babyName ?? 'Baby';
+    final l10n = AppLocalizations.of(context)!;
+    final babyName = item.babyName ?? l10n.babyFallbackName;
     final from = item.ownerDisplayName;
 
     return Container(
@@ -270,7 +273,7 @@ class _InvitationCard extends StatelessWidget {
                     ),
                     if (from != null && from.isNotEmpty)
                       Text(
-                        'from $from',
+                        l10n.invFromLabel(from),
                         style: const TextStyle(
                           fontSize: 13,
                           color: Color(0xFF8A7C75),
@@ -278,7 +281,9 @@ class _InvitationCard extends StatelessWidget {
                       ),
                     if (item.createdAt != null)
                       Text(
-                        DateFormat('MMM d, yyyy').format(item.createdAt!),
+                        MaterialLocalizations.of(
+                          context,
+                        ).formatShortDate(item.createdAt!),
                         style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFFBDB5B0),
@@ -292,7 +297,9 @@ class _InvitationCard extends StatelessWidget {
           const SizedBox(height: 16),
           if (item.status != 'pending')
             Text(
-              item.status == 'accepted' ? 'Accepted' : 'Declined',
+              item.status == 'accepted'
+                  ? l10n.invStatusAccepted
+                  : l10n.invStatusDeclined,
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
@@ -324,10 +331,10 @@ class _InvitationCard extends StatelessWidget {
                         color: const Color(0xFFF5F0EB),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'Decline',
-                          style: TextStyle(
+                          l10n.invDeclineBtn,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Color(0xFF8A7C75),
@@ -347,10 +354,10 @@ class _InvitationCard extends StatelessWidget {
                         color: const Color(0xFF4A3E39),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
-                          'Accept',
-                          style: TextStyle(
+                          l10n.invAcceptBtn,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,

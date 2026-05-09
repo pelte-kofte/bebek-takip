@@ -94,6 +94,13 @@ class _FakeRepository implements DataRepository {
     required Set<String> types,
     required List<Map<String, dynamic>> records,
   }) async {}
+
+  @override
+  Future<void> upsertRecordForBaby(
+    String uid, {
+    required String babyId,
+    required Map<String, dynamic> record,
+  }) async {}
 }
 
 void main() {

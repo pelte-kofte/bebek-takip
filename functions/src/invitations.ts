@@ -69,6 +69,57 @@ function hasActivePremiumAccess(profile: AdaptyProfileResponse): boolean {
   return expiresAt > now;
 }
 
+async function backfillLegacySharedBabyData(
+  ownerUid: string,
+  babyId: string
+): Promise<void> {
+  if (!ownerUid.trim() || !babyId.trim()) return;
+
+  const db = getFirestore();
+  const legacyCollections = [
+    "records",
+    "medications",
+    "medicationLogs",
+  ] as const;
+
+  for (const collection of legacyCollections) {
+    const legacySnap = await db
+      .collection("users")
+      .doc(ownerUid)
+      .collection(collection)
+      .where("babyId", "==", babyId)
+      .get();
+
+    if (legacySnap.empty) continue;
+
+    let batch = db.batch();
+    let batchOps = 0;
+    for (const doc of legacySnap.docs) {
+      batch.set(
+        db.collection("babies").doc(babyId).collection(collection).doc(doc.id),
+        doc.data(),
+        {merge: true}
+      );
+      batchOps++;
+      if (batchOps === 450) {
+        await batch.commit();
+        batch = db.batch();
+        batchOps = 0;
+      }
+    }
+    if (batchOps > 0) {
+      await batch.commit();
+    }
+
+    logger.info("backfillLegacySharedBabyData: migrated collection", {
+      ownerUid,
+      babyId,
+      collection,
+      migratedCount: legacySnap.size,
+    });
+  }
+}
+
 async function syncPremiumTruthFromAdapty(
   uid: string
 ): Promise<boolean> {
@@ -584,6 +635,8 @@ export const acceptInvitationCode = onCall(
       babyId,
     });
 
+    await backfillLegacySharedBabyData(invData.ownerUid, babyId);
+
     return {success: true, babyId};
   }
 );
@@ -710,6 +763,8 @@ export const acceptInvitation = onCall(
       callerUid,
       babyId,
     });
+
+    await backfillLegacySharedBabyData(invData.ownerUid, babyId);
 
     // 6. Return
     return {success: true, babyId};

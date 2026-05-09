@@ -10,6 +10,7 @@ import '../models/illustration_request.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../services/illustration_request_service.dart';
+import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
 import '../widgets/illustration_upsell_sheet.dart';
 
@@ -30,10 +31,23 @@ Widget buildPlatformImage(
 }
 
 String? resolveMilestonePhotoSource(Map<String, dynamic> milestone) {
-  final local = milestone['photoPath']?.toString().trim() ?? '';
-  if (local.isNotEmpty) return local;
+  final localCandidates = [
+    milestone['photoPath']?.toString().trim() ?? '',
+    milestone['photoLocalPath']?.toString().trim() ?? '',
+  ];
+  for (final candidate in localCandidates) {
+    if (candidate.isEmpty) continue;
+    final isNetwork =
+        candidate.startsWith('http://') || candidate.startsWith('https://');
+    if (kIsWeb || isNetwork || File(candidate).existsSync()) {
+      return candidate;
+    }
+  }
   final remote = milestone['photoUrl']?.toString().trim() ?? '';
   if (remote.isNotEmpty) return remote;
+  for (final candidate in localCandidates) {
+    if (candidate.isNotEmpty) return candidate;
+  }
   return null;
 }
 
@@ -125,26 +139,10 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   String _formatDate(DateTime date, {bool includeYear = false}) {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    final day = date.day;
-    final month = months[date.month - 1];
     if (includeYear || date.year != DateTime.now().year) {
-      return '$day $month ${date.year}';
+      return formatLocalizedDate(context, date);
     }
-    return '$day $month';
+    return MaterialLocalizations.of(context).formatShortMonthDay(date);
   }
 
   void _showMilestoneDetail(Map<String, dynamic> milestone) {
@@ -180,24 +178,25 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   Future<void> _deleteMilestone(Map<String, dynamic> milestone) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFFFFFBF5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Delete memory?',
+        title: Text(
+          l10n.memoryDeleteTitle,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
-        content: const Text(
-          'This memory will be permanently deleted.',
+        content: Text(
+          l10n.memoryDeleteMessage,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(
                 color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
               ),
@@ -205,8 +204,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Delete',
+            child: Text(
+              l10n.delete,
               style: TextStyle(color: Color(0xFFFF6B6B)),
             ),
           ),
@@ -382,8 +381,8 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                   backgroundColor: const Color(0xFFFFB4A2),
                   elevation: 8,
                   icon: const Icon(Icons.add, color: Colors.white),
-                  label: const Text(
-                    'Add Memory',
+                  label: Text(
+                    AppLocalizations.of(context)!.addMemory,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -844,12 +843,13 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
   }
 
   Future<String?> _cropImage(String sourcePath) async {
+    final l10n = AppLocalizations.of(context)!;
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Fotoğrafı Kırp',
+          toolbarTitle: l10n.cropPhoto,
           toolbarColor: const Color(0xFFFFB4A2),
           toolbarWidgetColor: Colors.white,
           activeControlsWidgetColor: const Color(0xFFFFB4A2),
@@ -857,9 +857,9 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
           lockAspectRatio: false,
         ),
         IOSUiSettings(
-          title: 'Fotoğrafı Kırp',
-          doneButtonTitle: 'Tamam',
-          cancelButtonTitle: 'İptal',
+          title: l10n.cropPhoto,
+          doneButtonTitle: l10n.ok,
+          cancelButtonTitle: l10n.cancel,
           aspectRatioLockEnabled: false,
         ),
       ],
@@ -935,6 +935,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFFFFFBF5),
       body: Stack(
@@ -1009,8 +1010,8 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         ),
                       ),
                       // Title
-                      const Text(
-                        'Add Memory',
+                      Text(
+                        l10n.addMemory,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -1113,7 +1114,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         const SizedBox(height: 20),
                         if (_shouldShowLocalOnlyMemoryPhotoNote()) ...[
                           Text(
-                            'Photos are stored only on this device (not synced yet).',
+                            l10n.memoryPhotosLocalOnly,
                             style: TextStyle(
                               fontSize: 12,
                               color: const Color(
@@ -1126,7 +1127,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                           const SizedBox(height: 20),
                         // Memory title
                         Text(
-                          'Title',
+                          l10n.titleLabel,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -1164,7 +1165,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         const SizedBox(height: 20),
                         // Date picker
                         Text(
-                          'Date',
+                          l10n.dateLabel,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -1215,7 +1216,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         const SizedBox(height: 20),
                         // Notes
                         Text(
-                          'Notes',
+                          l10n.notes,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -1311,8 +1312,8 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                               ),
                             ),
                           )
-                        : const Text(
-                            'Save Memory',
+                        : Text(
+                            l10n.saveMemory,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 18,
@@ -1341,7 +1342,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          'Add a photo of the moment',
+          AppLocalizations.of(context)!.memoryPhotoPlaceholder,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
@@ -1416,12 +1417,13 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   }
 
   Future<String?> _cropImage(String sourcePath) async {
+    final l10n = AppLocalizations.of(context)!;
     final croppedFile = await ImageCropper().cropImage(
       sourcePath: sourcePath,
       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
       uiSettings: [
         AndroidUiSettings(
-          toolbarTitle: 'Fotoğrafı Kırp',
+          toolbarTitle: l10n.cropPhoto,
           toolbarColor: const Color(0xFFFFB4A2),
           toolbarWidgetColor: Colors.white,
           activeControlsWidgetColor: const Color(0xFFFFB4A2),
@@ -1429,9 +1431,9 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
           lockAspectRatio: false,
         ),
         IOSUiSettings(
-          title: 'Fotoğrafı Kırp',
-          doneButtonTitle: 'Tamam',
-          cancelButtonTitle: 'İptal',
+          title: l10n.cropPhoto,
+          doneButtonTitle: l10n.ok,
+          cancelButtonTitle: l10n.cancel,
           aspectRatioLockEnabled: false,
         ),
       ],
@@ -1507,24 +1509,25 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   }
 
   Future<void> _deleteMilestone() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFFFFFBF5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Delete memory?',
+        title: Text(
+          l10n.memoryDeleteTitle,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
-        content: const Text(
-          'This memory will be permanently deleted.',
+        content: Text(
+          l10n.memoryDeleteMessage,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(
                 color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
               ),
@@ -1532,8 +1535,8 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              'Delete',
+            child: Text(
+              l10n.delete,
               style: TextStyle(color: Color(0xFFFF6B6B)),
             ),
           ),
@@ -1551,25 +1554,12 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   }
 
   String _formatDateDisplay(DateTime date) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+    return formatLocalizedDate(context, date);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final screenHeight = MediaQuery.of(context).size.height;
     final hasPhoto = _photoPath != null && _photoPath!.isNotEmpty;
 
@@ -1620,8 +1610,8 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                     ),
                   ),
                 ),
-                const Text(
-                  'Edit Memory',
+                Text(
+                  l10n.editMemory,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -1771,7 +1761,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Fotoğraf Ekle',
+                              l10n.addPhoto,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
@@ -1786,7 +1776,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                     ),
                   if (_shouldShowLocalOnlyMemoryPhotoNote()) ...[
                     Text(
-                      'Photos are stored only on this device (not synced yet).',
+                      l10n.memoryPhotosLocalOnly,
                       style: TextStyle(
                         fontSize: 12,
                         color: const Color(0xFF4A3E39).withValues(alpha: 0.55),
@@ -1796,7 +1786,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   ],
                   // Title field
                   Text(
-                    'Title',
+                    l10n.titleLabel,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -1830,7 +1820,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   const SizedBox(height: 18),
                   // Date picker
                   Text(
-                    'Date',
+                    l10n.dateLabel,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -1875,7 +1865,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   const SizedBox(height: 18),
                   // Notes
                   Text(
-                    'Notes',
+                    l10n.notes,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -1931,8 +1921,8 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                                 ),
                               ),
                             )
-                          : const Text(
-                              'Save Changes',
+                          : Text(
+                              l10n.update,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
@@ -2114,7 +2104,7 @@ class _SharePreviewSheet extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Turn this moment into an illustration',
+                    AppLocalizations.of(context)!.illTurnIntoIllustration,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -2139,7 +2129,7 @@ class _SharePreviewSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Text(
-                      'Cancel',
+                      AppLocalizations.of(context)!.cancel,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 15,
@@ -2163,17 +2153,17 @@ class _SharePreviewSheet extends StatelessWidget {
                       color: const Color(0xFFFFB4A2),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.share_outlined,
                           color: Colors.white,
                           size: 18,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          'Share',
+                          AppLocalizations.of(context)!.share,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -2232,24 +2222,25 @@ class MilestoneDetailScreen extends StatelessWidget {
   }
 
   Future<void> _deleteMemory(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: const Color(0xFFFFFBF5),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Delete memory?',
+        title: Text(
+          l10n.memoryDeleteTitle,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
-        content: const Text(
-          'This memory will be permanently deleted.',
+        content: Text(
+          l10n.memoryDeleteMessage,
           style: TextStyle(color: Color(0xFF4A3E39)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text(
-              'Cancel',
+              l10n.cancel,
               style: TextStyle(
                 color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
               ),
@@ -2257,8 +2248,8 @@ class MilestoneDetailScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Delete',
+            child: Text(
+              l10n.delete,
               style: TextStyle(color: Color(0xFFFF6B6B)),
             ),
           ),
@@ -2626,6 +2617,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final illustrationUrl = (_milestone['illustrationUrl'] ?? '')
         .toString()
         .trim();
@@ -2644,7 +2636,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Illustration',
+                l10n.illustrationSectionTitle,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -2691,7 +2683,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Tap to view full illustration',
+                l10n.illustrationTapToView,
                 style: TextStyle(
                   fontSize: 12,
                   color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
@@ -2777,7 +2769,7 @@ class _IllustrationStyleChooserSheet extends StatelessWidget {
               icon: Icons.auto_fix_high_rounded,
               iconColor: const Color(0xFFFFB4A2),
               label: l10n.illNilicoStyle,
-              description: 'Soft children\'s book illustration',
+              description: l10n.illStyleDefaultDescription,
               onTap: () => Navigator.pop(context, 'default'),
             ),
             const Divider(
@@ -2791,7 +2783,7 @@ class _IllustrationStyleChooserSheet extends StatelessWidget {
               icon: Icons.brush_rounded,
               iconColor: const Color(0xFF9C88CC),
               label: l10n.illLofiIllustration,
-              description: 'Warm lo-fi anime style',
+              description: l10n.illStyleLofiDescription,
               onTap: () => Navigator.pop(context, 'lofi'),
             ),
             const SizedBox(height: 8),
