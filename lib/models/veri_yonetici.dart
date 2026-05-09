@@ -4686,8 +4686,11 @@ class VeriYonetici {
   }
 
   static List<Map<String, dynamic>> getAsiKayitlariForBaby(String babyId) {
+    final targetBabyId = babyId.trim();
+    if (targetBabyId.isEmpty) return [];
     return _asiKayitlari
-        .where((r) => r['babyId'] == babyId && !_rowIsDeleted(r))
+        .where((r) => r['babyId'] == targetBabyId && !_rowIsDeleted(r))
+        .map((r) => Map<String, dynamic>.from(r))
         .toList();
   }
 

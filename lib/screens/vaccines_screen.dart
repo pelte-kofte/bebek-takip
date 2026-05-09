@@ -112,9 +112,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
     final vaccineId = med['vaccineId'] as String?;
     if (vaccineId == null) return;
-    final vaccine = VeriYonetici.getAsiKayitlariForBaby(_screenBabyId)
-        .where((v) => v['id'] == vaccineId)
-        .firstOrNull;
+    final vaccine = VeriYonetici.getAsiKayitlariForBaby(
+      _screenBabyId,
+    ).where((v) => v['id'] == vaccineId).firstOrNull;
     final vaccineTime = vaccine?['tarih'] as DateTime?;
     if (vaccineTime == null) return;
 
@@ -849,10 +849,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       return Padding(
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
         child: Row(
-          children: [
-            const Spacer(),
-            _buildCalendarMenuButton(isDark, l10n),
-          ],
+          children: [const Spacer(), _buildCalendarMenuButton(isDark, l10n)],
         ),
       );
     }
@@ -918,9 +915,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               ? AppColors.bgDarkCard
               : const Color(0xFFFFF3EE).withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.12),
-          ),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -933,10 +928,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             const SizedBox(width: 6),
             Text(
               l10n.calendar,
-              style: AppTypography.caption(context).copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: AppTypography.caption(
+                context,
+              ).copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -1393,12 +1387,12 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.14),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: AppColors.primary.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -1419,20 +1413,20 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 13),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(28),
           ),
           elevation: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.add_circle, size: 21),
+            const Icon(Icons.add_circle, size: 24),
             const SizedBox(width: 8),
             Text(
               l10n.addVaccine,
-              style: AppTypography.button().copyWith(fontSize: 16),
+              style: AppTypography.button().copyWith(fontSize: 18),
             ),
           ],
         ),

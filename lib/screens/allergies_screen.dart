@@ -16,6 +16,7 @@ class AllergiesScreen extends StatefulWidget {
 }
 
 class _AllergiesScreenState extends State<AllergiesScreen> {
+  static const double _listHorizontalPadding = 16;
   final AllergyService _service = AllergyService();
   bool _streamHasInlineError = false;
 
@@ -249,7 +250,12 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
   }) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      margin: EdgeInsets.fromLTRB(24, compact ? 8 : 12, 24, compact ? 12 : 16),
+      margin: EdgeInsets.fromLTRB(
+        _listHorizontalPadding,
+        compact ? 8 : 12,
+        _listHorizontalPadding,
+        compact ? 12 : 16,
+      ),
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 14 : 16,
         vertical: compact ? 12 : 14,
@@ -391,32 +397,19 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
       textColor: textColor,
       isDark: isDark,
       l10n: l10n,
+      bottomInset: widget.embedded ? 120 : 24,
     );
 
     if (widget.embedded) {
-      return Column(
+      return Stack(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-            child: Row(
-              children: [
-                const Spacer(),
-                GestureDetector(
-                  onTap: () => _showAddSheet(context),
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFB4A2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.add, color: Colors.white, size: 22),
-                  ),
-                ),
-              ],
-            ),
+          Positioned.fill(child: body),
+          Positioned(
+            bottom: 32,
+            left: 24,
+            right: 24,
+            child: _buildEmbeddedAddButton(context),
           ),
-          Expanded(child: body),
         ],
       );
     }
@@ -470,6 +463,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
     required Color textColor,
     required bool isDark,
     required AppLocalizations l10n,
+    double bottomInset = 24,
   }) {
     final babyId = _babyId;
 
@@ -510,7 +504,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
 
         if (allergies.isEmpty) {
           return ListView(
-            padding: const EdgeInsets.only(bottom: 24),
+            padding: EdgeInsets.only(bottom: bottomInset),
             children: [
               _buildAllergyTipCard(
                 context,
@@ -545,7 +539,9 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
                     const SizedBox(height: 16),
                     Text(
                       l10n.noAllergies,
-                      style: AppTypography.h2(context).copyWith(color: textColor),
+                      style: AppTypography.h2(
+                        context,
+                      ).copyWith(color: textColor),
                     ),
                     const SizedBox(height: 6),
                     Text(
@@ -569,7 +565,12 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          padding: EdgeInsets.fromLTRB(
+            _listHorizontalPadding,
+            0,
+            _listHorizontalPadding,
+            bottomInset,
+          ),
           itemCount: allergies.length + 1,
           separatorBuilder: (_, index) =>
               index == 0 ? const SizedBox.shrink() : const SizedBox(height: 10),
@@ -701,6 +702,45 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
           },
         );
       },
+    );
+  }
+
+  Widget _buildEmbeddedAddButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.2),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: () => _showAddSheet(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(28),
+          ),
+          elevation: 0,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.add_circle, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              l10n.addAllergy,
+              style: AppTypography.button().copyWith(fontSize: 18),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

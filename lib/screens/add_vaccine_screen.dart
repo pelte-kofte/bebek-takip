@@ -40,7 +40,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   void initState() {
     super.initState();
     _targetBabyId =
-        widget.vaccine?['babyId']?.toString() ??
+        widget.vaccine?['babyId']?.toString().trim() ??
         widget.babyId?.trim() ??
         VeriYonetici.getActiveBabyId();
     if (widget.vaccine != null) {
@@ -97,12 +97,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
       }
 
       await VeriYonetici.saveAsiKayitlariForBaby(_targetBabyId, vaccines);
-      final persisted = VeriYonetici.getAsiKayitlariForBaby(
-        _targetBabyId,
-      ).any((v) => v['id'] == newVaccine['id']);
-      if (!persisted) {
-        throw StateError(l10n.saveFailedTryAgain);
-      }
       HapticFeedback.lightImpact();
       if (!mounted) return;
       Navigator.pop(context, true);
