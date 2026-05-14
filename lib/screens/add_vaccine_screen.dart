@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -59,6 +60,12 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     super.dispose();
   }
 
+  void _debugLog(String message) {
+    if (kDebugMode) {
+      debugPrint('[AddVaccineScreen] $message');
+    }
+  }
+
   Future<void> _saveVaccine() async {
     if (_isSaving) return;
     final l10n = AppLocalizations.of(context)!;
@@ -71,21 +78,36 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     setState(() => _isSaving = true);
 
     try {
-      if (_targetBabyId.isEmpty) {
+      final targetBabyId = _targetBabyId.trim();
+      if (targetBabyId.isEmpty) {
         throw StateError(l10n.spNoActiveBaby);
       }
-      final vaccines = VeriYonetici.getAsiKayitlariForBaby(_targetBabyId);
+      final vaccines = VeriYonetici.getAsiKayitlariForBaby(targetBabyId);
+      _debugLog(
+        'targetBabyId=$targetBabyId beforeCount=${vaccines.length} '
+        'existingIds=${vaccines.map((v) => v['id']).join(',')}',
+      );
       final newVaccine = {
         'id':
             widget.vaccine?['id'] ??
             'vaccine_${DateTime.now().microsecondsSinceEpoch}',
-        'babyId': _targetBabyId,
+        'babyId': targetBabyId,
         'ad': _nameController.text.trim(),
         'donem': _selectedPeriod,
         'durum': _selectedStatus,
         'tarih': _selectedDate,
         'notlar': _notesController.text.trim(),
+        'isDeleted': false,
       };
+      _debugLog(
+        'newVaccine '
+        'id=${newVaccine['id']} '
+        'babyId=${newVaccine['babyId']} '
+        'ad=${newVaccine['ad']} '
+        'durum=${newVaccine['durum']} '
+        'donem=${newVaccine['donem']} '
+        'isDeleted=${newVaccine['isDeleted']}',
+      );
 
       final existingIndex = vaccines.indexWhere(
         (v) => v['id'] == widget.vaccine?['id'],
@@ -96,10 +118,33 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         vaccines.add(newVaccine);
       }
 
-      await VeriYonetici.saveAsiKayitlariForBaby(_targetBabyId, vaccines);
+      await VeriYonetici.saveAsiKayitlariForBaby(targetBabyId, vaccines);
+      final persisted = VeriYonetici.getAsiKayitlariForBaby(targetBabyId);
+      final persistedIds = persisted
+          .map((v) => (v['id'] ?? '').toString())
+          .where((id) => id.isNotEmpty)
+          .toList(growable: false);
+      final savedId = (newVaccine['id'] ?? '').toString();
+      _debugLog(
+        'afterSave targetBabyId=$targetBabyId afterCount=${persisted.length} '
+        'persistedIds=${persistedIds.join(',')}',
+      );
+      if (!persistedIds.contains(savedId)) {
+        final detail =
+            'Vaccine missing after save '
+            'targetBabyId=$targetBabyId '
+            'savedId=$savedId '
+            'persistedIds=${persistedIds.join(',')}';
+        _debugLog(detail);
+        throw StateError(kDebugMode ? detail : l10n.saveFailedTryAgain);
+      }
       HapticFeedback.lightImpact();
       if (!mounted) return;
-      Navigator.pop(context, true);
+      Navigator.pop(context, <String, dynamic>{
+        'saved': true,
+        'babyId': targetBabyId,
+        'vaccineId': savedId,
+      });
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

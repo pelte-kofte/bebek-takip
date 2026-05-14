@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../l10n/app_localizations.dart';
@@ -20,17 +21,23 @@ class VaccinesScreen extends StatefulWidget {
 class _VaccinesScreenState extends State<VaccinesScreen> {
   List<Map<String, dynamic>> _vaccines = [];
   late final VoidCallback _vaccineListener;
-  late final String _screenBabyId;
+  String _screenBabyId = '';
 
   @override
   void initState() {
     super.initState();
-    _screenBabyId = VeriYonetici.getActiveBabyId();
+    _screenBabyId = VeriYonetici.getActiveBabyId().trim();
     _vaccineListener = () {
       if (mounted) _loadVaccines();
     };
     VeriYonetici.vaccineNotifier.addListener(_vaccineListener);
     VeriYonetici.dataNotifier.addListener(_vaccineListener);
+    _loadVaccines();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _loadVaccines();
   }
 
@@ -41,9 +48,34 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     super.dispose();
   }
 
-  void _loadVaccines() {
+  void _debugLog(String message) {
+    if (kDebugMode) {
+      debugPrint('[VaccinesScreen] $message');
+    }
+  }
+
+  String _resolveScreenBabyId({String? preferredBabyId}) {
+    final preferred = preferredBabyId?.trim() ?? '';
+    if (preferred.isNotEmpty) {
+      _screenBabyId = preferred;
+      return _screenBabyId;
+    }
+    final activeBabyId = VeriYonetici.getActiveBabyId().trim();
+    if (activeBabyId.isNotEmpty) {
+      _screenBabyId = activeBabyId;
+    }
+    return _screenBabyId;
+  }
+
+  void _loadVaccines({String? preferredBabyId}) {
+    final targetBabyId = _resolveScreenBabyId(preferredBabyId: preferredBabyId);
+    final loaded = VeriYonetici.getAsiKayitlariForBaby(targetBabyId);
+    _debugLog(
+      '_screenBabyId=$targetBabyId loadedIds='
+      '${loaded.map((v) => v['id']).join(',')}',
+    );
     setState(() {
-      _vaccines = VeriYonetici.getAsiKayitlariForBaby(_screenBabyId);
+      _vaccines = loaded;
     });
   }
 
@@ -76,22 +108,28 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     );
 
     if (confirmed == true) {
+      final targetBabyId = _resolveScreenBabyId();
       _vaccines.removeWhere((item) => item['id'] == vaccine['id']);
-      await VeriYonetici.saveAsiKayitlariForBaby(_screenBabyId, _vaccines);
+      await VeriYonetici.saveAsiKayitlariForBaby(targetBabyId, _vaccines);
     }
   }
 
   void _editVaccine(Map<String, dynamic> vaccine) async {
+    final targetBabyId = _resolveScreenBabyId(
+      preferredBabyId: vaccine['babyId']?.toString(),
+    );
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
-            AddVaccineScreen(vaccine: vaccine, babyId: _screenBabyId),
+            AddVaccineScreen(vaccine: vaccine, babyId: targetBabyId),
       ),
     );
 
     if (result == true) {
       _loadVaccines();
+    } else if (result is Map && result['saved'] == true) {
+      _loadVaccines(preferredBabyId: result['babyId']?.toString());
     }
   }
 
@@ -368,7 +406,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       final item = _vaccines.removeAt(oldIndex);
       _vaccines.insert(newIndex, item);
     });
-    await VeriYonetici.saveAsiKayitlariForBaby(_screenBabyId, _vaccines);
+    final targetBabyId = _resolveScreenBabyId();
+    await VeriYonetici.saveAsiKayitlariForBaby(targetBabyId, _vaccines);
   }
 
   void _initializeDefaultVaccines() async {
@@ -393,8 +432,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
     if (confirmed == true) {
       final defaultVaccines = AsiVeri.getTurkiyeAsiTakvimi();
+      final targetBabyId = _resolveScreenBabyId();
       final existingVaccines = VeriYonetici.getAsiKayitlariForBaby(
-        _screenBabyId,
+        targetBabyId,
       );
 
       final existingIds = existingVaccines.map((v) => v['id']).toSet();
@@ -404,10 +444,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
       existingVaccines.addAll(newVaccines);
       await VeriYonetici.saveAsiKayitlariForBaby(
-        _screenBabyId,
+        targetBabyId,
         existingVaccines,
       );
-      _loadVaccines();
+      _loadVaccines(preferredBabyId: targetBabyId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -697,7 +737,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 // Add vaccines with new unique IDs to avoid conflicts
                                 final existingVaccines =
                                     VeriYonetici.getAsiKayitlariForBaby(
-                                      _screenBabyId,
+                                      _resolveScreenBabyId(),
                                     );
                                 for (final vaccine in toAdd) {
                                   final newVaccine = Map<String, dynamic>.from(
@@ -710,7 +750,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                                 }
 
                                 await VeriYonetici.saveAsiKayitlariForBaby(
-                                  _screenBabyId,
+                                  _resolveScreenBabyId(),
                                   existingVaccines,
                                 );
                                 _loadVaccines();
@@ -1402,12 +1442,15 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddVaccineScreen(babyId: _screenBabyId),
+              builder: (context) =>
+                  AddVaccineScreen(babyId: _resolveScreenBabyId()),
             ),
           );
 
           if (result == true) {
             _loadVaccines();
+          } else if (result is Map && result['saved'] == true) {
+            _loadVaccines(preferredBabyId: result['babyId']?.toString());
           }
         },
         style: ElevatedButton.styleFrom(

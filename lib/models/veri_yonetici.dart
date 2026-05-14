@@ -4687,11 +4687,23 @@ class VeriYonetici {
 
   static List<Map<String, dynamic>> getAsiKayitlariForBaby(String babyId) {
     final targetBabyId = babyId.trim();
-    if (targetBabyId.isEmpty) return [];
-    return _asiKayitlari
+    if (targetBabyId.isEmpty) {
+      if (kDebugMode) {
+        _log('getAsiKayitlariForBaby: empty target babyId');
+      }
+      return [];
+    }
+    final rows = _asiKayitlari
         .where((r) => r['babyId'] == targetBabyId && !_rowIsDeleted(r))
         .map((r) => Map<String, dynamic>.from(r))
         .toList();
+    if (kDebugMode) {
+      _log(
+        'getAsiKayitlariForBaby babyId=$targetBabyId '
+        'count=${rows.length} ids=${rows.map((r) => r['id']).join(',')}',
+      );
+    }
+    return rows;
   }
 
   static ValueNotifier<int> get vaccineNotifier => _vaccineVersion;
@@ -4713,11 +4725,20 @@ class VeriYonetici {
     }
     final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
     final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
+    final beforeCount = _asiKayitlari
+        .where((r) => r['babyId'] == targetBabyId && !_rowIsDeleted(r))
+        .length;
     final beforeIds = _activeIdsFromRows(
       _asiKayitlari
           .where((r) => r['babyId'] == targetBabyId)
           .map((e) => Map<String, dynamic>.from(e)),
     );
+    if (kDebugMode) {
+      _log(
+        'saveAsiKayitlariForBaby start babyId=$targetBabyId '
+        'beforeCount=$beforeCount incomingCount=${kayitlar.length}',
+      );
+    }
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
     for (final r in kayitlar) {
@@ -4728,6 +4749,13 @@ class VeriYonetici {
       r['isDeleted'] = false;
       r['deletedAt'] = null;
       prepared.add(Map<String, dynamic>.from(r));
+      if (kDebugMode) {
+        _log(
+          'saveAsiKayitlariForBaby row '
+          'id=${r['id']} babyId=${r['babyId']} ad=${r['ad']} '
+          'durum=${r['durum']} donem=${r['donem']} isDeleted=${r['isDeleted']}',
+        );
+      }
     }
 
     final existingVaccines = _asiKayitlari
@@ -4745,6 +4773,18 @@ class VeriYonetici {
     );
     if (targetBabyId == _activeBabyId) {
       _notifyDataChanged(reason: 'asi_kayitlari');
+    }
+    final afterRows = _asiKayitlari
+        .where((r) => r['babyId'] == targetBabyId && !_rowIsDeleted(r))
+        .map((r) => Map<String, dynamic>.from(r))
+        .toList(growable: false);
+    if (kDebugMode) {
+      _log(
+        'saveAsiKayitlariForBaby local-apply babyId=$targetBabyId '
+        'afterCount=${afterRows.length} ids=${afterRows.map((r) => r['id']).join(',')} '
+        'activeBabyId=$_activeBabyId dataVersion=${_dataVersion.value} '
+        'vaccineVersion=${_vaccineVersion.value}',
+      );
     }
 
     final data = _asiKayitlari
@@ -4769,6 +4809,13 @@ class VeriYonetici {
         .toList();
     await _setLocalString('asi_kayitlari', jsonEncode(data));
     _vaccineVersion.value++;
+    if (kDebugMode) {
+      _log(
+        'saveAsiKayitlariForBaby persisted babyId=$targetBabyId '
+        'afterCount=${afterRows.length} ids=${afterRows.map((r) => r['id']).join(',')} '
+        'dataVersion=${_dataVersion.value} vaccineVersion=${_vaccineVersion.value}',
+      );
+    }
     await _syncSharedCriticalOrBestEffort(
       babyId: targetBabyId,
       label: 'vaccine sync',

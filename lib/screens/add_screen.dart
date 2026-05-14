@@ -325,10 +325,7 @@ class _AddScreenState extends State<AddScreen> {
     final l10n = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final pickedTime = await _showCupertinoTimePicker(
-      TimeOfDay(
-        hour: initialDateTime.hour,
-        minute: initialDateTime.minute,
-      ),
+      TimeOfDay(hour: initialDateTime.hour, minute: initialDateTime.minute),
     );
     if (pickedTime == null) return null;
 
@@ -535,64 +532,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  Widget _buildPastelDateChip({
-    required bool isDark,
-    required DateTime value,
-    required VoidCallback onTap,
-  }) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF2A2A33) : const Color(0xFFF8F1F4),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.08)
-                  : const Color(0xFFEADDE3),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                CupertinoIcons.calendar,
-                size: 16,
-                color: isDark ? Colors.white70 : const Color(0xFFB86E5A),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                _formatDateLabel(value),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.82)
-                      : const Color(0xFF6F6878),
-                ),
-              ),
-              const SizedBox(width: 6),
-              Icon(
-                CupertinoIcons.chevron_down,
-                size: 14,
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.48)
-                    : const Color(0xFFB2A7AE),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWarmSummaryCard({
-    required bool isDark,
-    required Widget child,
-  }) {
+  Widget _buildWarmSummaryCard({required bool isDark, required Widget child}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -907,21 +847,19 @@ class _AddScreenState extends State<AddScreen> {
                                   isDark: isDark,
                                   value: _feedingDateTime,
                                   placeholder: l10n.tapToSetTime,
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
+                                  secondaryLabel: _formatDateLabel(
+                                    _feedingDateTime,
+                                  ),
+                                  onDateTap: () async {
+                                    final picked = await _pickEventDate(
                                       _feedingDateTime,
                                     );
                                     if (picked != null) {
                                       setState(() => _feedingDateTime = picked);
                                     }
                                   },
-                                ),
-                                const SizedBox(height: 10),
-                                _buildPastelDateChip(
-                                  isDark: isDark,
-                                  value: _feedingDateTime,
                                   onTap: () async {
-                                    final picked = await _pickEventDate(
+                                    final picked = await _pickEventTime(
                                       _feedingDateTime,
                                     );
                                     if (picked != null) {
@@ -967,7 +905,9 @@ class _AddScreenState extends State<AddScreen> {
                                           Duration(minutes: minutes),
                                         );
                                     if (picked != null) {
-                                      setState(() => minutes = picked.inMinutes);
+                                      setState(
+                                        () => minutes = picked.inMinutes,
+                                      );
                                     }
                                   },
                                   child: _buildFeedingMetricCard(
@@ -1178,7 +1118,9 @@ class _AddScreenState extends State<AddScreen> {
                                       _sleepEndDateTime ?? DateTime.now(),
                                     );
                                     if (picked != null) {
-                                      setState(() => _sleepEndDateTime = picked);
+                                      setState(
+                                        () => _sleepEndDateTime = picked,
+                                      );
                                     }
                                   },
                                 ),
@@ -1250,21 +1192,19 @@ class _AddScreenState extends State<AddScreen> {
                                   isDark: isDark,
                                   value: _diaperDateTime,
                                   placeholder: l10n.tapToSetTime,
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
+                                  secondaryLabel: _formatDateLabel(
+                                    _diaperDateTime,
+                                  ),
+                                  onDateTap: () async {
+                                    final picked = await _pickEventDate(
                                       _diaperDateTime,
                                     );
                                     if (picked != null) {
                                       setState(() => _diaperDateTime = picked);
                                     }
                                   },
-                                ),
-                                const SizedBox(height: 10),
-                                _buildPastelDateChip(
-                                  isDark: isDark,
-                                  value: _diaperDateTime,
                                   onTap: () async {
-                                    final picked = await _pickEventDate(
+                                    final picked = await _pickEventTime(
                                       _diaperDateTime,
                                     );
                                     if (picked != null) {
@@ -1366,8 +1306,8 @@ class _AddScreenState extends State<AddScreen> {
                                         ? const Color(0xFFE39A86)
                                         : const Color(0xFFFF998A),
                                     borderRadius: BorderRadius.circular(16),
-                                    boxShadow: selectedActivity == 'bottle' &&
-                                            !isDark
+                                    boxShadow:
+                                        selectedActivity == 'bottle' && !isDark
                                         ? [
                                             BoxShadow(
                                               color: const Color(

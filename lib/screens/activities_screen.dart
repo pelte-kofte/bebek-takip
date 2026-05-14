@@ -3,9 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart'
-    show
-        CupertinoDatePicker,
-        CupertinoDatePickerMode;
+    show CupertinoDatePicker, CupertinoDatePickerMode;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import '../theme/app_theme.dart';
 import '../models/veri_yonetici.dart';
@@ -573,9 +571,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 subtitle = '${l10n.total}: $toplamDakika ${l10n.minAbbrev}';
                 if (kDebugMode && !_loggedNursingSeparatorSample) {
                   _loggedNursingSeparatorSample = true;
-                  debugPrint(
-                    '[ActivitiesScreen] nursing subtitle="$subtitle"',
-                  );
+                  debugPrint('[ActivitiesScreen] nursing subtitle="$subtitle"');
                 }
               } else {
                 title = normalizedTur.contains('form')
@@ -1618,16 +1614,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                     (isDark
                                             ? Colors.white
                                             : const Color(0xFFE6C3B8))
-                                        .withValues(alpha: isDark ? 0.08 : 0.76),
+                                        .withValues(
+                                          alpha: isDark ? 0.08 : 0.76,
+                                        ),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(999),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (isDark
-                                            ? Colors.black
-                                            : const Color(0xFFE6C8BF))
-                                        .withValues(alpha: isDark ? 0.26 : 0.28),
+                                    color:
+                                        (isDark
+                                                ? Colors.black
+                                                : const Color(0xFFE6C8BF))
+                                            .withValues(
+                                              alpha: isDark ? 0.26 : 0.28,
+                                            ),
                                     blurRadius: 18,
                                     offset: const Offset(0, 6),
                                   ),
@@ -1675,7 +1676,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                       borderRadius: BorderRadius.circular(16),
                                       side: BorderSide(
                                         color: isDark
-                                            ? Colors.white.withValues(alpha: 0.06)
+                                            ? Colors.white.withValues(
+                                                alpha: 0.06,
+                                              )
                                             : const Color(
                                                 0xFFEEDFD9,
                                               ).withValues(alpha: 0.92),
@@ -1817,9 +1820,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               child: Icon(
                 leadingIcon,
                 size: 20,
-                color: isDark
-                    ? Colors.white70
-                    : const Color(0xFFCF866F),
+                color: isDark ? Colors.white70 : const Color(0xFFCF866F),
               ),
             ),
             const SizedBox(width: 14),
@@ -1830,14 +1831,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               children: [
                 Text(
                   title,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: isDark
-                      ? AppColors.textSecondaryDark
-                      : const Color(0xFF8F8796),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : const Color(0xFF8F8796),
+                  ),
                 ),
-              ),
                 const SizedBox(height: 6),
                 Text(
                   value,
@@ -2018,76 +2019,80 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               ],
       ),
       child: Row(
-        children: labels.entries.map((entry) {
-          final value = entry.key;
-          final label = entry.value;
-          final isSelected = groupValue == value;
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: GestureDetector(
-                onTap: () => onChanged(value),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOutCubic,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(999),
-                    gradient: isSelected && !isDark
-                        ? const LinearGradient(
-                            colors: [Color(0xFFFFFEFB), Color(0xFFFFF5EF)],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          )
-                        : null,
-                    color: isSelected
-                        ? (isDark
-                              ? const Color(0xFF3A3A46)
-                              : const Color(0xFFFFFCF7))
-                        : Colors.transparent,
-                    border: isSelected && !isDark
-                        ? Border.all(color: const Color(0xFFF3E2D6))
-                        : null,
-                    boxShadow: isSelected && !isDark
-                        ? [
-                            BoxShadow(
-                              color: const Color(
-                                0xFFDFC7BE,
-                              ).withValues(alpha: 0.22),
-                              blurRadius: 14,
-                              offset: const Offset(0, 5),
-                            ),
-                            BoxShadow(
-                              color: Colors.white.withValues(alpha: 0.78),
-                              blurRadius: 8,
-                              offset: const Offset(0, -1),
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: Text(
-                    label,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                      color: isSelected
-                          ? const Color(0xFFB86E5A)
-                          : isDark
-                          ? Colors.white.withValues(alpha: 0.74)
-                          : const Color(0xFF6F6878),
+        children: labels.entries
+            .map((entry) {
+              final value = entry.key;
+              final label = entry.value;
+              final isSelected = groupValue == value;
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: GestureDetector(
+                    onTap: () => onChanged(value),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutCubic,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: isSelected && !isDark
+                            ? const LinearGradient(
+                                colors: [Color(0xFFFFFEFB), Color(0xFFFFF5EF)],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                              )
+                            : null,
+                        color: isSelected
+                            ? (isDark
+                                  ? const Color(0xFF3A3A46)
+                                  : const Color(0xFFFFFCF7))
+                            : Colors.transparent,
+                        border: isSelected && !isDark
+                            ? Border.all(color: const Color(0xFFF3E2D6))
+                            : null,
+                        boxShadow: isSelected && !isDark
+                            ? [
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFDFC7BE,
+                                  ).withValues(alpha: 0.22),
+                                  blurRadius: 14,
+                                  offset: const Offset(0, 5),
+                                ),
+                                BoxShadow(
+                                  color: Colors.white.withValues(alpha: 0.78),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, -1),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        label,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                          color: isSelected
+                              ? const Color(0xFFB86E5A)
+                              : isDark
+                              ? Colors.white.withValues(alpha: 0.74)
+                              : const Color(0xFF6F6878),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }).toList(growable: false),
+              );
+            })
+            .toList(growable: false),
       ),
     );
   }
@@ -2499,6 +2504,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
+                subtitle: _formatInlineDate(eventTime),
+                trailingAccessory: _buildInlineDateButton(
+                  value: eventTime,
+                  onTap: () async {
+                    final picked = await _pickEventDate(eventTime);
+                    if (picked != null) setModalState(() => eventTime = picked);
+                  },
+                ),
                 onTap: () async {
                   final picked = await _pickNormalizedDateTime(eventTime);
                   if (picked != null) setModalState(() => eventTime = picked);
@@ -2653,6 +2666,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
+                subtitle: _formatInlineDate(eventTime),
+                trailingAccessory: _buildInlineDateButton(
+                  value: eventTime,
+                  onTap: () async {
+                    final picked = await _pickEventDate(eventTime);
+                    if (picked != null) setModalState(() => eventTime = picked);
+                  },
+                ),
                 onTap: () async {
                   final picked = await _pickNormalizedDateTime(eventTime);
                   if (picked != null) setModalState(() => eventTime = picked);
@@ -2742,6 +2763,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               _buildFeedingSheetRowTile(
                 title: l10n.time,
                 value: _formatTime(eventTime),
+                subtitle: _formatInlineDate(eventTime),
+                trailingAccessory: _buildInlineDateButton(
+                  value: eventTime,
+                  onTap: () async {
+                    final picked = await _pickEventDate(eventTime);
+                    if (picked != null) setModalState(() => eventTime = picked);
+                  },
+                ),
                 onTap: () async {
                   final picked = await _pickNormalizedDateTime(eventTime);
                   if (picked != null) setModalState(() => eventTime = picked);
