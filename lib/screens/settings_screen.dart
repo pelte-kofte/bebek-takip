@@ -69,11 +69,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  int _babyAgeInMonths() {
-    final birthDate = VeriYonetici.getBirthDate();
+  int? _babyAgeInMonths() {
+    final baby = VeriYonetici.getActiveBabyOrNull();
+    if (baby == null) return null;
+    final birthDate = baby.birthDate;
     final now = DateTime.now();
-    int months =
-        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    int months = (now.year - birthDate.year) * 12 + now.month - birthDate.month;
     if (now.day < birthDate.day) {
       months -= 1;
     }
@@ -478,7 +479,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               iconBgColor: const Color(0xFFFFF0D9),
                               iconColor: const Color(0xFFDAA520),
                               title: l10n.dailyTip,
-                              subtitle: _dailyTipReminderEnabled ? '' : l10n.off,
+                              subtitle: _dailyTipReminderEnabled
+                                  ? ''
+                                  : l10n.off,
                               value: _dailyTipReminderEnabled,
                               onChanged: _toggleDailyTipReminder,
                               textColor: textColor,
@@ -1337,9 +1340,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.06),
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFFFFB4A2).withValues(alpha: 0.06),
@@ -1404,19 +1405,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ],
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 10),
-          trailing,
-        ],
+        if (trailing != null) ...[const SizedBox(width: 10), trailing],
         const SizedBox(width: 10),
         Container(
           padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             color: iconBgColor.withValues(alpha: 0.4),
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: subtitleColor.withValues(alpha: 0.08),
-            ),
+            border: Border.all(color: subtitleColor.withValues(alpha: 0.08)),
           ),
           child: Switch(
             value: value,
@@ -1571,7 +1567,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         subtitle,
         style: TextStyle(fontSize: 12.5, color: subtitleColor),
       ),
-      trailing: Icon(Icons.chevron_right_rounded, color: subtitleColor, size: 20),
+      trailing: Icon(
+        Icons.chevron_right_rounded,
+        color: subtitleColor,
+        size: 20,
+      ),
       onTap: onTap,
       visualDensity: const VisualDensity(vertical: -3),
     );

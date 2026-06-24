@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import 'allergies_screen.dart';
+import 'baby_meals_screen.dart';
 import 'ilaclar_screen.dart';
 import 'vaccines_screen.dart';
 
@@ -18,7 +19,7 @@ class HealthScreen extends StatelessWidget {
     return DecorativeBackground(
       preset: BackgroundPreset.vaccines,
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: SafeArea(
@@ -34,6 +35,7 @@ class HealthScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: TabBar(
+                      isScrollable: true,
                       labelColor: Colors.white,
                       unselectedLabelColor: isDark
                           ? AppColors.textSecondaryDark
@@ -50,6 +52,13 @@ class HealthScreen extends StatelessWidget {
                         Tab(text: l10n.allergiesTitle),
                         Tab(text: l10n.vaccines),
                         Tab(text: l10n.medications),
+                        Tab(
+                          text:
+                              Localizations.localeOf(context).languageCode ==
+                                  'tr'
+                              ? 'Ek Gıda'
+                              : 'Baby Meals',
+                        ),
                       ],
                     ),
                   ),
@@ -61,6 +70,7 @@ class HealthScreen extends StatelessWidget {
                       AllergiesScreen(embedded: true),
                       VaccinesScreen(embedded: true),
                       IlaclarScreen(embedded: true),
+                      BabyMealsScreen(embedded: true),
                     ],
                   ),
                 ),

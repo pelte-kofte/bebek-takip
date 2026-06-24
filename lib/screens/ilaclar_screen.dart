@@ -629,6 +629,328 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     }
   }
 
+  int _givenTodayCount(Map<String, dynamic> med) {
+    if (_isProtocolMedication(med)) {
+      return _todayProtocolLogs(med).length;
+    }
+    return _todayDoseLogsByIndex(med).length;
+  }
+
+  int _plannedDoseCount(Map<String, dynamic> med) {
+    if (_isProtocolMedication(med)) {
+      final offsets = (med['protocolOffsets'] as List?) ?? const [];
+      return offsets.isEmpty ? 2 : offsets.length;
+    }
+    final count = _dailyTimes(med).length;
+    return count == 0 ? 1 : count;
+  }
+
+  String _primaryActionLabel(Map<String, dynamic> med, AppLocalizations l10n) {
+    final scheduleType = (med['scheduleType'] as String?) ?? _filterPrn;
+    return scheduleType == _filterPrn
+        ? l10n.medicationGiveNow
+        : l10n.logGivenNow;
+  }
+
+  String _progressLabel(Map<String, dynamic> med, AppLocalizations l10n) {
+    final scheduleType = (med['scheduleType'] as String?) ?? _filterPrn;
+    final done = _givenTodayCount(med);
+    if (scheduleType == _filterPrn) {
+      return done == 0 ? l10n.noMedicationHistory : l10n.givenTodayCount(done);
+    }
+    final total = _plannedDoseCount(med);
+    if (done >= total) {
+      return l10n.allDoneToday;
+    }
+    return l10n.todayProgressLabel(done, total);
+  }
+
+  DateTime? _nextReminderAt(Map<String, dynamic> med) {
+    if (med['isActive'] != true) return null;
+    if (VeriYonetici.isMedicationReminderEnabled() != true) return null;
+
+    final scheduleType = (med['scheduleType'] as String?) ?? _filterPrn;
+    if (scheduleType == _filterPrn) return null;
+    if (med['remindersEnabled'] != true) return null;
+
+    final now = DateTime.now();
+    if (scheduleType == _filterDaily) {
+      final times = _dailyTimes(med);
+      if (times.isEmpty) return null;
+      DateTime? best;
+      for (final time in times) {
+        final parts = time.split(':');
+        if (parts.length != 2) continue;
+        final hour = int.tryParse(parts[0]);
+        final minute = int.tryParse(parts[1]);
+        if (hour == null || minute == null) continue;
+        var candidate = DateTime(now.year, now.month, now.day, hour, minute);
+        if (!candidate.isAfter(now)) {
+          candidate = candidate.add(const Duration(days: 1));
+        }
+        if (best == null || candidate.isBefore(best)) {
+          best = candidate;
+        }
+      }
+      return best;
+    }
+
+    if (scheduleType == _filterVaccineProtocol) {
+      final vaccineId = med['vaccineId'] as String?;
+      final vaccine = VeriYonetici.getAsiKayitlari()
+          .where((v) => v['id'] == vaccineId)
+          .firstOrNull;
+      final vaccineDate = vaccine?['tarih'] as DateTime?;
+      if (vaccineDate == null) return null;
+
+      final offsets = ((med['protocolOffsets'] as List?) ?? const [])
+          .map((e) => Map<String, dynamic>.from(e as Map))
+          .toList(growable: false);
+      DateTime? best;
+      for (final offset in offsets) {
+        final kind = (offset['kind'] as String?) == 'before'
+            ? 'before'
+            : 'after';
+        final minutes = (offset['minutes'] as num?)?.toInt() ?? 0;
+        final candidate = kind == 'before'
+            ? vaccineDate.subtract(Duration(minutes: minutes))
+            : vaccineDate.add(Duration(minutes: minutes));
+        if (!candidate.isAfter(now)) continue;
+        if (best == null || candidate.isBefore(best)) {
+          best = candidate;
+        }
+      }
+      return best;
+    }
+
+    return null;
+  }
+
+  String _formatReminderDateTime(DateTime when, AppLocalizations l10n) {
+    final today = dateOnly(DateTime.now());
+    final target = dateOnly(when);
+    final timeText = MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(when));
+    if (target == today) {
+      return '${l10n.today} $timeText';
+    }
+    return '${formatLocalizedDate(context, when)} $timeText';
+  }
+
+  Future<void> _showMedicationActionSheet(Map<String, dynamic> med) async {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isActive = med['isActive'] == true;
+    final isMedication = med['type'] == 'medication';
+    final lastGivenAt = _lastGivenAt(med);
+    final nextReminderAt = _nextReminderAt(med);
+    final primaryLabel = _primaryActionLabel(med, l10n);
+    final primaryAction =
+        ((med['scheduleType'] as String?) ?? _filterPrn) == _filterPrn
+        ? () => _logGivenNow(med)
+        : () => _logNextRoutineDose(med);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        final surface = isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF8);
+        final secondaryText = isDark
+            ? AppColors.textSecondaryDark
+            : const Color(0xFF8B766B);
+        final accentSoft = isMedication
+            ? AppColors.primary.withValues(alpha: 0.12)
+            : const Color(0xFFEDE7F7);
+
+        return SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
+                    blurRadius: 28,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: secondaryText.withValues(alpha: 0.28),
+                          borderRadius: BorderRadius.circular(99),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                med['name']?.toString() ?? '',
+                                style: AppTypography.h3(
+                                  context,
+                                ).copyWith(fontSize: 20),
+                              ),
+                              const SizedBox(height: 8),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  _MedicationTypeBadge(
+                                    typeBadge: isMedication
+                                        ? l10n.medication
+                                        : l10n.supplement,
+                                    isMedication: isMedication,
+                                  ),
+                                  _MedicationStatusBadge(
+                                    label: isActive
+                                        ? l10n.active
+                                        : l10n.inactive,
+                                    isActive: isActive,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: accentSoft,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Icon(
+                            isMedication
+                                ? Icons.medication_outlined
+                                : Icons.health_and_safety_outlined,
+                            color: isMedication
+                                ? AppColors.primary
+                                : const Color(0xFF6B5B95),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    _MedicationInfoRow(
+                      icon: Icons.schedule_rounded,
+                      text: _scheduleSubtitle(med, l10n),
+                    ),
+                    const SizedBox(height: 10),
+                    _MedicationInfoRow(
+                      icon: Icons.check_circle_outline,
+                      text: l10n.lastGivenLabel(
+                        _formatLastGiven(lastGivenAt, l10n),
+                      ),
+                    ),
+                    if (nextReminderAt != null) ...[
+                      const SizedBox(height: 10),
+                      _MedicationInfoRow(
+                        icon: Icons.notifications_none_rounded,
+                        text:
+                            '${l10n.reminderTime}: ${_formatReminderDateTime(nextReminderAt, l10n)}',
+                      ),
+                    ],
+                    const SizedBox(height: 10),
+                    _MedicationInfoRow(
+                      icon: Icons.calendar_today_outlined,
+                      text: _progressLabel(med, l10n),
+                    ),
+                    const SizedBox(height: 18),
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton(
+                        onPressed:
+                            isActive &&
+                                !_recentlyTappedMedicationIds.contains(
+                                  med['id'],
+                                )
+                            ? () async {
+                                Navigator.pop(sheetContext);
+                                await primaryAction();
+                              }
+                            : null,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: AppColors.primary.withValues(
+                            alpha: 0.28,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        child: Text(primaryLabel),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    _MedicationSheetActionRow(
+                      icon: Icons.notifications_none_rounded,
+                      label: l10n.medicationSetReminder,
+                      onTap: isActive
+                          ? () async {
+                              Navigator.pop(sheetContext);
+                              await _showMedicationReminderSheet(med);
+                            }
+                          : null,
+                    ),
+                    _MedicationSheetActionRow(
+                      icon: Icons.edit_outlined,
+                      label: l10n.edit,
+                      onTap: () async {
+                        Navigator.pop(sheetContext);
+                        await _editMedication(med);
+                      },
+                    ),
+                    _MedicationSheetActionRow(
+                      icon: isActive
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outline,
+                      label: isActive ? l10n.deactivate : l10n.activate,
+                      onTap: () async {
+                        Navigator.pop(sheetContext);
+                        await _toggleActive(med);
+                      },
+                    ),
+                    _MedicationSheetActionRow(
+                      icon: Icons.delete_outline,
+                      label: l10n.delete,
+                      isDestructive: true,
+                      onTap: () async {
+                        Navigator.pop(sheetContext);
+                        await _deleteMedication(med);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -729,7 +1051,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     ];
 
     final selectedLabel = filters
-        .firstWhere((entry) => entry.$1 == _activeFilter, orElse: () => filters.first)
+        .firstWhere(
+          (entry) => entry.$1 == _activeFilter,
+          orElse: () => filters.first,
+        )
         .$2;
 
     return Padding(
@@ -795,127 +1120,135 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     final typeBadge = isMedication ? l10n.medication : l10n.supplement;
     final lastGivenAt = _lastGivenAt(med);
     final scheduleText = _scheduleSubtitle(med, l10n);
-    final statusText = isActive ? l10n.active : l10n.inactive;
-    final summaryText = '$typeBadge • $scheduleText • $statusText';
-    final primaryAction = ((med['scheduleType'] as String?) ?? _filterPrn) ==
-            _filterPrn
-        ? () => _logGivenNow(med)
-        : () => _logNextRoutineDose(med);
+    final progressText = _progressLabel(med, l10n);
+    final nextReminderAt = _nextReminderAt(med);
+    final secondaryText = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF866F65);
 
-    return GestureDetector(
-      onTap: () => _editMedication(med),
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: () => _showMedicationActionSheet(med),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.bgDarkCard.withValues(alpha: isActive ? 0.9 : 0.5)
-              : Colors.white.withValues(alpha: isActive ? 0.9 : 0.6),
-          borderRadius: BorderRadius.circular(16),
+              ? AppColors.bgDarkCard.withValues(alpha: isActive ? 0.92 : 0.58)
+              : const Color(
+                  0xFFFFFBF8,
+                ).withValues(alpha: isActive ? 0.96 : 0.78),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: const Color(0xFFFFB4A2).withValues(alpha: 0.05),
+            color: isActive
+                ? const Color(0xFFFFC9B8).withValues(alpha: 0.34)
+                : const Color(0xFFD8CEC9).withValues(alpha: 0.22),
           ),
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: const Color(0xFFFFD8CC).withValues(alpha: 0.18),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
         ),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    med['name'] ?? '',
-                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  margin: const EdgeInsets.only(top: 4),
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? const Color(0xFF73C7A6)
+                        : secondaryText.withValues(alpha: 0.4),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    summaryText,
-                    style: AppTypography.caption(context).copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : const Color(0xFF866F65),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    l10n.lastGivenLabel(_formatLastGiven(lastGivenAt, l10n)),
-                    style: AppTypography.caption(context).copyWith(
-                      color: isDark
-                          ? AppColors.textSecondaryDark
-                          : const Color(0xFF866F65),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed:
-                              isActive &&
-                                  !_recentlyTappedMedicationIds.contains(
-                                    med['id'],
-                                  )
-                              ? primaryAction
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: AppColors.primary
-                                .withValues(alpha: 0.3),
-                            disabledForegroundColor: Colors.white70,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(l10n.medicationGiveNow),
-                        ),
+                      Text(
+                        med['name'] ?? '',
+                        style: AppTypography.h3(context).copyWith(fontSize: 17),
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: isActive
-                              ? () => _showMedicationReminderSheet(med)
-                              : null,
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            side: BorderSide(
-                              color: AppColors.primary.withValues(alpha: 0.18),
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _MedicationTypeBadge(
+                            typeBadge: typeBadge,
+                            isMedication: isMedication,
                           ),
-                          child: Text(l10n.medicationSetReminder),
-                        ),
+                          _MedicationStatusBadge(
+                            label: isActive ? l10n.active : l10n.inactive,
+                            isActive: isActive,
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                switch (value) {
-                  case 'edit':
-                    _editMedication(med);
-                    break;
-                  case 'toggle':
-                    _toggleActive(med);
-                    break;
-                  case 'delete':
-                    _deleteMedication(med);
-                    break;
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
-                PopupMenuItem(
-                  value: 'toggle',
-                  child: Text(isActive ? l10n.deactivate : l10n.activate),
                 ),
-                PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: secondaryText.withValues(alpha: 0.8),
+                  size: 22,
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              scheduleText,
+              style: AppTypography.caption(
+                context,
+              ).copyWith(color: secondaryText, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.lastGivenLabel(_formatLastGiven(lastGivenAt, l10n)),
+              style: AppTypography.caption(
+                context,
+              ).copyWith(color: secondaryText),
+            ),
+            if (nextReminderAt != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                '${l10n.reminderTime}: ${_formatReminderDateTime(nextReminderAt, l10n)}',
+                style: AppTypography.caption(
+                  context,
+                ).copyWith(color: secondaryText),
+              ),
+            ],
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      progressText,
+                      style: AppTypography.caption(context).copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ],
@@ -1204,6 +1537,128 @@ class _MedicationTypeBadge extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: isMedication ? AppColors.primary : const Color(0xFF6B5B95),
+        ),
+      ),
+    );
+  }
+}
+
+class _MedicationStatusBadge extends StatelessWidget {
+  const _MedicationStatusBadge({required this.label, required this.isActive});
+
+  final String label;
+  final bool isActive;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? const Color(0xFF4CA984) : const Color(0xFF9A8F88);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _MedicationInfoRow extends StatelessWidget {
+  const _MedicationInfoRow({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final secondaryText = isDark
+        ? AppColors.textSecondaryDark
+        : const Color(0xFF8B766B);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(icon, size: 16, color: secondaryText),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: AppTypography.caption(
+              context,
+            ).copyWith(color: secondaryText, height: 1.35),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MedicationSheetActionRow extends StatelessWidget {
+  const _MedicationSheetActionRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.isDestructive = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onTap;
+  final bool isDestructive;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final color = isDestructive
+        ? const Color(0xFFD85C5C)
+        : (isDark ? Colors.white : const Color(0xFF2D1A18));
+    final bg = isDestructive
+        ? const Color(0xFFD85C5C).withValues(alpha: 0.10)
+        : (isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF7F0EB));
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Material(
+        color: bg,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: color),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: AppTypography.body(
+                      context,
+                    ).copyWith(color: color, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: color.withValues(alpha: 0.72),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

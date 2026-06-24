@@ -1,7 +1,7 @@
 name: bebek_takip
 description: "Bebek takip uygulaması"
 publish_to: 'none'
-version: 1.0.0+68
+version: 1.0.0+69
 
 environment:
   sdk: ^3.10.4
@@ -58,6 +58,8 @@ flutter:
   
   assets:
     - assets/illustrations/tips/
+    - assets/data/
+    - assets/images/meals/
     - assets/app_icon/
     - assets/onboarding/
     - assets/icons/live_preview/

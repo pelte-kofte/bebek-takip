@@ -200,7 +200,7 @@ class ReminderService {
 
   Future<void> scheduleDailyTipReminderAt({
     required DateTime scheduledAt,
-    required int babyAgeInMonths,
+    required int? babyAgeInMonths,
   }) async {
     if (!_initialized) await initialize();
 

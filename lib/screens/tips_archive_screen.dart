@@ -53,11 +53,12 @@ class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
     });
   }
 
-  int _babyAgeInMonths() {
-    final birthDate = VeriYonetici.getBirthDate();
+  int? _babyAgeInMonths() {
+    final baby = VeriYonetici.getActiveBabyOrNull();
+    if (baby == null) return null;
+    final birthDate = baby.birthDate;
     final now = DateTime.now();
-    int months =
-        (now.year - birthDate.year) * 12 + now.month - birthDate.month;
+    int months = (now.year - birthDate.year) * 12 + now.month - birthDate.month;
     if (now.day < birthDate.day) {
       months -= 1;
     }
@@ -146,139 +147,144 @@ class _TipsArchiveScreenState extends State<TipsArchiveScreen> {
                 child: _loading
                     ? const Center(child: CircularProgressIndicator())
                     : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
-                  itemCount: displayedTips.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    final tip = displayedTips[index];
-                    final isToday = tip.id == todayTip.id;
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                        itemCount: displayedTips.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final tip = displayedTips[index];
+                          final isToday = tip.id == todayTip.id;
 
-                    return Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: cardColor,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: isToday
-                              ? const Color(0xFFFFB4A2).withValues(alpha: 0.5)
-                              : (isDark
-                                    ? Colors.white.withValues(alpha: 0.06)
-                                    : const Color(
-                                        0xFFE5E0F7,
-                                      ).withValues(alpha: 0.4)),
-                          width: isToday ? 1.5 : 1,
-                        ),
-                        boxShadow: isDark
-                            ? null
-                            : [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFE5E0F7,
-                                  ).withValues(alpha: 0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Illustration
-                          Container(
-                            width: 48,
-                            height: 48,
+                          return Container(
+                            padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(
-                                      0xFFE5E0F7,
-                                    ).withValues(alpha: 0.12)
-                                  : const Color(
-                                      0xFFE5E0F7,
-                                    ).withValues(alpha: 0.4),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(14),
-                              child: Image.asset(
-                                tip.illustrationPath,
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Icon(
-                                      Icons.lightbulb_outline,
-                                      color: isDark
-                                          ? AppColors.accentLavender
-                                          : const Color(0xFF7A749E),
-                                      size: 22,
-                                    ),
+                              color: cardColor,
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: isToday
+                                    ? const Color(
+                                        0xFFFFB4A2,
+                                      ).withValues(alpha: 0.5)
+                                    : (isDark
+                                          ? Colors.white.withValues(alpha: 0.06)
+                                          : const Color(
+                                              0xFFE5E0F7,
+                                            ).withValues(alpha: 0.4)),
+                                width: isToday ? 1.5 : 1,
                               ),
+                              boxShadow: isDark
+                                  ? null
+                                  : [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFE5E0F7,
+                                        ).withValues(alpha: 0.2),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          // Text content
-                          Expanded(
-                            child: Column(
+                            child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        tip.title(context),
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          color: textColor,
-                                        ),
-                                      ),
-                                    ),
-                                    if (isToday)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 3,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFFFFB4A2)
-                                              .withValues(
-                                                alpha: isDark ? 0.25 : 0.15,
-                                              ),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          l10n.todayBadge,
-                                          style: TextStyle(
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.bold,
-                                            letterSpacing: 0.8,
+                                // Illustration
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? const Color(
+                                            0xFFE5E0F7,
+                                          ).withValues(alpha: 0.12)
+                                        : const Color(
+                                            0xFFE5E0F7,
+                                          ).withValues(alpha: 0.4),
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(14),
+                                    child: Image.asset(
+                                      tip.illustrationPath,
+                                      width: 48,
+                                      height: 48,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) => Icon(
+                                            Icons.lightbulb_outline,
                                             color: isDark
-                                                ? const Color(0xFFFFB4A2)
-                                                : const Color(0xFFE8A0A0),
+                                                ? AppColors.accentLavender
+                                                : const Color(0xFF7A749E),
+                                            size: 22,
                                           ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                // Text content
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                              tip.title(context),
+                                              style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: textColor,
+                                              ),
+                                            ),
+                                          ),
+                                          if (isToday)
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 3,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFFFFB4A2)
+                                                    .withValues(
+                                                      alpha: isDark
+                                                          ? 0.25
+                                                          : 0.15,
+                                                    ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                l10n.todayBadge,
+                                                style: TextStyle(
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 0.8,
+                                                  color: isDark
+                                                      ? const Color(0xFFFFB4A2)
+                                                      : const Color(0xFFE8A0A0),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        tip.description(context),
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: subtitleColor,
+                                          height: 1.4,
                                         ),
                                       ),
-                                  ],
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  tip.description(context),
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: subtitleColor,
-                                    height: 1.4,
+                                    ],
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),

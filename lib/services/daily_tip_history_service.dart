@@ -33,7 +33,7 @@ class DailyTipHistoryService {
   }
 
   Future<List<DailyTip>> loadSeenTips({
-    required int fallbackBabyAgeInMonths,
+    required int? fallbackBabyAgeInMonths,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     final seenIds = prefs.getStringList(_seenTipIdsKey) ?? const <String>[];

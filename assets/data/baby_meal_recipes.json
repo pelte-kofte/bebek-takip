@@ -1,0 +1,6363 @@
+[
+  {
+    "id": "recipe_001",
+    "title": "Banana Yogurt Oat Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "plain yogurt",
+      "finely ground oats"
+    ],
+    "steps": [
+      "Cook the finely ground oats until soft, then let them cool slightly.",
+      "Mash banana until smooth. Stir the fruit into yogurt.",
+      "Serve as a smooth spoonable bowl."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_002",
+    "title": "Pear Semolina Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "semolina",
+      "water"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook pear until very soft.",
+      "Serve smooth and spoonable."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_003",
+    "title": "Apple Oat Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "finely ground oats",
+      "water"
+    ],
+    "steps": [
+      "Cook apple until very soft.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_004",
+    "title": "Avocado Banana Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "avocado",
+      "banana"
+    ],
+    "steps": [
+      "Mash avocado and banana until smooth.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "puree_01",
+    "safetyNotes": [
+      "Serve as a smooth spoonable texture and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_005",
+    "title": "Sweet Potato Yogurt Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "sweet potato",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_006",
+    "title": "Pear Yogurt Oat Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "plain yogurt",
+      "finely ground oats"
+    ],
+    "steps": [
+      "Cook the finely ground oats until soft, then let them cool slightly.",
+      "Cook pear until very soft. Stir the fruit into yogurt.",
+      "Serve as a smooth spoonable bowl."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_007",
+    "title": "Apple Banana Oat Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "banana",
+      "finely ground oats"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_008",
+    "title": "Carrot Apple Semolina Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "carrot",
+      "apple",
+      "semolina"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook carrot and apple until very soft.",
+      "Serve smooth and spoonable."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_009",
+    "title": "Avocado Pear Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "avocado",
+      "pear"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash avocado until smooth.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "puree_01",
+    "safetyNotes": [
+      "Serve as a smooth spoonable texture and supervise closely."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_010",
+    "title": "Banana Semolina Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "semolina",
+      "water"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Mash banana until smooth.",
+      "Serve smooth and spoonable."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_011",
+    "title": "Sweet Potato Pear Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "sweet potato",
+      "pear"
+    ],
+    "steps": [
+      "Cook sweet potato and pear until very soft.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "puree_01",
+    "safetyNotes": [
+      "Serve as a smooth spoonable texture and supervise closely."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_012",
+    "title": "Apple Yogurt Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook apple until very soft.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_013",
+    "title": "Banana Pear Yogurt Mash",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "pear",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a smooth spoonable mash."
+    ],
+    "texture": "smooth mashed",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_014",
+    "title": "Red Lentils Carrot Lentil Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "carrot",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and carrot with red lentils until everything is very soft.",
+      "Blend or mash until smooth and moist.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_015",
+    "title": "Chicken Sweet Potato Veg Meal",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "sweet potato",
+      "chicken",
+      "water"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook sweet potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_016",
+    "title": "Zucchini Potato Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "zucchini",
+      "potato",
+      "water"
+    ],
+    "steps": [
+      "Cook zucchini and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Serve warm, not hot."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_017",
+    "title": "Salmon Peas Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "peas",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook peas and potato until very soft, then combine with the fish.",
+      "Mash until smooth and moist."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_018",
+    "title": "Broccoli Potato Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "broccoli",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook broccoli and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 19
+  },
+  {
+    "id": "recipe_019",
+    "title": "Carrot Potato Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "carrot",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook carrot and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_020",
+    "title": "White Fish Sweet Potato Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "sweet potato",
+      "water"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook sweet potato until very soft, then combine with the fish.",
+      "Mash until smooth and moist."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_021",
+    "title": "Red Lentils Zucchini Lentil Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "zucchini",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and zucchini with red lentils until everything is very soft.",
+      "Blend or mash until smooth and moist.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_022",
+    "title": "Chicken Carrot Veg Meal",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_023",
+    "title": "Peas Potato Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "peas",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook peas and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_024",
+    "title": "Sweet Potato Broccoli Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "sweet potato",
+      "broccoli",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook sweet potato and broccoli until very soft.",
+      "Blend or mash until smooth.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 19
+  },
+  {
+    "id": "recipe_025",
+    "title": "Beef Carrot Veg Meal",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_026",
+    "title": "Zucchini Peas Soft Lunch",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "lunch",
+    "ingredients": [
+      "zucchini",
+      "peas",
+      "potato"
+    ],
+    "steps": [
+      "Cook zucchini, peas, and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Serve warm, not hot."
+    ],
+    "texture": "smooth puree",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_027",
+    "title": "Potato Egg Dinner Bowl",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "egg yolk",
+      "potato",
+      "water"
+    ],
+    "steps": [
+      "Cook the egg yolk until fully done and shred or chop it finely.",
+      "Cook potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_028",
+    "title": "Broccoli Soft Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "broccoli",
+      "rice",
+      "water"
+    ],
+    "steps": [
+      "Cook broccoli until very soft.",
+      "Blend or mash until smooth.",
+      "Serve warm, not hot."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable"
+    ],
+    "imageKey": "puree_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 19
+  },
+  {
+    "id": "recipe_029",
+    "title": "Chicken Zucchini Family Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook zucchini and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_030",
+    "title": "Red Lentils Sweet Potato Lentil Dinner",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "sweet potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and sweet potato with red lentils until everything is very soft.",
+      "Blend or mash until smooth and moist.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_031",
+    "title": "Lamb Carrot Family Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "lamb",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_032",
+    "title": "White Fish Zucchini Soft Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook zucchini and potato until very soft, then combine with the fish.",
+      "Mash until smooth and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_033",
+    "title": "Peas Sweet Potato Soft Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "peas",
+      "sweet potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook peas and sweet potato until very soft.",
+      "Blend or mash until smooth.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_034",
+    "title": "Beef Broccoli Family Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_035",
+    "title": "Salmon Carrot Soft Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook carrot and potato until very soft, then combine with the fish.",
+      "Mash until smooth and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_036",
+    "title": "Red Lentils Peas Lentil Dinner",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "peas",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and peas with red lentils until everything is very soft.",
+      "Blend or mash until smooth and moist.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_037",
+    "title": "Chicken Sweet Potato Family Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "sweet potato",
+      "potato"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook sweet potato and potato until soft, then combine everything together.",
+      "Blend or mash until very soft and moist."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_038",
+    "title": "Zucchini Carrot Soft Supper",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "dinner",
+    "ingredients": [
+      "zucchini",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook zucchini, carrot, and potato until very soft.",
+      "Blend or mash until smooth.",
+      "Serve warm, not hot."
+    ],
+    "texture": "very soft mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Serve smooth or very soft textures and supervise eating closely."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_039",
+    "title": "Banana Yogurt Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_040",
+    "title": "Pear Avocado Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "avocado"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash avocado until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_041",
+    "title": "Apple Yogurt Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook apple until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_042",
+    "title": "Sweet Potato Banana Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "sweet potato",
+      "banana"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_043",
+    "title": "Carrot Apple Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "carrot",
+      "apple"
+    ],
+    "steps": [
+      "Cook carrot and apple until very soft.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_044",
+    "title": "Avocado Yogurt Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Mash avocado until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_045",
+    "title": "Pear Banana Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "banana"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_046",
+    "title": "Sweet Potato Yogurt Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "sweet potato",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_047",
+    "title": "Apple Avocado Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "avocado"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash avocado until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_048",
+    "title": "Banana Pear Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "pear"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_049",
+    "title": "Carrot Sweet Potato Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "carrot",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook carrot and sweet potato until very soft.",
+      "Mash together until moist and easy to eat.",
+      "Serve as a soft spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer as a spoonable soft snack and supervise closely."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_050",
+    "title": "Pear Banana Yogurt Snack",
+    "minMonths": 6,
+    "maxMonths": 8,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "pear",
+      "banana"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a spoonable snack."
+    ],
+    "texture": "soft spoonable mash",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_051",
+    "title": "Banana Yogurt Oat Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Mash banana until smooth. Stir the fruit into yogurt.",
+      "Serve thick and soft, with only very soft small pieces if needed."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_052",
+    "title": "Apple Semolina Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook apple until very soft.",
+      "Serve as a thick soft bowl."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_053",
+    "title": "Pear Oat Mash",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "rolled oats",
+      "water"
+    ],
+    "steps": [
+      "Cook pear until very soft.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a thick mash with very soft small pieces."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_054",
+    "title": "Avocado Banana Yogurt Mash",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "avocado",
+      "banana",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Mash avocado and banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a thick soft mash."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_055",
+    "title": "Sweet Potato Egg Breakfast Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "sweet potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft.",
+      "Mash together with a little warm water if needed and serve soft."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "vegetable",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_056",
+    "title": "Apple Banana Oat Mash",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve as a thick mash with very soft small pieces."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_057",
+    "title": "Pear Yogurt Oat Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "plain yogurt",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook pear until very soft. Stir the fruit into yogurt.",
+      "Serve thick and soft, with only very soft small pieces if needed."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_058",
+    "title": "Carrot Apple Semolina Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "carrot",
+      "apple",
+      "semolina"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook carrot and apple until very soft.",
+      "Serve as a thick soft bowl."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_059",
+    "title": "Avocado Potato Egg Breakfast Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "avocado",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato until very soft. Mash avocado until smooth.",
+      "Mash together with a little warm water if needed and serve soft."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_060",
+    "title": "Banana Pear Semolina Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "pear",
+      "semolina"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Serve as a thick soft bowl."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_061",
+    "title": "Sweet Potato Yogurt Oat Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "sweet potato",
+      "plain yogurt",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook sweet potato until very soft. Stir the fruit into yogurt.",
+      "Serve thick and soft, with only very soft small pieces if needed."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_062",
+    "title": "Apple Pear Yogurt Mash",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "pear",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook apple and pear until very soft.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a thick soft mash."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_063",
+    "title": "Banana Egg Breakfast Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Mash banana until smooth.",
+      "Mash together with a little warm water if needed and serve soft."
+    ],
+    "texture": "thick mash with very soft pieces",
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_064",
+    "title": "Red Lentils Carrot Lentil Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook red lentils, carrot, and potato with red lentils until everything is very soft.",
+      "Mash until thick with only very soft small pieces.",
+      "Serve warm, not hot."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_065",
+    "title": "Chicken Sweet Potato Veg Meal",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "sweet potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook sweet potato and peas until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_066",
+    "title": "Zucchini Potato Soft Lunch",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "zucchini",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook zucchini and potato until very soft.",
+      "Mash until thick with very soft small pieces.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_067",
+    "title": "Salmon Broccoli Soft Lunch",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook broccoli and potato until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_068",
+    "title": "Beef Carrot Veg Meal",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_069",
+    "title": "White Fish Peas Soft Lunch",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "peas",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook peas and sweet potato until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_070",
+    "title": "Red Lentils Zucchini Lentil Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "zucchini",
+      "carrot"
+    ],
+    "steps": [
+      "Cook red lentils, zucchini, and carrot with red lentils until everything is very soft.",
+      "Mash until thick with only very soft small pieces.",
+      "Serve warm, not hot."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_071",
+    "title": "Lamb Potato Veg Meal",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "lamb",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook potato and peas until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_072",
+    "title": "Chicken Broccoli Veg Meal",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "broccoli",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook broccoli until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "puree_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_073",
+    "title": "Sweet Potato Peas Soft Lunch",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "sweet potato",
+      "peas",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook sweet potato and peas until very soft.",
+      "Mash until thick with very soft small pieces.",
+      "Add a small drizzle of olive oil before serving."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_074",
+    "title": "Beef Zucchini Veg Meal",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook zucchini and potato until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_075",
+    "title": "Salmon Carrot Soft Lunch",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "carrot",
+      "peas"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook carrot and peas until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_076",
+    "title": "Red Lentils Broccoli Lentil Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "broccoli",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and broccoli with red lentils until everything is very soft.",
+      "Mash until thick with only very soft small pieces.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "soft chunky mash",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_077",
+    "title": "Potato Broccoli Egg Dinner Bowl",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "egg",
+      "potato",
+      "broccoli"
+    ],
+    "steps": [
+      "Cook the egg until fully done and shred or chop it finely.",
+      "Cook potato and broccoli until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 18
+  },
+  {
+    "id": "recipe_078",
+    "title": "Chicken Carrot Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "carrot",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook carrot until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_079",
+    "title": "Lamb Sweet Potato Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "lamb",
+      "sweet potato",
+      "zucchini"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook sweet potato and zucchini until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_080",
+    "title": "White Fish Potato Soft Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook potato and peas until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_081",
+    "title": "Red Lentils Sweet Potato Lentil Dinner",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "sweet potato",
+      "carrot"
+    ],
+    "steps": [
+      "Cook red lentils, sweet potato, and carrot with red lentils until everything is very soft.",
+      "Mash until thick with only very soft small pieces.",
+      "Serve warm, not hot."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_082",
+    "title": "Beef Broccoli Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_083",
+    "title": "Salmon Zucchini Soft Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "zucchini",
+      "peas"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook zucchini and peas until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_084",
+    "title": "Chicken Potato Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook potato and peas until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_085",
+    "title": "Red Lentils Zucchini Lentil Dinner",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "zucchini",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and zucchini with red lentils until everything is very soft.",
+      "Mash until thick with only very soft small pieces.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_086",
+    "title": "Lamb Carrot Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "lamb",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_087",
+    "title": "White Fish Broccoli Soft Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "broccoli",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook broccoli and sweet potato until very soft, then combine with the fish.",
+      "Serve as a soft mash with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_088",
+    "title": "Beef Peas Family Supper",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "peas",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook peas and potato until soft, then combine everything together.",
+      "Serve mashed with very soft small pieces."
+    ],
+    "texture": "mashed with very soft small pieces",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "veggie_mash_01",
+    "safetyNotes": [
+      "Keep pieces very soft and small enough for your baby to manage safely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_089",
+    "title": "Banana Yogurt Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve thick and soft."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_090",
+    "title": "Pear Avocado Yogurt Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "avocado",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash avocado until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve thick and soft."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_091",
+    "title": "Potato Egg Snack Bites",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato until very soft.",
+      "Mash or finely chop together and serve soft and moist."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_092",
+    "title": "Apple Yogurt Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "plain yogurt",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook apple until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve thick and soft."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_093",
+    "title": "Banana Sweet Potato Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Offer as a soft thick snack."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer soft mash or very soft small pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_094",
+    "title": "Carrot Pear Yogurt Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "carrot",
+      "pear",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook carrot and pear until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve thick and soft."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "vegetable"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_095",
+    "title": "Avocado Banana Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "banana"
+    ],
+    "steps": [
+      "Mash avocado and banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Offer as a soft thick snack."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer soft mash or very soft small pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_096",
+    "title": "Sweet Potato Peas Egg Snack Bites",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "sweet potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato and peas until very soft.",
+      "Mash or finely chop together and serve soft and moist."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_097",
+    "title": "Apple Pear Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "pear"
+    ],
+    "steps": [
+      "Cook apple and pear until very soft.",
+      "Mash together until moist and easy to eat.",
+      "Offer as a soft thick snack."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer soft mash or very soft small pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_098",
+    "title": "Sweet Potato Yogurt Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve thick and soft."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_099",
+    "title": "Banana Pear Oat Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "pear",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Offer as a soft thick snack."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_100",
+    "title": "Avocado Potato Snack",
+    "minMonths": 9,
+    "maxMonths": 12,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook potato until very soft. Mash avocado until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Offer as a soft thick snack."
+    ],
+    "texture": "soft thick texture",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Offer soft mash or very soft small pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_101",
+    "title": "Banana Egg Breakfast Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Mash banana until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_102",
+    "title": "Pear Yogurt Oat Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "plain yogurt",
+      "pear",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook pear until very soft. Stir the fruit into yogurt.",
+      "Serve as a soft bowl with age-appropriate small pieces."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_103",
+    "title": "Apple Semolina Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook apple until very soft.",
+      "Serve warm as a soft family-style breakfast bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_104",
+    "title": "Avocado Potato Egg Breakfast",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "avocado",
+      "egg",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato until very soft. Mash avocado until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_105",
+    "title": "Banana Yogurt Oat Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "plain yogurt",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Mash banana until smooth. Stir the fruit into yogurt.",
+      "Serve as a soft bowl with age-appropriate small pieces."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_106",
+    "title": "Sweet Potato Egg Breakfast",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "sweet potato",
+      "egg",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "vegetable",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_107",
+    "title": "Pear Banana Yogurt Mash",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "banana",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a soft breakfast bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_108",
+    "title": "Apple Yogurt Oat Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook apple until very soft. Stir the fruit into yogurt.",
+      "Serve as a soft bowl with age-appropriate small pieces."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_109",
+    "title": "Avocado Sweet Potato Egg Breakfast Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "avocado",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft. Mash avocado until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_110",
+    "title": "Banana Semolina Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Mash banana until smooth.",
+      "Serve warm as a soft family-style breakfast bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_111",
+    "title": "Pear Apple Oat Mash",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "apple",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook pear and apple until very soft.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve soft and easy to manage in bite-sized amounts."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_112",
+    "title": "Carrot Potato Egg Breakfast",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook carrot and potato until very soft.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "vegetable",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_113",
+    "title": "Banana Apple Yogurt Mash",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "breakfast",
+    "ingredients": [
+      "plain yogurt",
+      "banana",
+      "apple"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a soft breakfast bowl."
+    ],
+    "texture": "soft family-food style",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Cut into soft bite-sized pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_114",
+    "title": "Chicken Sweet Potato Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "sweet potato",
+      "broccoli"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook sweet potato and broccoli until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_115",
+    "title": "Red Lentils Carrot Lentil Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "carrot",
+      "zucchini"
+    ],
+    "steps": [
+      "Cook red lentils, carrot, and zucchini with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_116",
+    "title": "Salmon Potato Soft Lunch",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook potato and peas until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_117",
+    "title": "Beef Carrot Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_118",
+    "title": "White Fish Broccoli Soft Lunch",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "broccoli",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook broccoli and sweet potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_119",
+    "title": "Lamb Zucchini Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "lamb",
+      "zucchini",
+      "peas"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook zucchini and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_120",
+    "title": "Chicken Potato Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_121",
+    "title": "Red Lentils Sweet Potato Lentil Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "sweet potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook red lentils, sweet potato, and peas with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_122",
+    "title": "Beef Broccoli Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "broccoli",
+      "rice"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook broccoli until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_123",
+    "title": "Salmon Carrot Soft Lunch",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook carrot and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_124",
+    "title": "White Fish Zucchini Soft Lunch",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook zucchini and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_125",
+    "title": "Lamb Sweet Potato Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "lamb",
+      "sweet potato",
+      "carrot"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook sweet potato and carrot until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_126",
+    "title": "Chicken Peas Veg Meal",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "peas",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft bite-sized family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_127",
+    "title": "Broccoli Potato Egg Dinner Bowl",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "egg",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_128",
+    "title": "Beef Sweet Potato Family Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "sweet potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook sweet potato and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_129",
+    "title": "Red Lentils Zucchini Lentil Dinner",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "zucchini",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and zucchini with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_130",
+    "title": "Salmon Broccoli Soft Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook broccoli and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_131",
+    "title": "Chicken Carrot Family Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook carrot and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_132",
+    "title": "White Fish Peas Soft Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "peas",
+      "potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook peas and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_133",
+    "title": "Lamb Broccoli Family Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "lamb",
+      "broccoli",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook broccoli and sweet potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_134",
+    "title": "Red Lentils Carrot Lentil Dinner",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook red lentils, carrot, and potato with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_135",
+    "title": "Beef Zucchini Family Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "zucchini",
+      "peas"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook zucchini and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_136",
+    "title": "Salmon Sweet Potato Soft Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "sweet potato",
+      "carrot"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook sweet potato and carrot until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_137",
+    "title": "Chicken Zucchini Family Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "zucchini",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook zucchini until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_138",
+    "title": "White Fish Broccoli Soft Supper",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "broccoli",
+      "peas"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook broccoli and peas until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "soft family-food style, bite-sized",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Serve as soft family food in bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_139",
+    "title": "Banana Pear Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "banana",
+      "pear"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_140",
+    "title": "Sweet Potato Egg Snack Bites",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "sweet potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_141",
+    "title": "Avocado Banana Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "banana",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Mash avocado and banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_142",
+    "title": "Apple Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook apple until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_143",
+    "title": "Pear Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_144",
+    "title": "Potato Peas Egg Snack Bites",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato and peas until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_145",
+    "title": "Banana Sweet Potato Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "sweet potato",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "vegetable"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_146",
+    "title": "Avocado Pear Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "pear"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash avocado until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as soft easy-to-chew snack pieces or mash."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_147",
+    "title": "Apple Banana Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "apple",
+      "banana"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_148",
+    "title": "Carrot Egg Snack Bites",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "carrot",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook carrot until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_149",
+    "title": "Pear Yogurt Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_150",
+    "title": "Banana Avocado Snack",
+    "minMonths": 12,
+    "maxMonths": 18,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "avocado",
+      "potato"
+    ],
+    "steps": [
+      "Cook potato until very soft. Mash banana and avocado until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as soft easy-to-chew snack pieces or mash."
+    ],
+    "texture": "soft toddler snack",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "vegetable",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Offer soft, easy-to-chew pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_151",
+    "title": "Banana Egg Breakfast Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Mash banana until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_152",
+    "title": "Apple Yogurt Oat Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "plain yogurt",
+      "apple",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook apple until very soft. Stir the fruit into yogurt.",
+      "Serve as a soft bowl with age-appropriate small pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_153",
+    "title": "Pear Semolina Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook pear until very soft.",
+      "Serve warm as a soft family-style breakfast bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_154",
+    "title": "Avocado Sweet Potato Egg Breakfast",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "avocado",
+      "egg",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft. Mash avocado until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 10
+  },
+  {
+    "id": "recipe_155",
+    "title": "Banana Pear Yogurt Mash",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "plain yogurt",
+      "pear"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a soft breakfast bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_156",
+    "title": "Potato Carrot Egg Breakfast",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "potato",
+      "carrot"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato and carrot until very soft.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "vegetable",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_157",
+    "title": "Apple Banana Oat Mash",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Mash all ingredients together until the texture suits your child's age.",
+      "Serve soft and easy to manage in bite-sized amounts."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "porridge_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_158",
+    "title": "Pear Banana Yogurt Mash",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "plain yogurt",
+      "pear",
+      "banana"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a soft breakfast bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_159",
+    "title": "Avocado Potato Egg Breakfast Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "egg",
+      "avocado",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato until very soft. Mash avocado until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_160",
+    "title": "Sweet Potato Yogurt Oat Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "sweet potato",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook the oats until soft, then let them cool slightly.",
+      "Cook sweet potato until very soft. Stir the fruit into yogurt.",
+      "Serve as a soft bowl with age-appropriate small pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "vegetable",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_161",
+    "title": "Apple Semolina Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "apple",
+      "semolina",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook semolina with water until thick and smooth.",
+      "Cook apple until very soft.",
+      "Serve warm as a soft family-style breakfast bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_162",
+    "title": "Banana Egg Breakfast",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "banana",
+      "egg",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Mash banana until smooth.",
+      "Serve soft and easy to manage in bite-sized amounts or as a soft bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "breakfast",
+      "fruit",
+      "protein",
+      "easyBreakfast"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 12
+  },
+  {
+    "id": "recipe_163",
+    "title": "Pear Apple Yogurt Mash",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "breakfast",
+    "ingredients": [
+      "pear",
+      "apple",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear and apple until very soft.",
+      "Stir into yogurt until smooth and creamy.",
+      "Serve as a soft breakfast bowl."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "breakfast",
+      "creamy",
+      "fruit",
+      "easyBreakfast"
+    ],
+    "imageKey": "yogurt_bowl_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Serve as a soft toddler meal with bite-sized pieces and supervise closely."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_164",
+    "title": "Chicken Broccoli Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_165",
+    "title": "Beef Sweet Potato Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "sweet potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook sweet potato and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_166",
+    "title": "Salmon Zucchini Soft Lunch",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook zucchini and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_167",
+    "title": "Red Lentils Carrot Lentil Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "carrot",
+      "zucchini"
+    ],
+    "steps": [
+      "Cook red lentils, carrot, and zucchini with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_168",
+    "title": "White Fish Broccoli Soft Lunch",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "broccoli",
+      "peas"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook broccoli and peas until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_169",
+    "title": "Lamb Sweet Potato Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "lamb",
+      "sweet potato",
+      "potato"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook sweet potato and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_170",
+    "title": "Chicken Carrot Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "carrot",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook carrot until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_171",
+    "title": "Beef Zucchini Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "beef",
+      "zucchini",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook zucchini and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_172",
+    "title": "Salmon Peas Soft Lunch",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "salmon",
+      "peas",
+      "sweet potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook peas and sweet potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_173",
+    "title": "Red Lentils Broccoli Lentil Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "red lentils",
+      "broccoli",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook red lentils and broccoli with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Finish with a small drizzle of olive oil before serving."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 21
+  },
+  {
+    "id": "recipe_174",
+    "title": "White Fish Carrot Soft Lunch",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "white fish",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook carrot and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_175",
+    "title": "Lamb Peas Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "lamb",
+      "peas",
+      "zucchini"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook peas and zucchini until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_176",
+    "title": "Chicken Sweet Potato Veg Meal",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "lunch",
+    "ingredients": [
+      "chicken",
+      "sweet potato",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook sweet potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft family meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "lunch",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_177",
+    "title": "Broccoli Potato Egg Dinner Bowl",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "egg",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "egg_breakfast_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 20
+  },
+  {
+    "id": "recipe_178",
+    "title": "Beef Carrot Family Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "carrot",
+      "peas"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook carrot and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_179",
+    "title": "Red Lentils Sweet Potato Lentil Dinner",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "sweet potato",
+      "potato"
+    ],
+    "steps": [
+      "Cook red lentils, sweet potato, and potato with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_180",
+    "title": "Salmon Broccoli Soft Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook broccoli and potato until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_181",
+    "title": "Chicken Zucchini Family Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "zucchini",
+      "peas"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook zucchini and peas until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_182",
+    "title": "White Fish Sweet Potato Soft Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "sweet potato",
+      "carrot"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook sweet potato and carrot until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_183",
+    "title": "Lamb Broccoli Family Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "lamb",
+      "broccoli",
+      "potato"
+    ],
+    "steps": [
+      "Cook the lamb until fully done and shred or chop it finely.",
+      "Cook broccoli and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_184",
+    "title": "Red Lentils Zucchini Lentil Dinner",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "red lentils",
+      "zucchini",
+      "carrot"
+    ],
+    "steps": [
+      "Cook red lentils, zucchini, and carrot with red lentils until everything is very soft.",
+      "Mash lightly or serve as a soft family-style bowl.",
+      "Serve warm, not hot."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "lentil_soup_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_185",
+    "title": "Beef Sweet Potato Family Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "beef",
+      "sweet potato",
+      "potato"
+    ],
+    "steps": [
+      "Cook the beef until fully done and shred or chop it finely.",
+      "Cook sweet potato and potato until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_186",
+    "title": "Salmon Peas Soft Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "salmon",
+      "peas",
+      "carrot"
+    ],
+    "steps": [
+      "Cook the salmon until fully done and remove every bone.",
+      "Cook peas and carrot until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 22
+  },
+  {
+    "id": "recipe_187",
+    "title": "Chicken Broccoli Family Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "chicken",
+      "broccoli",
+      "rice"
+    ],
+    "steps": [
+      "Cook the chicken until fully done and shred or chop it finely.",
+      "Cook broccoli until soft, then combine everything together.",
+      "Serve soft and tender in bite-sized pieces."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "family_bowl_01",
+    "safetyNotes": [
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 23
+  },
+  {
+    "id": "recipe_188",
+    "title": "White Fish Zucchini Soft Supper",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "dinner",
+    "ingredients": [
+      "white fish",
+      "zucchini",
+      "peas"
+    ],
+    "steps": [
+      "Cook the white fish until fully done and remove every bone.",
+      "Cook zucchini and peas until very soft, then combine with the fish.",
+      "Serve as soft bite-sized family food and supervise closely."
+    ],
+    "texture": "toddler-friendly soft meal",
+    "allergens": [
+      "fish"
+    ],
+    "tags": [
+      "dinner",
+      "vegetable",
+      "protein"
+    ],
+    "imageKey": "fish_veg_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Check carefully for bones before serving.",
+      "Keep family-style foods soft and easy to chew, and supervise while eating."
+    ],
+    "prepTimeMinutes": 24
+  },
+  {
+    "id": "recipe_189",
+    "title": "Banana Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "banana",
+      "rolled oats"
+    ],
+    "steps": [
+      "Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy",
+      "gluten"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_190",
+    "title": "Sweet Potato Egg Snack Bites",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "sweet potato",
+      "olive oil"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook sweet potato until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_191",
+    "title": "Avocado Pear Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "pear",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash avocado until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_192",
+    "title": "Apple Banana Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "apple",
+      "banana",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook apple until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_193",
+    "title": "Potato Peas Egg Snack Bites",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "potato",
+      "peas"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook potato and peas until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 9
+  },
+  {
+    "id": "recipe_194",
+    "title": "Banana Sweet Potato Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "sweet potato",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft. Mash banana until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "vegetable"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_195",
+    "title": "Pear Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "pear",
+      "rolled oats",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook pear until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "gluten",
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 6
+  },
+  {
+    "id": "recipe_196",
+    "title": "Avocado Banana Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "banana"
+    ],
+    "steps": [
+      "Mash avocado and banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as soft easy-to-chew snack pieces or mash."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "none"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_197",
+    "title": "Apple Pear Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "plain yogurt",
+      "apple",
+      "pear"
+    ],
+    "steps": [
+      "Cook apple and pear until very soft.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_198",
+    "title": "Carrot Potato Egg Snack Bites",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "egg",
+      "carrot",
+      "potato"
+    ],
+    "steps": [
+      "Cook the egg until fully done.",
+      "Cook carrot and potato until very soft.",
+      "Offer as soft bite-sized snack pieces and supervise closely."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "egg"
+    ],
+    "tags": [
+      "snack",
+      "vegetable",
+      "protein",
+      "quick"
+    ],
+    "imageKey": "finger_food_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  },
+  {
+    "id": "recipe_199",
+    "title": "Banana Pear Oat Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "banana",
+      "pear",
+      "rolled oats"
+    ],
+    "steps": [
+      "Cook pear until very soft. Mash banana until smooth.",
+      "Mash together until moist and easy to eat.",
+      "Serve as soft easy-to-chew snack pieces or mash."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "gluten"
+    ],
+    "tags": [
+      "snack",
+      "fruit",
+      "quick"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 7
+  },
+  {
+    "id": "recipe_200",
+    "title": "Avocado Sweet Potato Yogurt Snack",
+    "minMonths": 18,
+    "maxMonths": 24,
+    "mealType": "snack",
+    "ingredients": [
+      "avocado",
+      "sweet potato",
+      "plain yogurt"
+    ],
+    "steps": [
+      "Cook sweet potato until very soft. Mash avocado until smooth.",
+      "Stir into yogurt until smooth or softly textured.",
+      "Serve as a soft toddler snack bowl."
+    ],
+    "texture": "soft toddler-friendly snack",
+    "allergens": [
+      "dairy"
+    ],
+    "tags": [
+      "snack",
+      "creamy",
+      "fruit",
+      "vegetable"
+    ],
+    "imageKey": "snack_plate_01",
+    "safetyNotes": [
+      "Introduce allergenic foods one at a time and watch for any reaction.",
+      "Offer soft toddler-friendly pieces and supervise while eating."
+    ],
+    "prepTimeMinutes": 8
+  }
+]
