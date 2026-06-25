@@ -20,6 +20,7 @@ class BabyMealsScreen extends StatefulWidget {
 
 class _BabyMealsScreenState extends State<BabyMealsScreen> {
   static const String _filterAll = 'all';
+  static const int _initialRecipeCount = 6;
 
   final BabyMealRecipeService _recipeService = BabyMealRecipeService.instance;
   final TextEditingController _ingredientController = TextEditingController();
@@ -109,6 +110,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
   String get _matcherResultsText => _isTurkish
       ? 'Uygun Tarifler'
       : 'Matching Recipes';
+
+  String get _viewAllRecipesText =>
+      _isTurkish ? 'Tum tarifleri gor' : 'View all recipes';
 
   String get _matcherEmptyText => _isTurkish
       ? 'Bu malzemelerle uygun tarif bulamadik.'
@@ -204,6 +208,13 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     return recipes
         .where((recipe) => recipe.mealType == _activeFilter)
         .toList(growable: false);
+  }
+
+  List<BabyMealRecipe> _previewRecipes(List<BabyMealRecipe> recipes) {
+    if (recipes.length <= _initialRecipeCount) {
+      return recipes;
+    }
+    return recipes.take(_initialRecipeCount).toList(growable: false);
   }
 
   bool get _canSearchIngredients => _ingredientQuery.trim().isNotEmpty;
@@ -342,6 +353,65 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         : '${match.matchPercentage}% match';
   }
 
+  _MealVisuals _mealVisuals(String mealType, {required bool isDark}) {
+    switch (mealType) {
+      case 'breakfast':
+        return _MealVisuals(
+          accent: AppColors.accentLavender,
+          tint: const Color(0xFFF4EFFB),
+          border: const Color(0xFFE6DDF4),
+          imageGradient: const <Color>[Color(0xFFE9DFF7), Color(0xFFFBF8FE)],
+          text: const Color(0xFF7B6791),
+        );
+      case 'lunch':
+        return _MealVisuals(
+          accent: AppColors.accentPeach,
+          tint: const Color(0xFFFFF1EA),
+          border: const Color(0xFFF6DED1),
+          imageGradient: const <Color>[Color(0xFFFFE5D8), Color(0xFFFFF8F3)],
+          text: const Color(0xFF9B715D),
+        );
+      case 'dinner':
+        return _MealVisuals(
+          accent: const Color(0xFFF2C9C4),
+          tint: const Color(0xFFFFF0EE),
+          border: const Color(0xFFF0D5D2),
+          imageGradient: const <Color>[Color(0xFFF5D7D2), Color(0xFFFFF8F6)],
+          text: const Color(0xFF9A6C66),
+        );
+      case 'snack':
+        return _MealVisuals(
+          accent: const Color(0xFFF8EBD7),
+          tint: const Color(0xFFFFFAF2),
+          border: const Color(0xFFF1E3CC),
+          imageGradient: const <Color>[Color(0xFFF8EBD7), Color(0xFFFFFCF8)],
+          text: const Color(0xFF9B8062),
+        );
+      default:
+        return _MealVisuals(
+          accent: AppColors.primaryLight,
+          tint: isDark
+              ? AppColors.bgDarkCard.withValues(alpha: 0.92)
+              : Colors.white.withValues(alpha: 0.9),
+          border: AppColors.primary.withValues(alpha: 0.12),
+          imageGradient: const <Color>[Color(0xFFFFE0D2), Color(0xFFFFF4EC)],
+          text: const Color(0xFF866F65),
+        );
+    }
+  }
+
+  Future<void> _openAllRecipes(List<BabyMealRecipe> recipes) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => _AllRecipesScreen(
+          title: _forAgeText,
+          recipes: recipes,
+          buildRecipeCard: (recipe, isDark) => _buildRecipeCard(recipe, isDark),
+        ),
+      ),
+    );
+  }
+
   void _runIngredientMatcher() {
     if (!_canSearchIngredients) {
       return;
@@ -366,37 +436,40 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     final textSecondary = isDark
         ? AppColors.textSecondaryDark
         : const Color(0xFF866F65);
+    final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
-        return SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: Container(
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF7),
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
-                    blurRadius: 24,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                child: SingleChildScrollView(
+        final bottomPadding = MediaQuery.of(sheetContext).viewPadding.bottom;
+
+        return Padding(
+          padding: EdgeInsets.fromLTRB(12, 0, 12, 12 + bottomPadding),
+          child: Container(
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF7),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
+                  blurRadius: 28,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Center(
                         child: Container(
-                          width: 40,
+                          width: 42,
                           height: 4,
                           decoration: BoxDecoration(
                             color: textSecondary.withValues(alpha: 0.35),
@@ -404,48 +477,62 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      Text(
-                        recipe.title,
-                        style: AppTypography.h3(context).copyWith(fontSize: 20),
+                      const SizedBox(height: 22),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 56),
+                        child: Text(
+                          recipe.title,
+                          style: AppTypography.h3(
+                            context,
+                          ).copyWith(fontSize: 22),
+                        ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 18),
                       Center(
                         child: _MealImageCard(
                           imageKey: recipe.imageKey,
                           compact: false,
                           detail: true,
+                          gradientColors: visuals.imageGradient,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
+                        spacing: 10,
+                        runSpacing: 10,
                         children: [
-                          _MealMetaPill(label: _ageRangeLabel(recipe)),
-                          _MealMetaPill(label: recipe.texture),
+                          _MealMetaPill(
+                            label: _ageRangeLabel(recipe),
+                            color: visuals.tint,
+                            textColor: visuals.text,
+                          ),
+                          _MealMetaPill(
+                            label: recipe.texture,
+                            color: visuals.tint.withValues(alpha: 0.82),
+                            textColor: visuals.text,
+                          ),
                           _MealMetaPill(
                             label: '${recipe.prepTimeMinutes} min',
                             highlight: true,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 24),
                       _DetailSectionTitle(title: _ingredientsText),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       ...recipe.ingredients.map(
                         (item) => _DetailBullet(text: item),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
                       _DetailSectionTitle(title: _stepsText),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       ...recipe.steps.asMap().entries.map(
                         (entry) => _DetailStep(
                           index: entry.key + 1,
                           text: entry.value,
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
                       _DetailSectionTitle(title: _allergensText),
                       const SizedBox(height: 10),
                       Wrap(
@@ -455,20 +542,32 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                             .map(
                               (allergen) => _MealMetaPill(
                                 label: _allergenLabel(allergen),
+                                color: visuals.tint,
+                                textColor: visuals.text,
                               ),
                             )
                             .toList(growable: false),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 20),
                       _DetailSectionTitle(title: _safetyText),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 10),
                       ...recipe.safetyNotes.map(
                         (item) => _DetailBullet(text: item),
                       ),
                     ],
                   ),
                 ),
-              ),
+                Positioned(
+                  top: 14,
+                  left: 16,
+                  child: SafeArea(
+                    bottom: false,
+                    child: _SheetCloseButton(
+                      onPressed: () => Navigator.pop(sheetContext),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -480,33 +579,60 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     final textSecondary = isDark
         ? AppColors.textSecondaryDark
         : const Color(0xFF866F65);
+    final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
     return GestureDetector(
       onTap: () => _showRecipeDetails(recipe),
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isDark
                 ? <Color>[AppColors.bgDarkCard, const Color(0xFF3E302B)]
-                : <Color>[const Color(0xFFFFF3EC), const Color(0xFFFFFBF7)],
+                : <Color>[
+                    visuals.tint.withValues(alpha: 0.98),
+                    const Color(0xFFFFFBF7),
+                  ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
+          border: Border.all(
+            color: isDark
+                ? visuals.accent.withValues(alpha: 0.18)
+                : visuals.border,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              _todayText,
-              style: AppTypography.caption(
-                context,
-              ).copyWith(color: AppColors.primary, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 10),
             Row(
+              children: [
+                Text(
+                  _todayText,
+                  style: AppTypography.caption(context).copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _MealMetaPill(
+                  label: _mealTypeLabel(recipe.mealType),
+                  color: visuals.tint,
+                  textColor: visuals.text,
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Column(
@@ -514,7 +640,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     children: [
                       Text(
                         recipe.title,
-                        style: AppTypography.h3(context).copyWith(fontSize: 18),
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.h3(context).copyWith(fontSize: 19),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -526,8 +654,12 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                _MealImageCard(imageKey: recipe.imageKey, compact: false),
+                const SizedBox(width: 18),
+                _MealImageCard(
+                  imageKey: recipe.imageKey,
+                  compact: false,
+                  gradientColors: visuals.imageGradient,
+                ),
               ],
             ),
           ],
@@ -540,30 +672,55 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     final textSecondary = isDark
         ? AppColors.textSecondaryDark
         : const Color(0xFF866F65);
+    final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
     return InkWell(
       borderRadius: BorderRadius.circular(22),
       onTap: () => _showRecipeDetails(recipe),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.bgDarkCard.withValues(alpha: 0.92)
-              : Colors.white.withValues(alpha: 0.88),
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+          border: Border.all(
+            color: isDark
+                ? visuals.accent.withValues(alpha: 0.16)
+                : visuals.border,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _MealImageCard(imageKey: recipe.imageKey, compact: true),
-            const SizedBox(width: 14),
+            _MealImageCard(
+              imageKey: recipe.imageKey,
+              compact: true,
+              gradientColors: visuals.imageGradient,
+            ),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _MealMetaPill(
+                    label: _mealTypeLabel(recipe.mealType),
+                    compact: true,
+                    color: visuals.tint.withValues(alpha: 0.96),
+                    textColor: visuals.text,
+                  ),
+                  const SizedBox(height: 10),
                   Text(
                     recipe.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTypography.h3(context).copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 6),
@@ -610,17 +767,21 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   Widget _buildIngredientMatcherCard(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: isDark
-              ? <Color>[const Color(0xFF3F2F2A), AppColors.bgDarkCard]
-              : <Color>[const Color(0xFFFFF1E8), const Color(0xFFFFFBF7)],
+              ? <Color>[const Color(0xFF3A3244), AppColors.bgDarkCard]
+              : <Color>[const Color(0xFFF4EEFB), const Color(0xFFFFFBF7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.14)),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(
+          color: isDark
+              ? AppColors.accentLavender.withValues(alpha: 0.18)
+              : const Color(0xFFE3D8F3),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
@@ -638,12 +799,16 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.12),
+                  gradient: const LinearGradient(
+                    colors: <Color>[Color(0xFFE8DEF8), Color(0xFFF7F0FF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
                   Icons.kitchen_rounded,
-                  color: AppColors.primary,
+                  color: const Color(0xFF7A749E),
                   size: 22,
                 ),
               ),
@@ -749,6 +914,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     final textSecondary = isDark
         ? AppColors.textSecondaryDark
         : const Color(0xFF866F65);
+    final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
     return InkWell(
       borderRadius: BorderRadius.circular(22),
@@ -760,7 +926,11 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               ? AppColors.bgDarkCard.withValues(alpha: 0.92)
               : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
+          border: Border.all(
+            color: isDark
+                ? visuals.accent.withValues(alpha: 0.16)
+                : visuals.border,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -822,6 +992,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final recipes = _visibleRecipes();
+    final previewRecipes = _previewRecipes(recipes);
     final todaysRecipe = _todaysRecipe(recipes);
 
     if (_loading) {
@@ -852,14 +1023,19 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                   message: _loadFailed ? _loadErrorText : _emptyText,
                 )
               : ListView(
-                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+                  padding: EdgeInsets.fromLTRB(
+                    24,
+                    8,
+                    24,
+                    widget.embedded ? 110 : 32,
+                  ),
                   children: [
                     if (todaysRecipe != null)
                       _buildHeroCard(todaysRecipe, isDark),
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 22),
                     _buildIngredientMatcherCard(isDark),
                     if (_didSearchIngredients) ...[
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 26),
                       Text(
                         _matcherResultsText,
                         style: AppTypography.h3(context).copyWith(fontSize: 17),
@@ -879,7 +1055,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           ),
                         ),
                     ],
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 18),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -900,19 +1076,21 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                                             ? Colors.white
                                             : (isDark
                                                   ? AppColors.textSecondaryDark
-                                                  : const Color(0xFF866F65)),
+                                                  : const Color(0xFF7A749E)),
                                         fontWeight: FontWeight.w600,
                                       ),
-                                  selectedColor: AppColors.primary,
+                                  selectedColor: const Color(0xFF9A8AC0),
                                   backgroundColor: isDark
                                       ? AppColors.bgDarkCard
-                                      : Colors.white.withValues(alpha: 0.84),
+                                      : const Color(0xFFF7F1FB),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14),
                                     side: BorderSide(
-                                      color: AppColors.primary.withValues(
-                                        alpha: selected ? 0 : 0.12,
-                                      ),
+                                      color: selected
+                                          ? Colors.transparent
+                                          : const Color(
+                                              0xFFE3D8F3,
+                                            ).withValues(alpha: 0.9),
                                     ),
                                   ),
                                 ),
@@ -921,18 +1099,45 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                             .toList(growable: false),
                       ),
                     ),
-                    const SizedBox(height: 18),
-                    Text(
-                      _forAgeText,
-                      style: AppTypography.h3(context).copyWith(fontSize: 17),
+                    const SizedBox(height: 28),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _forAgeText,
+                            style: AppTypography.h3(
+                              context,
+                            ).copyWith(fontSize: 17),
+                          ),
+                        ),
+                        if (recipes.length > _initialRecipeCount)
+                          Text(
+                            '${recipes.length}',
+                            style: AppTypography.caption(context).copyWith(
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : const Color(0xFF866F65),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    ...recipes.map(
+                    const SizedBox(height: 14),
+                    ...previewRecipes.map(
                       (recipe) => Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: _buildRecipeCard(recipe, isDark),
                       ),
                     ),
+                    if (recipes.length > _initialRecipeCount) ...[
+                      const SizedBox(height: 4),
+                      _ViewAllRecipesCard(
+                        label: _viewAllRecipesText,
+                        count: recipes.length,
+                        isDark: isDark,
+                        onTap: () => _openAllRecipes(recipes),
+                      ),
+                    ],
                   ],
                 ),
         ),
@@ -946,29 +1151,41 @@ class _MealImageCard extends StatelessWidget {
     required this.imageKey,
     required this.compact,
     this.detail = false,
+    this.gradientColors,
   });
 
   final String imageKey;
   final bool compact;
   final bool detail;
+  final List<Color>? gradientColors;
 
   @override
   Widget build(BuildContext context) {
     final assetPath = BabyMealImageAssets.assetPathFor(imageKey);
-    final width = detail ? 164.0 : (compact ? 72.0 : 92.0);
-    final height = detail ? 164.0 : (compact ? 72.0 : 92.0);
-    final radius = detail ? 24.0 : 18.0;
+    final width = detail ? 188.0 : (compact ? 82.0 : 108.0);
+    final height = detail ? 188.0 : (compact ? 82.0 : 108.0);
+    final radius = detail ? 28.0 : 20.0;
 
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: <Color>[Color(0xFFFFE0D2), Color(0xFFFFF4EC)],
+        gradient: LinearGradient(
+          colors:
+              gradientColors ??
+              const <Color>[Color(0xFFFFE0D2), Color(0xFFFFF4EC)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: detail ? 0.10 : 0.05),
+            blurRadius: detail ? 20 : 12,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       clipBehavior: Clip.antiAlias,
       child: assetPath == null
@@ -1056,32 +1273,213 @@ class _MealMetaPill extends StatelessWidget {
     required this.label,
     this.compact = false,
     this.highlight = false,
+    this.color,
+    this.textColor,
   });
 
   final String label;
   final bool compact;
   final bool highlight;
+  final Color? color;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 10,
-        vertical: compact ? 4 : 6,
+        horizontal: compact ? 9 : 12,
+        vertical: compact ? 5 : 7,
       ),
       decoration: BoxDecoration(
-        color: highlight
-            ? AppColors.primary.withValues(alpha: 0.12)
-            : const Color(0xFFF8EFE8),
+        color:
+            color ??
+            (highlight
+                ? const Color(0xFFF2EAFB)
+                : const Color(0xFFF6F1FC)),
         borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: highlight
+              ? const Color(0xFFE3D8F3)
+              : Colors.white.withValues(alpha: 0.75),
+        ),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: compact ? 11 : 12,
           fontWeight: FontWeight.w600,
-          color: highlight ? AppColors.primary : const Color(0xFF7F6558),
+          color:
+              textColor ??
+              (highlight ? const Color(0xFF7A749E) : const Color(0xFF6F628A)),
         ),
+      ),
+    );
+  }
+}
+
+class _SheetCloseButton extends StatelessWidget {
+  const _SheetCloseButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onPressed,
+        child: Ink(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : Colors.white.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : const Color(0xFFE6E0DC),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.16 : 0.06),
+                blurRadius: 14,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.close_rounded,
+            size: 20,
+            color: isDark ? Colors.white : const Color(0xFF5B4A46),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MealVisuals {
+  const _MealVisuals({
+    required this.accent,
+    required this.tint,
+    required this.border,
+    required this.imageGradient,
+    required this.text,
+  });
+
+  final Color accent;
+  final Color tint;
+  final Color border;
+  final List<Color> imageGradient;
+  final Color text;
+}
+
+class _ViewAllRecipesCard extends StatelessWidget {
+  const _ViewAllRecipesCard({
+    required this.label,
+    required this.count,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  final String label;
+  final int count;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(22),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+              : Colors.white.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.14)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                Icons.menu_book_rounded,
+                color: AppColors.primary,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.body(context).copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            Text(
+              '$count',
+              style: AppTypography.bodySmall(context).copyWith(
+                fontWeight: FontWeight.w700,
+                color: isDark
+                    ? AppColors.textSecondaryDark
+                    : const Color(0xFF866F65),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : const Color(0xFF866F65),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AllRecipesScreen extends StatelessWidget {
+  const _AllRecipesScreen({
+    required this.title,
+    required this.recipes,
+    required this.buildRecipeCard,
+  });
+
+  final String title;
+  final List<BabyMealRecipe> recipes;
+  final Widget Function(BabyMealRecipe recipe, bool isDark) buildRecipeCard;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(title, style: AppTypography.h2(context)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+        itemCount: recipes.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
+        itemBuilder: (context, index) => buildRecipeCard(recipes[index], isDark),
       ),
     );
   }
