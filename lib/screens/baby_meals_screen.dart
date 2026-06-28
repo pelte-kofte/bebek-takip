@@ -8,6 +8,8 @@ import '../services/baby_meal_recipe_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/baby_meal_image_assets.dart';
 import '../utils/locale_text_utils.dart';
+import '../widgets/nilico_motion.dart';
+import '../widgets/nilico_section_header.dart';
 
 class BabyMealsScreen extends StatefulWidget {
   const BabyMealsScreen({super.key, this.embedded = false});
@@ -101,15 +103,13 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
       ? 'Malzemeleri yaz, uygun tarifleri bulalim.'
       : 'Enter ingredients and find matching baby meals.';
 
-  String get _matcherHint => _isTurkish
-      ? 'muz, yumurta, yogurt...'
-      : 'banana, egg, yogurt...';
+  String get _matcherHint =>
+      _isTurkish ? 'muz, yumurta, yogurt...' : 'banana, egg, yogurt...';
 
   String get _matcherButtonText => _isTurkish ? 'Tarif Bul' : 'Find Recipes';
 
-  String get _matcherResultsText => _isTurkish
-      ? 'Uygun Tarifler'
-      : 'Matching Recipes';
+  String get _matcherResultsText =>
+      _isTurkish ? 'Uygun Tarifler' : 'Matching Recipes';
 
   String get _viewAllRecipesText =>
       _isTurkish ? 'Tum tarifleri gor' : 'View all recipes';
@@ -140,9 +140,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 ? AppColors.bgDarkCard.withValues(alpha: 0.92)
                 : Colors.white.withValues(alpha: 0.88),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.1),
-            ),
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -160,9 +158,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               Text(
                 message,
                 textAlign: TextAlign.center,
-                style: AppTypography.body(context).copyWith(
-                  color: secondaryColor,
-                ),
+                style: AppTypography.body(
+                  context,
+                ).copyWith(color: secondaryColor),
               ),
             ],
           ),
@@ -402,7 +400,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   Future<void> _openAllRecipes(List<BabyMealRecipe> recipes) async {
     await Navigator.of(context).push(
-      MaterialPageRoute<void>(
+      buildNilicoPageRoute<void>(
         builder: (_) => _AllRecipesScreen(
           title: _forAgeText,
           recipes: recipes,
@@ -438,7 +436,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         : const Color(0xFF866F65);
     final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
-    await showModalBottomSheet<void>(
+    await showNilicoModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
@@ -450,20 +448,14 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
           padding: EdgeInsets.fromLTRB(12, 0, 12, 12 + bottomPadding),
           child: Container(
             decoration: BoxDecoration(
-              color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF7),
+              color: isDark ? AppColors.bgDarkCard : AppColors.surfaceWhite,
               borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.08),
-                  blurRadius: 28,
-                  offset: const Offset(0, 10),
-                ),
-              ],
+              boxShadow: AppShadows.card(isDark),
             ),
             child: Stack(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -477,11 +469,14 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 26),
                       Padding(
-                        padding: const EdgeInsets.only(right: 56),
+                        padding: const EdgeInsets.fromLTRB(56, 0, 56, 0),
                         child: Text(
                           recipe.title,
+                          maxLines: 2,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
                           style: AppTypography.h3(
                             context,
                           ).copyWith(fontSize: 22),
@@ -494,6 +489,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           compact: false,
                           detail: true,
                           gradientColors: visuals.imageGradient,
+                          heroTag: 'meal-${recipe.id}',
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -581,34 +577,20 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         : const Color(0xFF866F65);
     final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
-    return GestureDetector(
+    return NilicoPressable(
       onTap: () => _showRecipeDetails(recipe),
+      haptic: NilicoHapticType.selection,
       child: Container(
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isDark
-                ? <Color>[AppColors.bgDarkCard, const Color(0xFF3E302B)]
-                : <Color>[
-                    visuals.tint.withValues(alpha: 0.98),
-                    const Color(0xFFFFFBF7),
-                  ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: isDark ? AppColors.bgDarkCard : visuals.tint,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isDark
                 ? visuals.accent.withValues(alpha: 0.18)
                 : visuals.border,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
-              blurRadius: 24,
-              offset: const Offset(0, 12),
-            ),
-          ],
+          boxShadow: AppShadows.card(isDark),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -659,6 +641,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                   imageKey: recipe.imageKey,
                   compact: false,
                   gradientColors: visuals.imageGradient,
+                  heroTag: 'meal-${recipe.id}',
                 ),
               ],
             ),
@@ -674,28 +657,22 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         : const Color(0xFF866F65);
     final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
+    return NilicoPressable(
       onTap: () => _showRecipeDetails(recipe),
+      haptic: NilicoHapticType.selection,
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.bgDarkCard.withValues(alpha: 0.92)
-              : Colors.white.withValues(alpha: 0.9),
+              : AppColors.surfaceWhite,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: isDark
                 ? visuals.accent.withValues(alpha: 0.16)
                 : visuals.border,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          boxShadow: AppShadows.card(isDark),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -704,6 +681,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               imageKey: recipe.imageKey,
               compact: true,
               gradientColors: visuals.imageGradient,
+              heroTag: 'meal-${recipe.id}',
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -769,26 +747,14 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? <Color>[const Color(0xFF3A3244), AppColors.bgDarkCard]
-              : <Color>[const Color(0xFFF4EEFB), const Color(0xFFFFFBF7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark ? AppColors.bgDarkCard : AppColors.lavenderSoft,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(
           color: isDark
               ? AppColors.accentLavender.withValues(alpha: 0.18)
               : const Color(0xFFE3D8F3),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.18 : 0.05),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        boxShadow: AppShadows.card(isDark),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -799,12 +765,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: <Color>[Color(0xFFE8DEF8), Color(0xFFF7F0FF)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AppColors.surfaceWhite,
                   borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.borderSoft),
                 ),
                 child: Icon(
                   Icons.kitchen_rounded,
@@ -897,10 +860,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               ),
               child: Text(
                 _matcherButtonText,
-                style: AppTypography.body(context).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AppTypography.body(
+                  context,
+                ).copyWith(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -916,9 +878,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         : const Color(0xFF866F65);
     final visuals = _mealVisuals(recipe.mealType, isDark: isDark);
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
+    return NilicoPressable(
       onTap: () => _showRecipeDetails(recipe),
+      haptic: NilicoHapticType.selection,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -964,9 +926,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               const SizedBox(height: 10),
               Text(
                 '$_missingIngredientsText: ${match.missingIngredients.map(_ingredientLabel).join(', ')}',
-                style: AppTypography.bodySmall(context).copyWith(
-                  color: textSecondary,
-                ),
+                style: AppTypography.bodySmall(
+                  context,
+                ).copyWith(color: textSecondary),
               ),
             ],
             const SizedBox(height: 10),
@@ -1064,33 +1026,53 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                               final selected = _activeFilter == filter.key;
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8),
-                                child: ChoiceChip(
-                                  selected: selected,
-                                  label: Text(filter.label),
-                                  onSelected: (_) {
+                                child: NilicoPressable(
+                                  onTap: () {
+                                    if (!selected) {
+                                      NilicoHaptics.trigger(
+                                        NilicoHapticType.selection,
+                                      );
+                                    }
                                     setState(() => _activeFilter = filter.key);
                                   },
-                                  labelStyle: AppTypography.caption(context)
-                                      .copyWith(
-                                        color: selected
-                                            ? Colors.white
-                                            : (isDark
-                                                  ? AppColors.textSecondaryDark
-                                                  : const Color(0xFF7A749E)),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                  selectedColor: const Color(0xFF9A8AC0),
-                                  backgroundColor: isDark
-                                      ? AppColors.bgDarkCard
-                                      : const Color(0xFFF7F1FB),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(14),
-                                    side: BorderSide(
+                                  child: AnimatedContainer(
+                                    duration: NilicoMotion.chipDuration,
+                                    curve: NilicoMotion.ease,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 9,
+                                    ),
+                                    decoration: BoxDecoration(
                                       color: selected
-                                          ? Colors.transparent
-                                          : const Color(
-                                              0xFFE3D8F3,
-                                            ).withValues(alpha: 0.9),
+                                          ? const Color(0xFF9A8AC0)
+                                          : (isDark
+                                                ? AppColors.bgDarkCard
+                                                : const Color(0xFFF7F1FB)),
+                                      borderRadius: BorderRadius.circular(14),
+                                      border: Border.all(
+                                        color: selected
+                                            ? Colors.transparent
+                                            : const Color(
+                                                0xFFE3D8F3,
+                                              ).withValues(alpha: 0.9),
+                                      ),
+                                    ),
+                                    child: AnimatedDefaultTextStyle(
+                                      duration: NilicoMotion.chipDuration,
+                                      curve: NilicoMotion.ease,
+                                      style: AppTypography.caption(context)
+                                          .copyWith(
+                                            color: selected
+                                                ? Colors.white
+                                                : (isDark
+                                                      ? AppColors
+                                                            .textSecondaryDark
+                                                      : const Color(
+                                                          0xFF7A749E,
+                                                        )),
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                      child: Text(filter.label),
                                     ),
                                   ),
                                 ),
@@ -1100,27 +1082,19 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            _forAgeText,
-                            style: AppTypography.h3(
-                              context,
-                            ).copyWith(fontSize: 17),
-                          ),
-                        ),
-                        if (recipes.length > _initialRecipeCount)
-                          Text(
-                            '${recipes.length}',
-                            style: AppTypography.caption(context).copyWith(
-                              color: isDark
-                                  ? AppColors.textSecondaryDark
-                                  : const Color(0xFF866F65),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                      ],
+                    NilicoSectionHeader(
+                      title: _forAgeText,
+                      trailing: recipes.length > _initialRecipeCount
+                          ? Text(
+                              '${recipes.length}',
+                              style: AppTypography.caption(context).copyWith(
+                                color: isDark
+                                    ? AppColors.textSecondaryDark
+                                    : const Color(0xFF866F65),
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          : null,
                     ),
                     const SizedBox(height: 14),
                     ...previewRecipes.map(
@@ -1152,40 +1126,34 @@ class _MealImageCard extends StatelessWidget {
     required this.compact,
     this.detail = false,
     this.gradientColors,
+    this.heroTag,
   });
 
   final String imageKey;
   final bool compact;
   final bool detail;
   final List<Color>? gradientColors;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final assetPath = BabyMealImageAssets.assetPathFor(imageKey);
     final width = detail ? 188.0 : (compact ? 82.0 : 108.0);
     final height = detail ? 188.0 : (compact ? 82.0 : 108.0);
     final radius = detail ? 28.0 : 20.0;
+    final imagePadding = detail ? 16.0 : (compact ? 8.0 : 10.0);
 
-    return Container(
+    final imageCard = Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors:
-              gradientColors ??
-              const <Color>[Color(0xFFFFE0D2), Color(0xFFFFF4EC)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color:
+            gradientColors?.first.withValues(alpha: 0.7) ??
+            AppColors.bgLightSurface,
         borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: detail ? 0.10 : 0.05),
-            blurRadius: detail ? 20 : 12,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        border: Border.all(color: AppColors.borderSoft),
+        boxShadow: AppShadows.card(isDark),
       ),
       clipBehavior: Clip.antiAlias,
       child: assetPath == null
@@ -1194,18 +1162,27 @@ class _MealImageCard extends StatelessWidget {
               compact: compact,
               detail: detail,
             )
-          : Image.asset(
-              assetPath,
-              fit: BoxFit.cover,
-              errorBuilder: (_, _, _) {
-                return _MealImageFallback(
-                  imageKey: imageKey,
-                  compact: compact,
-                  detail: detail,
-                );
-              },
+          : Padding(
+              padding: EdgeInsets.all(imagePadding),
+              child: Image.asset(
+                assetPath,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) {
+                  return _MealImageFallback(
+                    imageKey: imageKey,
+                    compact: compact,
+                    detail: detail,
+                  );
+                },
+              ),
             ),
     );
+
+    if (heroTag == null) {
+      return imageCard;
+    }
+
+    return Hero(tag: heroTag!, child: imageCard);
   }
 }
 
@@ -1228,12 +1205,8 @@ class _MealImageFallback extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(detail ? 14 : 10),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: <Color>[Color(0xFFFFE0D2), Color(0xFFFFF4EC)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.45)),
+        color: AppColors.bgLightSurface,
+        border: Border.all(color: AppColors.borderSoft),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1293,9 +1266,7 @@ class _MealMetaPill extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             color ??
-            (highlight
-                ? const Color(0xFFF2EAFB)
-                : const Color(0xFFF6F1FC)),
+            (highlight ? const Color(0xFFF2EAFB) : const Color(0xFFF6F1FC)),
         borderRadius: BorderRadius.circular(999),
         border: Border.all(
           color: highlight
@@ -1394,17 +1365,18 @@ class _ViewAllRecipesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(22),
+    return NilicoPressable(
       onTap: onTap,
+      haptic: NilicoHapticType.selection,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.bgDarkCard.withValues(alpha: 0.9)
-              : Colors.white.withValues(alpha: 0.9),
+              : AppColors.surfaceWhite,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: AppColors.primary.withValues(alpha: 0.14)),
+          boxShadow: AppShadows.card(isDark),
         ),
         child: Row(
           children: [
@@ -1425,9 +1397,9 @@ class _ViewAllRecipesCard extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: AppTypography.body(context).copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AppTypography.body(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Text(
@@ -1479,7 +1451,8 @@ class _AllRecipesScreen extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
         itemCount: recipes.length,
         separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (context, index) => buildRecipeCard(recipes[index], isDark),
+        itemBuilder: (context, index) =>
+            buildRecipeCard(recipes[index], isDark),
       ),
     );
   }

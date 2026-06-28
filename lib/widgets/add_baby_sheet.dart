@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart'
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../utils/locale_text_utils.dart';
+import 'nilico_motion.dart';
 
 class AddBabySheet extends StatefulWidget {
   final VoidCallback onBabyAdded;
@@ -39,6 +40,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
       await VeriYonetici.setActiveBaby(newId);
 
       if (!mounted) return;
+      NilicoHaptics.trigger(NilicoHapticType.success);
       Navigator.pop(context);
       widget.onBabyAdded();
     } catch (e) {
@@ -61,7 +63,7 @@ class _AddBabySheetState extends State<AddBabySheet> {
   void _pickDate() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) {

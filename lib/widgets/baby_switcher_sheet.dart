@@ -5,6 +5,7 @@ import '../models/baby.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import 'add_baby_sheet.dart';
+import 'nilico_motion.dart';
 
 class BabySwitcherSheet extends StatelessWidget {
   final VoidCallback onBabyChanged;
@@ -152,8 +153,9 @@ class BabySwitcherSheet extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color:
-                                isDark ? Colors.white : const Color(0xFF2D1A18),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF2D1A18),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -206,7 +208,7 @@ class BabySwitcherSheet extends StatelessWidget {
   }
 
   void _openAddBabySheet(BuildContext context) {
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,

@@ -5,6 +5,7 @@ import '../models/allergy.dart';
 import '../models/veri_yonetici.dart';
 import '../services/allergy_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/nilico_primary_button.dart';
 
 class AllergiesScreen extends StatefulWidget {
   const AllergiesScreen({super.key, this.embedded = false});
@@ -261,28 +262,16 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         vertical: compact ? 12 : 14,
       ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF2D2934), const Color(0xFF2B2730)]
-              : [const Color(0xFFFFF4EE), const Color(0xFFF6F0FB)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: isDark
+            ? AppColors.bgDarkCard
+            : AppColors.lavenderSoft,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
               ? Colors.white.withValues(alpha: 0.06)
-              : const Color(0xFFEBDCE5),
+              : AppColors.borderSoft,
         ),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: const Color(0xFFE8D8D2).withValues(alpha: 0.18),
-                  blurRadius: 14,
-                  offset: const Offset(0, 6),
-                ),
-              ],
+        boxShadow: AppShadows.card(isDark),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -707,40 +696,10 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
 
   Widget _buildEmbeddedAddButton(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () => _showAddSheet(context),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-          elevation: 0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add_circle, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              l10n.addAllergy,
-              style: AppTypography.button().copyWith(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
+    return NilicoPrimaryButton(
+      label: l10n.addAllergy,
+      icon: Icons.add_circle,
+      onPressed: () => _showAddSheet(context),
     );
   }
 }

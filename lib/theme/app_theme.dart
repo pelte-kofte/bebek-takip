@@ -36,6 +36,40 @@ class AppColors {
   static const Color textPrimaryDark = Color(0xFFF0EAF4);
   static const Color textSecondaryDark = Color(0xFFB8B0C0);
   static const Color textMutedDark = Color(0xFF807888);
+
+  // Pastel system
+  static const Color backgroundCream = bgLight;
+  static const Color surfaceWhite = bgLightCard;
+  static const Color lavenderAccent = accentLavender;
+  static const Color lavenderSoft = Color(0xFFF2EDF8);
+  static const Color coralPrimary = primary;
+  static const Color butterSoft = Color(0xFFFFF7DD);
+  static const Color textPrimary = Color(0xFF4A3E39);
+  static const Color textSecondary = Color(0xFF8C817F);
+  static const Color borderSoft = Color(0xFFE8E0ED);
+}
+
+class AppShadows {
+  AppShadows._();
+
+  static List<BoxShadow> card(bool isDark) {
+    if (isDark) {
+      return <BoxShadow>[
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.16),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
+        ),
+      ];
+    }
+    return <BoxShadow>[
+      const BoxShadow(
+        color: Color(0x14000000),
+        blurRadius: 18,
+        offset: Offset(0, 8),
+      ),
+    ];
+  }
 }
 
 class AppTypography {

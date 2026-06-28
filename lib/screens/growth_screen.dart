@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_motion.dart';
 import 'add_growth_screen.dart';
 
 class GrowthScreen extends StatefulWidget {
@@ -31,7 +32,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
     });
   }
 
-  String _localeName(BuildContext context) => Localizations.localeOf(context).toString();
+  String _localeName(BuildContext context) =>
+      Localizations.localeOf(context).toString();
 
   String _formatDate(BuildContext context, DateTime date) {
     return intl.DateFormat.yMMMMd(_localeName(context)).format(date);
@@ -66,8 +68,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 child: _records.isEmpty
                     ? _buildEmptyState(l10n)
                     : _selectedTab == 0
-                        ? _buildRecordsList(isDark, l10n)
-                        : _buildChartView(isDark, l10n),
+                    ? _buildRecordsList(isDark, l10n)
+                    : _buildChartView(isDark, l10n),
               ),
             ],
           ),
@@ -76,7 +78,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
           onPressed: () async {
             final result = await Navigator.push<bool>(
               context,
-              MaterialPageRoute(
+              buildNilicoPageRoute<bool>(
                 builder: (context) => AddGrowthScreen(onSaved: _loadRecords),
               ),
             );
@@ -155,8 +157,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
           children: [
             Expanded(
               child: GestureDetector(
-                onTap: () => setState(() => _selectedTab = 0),
-                child: Container(
+                onTap: () {
+                  if (_selectedTab != 0) {
+                    NilicoHaptics.trigger(NilicoHapticType.selection);
+                  }
+                  setState(() => _selectedTab = 0);
+                },
+                child: AnimatedContainer(
+                  duration: NilicoMotion.chipDuration,
+                  curve: NilicoMotion.ease,
                   margin: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: _selectedTab == 0 ? cardColor : Colors.transparent,
@@ -201,8 +210,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ),
             Expanded(
               child: GestureDetector(
-                onTap: () => setState(() => _selectedTab = 1),
-                child: Container(
+                onTap: () {
+                  if (_selectedTab != 1) {
+                    NilicoHaptics.trigger(NilicoHapticType.selection);
+                  }
+                  setState(() => _selectedTab = 1);
+                },
+                child: AnimatedContainer(
+                  duration: NilicoMotion.chipDuration,
+                  curve: NilicoMotion.ease,
                   margin: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: _selectedTab == 1 ? cardColor : Colors.transparent,
@@ -281,10 +297,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     );
   }
 
-  Widget _buildChartEmptyState(
-    Color subtitleColor,
-    AppLocalizations l10n,
-  ) {
+  Widget _buildChartEmptyState(Color subtitleColor, AppLocalizations l10n) {
     final remaining = 3 - _records.length;
     return Center(
       child: Padding(
@@ -485,8 +498,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _chartMetric = 0),
-              child: Container(
+              onTap: () {
+                if (_chartMetric != 0) {
+                  NilicoHaptics.trigger(NilicoHapticType.selection);
+                }
+                setState(() => _chartMetric = 0);
+              },
+              child: AnimatedContainer(
+                duration: NilicoMotion.chipDuration,
+                curve: NilicoMotion.ease,
                 margin: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: _chartMetric == 0 ? cardColor : Colors.transparent,
@@ -502,13 +522,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
                       : null,
                 ),
                 child: Center(
-                  child: Text(
-                    l10n.height,
+                  child: AnimatedDefaultTextStyle(
+                    duration: NilicoMotion.chipDuration,
+                    curve: NilicoMotion.ease,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: _chartMetric == 0 ? lavender : inactiveTextColor,
                     ),
+                    child: Text(l10n.height),
                   ),
                 ),
               ),
@@ -516,8 +538,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () => setState(() => _chartMetric = 1),
-              child: Container(
+              onTap: () {
+                if (_chartMetric != 1) {
+                  NilicoHaptics.trigger(NilicoHapticType.selection);
+                }
+                setState(() => _chartMetric = 1);
+              },
+              child: AnimatedContainer(
+                duration: NilicoMotion.chipDuration,
+                curve: NilicoMotion.ease,
                 margin: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   color: _chartMetric == 1 ? cardColor : Colors.transparent,
@@ -533,13 +562,15 @@ class _GrowthScreenState extends State<GrowthScreen> {
                       : null,
                 ),
                 child: Center(
-                  child: Text(
-                    l10n.weight,
+                  child: AnimatedDefaultTextStyle(
+                    duration: NilicoMotion.chipDuration,
+                    curve: NilicoMotion.ease,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: _chartMetric == 1 ? lavender : inactiveTextColor,
                     ),
+                    child: Text(l10n.weight),
                   ),
                 ),
               ),

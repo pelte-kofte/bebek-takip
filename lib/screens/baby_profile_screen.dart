@@ -325,19 +325,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                     ),
                                     boxShadow: isDark
                                         ? null
-                                        : [
-                                            BoxShadow(
-                                              color: _hasPhoto
-                                                  ? const Color(
-                                                      0xFFFFB4A2,
-                                                    ).withValues(alpha: 0.25)
-                                                  : Colors.black.withValues(
-                                                      alpha: 0.06,
-                                                    ),
-                                              blurRadius: _hasPhoto ? 24 : 16,
-                                              offset: const Offset(0, 8),
-                                            ),
-                                          ],
+                                        : AppShadows.card(false),
                                   ),
                                   child: ClipOval(
                                     child: _hasPhoto

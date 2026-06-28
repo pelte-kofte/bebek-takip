@@ -21,6 +21,8 @@ import '../services/shared_parenting_service.dart';
 import 'invitation_inbox_screen.dart';
 import 'shared_parenting_screen.dart';
 import '../widgets/illustration_upsell_sheet.dart';
+import '../widgets/nilico_badge.dart';
+import '../widgets/nilico_section_header.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -779,14 +781,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSectionHeader(String title, Color subtitleColor) {
-    return Text(
-      title.toUpperCase(),
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.bold,
-        color: subtitleColor,
-        letterSpacing: 1.0,
-      ),
+    return NilicoSectionHeader(
+      title: title,
+      mode: NilicoSectionHeaderMode.eyebrow,
+      titleColor: subtitleColor,
     );
   }
 
@@ -848,23 +846,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 if (isPremium)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE5E0F7),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      l10n.active,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF9C88CC),
-                      ),
-                    ),
+                  NilicoBadge(
+                    label: l10n.active,
+                    variant: NilicoBadgeVariant.premium,
                   )
                 else
                   Icon(Icons.chevron_right, color: subtitleColor, size: 24),
@@ -1340,19 +1324,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFFB4A2).withValues(alpha: 0.06),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.22),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
+        border: Border.all(color: AppColors.borderSoft),
+        boxShadow: AppShadows.card(false),
       ),
       child: child,
     );

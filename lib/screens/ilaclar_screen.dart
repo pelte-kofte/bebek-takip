@@ -6,6 +6,8 @@ import '../models/veri_yonetici.dart';
 import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
+import '../widgets/nilico_badge.dart';
+import '../widgets/nilico_primary_button.dart';
 
 class IlaclarScreen extends StatefulWidget {
   const IlaclarScreen({super.key, this.embedded = false});
@@ -1258,40 +1260,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
   }
 
   Widget _buildAddButton(AppLocalizations l10n) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: _addMedication,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-          elevation: 0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add_circle, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              l10n.addMedication,
-              style: AppTypography.button().copyWith(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
+    return NilicoPrimaryButton(
+      label: l10n.addMedication,
+      icon: Icons.add_circle,
+      onPressed: _addMedication,
     );
   }
 }
@@ -1523,22 +1495,9 @@ class _MedicationTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: isMedication
-            ? AppColors.primary.withValues(alpha: 0.15)
-            : const Color(0xFFE5E0F7),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        typeBadge,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: isMedication ? AppColors.primary : const Color(0xFF6B5B95),
-        ),
-      ),
+    return NilicoBadge(
+      label: typeBadge,
+      variant: isMedication ? NilicoBadgeVariant.status : NilicoBadgeVariant.type,
     );
   }
 }
@@ -1551,22 +1510,11 @@ class _MedicationStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? const Color(0xFF4CA984) : const Color(0xFF9A8F88);
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
-      ),
+    return NilicoBadge(
+      label: label,
+      variant: isActive
+          ? NilicoBadgeVariant.success
+          : NilicoBadgeVariant.inactive,
     );
   }
 }

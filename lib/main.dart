@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +12,7 @@ import 'screens/health_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'screens/splash_screen.dart';
 import 'widgets/add_baby_sheet.dart';
+import 'widgets/nilico_motion.dart';
 import 'theme/app_theme.dart';
 import 'services/reminder_service.dart';
 import 'services/locale_service.dart';
@@ -27,7 +27,7 @@ class AppNavigator {
     final state = key.currentState;
     if (state == null) return;
     state.pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => screen),
+      buildNilicoPageRoute<void>(builder: (_) => screen),
       (route) => false,
     );
   }
@@ -177,7 +177,7 @@ class _MainScreenState extends State<MainScreen> {
     if (!mounted || _didPromptAddBaby || !widget.promptAddBabyOnStart) return;
     if (VeriYonetici.getBabies().isNotEmpty) return;
     _didPromptAddBaby = true;
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -196,9 +196,8 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _onItemTapped(int index) {
-    HapticFeedback.lightImpact();
     if (index == 2) {
-      showModalBottomSheet(
+      showNilicoModalBottomSheet(
         context: context,
         isScrollControlled: true,
         isDismissible: true,
@@ -207,6 +206,9 @@ class _MainScreenState extends State<MainScreen> {
         builder: (context) => AddScreen(onSaved: _refresh),
       );
     } else {
+      if (_selectedIndex != index) {
+        NilicoHaptics.trigger(NilicoHapticType.selection);
+      }
       setState(() {
         _selectedIndex = index;
       });

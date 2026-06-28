@@ -1014,6 +1014,14 @@ class VeriYonetici {
       doc['durationMinutes'] = (doc['sure'] as Duration).inMinutes;
       return doc;
     }
+    if (explicitType == 'growth' ||
+        doc.containsKey('boy') ||
+        doc.containsKey('kilo') ||
+        doc.containsKey('basCevresi')) {
+      doc['type'] = 'growth';
+      doc['date'] = doc['tarih'];
+      return doc;
+    }
     if (explicitType == 'vaccine' ||
         doc.containsKey('donem') ||
         doc.containsKey('durum')) {
@@ -4369,27 +4377,51 @@ class VeriYonetici {
     final targetBabyId = _activeBabyId;
     final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
     final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
-    final beforeIds = _activeIdsFromRows(
-      _boyKiloKayitlari
-          .where((r) => r['babyId'] == targetBabyId)
-          .map((e) => Map<String, dynamic>.from(e)),
-    );
-    final now = DateTime.now();
-    final prepared = <Map<String, dynamic>>[];
-    for (final r in kayitlar) {
-      r['babyId'] = targetBabyId;
-      _ensureStableIdForRow(r, entity: 'growth');
-      r['updatedAt'] = now;
-      r['localUpdatedAt'] = now;
-      r['isDeleted'] = false;
-      r['deletedAt'] = null;
-      prepared.add(Map<String, dynamic>.from(r));
-    }
-
     final existingGrowth = _boyKiloKayitlari
         .where((r) => r['babyId'] == targetBabyId)
         .map((e) => Map<String, dynamic>.from(e))
         .toList();
+    final existingById = <String, Map<String, dynamic>>{
+      for (final row in existingGrowth)
+        (row['id'] ?? '').toString(): Map<String, dynamic>.from(row),
+    };
+    final beforeIds = _activeIdsFromRows(existingGrowth);
+    final now = DateTime.now();
+    final prepared = <Map<String, dynamic>>[];
+    final changedRows = <Map<String, dynamic>>[];
+    for (final r in kayitlar) {
+      r['babyId'] = targetBabyId;
+      final id = _ensureStableIdForRow(r, entity: 'growth');
+      final existing = existingById[id];
+      final preparedRow = Map<String, dynamic>.from(r);
+      final changed =
+          existing == null ||
+          _rowIsDeleted(existing) ||
+          _rowComparableSignature(existing) !=
+              _rowComparableSignature(preparedRow);
+      preparedRow['updatedAt'] = changed ? now : existing['updatedAt'] ?? now;
+      preparedRow['localUpdatedAt'] = changed
+          ? now
+          : existing['localUpdatedAt'] ?? existing['updatedAt'] ?? now;
+      preparedRow['isDeleted'] = false;
+      preparedRow['deletedAt'] = null;
+      prepared.add(preparedRow);
+      if (changed) {
+        changedRows.add(Map<String, dynamic>.from(preparedRow));
+      }
+    }
+    final incomingIds = prepared
+        .map((r) => (r['id'] ?? '').toString())
+        .where((id) => id.isNotEmpty)
+        .toSet();
+    final generatedTombstones = existingGrowth
+        .where((r) => !_rowIsDeleted(r))
+        .where((r) => !incomingIds.contains((r['id'] ?? '').toString()))
+        .map((r) => _tombstoneRowFrom(r, now: now))
+        .toList();
+    changedRows.addAll(
+      generatedTombstones.map((e) => Map<String, dynamic>.from(e)),
+    );
     _boyKiloKayitlari.removeWhere((r) => r['babyId'] == targetBabyId);
     _boyKiloKayitlari.addAll(
       _mergeActiveRowsWithTombstones(
@@ -4428,7 +4460,13 @@ class VeriYonetici {
               rollbackBundle,
               reason: 'rollback:growth-sync',
             ),
-      sync: () => _syncActiveBabyRecordsToCloud(babyId: targetBabyId),
+      sync: () => isSharedBaby
+          ? _syncScopedRecordRowsToCloud(
+              babyId: targetBabyId,
+              rows: changedRows,
+              shared: isSharedBaby,
+            )
+          : _syncActiveBabyRecordsToCloud(babyId: targetBabyId),
     );
     final afterIds = _activeIdsFromRows(prepared);
     await _notifySharedActivityIfNeeded(
@@ -4747,9 +4785,7 @@ class VeriYonetici {
     final beforeCount = _asiKayitlari
         .where((r) => r['babyId'] == targetBabyId && !_rowIsDeleted(r))
         .length;
-    final beforeIds = _activeIdsFromRows(
-      existingVaccines,
-    );
+    final beforeIds = _activeIdsFromRows(existingVaccines);
     if (kDebugMode) {
       _log(
         'saveAsiKayitlariForBaby start babyId=$targetBabyId '

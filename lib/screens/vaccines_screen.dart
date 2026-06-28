@@ -8,6 +8,7 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_primary_button.dart';
 import 'add_vaccine_screen.dart';
 
 class VaccinesScreen extends StatefulWidget {
@@ -1425,55 +1426,24 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   Widget _buildAddButton() {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+    return NilicoPrimaryButton(
+      label: l10n.addVaccine,
+      icon: Icons.add_circle,
+      onPressed: () async {
+        HapticFeedback.lightImpact();
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddVaccineScreen(babyId: _resolveScreenBabyId()),
           ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed: () async {
-          HapticFeedback.lightImpact();
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  AddVaccineScreen(babyId: _resolveScreenBabyId()),
-            ),
-          );
+        );
 
-          if (result == true) {
-            _loadVaccines();
-          } else if (result is Map && result['saved'] == true) {
-            _loadVaccines(preferredBabyId: result['babyId']?.toString());
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28),
-          ),
-          elevation: 0,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.add_circle, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              l10n.addVaccine,
-              style: AppTypography.button().copyWith(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
+        if (result == true) {
+          _loadVaccines();
+        } else if (result is Map && result['saved'] == true) {
+          _loadVaccines(preferredBabyId: result['babyId']?.toString());
+        }
+      },
     );
   }
 }

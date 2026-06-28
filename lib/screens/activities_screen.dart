@@ -1605,34 +1605,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                               height: 6,
                               margin: const EdgeInsets.only(bottom: 14),
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    (isDark
-                                            ? Colors.white
-                                            : const Color(0xFFF2D9D0))
-                                        .withValues(alpha: isDark ? 0.2 : 0.92),
-                                    (isDark
-                                            ? Colors.white
-                                            : const Color(0xFFE6C3B8))
-                                        .withValues(
-                                          alpha: isDark ? 0.08 : 0.76,
-                                        ),
-                                  ],
-                                ),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.14)
+                                    : const Color(0xFFE9D9D1),
                                 borderRadius: BorderRadius.circular(999),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        (isDark
-                                                ? Colors.black
-                                                : const Color(0xFFE6C8BF))
-                                            .withValues(
-                                              alpha: isDark ? 0.26 : 0.28,
-                                            ),
-                                    blurRadius: 18,
-                                    offset: const Offset(0, 6),
-                                  ),
-                                ],
                               ),
                             ),
                             Row(
@@ -2038,36 +2014,16 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                       ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(999),
-                        gradient: isSelected && !isDark
-                            ? const LinearGradient(
-                                colors: [Color(0xFFFFFEFB), Color(0xFFFFF5EF)],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              )
-                            : null,
                         color: isSelected
                             ? (isDark
                                   ? const Color(0xFF3A3A46)
-                                  : const Color(0xFFFFFCF7))
+                                  : AppColors.surfaceWhite)
                             : Colors.transparent,
                         border: isSelected && !isDark
-                            ? Border.all(color: const Color(0xFFF3E2D6))
+                            ? Border.all(color: AppColors.borderSoft)
                             : null,
                         boxShadow: isSelected && !isDark
-                            ? [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFDFC7BE,
-                                  ).withValues(alpha: 0.22),
-                                  blurRadius: 14,
-                                  offset: const Offset(0, 5),
-                                ),
-                                BoxShadow(
-                                  color: Colors.white.withValues(alpha: 0.78),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, -1),
-                                ),
-                              ]
+                            ? AppShadows.card(false)
                             : null,
                       ),
                       child: Text(

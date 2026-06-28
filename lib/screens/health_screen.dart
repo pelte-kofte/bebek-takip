@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_motion.dart';
 import 'allergies_screen.dart';
 import 'baby_meals_screen.dart';
 import 'ilaclar_screen.dart';
@@ -76,16 +77,16 @@ class _HealthTabCapsules extends StatelessWidget {
     }
 
     return SizedBox(
-      height: 58,
+      height: 66,
       child: AnimatedBuilder(
         animation: animation,
         builder: (context, _) {
           final animationValue = animation.value;
           final currentIndex = controller.index;
-          const overlap = 18.0;
+          const overlap = 34.0;
 
           final widths = labels
-              .map((label) => math.max(112.0, 52.0 + (label.length * 7.2)))
+              .map((label) => math.max(136.0, 64.0 + (label.length * 7.0)))
               .toList(growable: false);
           final totalWidth =
               widths.fold<double>(0, (sum, width) => sum + width) -
@@ -98,37 +99,43 @@ class _HealthTabCapsules extends StatelessWidget {
               width: totalWidth,
               child: Stack(
                 clipBehavior: Clip.none,
-                children: List<Widget>.generate(labels.length, (index) {
-                  final distance = (animationValue - index).abs();
-                  final selectedness = (1 - distance).clamp(0.0, 1.0);
-                  final isActive = currentIndex == index;
-                  final left = widths
-                          .take(index)
-                          .fold<double>(0, (sum, width) => sum + width) -
-                      (overlap * index);
+                children:
+                    List<Widget>.generate(labels.length, (index) {
+                      final distance = (animationValue - index).abs();
+                      final selectedness = (1 - distance).clamp(0.0, 1.0);
+                      final isActive = currentIndex == index;
+                      final left =
+                          widths
+                              .take(index)
+                              .fold<double>(0, (sum, width) => sum + width) -
+                          (overlap * index);
 
-                  return Positioned(
-                    left: left,
-                    top: 0,
-                    bottom: 0,
-                    child: _HealthTabPill(
-                      label: labels[index],
-                      width: widths[index],
-                      selectedness: selectedness,
-                      isActive: isActive,
-                      onTap: () => controller.animateTo(index),
-                    ),
-                  );
-                })
-                  ..sort((a, b) {
-                    final aPositioned = a as Positioned;
-                    final bPositioned = b as Positioned;
-                    final aPill = aPositioned.child as _HealthTabPill;
-                    final bPill = bPositioned.child as _HealthTabPill;
-                    return aPill.isActive == bPill.isActive
-                        ? 0
-                        : (aPill.isActive ? 1 : -1);
-                  }),
+                      return Positioned(
+                        left: left,
+                        top: 0,
+                        bottom: 0,
+                        child: _HealthTabPill(
+                          label: labels[index],
+                          width: widths[index],
+                          selectedness: selectedness,
+                          isActive: isActive,
+                          onTap: () {
+                            if (controller.index != index) {
+                              NilicoHaptics.trigger(NilicoHapticType.selection);
+                            }
+                            controller.animateTo(index);
+                          },
+                        ),
+                      );
+                    })..sort((a, b) {
+                      final aPositioned = a as Positioned;
+                      final bPositioned = b as Positioned;
+                      final aPill = aPositioned.child as _HealthTabPill;
+                      final bPill = bPositioned.child as _HealthTabPill;
+                      return aPill.isActive == bPill.isActive
+                          ? 0
+                          : (aPill.isActive ? 1 : -1);
+                    }),
               ),
             ),
           );
@@ -173,47 +180,59 @@ class _HealthTabPill extends StatelessWidget {
       isDark ? const Color(0xFF8F80AB) : const Color(0xFFD7CCE9),
       selectedness,
     )!;
+    final shadowColor = isDark
+        ? Colors.black.withValues(alpha: 0.16 + (0.10 * selectedness))
+        : const Color(
+            0xFFB5A6D3,
+          ).withValues(alpha: 0.07 + (0.15 * selectedness));
 
     return Material(
       color: Colors.transparent,
-      elevation: isActive ? 0 : 0,
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(22),
+          topRight: Radius.circular(22),
+          bottomLeft: Radius.circular(14),
+          bottomRight: Radius.circular(14),
+        ),
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOutCubic,
+          duration: NilicoMotion.chipDuration,
+          curve: NilicoMotion.ease,
           width: width,
-          constraints: const BoxConstraints(minHeight: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          constraints: const BoxConstraints(minHeight: 54),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
           decoration: BoxDecoration(
             color: fillColor,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(22),
+              topRight: Radius.circular(22),
+              bottomLeft: Radius.circular(14),
+              bottomRight: Radius.circular(14),
+            ),
             border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: isDark
-                    ? Colors.black.withValues(
-                        alpha: 0.14 + (0.10 * selectedness),
-                      )
-                    : const Color(0xFFB5A6D3).withValues(
-                        alpha: 0.06 + (0.16 * selectedness),
-                      ),
-                blurRadius: 12 + (8 * selectedness),
-                offset: Offset(0, 4 + (math.max(0, selectedness) * 4)),
+                color: shadowColor,
+                blurRadius: 10 + (8 * selectedness),
+                offset: Offset(0, 4 + (math.max(0, selectedness) * 3)),
               ),
             ],
           ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.visible,
-            softWrap: false,
+          child: AnimatedDefaultTextStyle(
+            duration: NilicoMotion.chipDuration,
+            curve: NilicoMotion.ease,
             style: AppTypography.bodySmall(context).copyWith(
               color: textColor,
               fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
             ),
-            textAlign: TextAlign.center,
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              softWrap: false,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),

@@ -10,9 +10,11 @@ import '../models/illustration_request.dart';
 import '../models/veri_yonetici.dart';
 import '../l10n/app_localizations.dart';
 import '../services/illustration_request_service.dart';
+import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
 import '../widgets/illustration_upsell_sheet.dart';
+import '../widgets/nilico_motion.dart';
 
 /// Platform-aware image widget that works on both web and mobile
 Widget buildPlatformImage(
@@ -57,7 +59,7 @@ bool _shouldShowLocalOnlyMemoryPhotoNote() {
 }
 
 Future<String?> showMemoryIllustrationStyleSheet(BuildContext context) {
-  return showModalBottomSheet<String>(
+  return showNilicoModalBottomSheet<String>(
     context: context,
     backgroundColor: Colors.transparent,
     builder: (_) => const _IllustrationStyleChooserSheet(),
@@ -90,22 +92,22 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     };
     VeriYonetici.dataNotifier.addListener(_dataListener);
     _loadMilestones();
-    _requestSubscription = _illustrationRequestService.watchMyRequests().listen((
-      requests,
-    ) {
-      if (!mounted) return;
-      final generatingIds = requests
-          .where(
-            (request) =>
-                request.memoryId.isNotEmpty &&
-                request.resultImageUrl == null &&
-                (request.status == IllustrationRequestStatus.pending ||
-                    request.status == IllustrationRequestStatus.processing),
-          )
-          .map((request) => request.memoryId)
-          .toSet();
-      setState(() => _generatingMemoryIds = generatingIds);
-    });
+    _requestSubscription = _illustrationRequestService.watchMyRequests().listen(
+      (requests) {
+        if (!mounted) return;
+        final generatingIds = requests
+            .where(
+              (request) =>
+                  request.memoryId.isNotEmpty &&
+                  request.resultImageUrl == null &&
+                  (request.status == IllustrationRequestStatus.pending ||
+                      request.status == IllustrationRequestStatus.processing),
+            )
+            .map((request) => request.memoryId)
+            .toSet();
+        setState(() => _generatingMemoryIds = generatingIds);
+      },
+    );
   }
 
   @override
@@ -131,7 +133,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   void _showAddMilestoneSheet() {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      buildNilicoPageRoute(
         fullscreenDialog: true,
         builder: (context) => AddMilestoneScreen(onSaved: _loadMilestones),
       ),
@@ -148,7 +150,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   void _showMilestoneDetail(Map<String, dynamic> milestone) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      buildNilicoPageRoute(
         builder: (context) => MilestoneDetailScreen(
           milestone: milestone,
           onSaved: _loadMilestones,
@@ -159,7 +161,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   void _showEditMilestoneSheet(Map<String, dynamic> milestone) {
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -169,7 +171,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   void _shareMilestone(Map<String, dynamic> milestone) {
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) =>
@@ -214,6 +216,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     );
 
     if (confirm == true) {
+      NilicoHaptics.trigger(NilicoHapticType.medium);
       final milestones = VeriYonetici.getMilestones();
       milestones.removeWhere((m) => m['id'] == milestone['id']);
       await VeriYonetici.saveMilestones(milestones);
@@ -258,10 +261,16 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
 
   Widget _buildFilterChip(String label, _MemoryFilter filter) {
     final isSelected = _filter == filter;
-    return GestureDetector(
-      onTap: () => setState(() => _filter = filter),
+    return NilicoPressable(
+      onTap: () {
+        if (!isSelected) {
+          NilicoHaptics.trigger(NilicoHapticType.selection);
+        }
+        setState(() => _filter = filter);
+      },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
+        duration: NilicoMotion.chipDuration,
+        curve: NilicoMotion.ease,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
@@ -275,8 +284,9 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             width: 1.5,
           ),
         ),
-        child: Text(
-          label,
+        child: AnimatedDefaultTextStyle(
+          duration: NilicoMotion.chipDuration,
+          curve: NilicoMotion.ease,
           style: TextStyle(
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
@@ -284,6 +294,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                 ? const Color(0xFFFFB4A2)
                 : const Color(0xFF4A3E39).withValues(alpha: 0.6),
           ),
+          child: Text(label),
         ),
       ),
     );
@@ -501,47 +512,19 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         ),
       );
     }
-    return Stack(
-      children: [
-        // Timeline line — anchored to center of the 12px dot (padding=24, halfDot=6)
-        Positioned(
-          left: 29, // 24 padding + 6 half-dot - 1 half-line
-          top: 0,
-          bottom: 120,
-          child: Container(
-            width: 2,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  const Color(0xFFE5E0F7),
-                  const Color(0xFFE5E0F7).withValues(alpha: 0),
-                ],
-              ),
-            ),
-          ),
-        ),
-        // Memory cards
-        ListView.builder(
-          padding: const EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 8,
-            bottom: 120,
-          ),
-          itemCount: filtered.length,
-          itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
-        ),
-      ],
+    return ListView.builder(
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 120),
+      itemCount: filtered.length,
+      itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
     );
   }
 
   Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
     final photoSource = resolveMilestonePhotoSource(milestone);
     final hasPhoto = photoSource != null && photoSource.isNotEmpty;
-    final illustrationUrl =
-        (milestone['illustrationUrl'] ?? '').toString().trim();
+    final illustrationUrl = (milestone['illustrationUrl'] ?? '')
+        .toString()
+        .trim();
     final hasIllustration = illustrationUrl.isNotEmpty;
     final memoryId = (milestone['id'] ?? '').toString();
     final isGenerating =
@@ -551,69 +534,37 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     final note = (milestone['note'] ?? '').toString();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Timeline dot
-          Padding(
-            padding: const EdgeInsets.only(top: 22),
-            child: Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFB4A2),
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                    blurRadius: 4,
-                  ),
-                ],
-              ),
-            ),
+      padding: const EdgeInsets.only(bottom: 18),
+      child: NilicoPressable(
+        onTap: () => _showMilestoneDetail(milestone),
+        haptic: NilicoHapticType.selection,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: AppColors.borderSoft),
+            boxShadow: AppShadows.card(false),
           ),
-          const SizedBox(width: 16),
-          // Card
-          Expanded(
-            child: GestureDetector(
-              onTap: () => _showMilestoneDetail(milestone),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.95),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.5),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(26),
+            child: Stack(
+              children: [
+                Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Photo header (full-width, photo-first)
                     if (hasPhoto)
                       Stack(
                         children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                            child: SizedBox(
-                              height: 148,
-                              width: double.infinity,
+                          AspectRatio(
+                            aspectRatio: 1.12,
+                            child: Hero(
+                              tag: 'memory-image-${milestone['id']}',
                               child: buildPlatformImage(
                                 photoSource,
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) =>
                                     Container(
-                                      color: const Color(0xFFE5E0F7),
+                                      color: const Color(0xFFEDE7F8),
                                       child: const Center(
                                         child: Icon(
                                           Icons.image_not_supported_outlined,
@@ -625,11 +576,10 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                               ),
                             ),
                           ),
-                          // Illustration state badge overlaid on photo
                           if (hasIllustration || isGenerating)
                             Positioned(
-                              bottom: 10,
-                              left: 12,
+                              left: 14,
+                              bottom: 14,
                               child: _buildIllustrationBadge(
                                 isReady: hasIllustration,
                                 isGenerating: isGenerating,
@@ -637,163 +587,214 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                               ),
                             ),
                         ],
-                      ),
-                    // Content row
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // Badge above title when no photo
-                                if (!hasPhoto &&
-                                    (hasIllustration || isGenerating)) ...[
-                                  _buildIllustrationBadge(
-                                    isReady: hasIllustration,
-                                    isGenerating: isGenerating,
-                                  ),
-                                  const SizedBox(height: 6),
-                                ],
-                                Text(
-                                  milestone['title'] ?? '',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF4A3E39),
-                                    height: 1.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _formatDate(milestone['date'] as DateTime),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: const Color(
-                                      0xFF4A3E39,
-                                    ).withValues(alpha: 0.42),
-                                    letterSpacing: 0.1,
-                                  ),
-                                ),
-                                if (note.isNotEmpty) ...[
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    note,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: const Color(
-                                        0xFF4A3E39,
-                                      ).withValues(alpha: 0.6),
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                ],
-                              ],
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (hasIllustration || isGenerating) ...[
+                              _buildIllustrationBadge(
+                                isReady: hasIllustration,
+                                isGenerating: isGenerating,
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                            Text(
+                              milestone['title'] ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF4A3E39),
+                                height: 1.2,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 6),
-                          // Overflow menu
-                          SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: PopupMenuButton<String>(
-                              icon: Icon(
-                                Icons.more_horiz,
-                                size: 18,
+                            const SizedBox(height: 6),
+                            Text(
+                              _formatDate(milestone['date'] as DateTime),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                                 color: const Color(
                                   0xFF4A3E39,
-                                ).withValues(alpha: 0.4),
+                                ).withValues(alpha: 0.46),
                               ),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              color: const Color(0xFFFFFBF5),
-                              onSelected: (value) {
-                                switch (value) {
-                                  case 'edit':
-                                    _showEditMilestoneSheet(milestone);
-                                  case 'share':
-                                    _shareMilestone(milestone);
-                                  case 'delete':
-                                    _deleteMilestone(milestone);
-                                }
-                              },
-                              itemBuilder: (context) => [
-                                PopupMenuItem(
-                                  value: 'edit',
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.edit_outlined,
-                                        size: 18,
-                                        color: Color(0xFF4A3E39),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.edit,
-                                        style: const TextStyle(
-                                          color: Color(0xFF4A3E39),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 'share',
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.share_outlined,
-                                        size: 18,
-                                        color: Color(0xFF4A3E39),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.share,
-                                        style: const TextStyle(
-                                          color: Color(0xFF4A3E39),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                PopupMenuItem(
-                                  value: 'delete',
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.delete_outline,
-                                        size: 18,
-                                        color: Color(0xFFFF6B6B),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        AppLocalizations.of(context)!.delete,
-                                        style: const TextStyle(
-                                          color: Color(0xFFFF6B6B),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ),
-                          ),
-                        ],
+                            if (note.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                note,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: const Color(
+                                    0xFF4A3E39,
+                                  ).withValues(alpha: 0.68),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                    ),
+                    if (hasPhoto)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              milestone['title'] ?? '',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF4A3E39),
+                                height: 1.2,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _formatDate(milestone['date'] as DateTime),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.46),
+                              ),
+                            ),
+                            if (note.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                note,
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: const Color(
+                                    0xFF4A3E39,
+                                  ).withValues(alpha: 0.68),
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                   ],
                 ),
-              ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: hasPhoto
+                          ? Colors.white.withValues(alpha: 0.88)
+                          : const Color(0xFFFFFBF5),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.06),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_horiz,
+                        size: 18,
+                        color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                      ),
+                      padding: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      color: const Color(0xFFFFFBF5),
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            _showEditMilestoneSheet(milestone);
+                          case 'share':
+                            _shareMilestone(milestone);
+                          case 'delete':
+                            _deleteMilestone(milestone);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.edit_outlined,
+                                size: 18,
+                                color: Color(0xFF4A3E39),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                AppLocalizations.of(context)!.edit,
+                                style: const TextStyle(
+                                  color: Color(0xFF4A3E39),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'share',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.share_outlined,
+                                size: 18,
+                                color: Color(0xFF4A3E39),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                AppLocalizations.of(context)!.share,
+                                style: const TextStyle(
+                                  color: Color(0xFF4A3E39),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.delete_outline,
+                                size: 18,
+                                color: Color(0xFFFF6B6B),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                AppLocalizations.of(context)!.delete,
+                                style: const TextStyle(
+                                  color: Color(0xFFFF6B6B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -910,6 +911,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
       await VeriYonetici.saveMilestones(milestones);
       if (!mounted) return;
       widget.onSaved();
+      NilicoHaptics.trigger(NilicoHapticType.success);
 
       if (mounted) Navigator.pop(context);
     } catch (e) {
@@ -1259,7 +1261,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
               ],
             ),
           ),
-          // Fixed bottom save button with gradient
+          // Fixed bottom save button
           Positioned(
             bottom: 0,
             left: 0,
@@ -1267,16 +1269,8 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
             child: Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    const Color(0xFFFFFBF5).withValues(alpha: 0),
-                    const Color(0xFFFFFBF5),
-                    const Color(0xFFFFFBF5),
-                  ],
-                  stops: const [0.0, 0.3, 1.0],
-                ),
+                color: const Color(0xFFFFFBF5),
+                border: Border(top: BorderSide(color: AppColors.borderSoft)),
               ),
               child: SafeArea(
                 top: false,
@@ -1352,7 +1346,6 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
       ],
     );
   }
-
 }
 
 // Edit Milestone Bottom Sheet
@@ -2197,7 +2190,7 @@ class MilestoneDetailScreen extends StatelessWidget {
   });
 
   void _showEditSheet(BuildContext context) {
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -2213,7 +2206,7 @@ class MilestoneDetailScreen extends StatelessWidget {
   }
 
   void _shareMilestone(BuildContext context) {
-    showModalBottomSheet(
+    showNilicoModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) =>
@@ -2258,6 +2251,7 @@ class MilestoneDetailScreen extends StatelessWidget {
     );
 
     if (confirm == true) {
+      NilicoHaptics.trigger(NilicoHapticType.medium);
       final milestones = VeriYonetici.getMilestones();
       milestones.removeWhere((m) => m['id'] == milestone['id']);
       await VeriYonetici.saveMilestones(milestones);
@@ -2468,23 +2462,26 @@ class MilestoneDetailScreen extends StatelessWidget {
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(24),
-                              child: buildPlatformImage(
-                                photoSource,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                      height: 200,
-                                      color: const Color(
-                                        0xFFE5E0F7,
-                                      ).withValues(alpha: 0.3),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.image_not_supported,
-                                          size: 48,
-                                          color: Color(0xFF4A3E39),
+                              child: Hero(
+                                tag: 'memory-image-${milestone['id']}',
+                                child: buildPlatformImage(
+                                  photoSource,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Container(
+                                        height: 200,
+                                        color: const Color(
+                                          0xFFE5E0F7,
+                                        ).withValues(alpha: 0.3),
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.image_not_supported,
+                                            size: 48,
+                                            color: Color(0xFF4A3E39),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                ),
                               ),
                             ),
                           ),
