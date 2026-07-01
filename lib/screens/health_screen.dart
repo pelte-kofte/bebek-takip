@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -21,7 +19,7 @@ class HealthScreen extends StatelessWidget {
       l10n.medications,
       Localizations.localeOf(context).languageCode == 'tr'
           ? 'Ek Gıda'
-          : 'Baby Meals',
+          : 'Meals',
     ];
   }
 
@@ -69,6 +67,53 @@ class _HealthTabCapsules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return _HealthTabScroller(labels: labels);
+  }
+}
+
+class _HealthTabScroller extends StatefulWidget {
+  const _HealthTabScroller({required this.labels});
+
+  final List<String> labels;
+
+  @override
+  State<_HealthTabScroller> createState() => _HealthTabScrollerState();
+}
+
+class _HealthTabScrollerState extends State<_HealthTabScroller> {
+  final ScrollController _scrollController = ScrollController();
+  late final List<GlobalKey> _pillKeys = List<GlobalKey>.generate(
+    widget.labels.length,
+    (_) => GlobalKey(),
+  );
+  int _lastEnsuredIndex = -1;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _ensureSelectedVisible(int index) {
+    if (_lastEnsuredIndex == index) return;
+    _lastEnsuredIndex = index;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scrollController.hasClients) return;
+      final pillContext = _pillKeys[index].currentContext;
+      if (pillContext == null) return;
+
+      Scrollable.ensureVisible(
+        pillContext,
+        alignment: 0.5,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final controller = DefaultTabController.of(context);
     final animation = controller.animation;
 
@@ -76,66 +121,58 @@ class _HealthTabCapsules extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return SizedBox(
-      height: 66,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      height: 50,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.bgDarkCard.withValues(alpha: 0.9)
+            : const Color(0xFFF4F1EC),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : const Color(0xFFE5DFD8),
+        ),
+      ),
       child: AnimatedBuilder(
         animation: animation,
         builder: (context, _) {
-          final animationValue = animation.value;
           final currentIndex = controller.index;
-          const overlap = 34.0;
-
-          final widths = labels
-              .map((label) => math.max(136.0, 64.0 + (label.length * 7.0)))
-              .toList(growable: false);
-          final totalWidth =
-              widths.fold<double>(0, (sum, width) => sum + width) -
-              (overlap * (labels.length - 1));
+          _ensureSelectedVisible(currentIndex);
 
           return SingleChildScrollView(
+            controller: _scrollController,
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: SizedBox(
-              width: totalWidth,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children:
-                    List<Widget>.generate(labels.length, (index) {
-                      final distance = (animationValue - index).abs();
-                      final selectedness = (1 - distance).clamp(0.0, 1.0);
-                      final isActive = currentIndex == index;
-                      final left =
-                          widths
-                              .take(index)
-                              .fold<double>(0, (sum, width) => sum + width) -
-                          (overlap * index);
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: List<Widget>.generate(widget.labels.length, (index) {
+                  final distance = (animation.value - index).abs();
+                  final selectedness = (1 - distance).clamp(0.0, 1.0);
+                  final isActive = currentIndex == index;
 
-                      return Positioned(
-                        left: left,
-                        top: 0,
-                        bottom: 0,
-                        child: _HealthTabPill(
-                          label: labels[index],
-                          width: widths[index],
-                          selectedness: selectedness,
-                          isActive: isActive,
-                          onTap: () {
-                            if (controller.index != index) {
-                              NilicoHaptics.trigger(NilicoHapticType.selection);
-                            }
-                            controller.animateTo(index);
-                          },
-                        ),
-                      );
-                    })..sort((a, b) {
-                      final aPositioned = a as Positioned;
-                      final bPositioned = b as Positioned;
-                      final aPill = aPositioned.child as _HealthTabPill;
-                      final bPill = bPositioned.child as _HealthTabPill;
-                      return aPill.isActive == bPill.isActive
-                          ? 0
-                          : (aPill.isActive ? 1 : -1);
-                    }),
+                  return Padding(
+                    key: _pillKeys[index],
+                    padding: EdgeInsets.only(
+                      right: index == widget.labels.length - 1 ? 0 : 4,
+                    ),
+                    child: _HealthTabPill(
+                      label: widget.labels[index],
+                      selectedness: selectedness,
+                      isActive: isActive,
+                      onTap: () {
+                        if (controller.index != index) {
+                          NilicoHaptics.trigger(NilicoHapticType.selection);
+                        }
+                        controller.animateTo(index);
+                      },
+                    ),
+                  );
+                }),
               ),
             ),
           );
@@ -148,14 +185,12 @@ class _HealthTabCapsules extends StatelessWidget {
 class _HealthTabPill extends StatelessWidget {
   const _HealthTabPill({
     required this.label,
-    required this.width,
     required this.selectedness,
     required this.isActive,
     required this.onTap,
   });
 
   final String label;
-  final double width;
   final double selectedness;
   final bool isActive;
   final VoidCallback onTap;
@@ -164,67 +199,42 @@ class _HealthTabPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final fillColor = Color.lerp(
-      isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF7),
-      isDark ? const Color(0xFF6F628A) : const Color(0xFFE7E0F6),
+      Colors.transparent,
+      isDark ? const Color(0xFF4A465A) : const Color(0xFFFFFFFF),
       selectedness,
     )!;
     final textColor = Color.lerp(
-      isDark ? AppColors.textSecondaryDark : const Color(0xFF7B6B67),
-      isDark ? Colors.white : const Color(0xFF55476B),
+      isDark ? AppColors.textSecondaryDark : const Color(0xFF7D746D),
+      isDark ? Colors.white : const Color(0xFF403B37),
       selectedness,
     )!;
     final borderColor = Color.lerp(
-      isDark
-          ? Colors.white.withValues(alpha: 0.06)
-          : const Color(0xFFE7DED8).withValues(alpha: 0.9),
-      isDark ? const Color(0xFF8F80AB) : const Color(0xFFD7CCE9),
+      Colors.transparent,
+      isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE8E2DB),
       selectedness,
     )!;
-    final shadowColor = isDark
-        ? Colors.black.withValues(alpha: 0.16 + (0.10 * selectedness))
-        : const Color(
-            0xFFB5A6D3,
-          ).withValues(alpha: 0.07 + (0.15 * selectedness));
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(22),
-          topRight: Radius.circular(22),
-          bottomLeft: Radius.circular(14),
-          bottomRight: Radius.circular(14),
-        ),
+        borderRadius: BorderRadius.circular(13),
         onTap: onTap,
         child: AnimatedContainer(
           duration: NilicoMotion.chipDuration,
           curve: NilicoMotion.ease,
-          width: width,
-          constraints: const BoxConstraints(minHeight: 54),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
+          constraints: const BoxConstraints(minHeight: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
           decoration: BoxDecoration(
             color: fillColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(22),
-              topRight: Radius.circular(22),
-              bottomLeft: Radius.circular(14),
-              bottomRight: Radius.circular(14),
-            ),
+            borderRadius: BorderRadius.circular(13),
             border: Border.all(color: borderColor),
-            boxShadow: [
-              BoxShadow(
-                color: shadowColor,
-                blurRadius: 10 + (8 * selectedness),
-                offset: Offset(0, 4 + (math.max(0, selectedness) * 3)),
-              ),
-            ],
           ),
           child: AnimatedDefaultTextStyle(
             duration: NilicoMotion.chipDuration,
             curve: NilicoMotion.ease,
             style: AppTypography.bodySmall(context).copyWith(
               color: textColor,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
             ),
             child: Text(
               label,

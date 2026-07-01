@@ -28,8 +28,25 @@ class _GrowthScreenState extends State<GrowthScreen> {
 
   void _loadRecords() {
     setState(() {
-      _records = VeriYonetici.getBoyKiloKayitlari();
+      _records = _sortRecordsByMeasurementDateDesc(
+        VeriYonetici.getBoyKiloKayitlari(),
+      );
     });
+  }
+
+  List<Map<String, dynamic>> _sortRecordsByMeasurementDateDesc(
+    List<Map<String, dynamic>> records,
+  ) {
+    final sorted = List<Map<String, dynamic>>.from(records);
+    sorted.sort((a, b) {
+      final aDate = a['tarih'] as DateTime?;
+      final bDate = b['tarih'] as DateTime?;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+    return sorted;
   }
 
   String _localeName(BuildContext context) =>
@@ -342,12 +359,12 @@ class _GrowthScreenState extends State<GrowthScreen> {
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: isDark
                 ? AppColors.bgDarkCard.withValues(alpha: 0.9)
                 : Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: isDark
                   ? Colors.white.withValues(alpha: 0.06)
@@ -363,49 +380,82 @@ class _GrowthScreenState extends State<GrowthScreen> {
                     ),
                   ],
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.accentGreen.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.trending_up,
-                  color: AppColors.accentGreen,
-                  size: 24,
-                ),
+              Text(
+                _formatDate(context, date),
+                style: AppTypography.h3(context).copyWith(fontSize: 16),
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _formatDate(context, date),
-                      style: AppTypography.h3(context).copyWith(fontSize: 16),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildMeasurementMetric(
+                      isDark: isDark,
+                      label: l10n.weight,
+                      value:
+                          '${_formatNumber(context, weight)} ${l10n.kilogramUnit}',
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${l10n.height}: ${_formatNumber(context, height)} ${l10n.centimeterUnit}  •  ${l10n.weight}: ${_formatNumber(context, weight)} ${l10n.kilogramUnit}',
-                      style: AppTypography.caption(context).copyWith(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.1,
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : const Color(0xFF866F65),
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildMeasurementMetric(
+                      isDark: isDark,
+                      label: l10n.height,
+                      value:
+                          '${_formatNumber(context, height)} ${l10n.centimeterUnit}',
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildMeasurementMetric({
+    required bool isDark,
+    required String label,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : const Color(0xFFFFF8F0),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: AppTypography.caption(context).copyWith(
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : const Color(0xFF9B8F88),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            value,
+            style: AppTypography.body(context).copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: isDark
+                  ? AppColors.textPrimaryDark
+                  : const Color(0xFF2D1A18),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -414,11 +414,11 @@ class _AddScreenState extends State<AddScreen> {
       text,
       style: TextStyle(
         fontSize: 10,
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w700,
         color: isDark
             ? Colors.white.withValues(alpha: 0.6)
             : const Color(0xFF4A3F3F),
-        letterSpacing: 2.0,
+        letterSpacing: 1.2,
       ),
     );
   }
@@ -431,102 +431,112 @@ class _AddScreenState extends State<AddScreen> {
     String? secondaryLabel,
     VoidCallback? onDateTap,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: _buildFeedingCard(
-        isDark: isDark,
-        surfaceColor: isDark ? AppColors.bgDarkSurface : Colors.white,
-        child: Row(
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : const Color(0xFFFFF4EE),
-                borderRadius: BorderRadius.circular(14),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: _buildFeedingCard(
+          isDark: isDark,
+          surfaceColor: isDark ? AppColors.bgDarkSurface : Colors.white,
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : const Color(0xFFFFF4EE),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  CupertinoIcons.time,
+                  size: 20,
+                  color: isDark ? Colors.white70 : const Color(0xFFCF866F),
+                ),
               ),
-              child: Icon(
-                CupertinoIcons.time,
-                size: 20,
-                color: isDark ? Colors.white70 : const Color(0xFFCF866F),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    value != null ? _formatTime(value) : placeholder,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: value != null
-                          ? (isDark
-                                ? AppColors.textPrimaryDark
-                                : const Color(0xFF4A3F3F))
-                          : (isDark
-                                ? Colors.white.withValues(alpha: 0.5)
-                                : const Color(0xFF7A749E)),
-                    ),
-                  ),
-                  if (secondaryLabel != null) ...[
-                    const SizedBox(height: 4),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      secondaryLabel,
+                      value != null ? _formatTime(value) : placeholder,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.58)
-                            : const Color(0xFF8F8796),
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: value != null
+                            ? (isDark
+                                  ? AppColors.textPrimaryDark
+                                  : const Color(0xFF4A3F3F))
+                            : (isDark
+                                  ? Colors.white.withValues(alpha: 0.5)
+                                  : const Color(0xFF7A749E)),
                       ),
                     ),
+                    if (secondaryLabel != null) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        secondaryLabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.58)
+                              : const Color(0xFF8F8796),
+                        ),
+                      ),
+                    ],
                   ],
-                ],
-              ),
-            ),
-            if (value != null && onDateTap != null) ...[
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: onDateTap,
-                child: Container(
-                  height: 34,
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.06)
-                        : const Color(0xFFFFF4EE),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.08)
-                          : const Color(0xFFF0E4E1),
-                    ),
-                  ),
-                  child: Icon(
-                    CupertinoIcons.calendar,
-                    size: 16,
-                    color: isDark ? Colors.white70 : const Color(0xFFCF866F),
-                  ),
                 ),
               ),
+              if (value != null && onDateTap != null) ...[
+                const SizedBox(width: 10),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(999),
+                    onTap: onDateTap,
+                    child: Container(
+                      height: 34,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : const Color(0xFFFFF4EE),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : const Color(0xFFF0E4E1),
+                        ),
+                      ),
+                      child: Icon(
+                        CupertinoIcons.calendar,
+                        size: 16,
+                        color: isDark
+                            ? Colors.white70
+                            : const Color(0xFFCF866F),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(width: 12),
+              Icon(
+                CupertinoIcons.chevron_right,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.5)
+                    : const Color(0xFFB2A7AE),
+                size: 18,
+              ),
             ],
-            const SizedBox(width: 12),
-            Icon(
-              CupertinoIcons.chevron_right,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.5)
-                  : const Color(0xFFB2A7AE),
-              size: 20,
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -538,9 +548,6 @@ class _AddScreenState extends State<AddScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFFFF998A).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFFF998A).withValues(alpha: 0.28),
-        ),
       ),
       child: child,
     );
@@ -640,718 +647,508 @@ class _AddScreenState extends State<AddScreen> {
           color: sheetBg,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -118,
-              right: -86,
-              child: IgnorePointer(
-                child: Container(
-                  width: 320,
-                  height: 320,
-                  decoration: BoxDecoration(
-                    color: const Color(
-                      0xFFFFB4A2,
-                    ).withValues(alpha: isDark ? 0.045 : 0.08),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 92,
-              left: -72,
-              child: IgnorePointer(
-                child: Container(
-                  width: 184,
-                  height: 184,
-                  decoration: BoxDecoration(
-                    color: const Color(
-                      0xFFE5E0F7,
-                    ).withValues(alpha: isDark ? 0.04 : 0.11),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 96,
-              left: 26,
-              child: IgnorePointer(
-                child: Container(
-                  width: 104,
-                  height: 104,
-                  decoration: BoxDecoration(
-                    color: const Color(
-                      0xFFDCEEF2,
-                    ).withValues(alpha: isDark ? 0.035 : 0.085),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: -118,
-              right: 46,
-              child: IgnorePointer(
-                child: Container(
-                  width: 238,
-                  height: 238,
-                  decoration: BoxDecoration(
-                    color: const Color(
-                      0xFFF6E4B8,
-                    ).withValues(alpha: isDark ? 0.03 : 0.065),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ),
-            if (selectedActivity == 'bottle')
-              Positioned(
-                top: 222,
-                right: -36,
-                child: IgnorePointer(
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: const Color(
-                        0xFFFFF6EA,
-                      ).withValues(alpha: isDark ? 0.03 : 0.08),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
-              ),
-            // Main content
-            SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Header
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        GestureDetector(
-                          onTap: _isSaving ? null : _handleCloseRequested,
-                          child: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: surfaceColor,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.05),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.close,
-                              color: isDark
-                                  ? AppColors.textPrimaryDark
-                                  : const Color(0xFF4A3F3F),
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Compact activity type row
-                  Builder(
-                    builder: (context) {
-                      final l10n = AppLocalizations.of(context)!;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          children: [
-                            _buildCompactActivityChip(
-                              'breastfeeding',
-                              l10n.nursing,
-                            ),
-                            const SizedBox(width: 6),
-                            _buildCompactActivityChip('bottle', l10n.bottle),
-                            const SizedBox(width: 6),
-                            _buildCompactActivityChip('sleep', l10n.sleep),
-                            const SizedBox(width: 6),
-                            _buildCompactActivityChip('diaper', l10n.diaper),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  // Detail panel - warmer card design
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: 20,
-                          right: 20,
-                          top: 0,
-                          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-                        ),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+                child: Row(
+                  children: [
+                    Material(
+                      color: surfaceColor,
+                      borderRadius: BorderRadius.circular(12),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: _isSaving ? null : _handleCloseRequested,
+                        child: SizedBox(
+                          width: 40,
+                          height: 40,
+                          child: Icon(
+                            Icons.close,
                             color: isDark
-                                ? AppColors.bgDarkSurface
-                                : Colors.white.withValues(alpha: 0.95),
-                            borderRadius: BorderRadius.circular(24),
-                            border: Border.all(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.08)
-                                  : const Color(
-                                      0xFFE5E0F7,
-                                    ).withValues(alpha: 0.5),
-                            ),
-                            boxShadow: isDark
-                                ? []
-                                : [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFE5E0F7,
-                                      ).withValues(alpha: 0.3),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (selectedActivity == 'breastfeeding' ||
-                                  selectedActivity == 'bottle') ...[
-                                Text(
-                                  l10n.selectTime.toUpperCase(),
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.6)
-                                        : const Color(0xFF4A3F3F),
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                _buildPastelTimeCard(
-                                  isDark: isDark,
-                                  value: _feedingDateTime,
-                                  placeholder: l10n.tapToSetTime,
-                                  secondaryLabel: _formatDateLabel(
-                                    _feedingDateTime,
-                                  ),
-                                  onDateTap: () async {
-                                    final picked = await _pickEventDate(
-                                      _feedingDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(() => _feedingDateTime = picked);
-                                    }
-                                  },
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
-                                      _feedingDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(() => _feedingDateTime = picked);
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                              ],
-                              if (selectedActivity == 'breastfeeding') ...[
-                                _buildSectionEyebrow(
-                                  l10n.side.toUpperCase(),
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildFeedingSegmentControl(
-                                  isDark: isDark,
-                                  surfaceColor: surfaceColor,
-                                  groupValue: selectedSide,
-                                  options: [
-                                    _SegmentOption(
-                                      value: 'left',
-                                      label: l10n.left,
-                                    ),
-                                    _SegmentOption(
-                                      value: 'right',
-                                      label: l10n.right,
-                                    ),
-                                  ],
-                                  onChanged: (value) =>
-                                      setState(() => selectedSide = value),
-                                ),
-                                const SizedBox(height: 16),
-                                _buildSectionEyebrow(
-                                  l10n.duration.toUpperCase(),
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                GestureDetector(
-                                  onTap: () async {
-                                    final picked =
-                                        await _showCupertinoDurationPicker(
-                                          Duration(minutes: minutes),
-                                        );
-                                    if (picked != null) {
-                                      setState(
-                                        () => minutes = picked.inMinutes,
-                                      );
-                                    }
-                                  },
-                                  child: _buildFeedingMetricCard(
-                                    isDark: isDark,
-                                    surfaceColor: surfaceColor,
-                                    label: l10n.duration,
-                                    value: minutes > 0
-                                        ? minutes.toString()
-                                        : '0',
-                                    unit: l10n.minAbbrev,
-                                    icon: CupertinoIcons.timer,
-                                    onDecrease: () => setState(() {
-                                      if (minutes > 0) minutes--;
-                                    }),
-                                    onIncrease: () => setState(() {
-                                      minutes++;
-                                    }),
-                                  ),
-                                ),
-                              ],
-                              if (selectedActivity == 'bottle') ...[
-                                // Category selector (Milk/Solid)
-                                Text(
-                                  l10n.category,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.6)
-                                        : const Color(0xFF4A3F3F),
-                                    letterSpacing: 2.0,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                _buildFeedingSegmentControl(
-                                  isDark: isDark,
-                                  surfaceColor: surfaceColor,
-                                  groupValue: feedingCategory,
-                                  options: [
-                                    _SegmentOption(
-                                      value: 'Milk',
-                                      label: l10n.milk,
-                                    ),
-                                    _SegmentOption(
-                                      value: 'Solid',
-                                      label: l10n.solid,
-                                    ),
-                                  ],
-                                  onChanged: (value) =>
-                                      setState(() => feedingCategory = value),
-                                ),
-                                const SizedBox(height: 22),
-                                // Show different content based on category
-                                if (feedingCategory == 'Solid') ...[
-                                  // Solid food description
-                                  Text(
-                                    l10n.whatWasGiven,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.6)
-                                          : const Color(0xFF4A3F3F),
-                                      letterSpacing: 2.0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildFeedingCard(
-                                    isDark: isDark,
-                                    surfaceColor: surfaceColor,
-                                    child: TextField(
-                                      controller: _solidFoodController,
-                                      maxLines: 2,
-                                      decoration: InputDecoration(
-                                        hintText: l10n.solidFoodHint,
-                                        hintStyle: TextStyle(
-                                          color: isDark
-                                              ? Colors.white.withValues(
-                                                  alpha: 0.34,
-                                                )
-                                              : const Color(
-                                                  0xFF6B6475,
-                                                ).withValues(alpha: 0.55),
-                                          fontSize: 14,
-                                        ),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.86,
-                                              )
-                                            : const Color(0xFF4A3F3F),
-                                      ),
-                                    ),
-                                  ),
-                                ] else ...[
-                                  _buildFeedingMetricCard(
-                                    isDark: isDark,
-                                    surfaceColor: surfaceColor,
-                                    label: l10n.amount,
-                                    value: bottleAmount.toString(),
-                                    unit: l10n.mlAbbrev,
-                                    icon: CupertinoIcons.drop,
-                                    onDecrease: () => setState(() {
-                                      if (bottleAmount >= 10) {
-                                        bottleAmount -= 10;
-                                      }
-                                    }),
-                                    onIncrease: () => setState(() {
-                                      bottleAmount += 10;
-                                    }),
-                                  ),
-                                  const SizedBox(height: 24),
-                                  // Milk type selector
-                                  Text(
-                                    l10n.milkType,
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.6)
-                                          : const Color(0xFF4A3F3F),
-                                      letterSpacing: 2.0,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  _buildFeedingSegmentControl(
-                                    isDark: isDark,
-                                    surfaceColor: surfaceColor,
-                                    groupValue: milkType,
-                                    options: [
-                                      _SegmentOption(
-                                        value: 'breast',
-                                        label: l10n.breastMilk,
-                                      ),
-                                      _SegmentOption(
-                                        value: 'formula',
-                                        label: l10n.formula,
-                                      ),
-                                    ],
-                                    onChanged: (value) =>
-                                        setState(() => milkType = value),
-                                  ),
-                                ], // end of else (Milk category)
-                              ],
-                              if (selectedActivity == 'sleep') ...[
-                                // Sleep started at
-                                _buildSectionEyebrow(
-                                  l10n.sleepStartedAt,
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildPastelTimeCard(
-                                  isDark: isDark,
-                                  value: _sleepStartDateTime,
-                                  placeholder: l10n.tapToSetTime,
-                                  secondaryLabel: _formatDateLabel(
-                                    _sleepStartDateTime,
-                                  ),
-                                  onDateTap: () async {
-                                    final picked = await _pickEventDate(
-                                      _sleepStartDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(
-                                        () => _sleepStartDateTime = picked,
-                                      );
-                                    }
-                                  },
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
-                                      _sleepStartDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(
-                                        () => _sleepStartDateTime = picked,
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                _buildSectionEyebrow(l10n.wokeUpAt, isDark),
-                                const SizedBox(height: 12),
-                                _buildPastelTimeCard(
-                                  isDark: isDark,
-                                  value: _sleepEndDateTime,
-                                  placeholder: l10n.tapToSetTime,
-                                  secondaryLabel: _sleepEndDateTime != null
-                                      ? _formatDateLabel(_sleepEndDateTime!)
-                                      : null,
-                                  onDateTap: _sleepEndDateTime == null
-                                      ? null
-                                      : () async {
-                                          final picked = await _pickEventDate(
-                                            _sleepEndDateTime!,
-                                          );
-                                          if (picked != null) {
-                                            setState(
-                                              () => _sleepEndDateTime = picked,
-                                            );
-                                          }
-                                        },
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
-                                      _sleepEndDateTime ?? DateTime.now(),
-                                    );
-                                    if (picked != null) {
-                                      setState(
-                                        () => _sleepEndDateTime = picked,
-                                      );
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 20),
-                                if (_sleepEndDateTime != null) ...[
-                                  _buildWarmSummaryCard(
-                                    isDark: isDark,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.timer_outlined,
-                                          color: Color(0xFFFF998A),
-                                          size: 20,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          l10n.totalSleep(
-                                            _calculateSleepDuration(),
-                                          ),
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: isDark
-                                                ? AppColors.textPrimaryDark
-                                                : const Color(0xFF4A3F3F),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ],
-                              if (selectedActivity == 'diaper') ...[
-                                _buildSectionEyebrow(
-                                  l10n.healthType.toUpperCase(),
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildFeedingSegmentControl(
-                                  isDark: isDark,
-                                  surfaceColor: surfaceColor,
-                                  groupValue: _diaperType,
-                                  options: [
-                                    _SegmentOption(
-                                      value: 'wet',
-                                      label: l10n.wet,
-                                    ),
-                                    _SegmentOption(
-                                      value: 'dirty',
-                                      label: l10n.dirty,
-                                    ),
-                                    _SegmentOption(
-                                      value: 'both',
-                                      label: l10n.both,
-                                    ),
-                                  ],
-                                  onChanged: (value) =>
-                                      setState(() => _diaperType = value),
-                                ),
-                                const SizedBox(height: 24),
-                                _buildSectionEyebrow(
-                                  l10n.healthTime.toUpperCase(),
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildPastelTimeCard(
-                                  isDark: isDark,
-                                  value: _diaperDateTime,
-                                  placeholder: l10n.tapToSetTime,
-                                  secondaryLabel: _formatDateLabel(
-                                    _diaperDateTime,
-                                  ),
-                                  onDateTap: () async {
-                                    final picked = await _pickEventDate(
-                                      _diaperDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(() => _diaperDateTime = picked);
-                                    }
-                                  },
-                                  onTap: () async {
-                                    final picked = await _pickEventTime(
-                                      _diaperDateTime,
-                                    );
-                                    if (picked != null) {
-                                      setState(() => _diaperDateTime = picked);
-                                    }
-                                  },
-                                ),
-                                const SizedBox(height: 24),
-                                _buildSectionEyebrow(
-                                  l10n.optionalNotes.toUpperCase(),
-                                  isDark,
-                                ),
-                                const SizedBox(height: 12),
-                                _buildFeedingCard(
-                                  isDark: isDark,
-                                  surfaceColor: surfaceColor,
-                                  child: TextField(
-                                    controller: _diaperNotesController,
-                                    maxLines: 3,
-                                    decoration: InputDecoration(
-                                      hintText: l10n.diaperNoteHint,
-                                      hintStyle: TextStyle(
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.3,
-                                              )
-                                            : const Color(
-                                                0xFF4A3F3F,
-                                              ).withValues(alpha: 0.3),
-                                        fontSize: 14,
-                                      ),
-                                      border: InputBorder.none,
-                                      contentPadding: EdgeInsets.zero,
-                                    ),
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.8)
-                                          : const Color(
-                                              0xFF4A3F3F,
-                                            ).withValues(alpha: 0.8),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              // Inline validation error
-                              if (_errorMessage != null) ...[
-                                const SizedBox(height: 16),
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFFFF6B6B,
-                                    ).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(
-                                        0xFFFF6B6B,
-                                      ).withValues(alpha: 0.3),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.info_outline,
-                                        color: Color(0xFFFF6B6B),
-                                        size: 18,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          _errorMessage!,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xFFFF6B6B),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                              // Save button - calm style
-                              const SizedBox(height: 16),
-                              GestureDetector(
-                                onTap: _isSaving ? null : _saveActivity,
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: selectedActivity == 'bottle'
-                                        ? const Color(0xFFE39A86)
-                                        : const Color(0xFFFF998A),
-                                    borderRadius: BorderRadius.circular(16),
-                                    boxShadow:
-                                        selectedActivity == 'bottle' && !isDark
-                                        ? [
-                                            BoxShadow(
-                                              color: const Color(
-                                                0xFFE39A86,
-                                              ).withValues(alpha: 0.24),
-                                              blurRadius: 16,
-                                              offset: const Offset(0, 8),
-                                            ),
-                                          ]
-                                        : null,
-                                  ),
-                                  child: _isSaving
-                                      ? const SizedBox(
-                                          height: 18,
-                                          width: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor:
-                                                AlwaysStoppedAnimation<Color>(
-                                                  Colors.white,
-                                                ),
-                                          ),
-                                        )
-                                      : Text(
-                                          l10n.save,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                ),
-                              ),
-                            ],
+                                ? AppColors.textPrimaryDark
+                                : const Color(0xFF4A3F3F),
+                            size: 18,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Row(
+                  children: [
+                    _buildCompactActivityChip('breastfeeding', l10n.nursing),
+                    const SizedBox(width: 6),
+                    _buildCompactActivityChip('bottle', l10n.bottle),
+                    const SizedBox(width: 6),
+                    _buildCompactActivityChip('sleep', l10n.sleep),
+                    const SizedBox(width: 6),
+                    _buildCompactActivityChip('diaper', l10n.diaper),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 24,
+                      right: 24,
+                      bottom: MediaQuery.of(context).viewInsets.bottom + 32,
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? AppColors.bgDarkSurface
+                            : Colors.white.withValues(alpha: 0.95),
+                        borderRadius: BorderRadius.circular(22),
+                        boxShadow: isDark
+                            ? null
+                            : const [
+                                BoxShadow(
+                                  color: Color(0x12000000),
+                                  blurRadius: 18,
+                                  offset: Offset(0, 6),
+                                ),
+                              ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (selectedActivity == 'breastfeeding' ||
+                              selectedActivity == 'bottle') ...[
+                            _buildSectionEyebrow(
+                              l10n.selectTime.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildPastelTimeCard(
+                              isDark: isDark,
+                              value: _feedingDateTime,
+                              placeholder: l10n.tapToSetTime,
+                              secondaryLabel: _formatDateLabel(
+                                _feedingDateTime,
+                              ),
+                              onDateTap: () async {
+                                final picked = await _pickEventDate(
+                                  _feedingDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _feedingDateTime = picked);
+                                }
+                              },
+                              onTap: () async {
+                                final picked = await _pickEventTime(
+                                  _feedingDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _feedingDateTime = picked);
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                          if (selectedActivity == 'breastfeeding') ...[
+                            _buildSectionEyebrow(
+                              l10n.side.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildFeedingSegmentControl(
+                              isDark: isDark,
+                              surfaceColor: surfaceColor,
+                              groupValue: selectedSide,
+                              options: [
+                                _SegmentOption(value: 'left', label: l10n.left),
+                                _SegmentOption(
+                                  value: 'right',
+                                  label: l10n.right,
+                                ),
+                              ],
+                              onChanged: (value) =>
+                                  setState(() => selectedSide = value),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionEyebrow(
+                              l10n.duration.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            GestureDetector(
+                              onTap: () async {
+                                final picked =
+                                    await _showCupertinoDurationPicker(
+                                      Duration(minutes: minutes),
+                                    );
+                                if (picked != null) {
+                                  setState(() => minutes = picked.inMinutes);
+                                }
+                              },
+                              child: _buildFeedingMetricCard(
+                                isDark: isDark,
+                                surfaceColor: surfaceColor,
+                                label: l10n.duration,
+                                value: minutes > 0 ? minutes.toString() : '0',
+                                unit: l10n.minAbbrev,
+                                icon: CupertinoIcons.timer,
+                                onDecrease: () => setState(() {
+                                  if (minutes > 0) minutes--;
+                                }),
+                                onIncrease: () => setState(() {
+                                  minutes++;
+                                }),
+                              ),
+                            ),
+                          ],
+                          if (selectedActivity == 'bottle') ...[
+                            _buildSectionEyebrow(
+                              l10n.category.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildFeedingSegmentControl(
+                              isDark: isDark,
+                              surfaceColor: surfaceColor,
+                              groupValue: feedingCategory,
+                              options: [
+                                _SegmentOption(value: 'Milk', label: l10n.milk),
+                                _SegmentOption(
+                                  value: 'Solid',
+                                  label: l10n.solid,
+                                ),
+                              ],
+                              onChanged: (value) =>
+                                  setState(() => feedingCategory = value),
+                            ),
+                            const SizedBox(height: 24),
+                            if (feedingCategory == 'Solid') ...[
+                              _buildSectionEyebrow(
+                                l10n.whatWasGiven.toUpperCase(),
+                                isDark,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildFeedingCard(
+                                isDark: isDark,
+                                surfaceColor: surfaceColor,
+                                child: TextField(
+                                  controller: _solidFoodController,
+                                  maxLines: 2,
+                                  decoration: InputDecoration(
+                                    hintText: l10n.solidFoodHint,
+                                    hintStyle: TextStyle(
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.34)
+                                          : const Color(
+                                              0xFF6B6475,
+                                            ).withValues(alpha: 0.55),
+                                      fontSize: 14,
+                                    ),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.zero,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.86)
+                                        : const Color(0xFF4A3F3F),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              _buildFeedingMetricCard(
+                                isDark: isDark,
+                                surfaceColor: surfaceColor,
+                                label: l10n.amount,
+                                value: bottleAmount.toString(),
+                                unit: l10n.mlAbbrev,
+                                icon: CupertinoIcons.drop,
+                                onDecrease: () => setState(() {
+                                  if (bottleAmount >= 10) bottleAmount -= 10;
+                                }),
+                                onIncrease: () => setState(() {
+                                  bottleAmount += 10;
+                                }),
+                              ),
+                              const SizedBox(height: 24),
+                              _buildSectionEyebrow(
+                                l10n.milkType.toUpperCase(),
+                                isDark,
+                              ),
+                              const SizedBox(height: 12),
+                              _buildFeedingSegmentControl(
+                                isDark: isDark,
+                                surfaceColor: surfaceColor,
+                                groupValue: milkType,
+                                options: [
+                                  _SegmentOption(
+                                    value: 'breast',
+                                    label: l10n.breastMilk,
+                                  ),
+                                  _SegmentOption(
+                                    value: 'formula',
+                                    label: l10n.formula,
+                                  ),
+                                ],
+                                onChanged: (value) =>
+                                    setState(() => milkType = value),
+                              ),
+                            ],
+                          ],
+                          if (selectedActivity == 'sleep') ...[
+                            _buildSectionEyebrow(l10n.sleepStartedAt, isDark),
+                            const SizedBox(height: 12),
+                            _buildPastelTimeCard(
+                              isDark: isDark,
+                              value: _sleepStartDateTime,
+                              placeholder: l10n.tapToSetTime,
+                              secondaryLabel: _formatDateLabel(
+                                _sleepStartDateTime,
+                              ),
+                              onDateTap: () async {
+                                final picked = await _pickEventDate(
+                                  _sleepStartDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _sleepStartDateTime = picked);
+                                }
+                              },
+                              onTap: () async {
+                                final picked = await _pickEventTime(
+                                  _sleepStartDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _sleepStartDateTime = picked);
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionEyebrow(l10n.wokeUpAt, isDark),
+                            const SizedBox(height: 12),
+                            _buildPastelTimeCard(
+                              isDark: isDark,
+                              value: _sleepEndDateTime,
+                              placeholder: l10n.tapToSetTime,
+                              secondaryLabel: _sleepEndDateTime != null
+                                  ? _formatDateLabel(_sleepEndDateTime!)
+                                  : null,
+                              onDateTap: _sleepEndDateTime == null
+                                  ? null
+                                  : () async {
+                                      final picked = await _pickEventDate(
+                                        _sleepEndDateTime!,
+                                      );
+                                      if (picked != null) {
+                                        setState(
+                                          () => _sleepEndDateTime = picked,
+                                        );
+                                      }
+                                    },
+                              onTap: () async {
+                                final picked = await _pickEventTime(
+                                  _sleepEndDateTime ?? DateTime.now(),
+                                );
+                                if (picked != null) {
+                                  setState(() => _sleepEndDateTime = picked);
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            if (_sleepEndDateTime != null)
+                              _buildWarmSummaryCard(
+                                isDark: isDark,
+                                child: Center(
+                                  child: Text(
+                                    l10n.totalSleep(_calculateSleepDuration()),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w700,
+                                      color: isDark
+                                          ? AppColors.textPrimaryDark
+                                          : const Color(0xFF4A3F3F),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                          if (selectedActivity == 'diaper') ...[
+                            _buildSectionEyebrow(
+                              l10n.healthType.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildFeedingSegmentControl(
+                              isDark: isDark,
+                              surfaceColor: surfaceColor,
+                              groupValue: _diaperType,
+                              options: [
+                                _SegmentOption(value: 'wet', label: l10n.wet),
+                                _SegmentOption(
+                                  value: 'dirty',
+                                  label: l10n.dirty,
+                                ),
+                                _SegmentOption(value: 'both', label: l10n.both),
+                              ],
+                              onChanged: (value) =>
+                                  setState(() => _diaperType = value),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionEyebrow(
+                              l10n.healthTime.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildPastelTimeCard(
+                              isDark: isDark,
+                              value: _diaperDateTime,
+                              placeholder: l10n.tapToSetTime,
+                              secondaryLabel: _formatDateLabel(_diaperDateTime),
+                              onDateTap: () async {
+                                final picked = await _pickEventDate(
+                                  _diaperDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _diaperDateTime = picked);
+                                }
+                              },
+                              onTap: () async {
+                                final picked = await _pickEventTime(
+                                  _diaperDateTime,
+                                );
+                                if (picked != null) {
+                                  setState(() => _diaperDateTime = picked);
+                                }
+                              },
+                            ),
+                            const SizedBox(height: 24),
+                            _buildSectionEyebrow(
+                              l10n.optionalNotes.toUpperCase(),
+                              isDark,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildFeedingCard(
+                              isDark: isDark,
+                              surfaceColor: surfaceColor,
+                              child: TextField(
+                                controller: _diaperNotesController,
+                                maxLines: 3,
+                                decoration: InputDecoration(
+                                  hintText: l10n.diaperNoteHint,
+                                  hintStyle: TextStyle(
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.3)
+                                        : const Color(
+                                            0xFF4A3F3F,
+                                          ).withValues(alpha: 0.3),
+                                    fontSize: 14,
+                                  ),
+                                  border: InputBorder.none,
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.8)
+                                      : const Color(
+                                          0xFF4A3F3F,
+                                        ).withValues(alpha: 0.8),
+                                ),
+                              ),
+                            ),
+                          ],
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: 20),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFFFF6B6B,
+                                ).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(
+                                    0xFFFF6B6B,
+                                  ).withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.info_outline,
+                                    color: Color(0xFFFF6B6B),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      _errorMessage!,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color(0xFFFF6B6B),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 24),
+                          Material(
+                            color: selectedActivity == 'bottle'
+                                ? const Color(0xFFE39A86)
+                                : const Color(0xFFFF998A),
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: _isSaving ? null : _saveActivity,
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                child: _isSaving
+                                    ? const SizedBox(
+                                        height: 18,
+                                        width: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                    : Text(
+                                        l10n.save,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1362,38 +1159,42 @@ class _AddScreenState extends State<AddScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          _clearError();
-          setState(() => selectedActivity = type);
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? const Color(0xFFFF998A).withValues(alpha: 0.14)
-                : (isDark ? AppColors.bgDarkCard : Colors.white),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+            _clearError();
+            setState(() => selectedActivity = type);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 13),
+            decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFFFF998A)
-                  : isDark
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : const Color(0xFFE5E0F7),
-              width: 1,
+                  ? const Color(0xFFFF998A).withValues(alpha: 0.12)
+                  : (isDark ? AppColors.bgDarkCard : Colors.white),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isSelected
+                    ? const Color(0xFFFF998A)
+                    : isDark
+                    ? Colors.white.withValues(alpha: 0.12)
+                    : const Color(0xFFE9E2DE),
+                width: 1,
+              ),
             ),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-              color: isSelected
-                  ? const Color(0xFFFF998A)
-                  : isDark
-                  ? Colors.white.withValues(alpha: 0.72)
-                  : const Color(0xFF7A749E),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                color: isSelected
+                    ? const Color(0xFFFF998A)
+                    : isDark
+                    ? Colors.white.withValues(alpha: 0.72)
+                    : const Color(0xFF7A749E),
+              ),
             ),
           ),
         ),
@@ -1409,68 +1210,58 @@ class _AddScreenState extends State<AddScreen> {
     required ValueChanged<String> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A33) : const Color(0xFFF6EFF2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF0E2E4),
-        ),
+        color: isDark ? const Color(0xFF2A2A33) : const Color(0xFFF7F1EE),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: options
             .map(
               (option) => Expanded(
-                child: GestureDetector(
-                  onTap: () => onChanged(option.value),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    curve: Curves.easeOut,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 13,
-                    ),
-                    decoration: BoxDecoration(
-                      color: groupValue == option.value
-                          ? (isDark ? surfaceColor : const Color(0xFFFFFCF7))
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(16),
-                      border: groupValue == option.value
-                          ? Border.all(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.06)
-                                  : const Color(0xFFF3E2D6),
-                            )
-                          : null,
-                      boxShadow: groupValue == option.value && !isDark
-                          ? [
-                              BoxShadow(
-                                color: const Color(
-                                  0xFFDFC7BE,
-                                ).withValues(alpha: 0.22),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: Text(
-                      option.label,
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: groupValue == option.value
-                            ? FontWeight.w700
-                            : FontWeight.w600,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: () => onChanged(option.value),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
                         color: groupValue == option.value
-                            ? const Color(0xFFB86E5A)
-                            : isDark
-                            ? Colors.white.withValues(alpha: 0.74)
-                            : const Color(0xFF6F6878),
+                            ? (isDark ? surfaceColor : Colors.white)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: groupValue == option.value && !isDark
+                            ? const [
+                                BoxShadow(
+                                  color: Color(0x0A000000),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Text(
+                        option.label,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: groupValue == option.value
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                          color: groupValue == option.value
+                              ? const Color(0xFFB86E5A)
+                              : isDark
+                              ? Colors.white.withValues(alpha: 0.74)
+                              : const Color(0xFF6F6878),
+                        ),
                       ),
                     ),
                   ),
@@ -1489,22 +1280,17 @@ class _AddScreenState extends State<AddScreen> {
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? AppColors.bgDarkCard : const Color(0xFFFFFCF8),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF2E5E1),
-        ),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: isDark
             ? null
-            : [
+            : const [
                 BoxShadow(
-                  color: const Color(0xFFE7D4CE).withValues(alpha: 0.22),
-                  blurRadius: 18,
-                  offset: const Offset(0, 8),
+                  color: Color(0x0F000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
                 ),
               ],
       ),
@@ -1611,39 +1397,43 @@ class _AddScreenState extends State<AddScreen> {
     required VoidCallback onTap,
     bool accent = false,
   }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 46,
-        height: 46,
-        decoration: BoxDecoration(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : const Color(0xFFFFFCF9),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : const Color(0xFFF0E4E1),
+                ? Colors.white.withValues(alpha: 0.06)
+                : const Color(0xFFFFFCF9),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : const Color(0xFFF0E4E1),
+            ),
+            boxShadow: isDark
+                ? null
+                : const [
+                    BoxShadow(
+                      color: Color(0x0D000000),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
           ),
-          boxShadow: isDark
-              ? null
-              : [
-                  BoxShadow(
-                    color: const Color(0xFFE6D7D2).withValues(alpha: 0.18),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Icon(
-          icon,
-          size: 22,
-          color: accent
-              ? const Color(0xFFE08F78)
-              : isDark
-              ? Colors.white.withValues(alpha: 0.76)
-              : const Color(0xFF8A8393),
+          child: Icon(
+            icon,
+            size: 22,
+            color: accent
+                ? const Color(0xFFE08F78)
+                : isDark
+                ? Colors.white.withValues(alpha: 0.76)
+                : const Color(0xFF8A8393),
+          ),
         ),
       ),
     );

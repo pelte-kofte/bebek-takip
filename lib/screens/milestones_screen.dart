@@ -244,17 +244,21 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 2, 24, 0),
-      child: Row(
-        children: [
-          _buildFilterChip(l10n.memoriesFilterAll, _MemoryFilter.all),
-          const SizedBox(width: 8),
-          _buildFilterChip(l10n.memoriesFilterPhotos, _MemoryFilter.photos),
-          const SizedBox(width: 8),
-          _buildFilterChip(
-            l10n.memoriesFilterIllustrated,
-            _MemoryFilter.illustrated,
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Row(
+          children: [
+            _buildFilterChip(l10n.memoriesFilterAll, _MemoryFilter.all),
+            const SizedBox(width: 8),
+            _buildFilterChip(l10n.memoriesFilterPhotos, _MemoryFilter.photos),
+            const SizedBox(width: 8),
+            _buildFilterChip(
+              l10n.memoriesFilterIllustrated,
+              _MemoryFilter.illustrated,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -271,24 +275,24 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       child: AnimatedContainer(
         duration: NilicoMotion.chipDuration,
         curve: NilicoMotion.ease,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFFB4A2).withValues(alpha: 0.14)
-              : Colors.white.withValues(alpha: 0.75),
-          borderRadius: BorderRadius.circular(100),
+              ? const Color(0xFFFFB4A2).withValues(alpha: 0.12)
+              : Colors.white.withValues(alpha: 0.72),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
                 ? const Color(0xFFFFB4A2)
                 : const Color(0xFFE5E0F7),
-            width: 1.5,
+            width: 1,
           ),
         ),
         child: AnimatedDefaultTextStyle(
           duration: NilicoMotion.chipDuration,
           curve: NilicoMotion.ease,
           style: TextStyle(
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
             color: isSelected
                 ? const Color(0xFFFFB4A2)
@@ -385,25 +389,25 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           ),
         ),
         floatingActionButton: _milestones.isNotEmpty
-            ? Container(
-                margin: const EdgeInsets.only(bottom: 16),
+            ? Padding(
+                padding: const EdgeInsets.only(right: 8, bottom: 8),
                 child: FloatingActionButton.extended(
                   onPressed: _showAddMilestoneSheet,
                   backgroundColor: const Color(0xFFFFB4A2),
-                  elevation: 8,
-                  icon: const Icon(Icons.add, color: Colors.white),
+                  elevation: 4,
+                  icon: const Icon(Icons.add, color: Colors.white, size: 18),
                   label: Text(
                     AppLocalizations.of(context)!.addMemory,
                     style: TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
                     ),
                   ),
                 ),
               )
             : null,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       ),
     );
   }
@@ -512,11 +516,41 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         ),
       );
     }
-    return ListView.builder(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 8, bottom: 120),
-      itemCount: filtered.length,
-      itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = _gridColumnCount(constraints.maxWidth);
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 104),
+          physics: const BouncingScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: _gridChildAspectRatio(crossAxisCount),
+          ),
+          itemCount: filtered.length,
+          itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
+        );
+      },
     );
+  }
+
+  int _gridColumnCount(double width) {
+    if (_filter == _MemoryFilter.photos) {
+      return width >= 390 ? 3 : 2;
+    }
+    return 2;
+  }
+
+  double _gridChildAspectRatio(int crossAxisCount) {
+    switch (_filter) {
+      case _MemoryFilter.photos:
+        return 0.92;
+      case _MemoryFilter.illustrated:
+        return crossAxisCount == 2 ? 0.78 : 0.82;
+      case _MemoryFilter.all:
+        return crossAxisCount == 2 ? 0.84 : 0.88;
+    }
   }
 
   Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
@@ -532,267 +566,275 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         memoryId.isNotEmpty &&
         _generatingMemoryIds.contains(memoryId);
     final note = (milestone['note'] ?? '').toString();
+    final isPhotoGrid = _filter == _MemoryFilter.photos;
+    final showCaptionBlock = !isPhotoGrid || !hasPhoto;
+    final title = (milestone['title'] ?? '').toString();
+    final date = _formatDate(milestone['date'] as DateTime);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: NilicoPressable(
-        onTap: () => _showMilestoneDetail(milestone),
-        haptic: NilicoHapticType.selection,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.96),
-            borderRadius: BorderRadius.circular(26),
-            border: Border.all(color: AppColors.borderSoft),
-            boxShadow: AppShadows.card(false),
+    return NilicoPressable(
+      onTap: () => _showMilestoneDetail(milestone),
+      haptic: NilicoHapticType.selection,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.96),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: AppColors.borderSoft.withValues(alpha: 0.72),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
-            child: Stack(
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (hasPhoto)
-                      Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 1.12,
-                            child: Hero(
-                              tag: 'memory-image-${milestone['id']}',
-                              child: buildPlatformImage(
-                                photoSource,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    Container(
-                                      color: const Color(0xFFEDE7F8),
-                                      child: const Center(
-                                        child: Icon(
-                                          Icons.image_not_supported_outlined,
-                                          color: Color(0xFFFFB4A2),
-                                          size: 32,
-                                        ),
+          boxShadow: AppShadows.card(false),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Stack(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        if (hasPhoto)
+                          Hero(
+                            tag: 'memory-image-${milestone['id']}',
+                            child: buildPlatformImage(
+                              photoSource,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
+                                    color: const Color(0xFFEDE7F8),
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.image_not_supported_outlined,
+                                        color: Color(0xFFFFB4A2),
+                                        size: 28,
                                       ),
                                     ),
-                              ),
+                                  ),
                             ),
-                          ),
-                          if (hasIllustration || isGenerating)
-                            Positioned(
-                              left: 14,
-                              bottom: 14,
-                              child: _buildIllustrationBadge(
-                                isReady: hasIllustration,
-                                isGenerating: isGenerating,
-                                onPhoto: true,
-                              ),
-                            ),
-                        ],
-                      )
-                    else
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (hasIllustration || isGenerating) ...[
-                              _buildIllustrationBadge(
-                                isReady: hasIllustration,
-                                isGenerating: isGenerating,
-                              ),
-                              const SizedBox(height: 10),
-                            ],
-                            Text(
-                              milestone['title'] ?? '',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF4A3E39),
-                                height: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              _formatDate(milestone['date'] as DateTime),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                          )
+                        else
+                          Container(
+                            color: const Color(0xFFFFF7F1),
+                            padding: const EdgeInsets.all(14),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Icon(
+                                Icons.photo_library_outlined,
+                                size: 28,
                                 color: const Color(
-                                  0xFF4A3E39,
-                                ).withValues(alpha: 0.46),
+                                  0xFFFFB4A2,
+                                ).withValues(alpha: 0.72),
                               ),
                             ),
-                            if (note.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                note,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: const Color(
-                                    0xFF4A3E39,
-                                  ).withValues(alpha: 0.68),
-                                  height: 1.4,
+                          ),
+                        if (hasPhoto)
+                          Positioned.fill(
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withValues(alpha: 0.04),
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.36),
+                                  ],
+                                  stops: const [0, 0.45, 1],
                                 ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    if (hasPhoto)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              milestone['title'] ?? '',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFF4A3E39),
-                                height: 1.2,
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              _formatDate(milestone['date'] as DateTime),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(
-                                  0xFF4A3E39,
-                                ).withValues(alpha: 0.46),
-                              ),
+                          ),
+                        if (hasIllustration || isGenerating)
+                          Positioned(
+                            left: 10,
+                            bottom: hasPhoto && !showCaptionBlock ? 10 : null,
+                            top: hasPhoto && showCaptionBlock ? 10 : null,
+                            child: _buildIllustrationBadge(
+                              isReady: hasIllustration,
+                              isGenerating: isGenerating,
+                              onPhoto: hasPhoto,
                             ),
-                            if (note.isNotEmpty) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                note,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: const Color(
-                                    0xFF4A3E39,
-                                  ).withValues(alpha: 0.68),
-                                  height: 1.4,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
-                Positioned(
-                  top: 12,
-                  right: 12,
-                  child: Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: hasPhoto
-                          ? Colors.white.withValues(alpha: 0.88)
-                          : const Color(0xFFFFFBF5),
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.06),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_horiz,
-                        size: 18,
-                        color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
-                      ),
-                      padding: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      color: const Color(0xFFFFFBF5),
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'edit':
-                            _showEditMilestoneSheet(milestone);
-                          case 'share':
-                            _shareMilestone(milestone);
-                          case 'delete':
-                            _deleteMilestone(milestone);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.edit_outlined,
-                                size: 18,
-                                color: Color(0xFF4A3E39),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                AppLocalizations.of(context)!.edit,
-                                style: const TextStyle(
-                                  color: Color(0xFF4A3E39),
-                                ),
-                              ),
-                            ],
                           ),
-                        ),
-                        PopupMenuItem(
-                          value: 'share',
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.share_outlined,
-                                size: 18,
-                                color: Color(0xFF4A3E39),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                AppLocalizations.of(context)!.share,
-                                style: const TextStyle(
-                                  color: Color(0xFF4A3E39),
+                        if (hasPhoto && !showCaptionBlock)
+                          Positioned(
+                            left: 12,
+                            right: 12,
+                            bottom: 10,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                    height: 1.2,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.delete_outline,
-                                size: 18,
-                                color: Color(0xFFFF6B6B),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                AppLocalizations.of(context)!.delete,
-                                style: const TextStyle(
-                                  color: Color(0xFFFF6B6B),
+                                const SizedBox(height: 4),
+                                Text(
+                                  date,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white.withValues(alpha: 0.88),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
+                  if (showCaptionBlock)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF4A3E39),
+                              height: 1.2,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            date,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.5),
+                            ),
+                          ),
+                          if (note.isNotEmpty &&
+                              _filter != _MemoryFilter.photos) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              note,
+                              maxLines: _filter == _MemoryFilter.illustrated
+                                  ? 3
+                                  : 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: const Color(
+                                  0xFF4A3E39,
+                                ).withValues(alpha: 0.66),
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+              Positioned(
+                top: 10,
+                right: 10,
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: hasPhoto
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : const Color(0xFFFFFBF5).withValues(alpha: 0.96),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_horiz,
+                      size: 16,
+                      color: const Color(0xFF4A3E39).withValues(alpha: 0.54),
+                    ),
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    color: const Color(0xFFFFFBF5),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'edit':
+                          _showEditMilestoneSheet(milestone);
+                        case 'share':
+                          _shareMilestone(milestone);
+                        case 'delete':
+                          _deleteMilestone(milestone);
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.edit_outlined,
+                              size: 18,
+                              color: Color(0xFF4A3E39),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.edit,
+                              style: const TextStyle(color: Color(0xFF4A3E39)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'share',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.share_outlined,
+                              size: 18,
+                              color: Color(0xFF4A3E39),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.share,
+                              style: const TextStyle(color: Color(0xFF4A3E39)),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.delete_outline,
+                              size: 18,
+                              color: Color(0xFFFF6B6B),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              AppLocalizations.of(context)!.delete,
+                              style: const TextStyle(color: Color(0xFFFF6B6B)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -94,9 +94,6 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   String get _safetyText => _isTurkish ? 'Guvenlik Notlari' : 'Safety Notes';
 
-  String get _tapForDetailsText =>
-      _isTurkish ? 'Detaylar icin dokun' : 'Tap for details';
-
   String get _matcherTitle => _isTurkish ? 'Evde ne var?' : 'What can I make?';
 
   String get _matcherSubtitle => _isTurkish
@@ -479,10 +476,10 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           overflow: TextOverflow.ellipsis,
                           style: AppTypography.h3(
                             context,
-                          ).copyWith(fontSize: 22),
+                          ).copyWith(fontSize: 20),
                         ),
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 16),
                       Center(
                         child: _MealImageCard(
                           imageKey: recipe.imageKey,
@@ -581,14 +578,14 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
       onTap: () => _showRecipeDetails(recipe),
       haptic: NilicoHapticType.selection,
       child: Container(
-        padding: const EdgeInsets.all(22),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark ? AppColors.bgDarkCard : visuals.tint,
-          borderRadius: BorderRadius.circular(24),
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: isDark
-                ? visuals.accent.withValues(alpha: 0.18)
-                : visuals.border,
+                ? visuals.accent.withValues(alpha: 0.14)
+                : visuals.border.withValues(alpha: 0.78),
           ),
           boxShadow: AppShadows.card(isDark),
         ),
@@ -600,21 +597,22 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 Text(
                   _todayText,
                   style: AppTypography.caption(context).copyWith(
-                    color: AppColors.primary,
+                    color: AppColors.primary.withValues(alpha: 0.88),
                     fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(width: 8),
                 _MealMetaPill(
                   label: _mealTypeLabel(recipe.mealType),
+                  compact: true,
                   color: visuals.tint,
                   textColor: visuals.text,
                 ),
               ],
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
                   child: Column(
@@ -622,11 +620,11 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     children: [
                       Text(
                         recipe.title,
-                        maxLines: 3,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.h3(context).copyWith(fontSize: 19),
+                        style: AppTypography.h3(context).copyWith(fontSize: 17),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Text(
                         '${_ageRangeLabel(recipe)} • ${recipe.texture}',
                         style: AppTypography.caption(
@@ -636,7 +634,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 18),
+                const SizedBox(width: 12),
                 _MealImageCard(
                   imageKey: recipe.imageKey,
                   compact: false,
@@ -661,7 +659,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
       onTap: () => _showRecipeDetails(recipe),
       haptic: NilicoHapticType.selection,
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.bgDarkCard.withValues(alpha: 0.92)
@@ -669,13 +667,13 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: isDark
-                ? visuals.accent.withValues(alpha: 0.16)
-                : visuals.border,
+                ? visuals.accent.withValues(alpha: 0.12)
+                : visuals.border.withValues(alpha: 0.75),
           ),
           boxShadow: AppShadows.card(isDark),
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _MealImageCard(
               imageKey: recipe.imageKey,
@@ -683,7 +681,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               gradientColors: visuals.imageGradient,
               heroTag: 'meal-${recipe.id}',
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,48 +692,44 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     color: visuals.tint.withValues(alpha: 0.96),
                     textColor: visuals.text,
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Text(
                     recipe.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppTypography.h3(context).copyWith(fontSize: 16),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
                     '${_ageRangeLabel(recipe)} • ${recipe.texture}',
-                    style: AppTypography.caption(
-                      context,
-                    ).copyWith(color: textSecondary),
-                  ),
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 6,
-                    children: recipe.allergens
-                        .map(
-                          (allergen) => _MealMetaPill(
-                            label: _allergenLabel(allergen),
-                            compact: true,
-                          ),
-                        )
-                        .toList(growable: false),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    _tapForDetailsText,
                     style: AppTypography.caption(context).copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
+                      color: textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                  if (recipe.allergens.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 6,
+                      children: recipe.allergens
+                          .map(
+                            (allergen) => _MealMetaPill(
+                              label: _allergenLabel(allergen),
+                              compact: true,
+                            ),
+                          )
+                          .toList(growable: false),
+                    ),
+                  ],
                 ],
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             Icon(
               Icons.chevron_right_rounded,
-              color: textSecondary.withValues(alpha: 0.8),
+              size: 16,
+              color: textSecondary.withValues(alpha: 0.42),
             ),
           ],
         ),
@@ -745,16 +739,20 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   Widget _buildIngredientMatcherCard(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isDark ? AppColors.bgDarkCard : AppColors.lavenderSoft,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
-              ? AppColors.accentLavender.withValues(alpha: 0.18)
-              : const Color(0xFFE3D8F3),
+              ? AppColors.accentLavender.withValues(alpha: 0.12)
+              : const Color(0xFFE3D8F3).withValues(alpha: 0.68),
         ),
-        boxShadow: AppShadows.card(isDark),
+        boxShadow: [
+          ...AppShadows.card(isDark).map(
+            (shadow) => shadow.copyWith(blurRadius: shadow.blurRadius * 0.65),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -762,29 +760,28 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
           Row(
             children: [
               Container(
-                width: 42,
-                height: 42,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
                   color: AppColors.surfaceWhite,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.borderSoft),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   Icons.kitchen_rounded,
                   color: const Color(0xFF7A749E),
-                  size: 22,
+                  size: 16,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       _matcherTitle,
-                      style: AppTypography.h3(context).copyWith(fontSize: 18),
+                      style: AppTypography.h3(context).copyWith(fontSize: 16),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       _matcherSubtitle,
                       style: AppTypography.bodySmall(context).copyWith(
@@ -798,7 +795,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           TextField(
             controller: _ingredientController,
             onChanged: (value) {
@@ -824,28 +821,28 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 color: AppColors.primary.withValues(alpha: 0.82),
               ),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 18,
-                vertical: 16,
+                horizontal: 14,
+                vertical: 12,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
                   color: AppColors.primary.withValues(alpha: 0.08),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
+                borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
                   color: AppColors.primary.withValues(alpha: 0.26),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -853,9 +850,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(14),
                 ),
               ),
               child: Text(
@@ -882,7 +879,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
       onTap: () => _showRecipeDetails(recipe),
       haptic: NilicoHapticType.selection,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isDark
               ? AppColors.bgDarkCard.withValues(alpha: 0.92)
@@ -891,7 +888,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
           border: Border.all(
             color: isDark
                 ? visuals.accent.withValues(alpha: 0.16)
-                : visuals.border,
+                : visuals.border.withValues(alpha: 0.72),
           ),
         ),
         child: Column(
@@ -963,7 +960,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
     return Column(
       children: [
-        SizedBox(height: widget.embedded ? 8 : 16),
+        SizedBox(height: widget.embedded ? 8 : 10),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Row(
@@ -974,7 +971,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
         Expanded(
           child: (_loadFailed || recipes.isEmpty)
               ? _buildStatusState(
@@ -989,20 +986,17 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     24,
                     8,
                     24,
-                    widget.embedded ? 110 : 32,
+                    widget.embedded ? 88 : 24,
                   ),
                   children: [
-                    if (todaysRecipe != null)
-                      _buildHeroCard(todaysRecipe, isDark),
-                    const SizedBox(height: 22),
                     _buildIngredientMatcherCard(isDark),
                     if (_didSearchIngredients) ...[
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 16),
                       Text(
                         _matcherResultsText,
-                        style: AppTypography.h3(context).copyWith(fontSize: 17),
+                        style: AppTypography.h3(context).copyWith(fontSize: 16),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       if (_ingredientMatches.isEmpty)
                         _buildStatusState(
                           isDark: isDark,
@@ -1012,12 +1006,16 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                       else
                         ..._ingredientMatches.map(
                           (match) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 8),
                             child: _buildMatchCard(match, isDark),
                           ),
                         ),
                     ],
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 14),
+                    if (todaysRecipe != null) ...[
+                      _buildHeroCard(todaysRecipe, isDark),
+                      const SizedBox(height: 14),
+                    ],
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -1039,8 +1037,8 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                                     duration: NilicoMotion.chipDuration,
                                     curve: NilicoMotion.ease,
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 14,
-                                      vertical: 9,
+                                      horizontal: 12,
+                                      vertical: 7,
                                     ),
                                     decoration: BoxDecoration(
                                       color: selected
@@ -1081,7 +1079,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                             .toList(growable: false),
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 18),
                     NilicoSectionHeader(
                       title: _forAgeText,
                       trailing: recipes.length > _initialRecipeCount
@@ -1096,15 +1094,15 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                             )
                           : null,
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 12),
                     ...previewRecipes.map(
                       (recipe) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.only(bottom: 10),
                         child: _buildRecipeCard(recipe, isDark),
                       ),
                     ),
                     if (recipes.length > _initialRecipeCount) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       _ViewAllRecipesCard(
                         label: _viewAllRecipesText,
                         count: recipes.length,
@@ -1137,45 +1135,40 @@ class _MealImageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final assetPath = BabyMealImageAssets.assetPathFor(imageKey);
-    final width = detail ? 188.0 : (compact ? 82.0 : 108.0);
-    final height = detail ? 188.0 : (compact ? 82.0 : 108.0);
-    final radius = detail ? 28.0 : 20.0;
-    final imagePadding = detail ? 16.0 : (compact ? 8.0 : 10.0);
+    final width = detail ? 196.0 : (compact ? 80.0 : 88.0);
+    final height = detail ? 196.0 : (compact ? 80.0 : 88.0);
+    final radius = detail ? 24.0 : 18.0;
+    final surfaceColor =
+        gradientColors?.last.withValues(alpha: detail ? 0.92 : 0.5) ??
+        AppColors.bgLightSurface;
 
-    final imageCard = Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color:
-            gradientColors?.first.withValues(alpha: 0.7) ??
-            AppColors.bgLightSurface,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: AppColors.borderSoft),
-        boxShadow: AppShadows.card(isDark),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: assetPath == null
-          ? _MealImageFallback(
-              imageKey: imageKey,
-              compact: compact,
-              detail: detail,
-            )
-          : Padding(
-              padding: EdgeInsets.all(imagePadding),
-              child: Image.asset(
-                assetPath,
-                fit: BoxFit.contain,
-                errorBuilder: (_, _, _) {
-                  return _MealImageFallback(
-                    imageKey: imageKey,
-                    compact: compact,
-                    detail: detail,
-                  );
-                },
+    final imageCard = ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(color: surfaceColor),
+        child: assetPath == null
+            ? _MealImageFallback(
+                imageKey: imageKey,
+                compact: compact,
+                detail: detail,
+              )
+            : SizedBox.expand(
+                child: Image.asset(
+                  assetPath,
+                  fit: detail ? BoxFit.contain : BoxFit.contain,
+                  errorBuilder: (_, _, _) {
+                    return _MealImageFallback(
+                      imageKey: imageKey,
+                      compact: compact,
+                      detail: detail,
+                    );
+                  },
+                ),
               ),
-            ),
+      ),
     );
 
     if (heroTag == null) {
@@ -1203,7 +1196,7 @@ class _MealImageFallback extends StatelessWidget {
     final labelSize = detail ? 12.0 : (compact ? 9.0 : 10.0);
 
     return Container(
-      padding: EdgeInsets.all(detail ? 14 : 10),
+      padding: EdgeInsets.all(detail ? 16 : 12),
       decoration: BoxDecoration(
         color: AppColors.bgLightSurface,
         border: Border.all(color: AppColors.borderSoft),

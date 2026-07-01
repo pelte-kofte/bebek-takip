@@ -128,6 +128,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
+    final l10n = AppLocalizations.of(context)!;
 
     return DecorativeBackground(
       preset: BackgroundPreset.activities,
@@ -138,58 +139,60 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             children: [
               // Header (fixed)
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                 child: Column(
                   children: [
                     if (widget.fromHome) ...[
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: Container(
-                              width: 40,
-                              height: 40,
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF2A2A3A)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: isDark
-                                    ? null
-                                    : [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.05,
-                                          ),
-                                          blurRadius: 8,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                              ),
-                              child: Icon(
-                                Icons.arrow_back,
-                                color: textColor,
-                                size: 20,
+                          Material(
+                            color: isDark
+                                ? const Color(0xFF2A2A3A)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            child: InkWell(
+                              onTap: () => Navigator.pop(context),
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                width: 48,
+                                height: 48,
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: textColor,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                     ],
 
                     // Tarih Secici
                     _buildDateSelector(isDark),
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        l10n.activities,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                          color: textColor.withValues(alpha: 0.56),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
 
               // Compact Category Tabs
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                 child: Builder(
                   builder: (context) {
-                    final l10n = AppLocalizations.of(context)!;
                     return Row(
                       children: [
                         Expanded(
@@ -242,7 +245,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(14),
@@ -261,42 +264,53 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         children: [
           IconButton(
             onPressed: _previousDay,
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             icon: const Icon(Icons.chevron_left, color: Color(0xFFFFB4A2)),
           ),
-          GestureDetector(
-            onTap: _selectDate,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
+          Expanded(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _selectDate,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.4),
-                  width: 1,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E0F7).withValues(alpha: 0.24),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.calendar_today,
+                        size: 16,
+                        color: Color(0xFFFFB4A2),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          _formatDateHeader(_selectedDate, l10n),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFFFB4A2),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.calendar_today,
-                    size: 16,
-                    color: Color(0xFFFFB4A2),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    _formatDateHeader(_selectedDate, l10n),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFFFB4A2),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
           IconButton(
             onPressed: _isToday(_selectedDate) ? null : _nextDay,
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             icon: Icon(
               Icons.chevron_right,
               color: _isToday(_selectedDate)
@@ -313,47 +327,55 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final isActive = _activeType == type;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final unselectedBg = isDark ? const Color(0xFF2A2A3A) : Colors.transparent;
+    final unselectedBg = isDark ? const Color(0xFF2A2A3A) : Colors.white;
     final unselectedBorder = isDark
-        ? Colors.white.withValues(alpha: 0.25)
-        : const Color(0xFFE5E0F7).withValues(alpha: 0.5);
+        ? Colors.white.withValues(alpha: 0.12)
+        : const Color(0xFFE5E0F7).withValues(alpha: 0.22);
     final unselectedFg = isDark
         ? Colors.white.withValues(alpha: 0.7)
-        : const Color(0xFF1d0e0c).withValues(alpha: 0.6);
+        : const Color(0xFF1d0e0c).withValues(alpha: 0.72);
 
-    return GestureDetector(
-      onTap: () => setState(() => _activeType = type),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-        decoration: BoxDecoration(
-          color: isActive
-              ? const Color(0xFFFFB4A2).withValues(alpha: 0.15)
-              : unselectedBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isActive ? const Color(0xFFFFB4A2) : unselectedBorder,
-            width: isActive ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => setState(() => _activeType = type),
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+          decoration: BoxDecoration(
+            color: isActive
+                ? const Color(0xFFFFB4A2).withValues(alpha: 0.12)
+                : unselectedBg,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isActive ? const Color(0xFFFFB4A2) : unselectedBorder,
+              width: 1,
             ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-                letterSpacing: 0.3,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 20,
                 color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
               ),
-            ),
-          ],
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                    letterSpacing: 0.2,
+                    color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -380,9 +402,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     }
   }
 
-  List<Map<String, dynamic>> _filterBySelectedDayRange(
+  List<Map<String, dynamic>> _filterBySelectedDayEventTime(
     List<Map<String, dynamic>> list,
-    String dateKey,
+    DateTime? Function(Map<String, dynamic>) eventTime,
   ) {
     final startOfDay = DateTime(
       _selectedDate.year,
@@ -394,9 +416,57 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         .subtract(const Duration(microseconds: 1));
 
     return list.where((item) {
-      final date = (item[dateKey] as DateTime).toLocal();
+      final date = eventTime(item)?.toLocal();
+      if (date == null) return false;
       return !date.isBefore(startOfDay) && !date.isAfter(endOfDay);
     }).toList();
+  }
+
+  DateTime? _mamaEventTime(Map<String, dynamic> kayit) {
+    final tarih = kayit['tarih'] ?? kayit['date'];
+    return tarih is DateTime ? tarih : null;
+  }
+
+  DateTime? _diaperEventTime(Map<String, dynamic> kayit) {
+    final tarih = kayit['tarih'] ?? kayit['date'];
+    return tarih is DateTime ? tarih : null;
+  }
+
+  DateTime? _sleepEventTime(Map<String, dynamic> kayit) {
+    final bitis = kayit['bitis'] ?? kayit['endAt'];
+    if (bitis is DateTime) return bitis;
+    final baslangic = kayit['baslangic'] ?? kayit['startAt'];
+    return baslangic is DateTime ? baslangic : null;
+  }
+
+  DateTime? _displayFallbackTime(Map<String, dynamic> kayit) {
+    final updatedAt = kayit['updatedAt'];
+    if (updatedAt is DateTime) return updatedAt;
+    final createdAt = kayit['createdAt'];
+    return createdAt is DateTime ? createdAt : null;
+  }
+
+  List<Map<String, dynamic>> _sortByEventTimeDesc(
+    List<Map<String, dynamic>> list,
+    DateTime? Function(Map<String, dynamic>) eventTime,
+  ) {
+    final sorted = List<Map<String, dynamic>>.from(list);
+    sorted.sort((a, b) {
+      final aTime = eventTime(a) ?? _displayFallbackTime(a);
+      final bTime = eventTime(b) ?? _displayFallbackTime(b);
+
+      if (aTime != null && bTime != null) {
+        final byTime = bTime.compareTo(aTime);
+        if (byTime != 0) return byTime;
+      } else if (aTime != null) {
+        return -1;
+      } else if (bTime != null) {
+        return 1;
+      }
+
+      return (b['id'] ?? '').toString().compareTo((a['id'] ?? '').toString());
+    });
+    return sorted;
   }
 
   Widget _buildMamaList() {
@@ -407,7 +477,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getMamaKayitlari();
-    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'tarih');
+    final kayitlar = _sortByEventTimeDesc(
+      _filterBySelectedDayEventTime(tumKayitlar, _mamaEventTime),
+      _mamaEventTime,
+    );
 
     int toplamMl = 0;
     int toplamDakika = 0;
@@ -431,17 +504,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       children: [
         // Section Header - OZET
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 l10n.summary,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -449,66 +523,42 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         // Ozet karti
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFFFB4A2).withValues(alpha: 0.2),
-              width: 1,
-            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Flexible(
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  spacing: 8,
-                  runSpacing: 4,
-                  children: [
-                    if (toplamDakika > 0)
-                      Text(
-                        '${l10n.breastfeeding}: $toplamDakika ${l10n.minAbbrev}',
-                        style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    if (toplamDakika > 0 && toplamMl > 0)
-                      Text(
-                        '•',
-                        style: const TextStyle(color: Color(0xFF888888)),
-                      ),
-                    if (toplamMl > 0)
-                      Text(
-                        '${l10n.bottle}: $toplamMl ${l10n.mlAbbrev}',
-                        style: const TextStyle(
-                          color: Color(0xFF333333),
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    Text(
-                      '(${kayitlar.length} ${l10n.record})',
-                      style: const TextStyle(
-                        color: Color(0xFF888888),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+              Text(
+                '${kayitlar.length} ${l10n.record}',
+                style: const TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
+              const SizedBox(height: 8),
+              if (toplamDakika > 0)
+                _buildSummaryMetricRow(
+                  label: l10n.breastfeeding,
+                  value: '$toplamDakika ${l10n.minAbbrev}',
+                ),
+              if (toplamDakika > 0 && toplamMl > 0) const SizedBox(height: 8),
+              if (toplamMl > 0)
+                _buildSummaryMetricRow(
+                  label: l10n.bottle,
+                  value: '$toplamMl ${l10n.mlAbbrev}',
+                ),
             ],
           ),
         ),
@@ -516,16 +566,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
         // Section Header - SON AKTIVITELER
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             children: [
               Text(
                 l10n.recentActivities,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -535,7 +586,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Liste
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             itemCount: kayitlar.length,
             itemBuilder: (context, index) {
               final kayit = kayitlar[index];
@@ -626,7 +677,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getKakaKayitlari();
-    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'tarih');
+    final kayitlar = _sortByEventTimeDesc(
+      _filterBySelectedDayEventTime(tumKayitlar, _diaperEventTime),
+      _diaperEventTime,
+    );
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
@@ -657,17 +711,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       children: [
         // Section Header - OZET
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 l10n.summary,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -675,29 +730,36 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         // Ozet karti
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
-              width: 1,
-            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildBezSummary(islak, l10n.wet),
-              _buildBezSummary(kirli, l10n.dirty),
-              _buildBezSummary(ikisi, l10n.both),
+              Text(
+                '${kayitlar.length} ${l10n.diaperChange}',
+                style: const TextStyle(
+                  color: Color(0xFF333333),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              _buildSummaryMetricRow(label: l10n.wet, value: '$islak'),
+              const SizedBox(height: 8),
+              _buildSummaryMetricRow(label: l10n.dirty, value: '$kirli'),
+              const SizedBox(height: 8),
+              _buildSummaryMetricRow(label: l10n.both, value: '$ikisi'),
             ],
           ),
         ),
@@ -705,16 +767,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
         // Section Header - SON AKTIVITELER
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             children: [
               Text(
                 l10n.recentActivities,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -724,7 +787,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Liste
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             itemCount: kayitlar.length,
             itemBuilder: (context, index) {
               final kayit = kayitlar[index];
@@ -769,7 +832,10 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final tumKayitlar = VeriYonetici.getUykuKayitlari();
-    final kayitlar = _filterBySelectedDayRange(tumKayitlar, 'bitis');
+    final kayitlar = _sortByEventTimeDesc(
+      _filterBySelectedDayEventTime(tumKayitlar, _sleepEventTime),
+      _sleepEventTime,
+    );
 
     if (kayitlar.isEmpty) {
       return _buildEmptyState(
@@ -792,17 +858,18 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       children: [
         // Section Header - OZET
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 l10n.summary,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -810,37 +877,41 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         ),
         // Ozet karti
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBF5),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
-              width: 1,
-            ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 '${l10n.total}: $saat ${l10n.hourAbbrev} $dakika ${l10n.minAbbrev}',
                 style: const TextStyle(
                   color: Color(0xFF333333),
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.start,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${kayitlar.length} ${l10n.record}',
+                style: const TextStyle(
+                  color: Color(0xFF7D7689),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ],
           ),
@@ -849,16 +920,17 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
         // Section Header - SON AKTIVITELER
         Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Row(
             children: [
               Text(
                 l10n.recentActivities,
                 style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  color: isDark ? Colors.white : const Color(0xFF1d0e0c),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
+                      .withValues(alpha: 0.68),
                 ),
               ),
             ],
@@ -868,7 +940,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         // Liste
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             itemCount: kayitlar.length,
             itemBuilder: (context, index) {
               final kayit = kayitlar[index];
@@ -895,27 +967,29 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildBezSummary(int count, String label) {
-    return Column(
+  Widget _buildSummaryMetricRow({
+    required String label,
+    required String value,
+  }) {
+    return Row(
       children: [
-        Text(
-          '$count',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF333333),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFF7D7689),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
         Text(
-          label,
+          value,
           style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF888888),
+            color: Color(0xFF333333),
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
           ),
-          textAlign: TextAlign.center,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
       ],
     );
@@ -953,7 +1027,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               ),
               child: Icon(icon, size: 48, color: const Color(0xFFFFB4A2)),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Text(
               title,
               style: TextStyle(
@@ -963,7 +1037,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             Text(
               subtitle,
               style: TextStyle(
@@ -1003,7 +1077,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           color: Colors.white,
                           size: 18,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Text(
                           l10n.selectAnotherDate,
                           style: const TextStyle(
@@ -1048,9 +1122,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         return false;
       },
       background: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 8),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 22),
+        padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
           color: const Color(0xFFFF6B6B).withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(18),
@@ -1063,19 +1137,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       ),
       child: Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
           color: cardColor,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: const Color(0xFFE5E0F7).withValues(alpha: 0.38),
+            color: const Color(0xFFE5E0F7).withValues(alpha: 0.18),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE5E0F7).withValues(alpha: 0.12),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
+              color: const Color(0xFFE5E0F7).withValues(alpha: 0.06),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
@@ -1085,170 +1159,139 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
             onTap: onEdit,
             borderRadius: BorderRadius.circular(18),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 12, 12),
-              child: Row(
+              padding: const EdgeInsets.all(16),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
                           title,
                           style: TextStyle(
                             fontWeight: FontWeight.w700,
-                            fontSize: 16,
+                            fontSize: 15,
                             color: textColor,
-                            letterSpacing: -0.2,
+                            letterSpacing: -0.1,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 3),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            color: subtitleColor.withValues(alpha: 0.76),
-                            fontSize: 12.5,
-                            height: 1.3,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        time,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: textColor.withValues(alpha: 0.7),
+                          fontSize: 13,
                         ),
-                        if (notes != null && notes.isNotEmpty) ...[
-                          const SizedBox(height: 3),
-                          Text(
-                            notes,
-                            style: TextStyle(
-                              color: subtitleColor.withValues(alpha: 0.58),
-                              fontSize: 11.5,
-                              fontStyle: FontStyle.italic,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                        if (creatorLabel != null ||
-                            (secondaryActionLabel != null &&
-                                onSecondaryAction != null)) ...[
-                          const SizedBox(height: 7),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 6,
-                            crossAxisAlignment: WrapCrossAlignment.center,
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 16,
+                        color: subtitleColor.withValues(alpha: 0.22),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: subtitleColor.withValues(alpha: 0.82),
+                      fontSize: 13,
+                      height: 1.3,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (notes != null && notes.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      notes,
+                      style: TextStyle(
+                        color: subtitleColor.withValues(alpha: 0.64),
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        height: 1.3,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  if (creatorLabel != null ||
+                      (secondaryActionLabel != null &&
+                          onSecondaryAction != null)) ...[
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (creatorLabel != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (creatorLabel != null)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      width: 7,
-                                      height: 7,
-                                      decoration: BoxDecoration(
-                                        color: _creatorColorFor(createdBy),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    ConstrainedBox(
-                                      constraints: const BoxConstraints(
-                                        maxWidth: 110,
-                                      ),
-                                      child: Text(
-                                        creatorLabel,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: subtitleColor.withValues(
-                                            alpha: 0.66,
-                                          ),
-                                          fontSize: 10.5,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: _creatorColorFor(createdBy),
+                                  shape: BoxShape.circle,
                                 ),
-                              if (secondaryActionLabel != null &&
-                                  onSecondaryAction != null)
-                                InkWell(
-                                  onTap: onSecondaryAction,
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
+                              ),
+                              const SizedBox(width: 8),
+                              ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 140,
+                                ),
+                                child: Text(
+                                  creatorLabel,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: subtitleColor.withValues(
+                                      alpha: 0.74,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(
-                                        0xFFFFF3EE,
-                                      ).withValues(alpha: 0.95),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: const Color(
-                                          0xFFFFD8C0,
-                                        ).withValues(alpha: 0.65),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      secondaryActionLabel,
-                                      style: const TextStyle(
-                                        fontSize: 10.5,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFFD4897A),
-                                      ),
-                                    ),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
+                              ),
                             ],
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 58,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        if (time.isNotEmpty)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFFF7F1F6,
-                              ).withValues(alpha: 0.95),
+                        if (secondaryActionLabel != null &&
+                            onSecondaryAction != null)
+                          Material(
+                            color: const Color(
+                              0xFFFFF3EE,
+                            ).withValues(alpha: 0.72),
+                            borderRadius: BorderRadius.circular(12),
+                            child: InkWell(
+                              onTap: onSecondaryAction,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: const Color(
-                                  0xFFE5E0F7,
-                                ).withValues(alpha: 0.55),
-                              ),
-                            ),
-                            child: Text(
-                              time,
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: subtitleColor.withValues(alpha: 0.68),
-                                fontSize: 11,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 8,
+                                ),
+                                child: Text(
+                                  secondaryActionLabel,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFFD4897A),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
-                        const SizedBox(height: 8),
-                        Icon(
-                          Icons.chevron_right_rounded,
-                          size: 18,
-                          color: subtitleColor.withValues(alpha: 0.24),
-                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

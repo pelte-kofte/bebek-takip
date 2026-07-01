@@ -24,6 +24,7 @@ class ReminderService {
   static const int feedingReminderId = 2001;
   static const int diaperReminderId = 2002;
   static const int dailyTipReminderId = 2003;
+  static const int dailyTipReminderCount = 7;
   static const int medicationReminderBaseId = 30000;
 
   static const String _feedingTitleKey = 'feeding_reminder_title';
@@ -208,10 +209,36 @@ class ReminderService {
     if (scheduledAt.isBefore(DateTime.now())) return;
 
     final l10n = await _loadLocalization();
-    final tip = DailyTip.todayForBaby(babyAgeInMonths);
     final title = l10n.dailyTipsTitle;
-    final body = tip.titleForLocalizations(l10n);
+    for (var dayOffset = 0; dayOffset < dailyTipReminderCount; dayOffset++) {
+      final scheduledForDay = DateTime(
+        scheduledAt.year,
+        scheduledAt.month,
+        scheduledAt.day + dayOffset,
+        scheduledAt.hour,
+        scheduledAt.minute,
+      );
+      final tip = DailyTip.todayForBaby(
+        babyAgeInMonths,
+        onDate: scheduledForDay,
+      );
+      final body = tip.titleForLocalizations(l10n);
 
+      await _scheduleDailyTipOneShot(
+        id: dailyTipReminderId + dayOffset,
+        title: title,
+        body: body,
+        scheduledAt: scheduledForDay,
+      );
+    }
+  }
+
+  Future<void> _scheduleDailyTipOneShot({
+    required int id,
+    required String title,
+    required String body,
+    required DateTime scheduledAt,
+  }) async {
     final androidDetails = AndroidNotificationDetails(
       'daily_tip_reminder_channel',
       'Daily Tips',
@@ -229,7 +256,7 @@ class ReminderService {
 
     _logNotificationDebug(
       operation: 'zonedSchedule',
-      id: dailyTipReminderId,
+      id: id,
       localeCode: await _savedLocaleCode(),
       title: title,
       body: body,
@@ -237,7 +264,7 @@ class ReminderService {
     );
 
     await _notifications.zonedSchedule(
-      dailyTipReminderId,
+      id,
       title,
       body,
       tz.TZDateTime.from(scheduledAt, tz.local),
@@ -245,7 +272,6 @@ class ReminderService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
@@ -392,7 +418,9 @@ class ReminderService {
   }
 
   Future<void> cancelDailyTipReminder() async {
-    await _notifications.cancel(dailyTipReminderId);
+    for (var dayOffset = 0; dayOffset < dailyTipReminderCount; dayOffset++) {
+      await _notifications.cancel(dailyTipReminderId + dayOffset);
+    }
   }
 
   /// Cancel all reminders
