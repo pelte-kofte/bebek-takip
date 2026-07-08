@@ -3,9 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
   // Background - Light
-  static const Color bgLight = Color(0xFFFDF6F0);
-  static const Color bgLightCard = Color(0xFFFFFFFA);
-  static const Color bgLightSurface = Color(0xFFFFF8F2);
+  static const Color bgLight = Color(0xFFFCF7F2);
+  static const Color bgLightCard = Color(0xFFFFFCF8);
+  static const Color bgLightSurface = Color(0xFFF8F3EE);
 
   // Background - Dark
   static const Color bgDark = Color(0xFF1E1E2A);
@@ -13,24 +13,24 @@ class AppColors {
   static const Color bgDarkSurface = Color(0xFF252535);
 
   // Primary
-  static const Color primary = Color(0xFFE8A0A0);
-  static const Color primaryLight = Color(0xFFFFD4D4);
-  static const Color primaryDark = Color(0xFFD48A8A);
+  static const Color primary = Color(0xFFE3A3A0);
+  static const Color primaryLight = Color(0xFFF6DEDC);
+  static const Color primaryDark = Color(0xFFD48F8C);
 
   // Accents
   static const Color accentBlue = Color(0xFFA8D4E6);
   static const Color accentGreen = Color(0xFFB8E0C8);
-  static const Color accentPeach = Color(0xFFFFD8C0);
-  static const Color accentLavender = Color(0xFFD4C4E8);
+  static const Color accentPeach = Color(0xFFF4DDCF);
+  static const Color accentLavender = Color(0xFFDCCFEA);
   static const Color accentYellow = Color(0xFFFFF0B8);
   static const Color peach = accentPeach;
   static const Color lavender = accentLavender;
   static const Color mint = accentGreen;
 
   // Text - Light
-  static const Color textPrimaryLight = Color(0xFF4A4458);
-  static const Color textSecondaryLight = Color(0xFF8A8494);
-  static const Color textMutedLight = Color(0xFFB0A8B8);
+  static const Color textPrimaryLight = Color(0xFF4B474F);
+  static const Color textSecondaryLight = Color(0xFF807A84);
+  static const Color textMutedLight = Color(0xFFA39CA6);
 
   // Text - Dark
   static const Color textPrimaryDark = Color(0xFFF0EAF4);
@@ -41,12 +41,21 @@ class AppColors {
   static const Color backgroundCream = bgLight;
   static const Color surfaceWhite = bgLightCard;
   static const Color lavenderAccent = accentLavender;
-  static const Color lavenderSoft = Color(0xFFF2EDF8);
+  static const Color lavenderSoft = Color(0xFFF3EEF7);
+  static const Color lavenderPaper = Color(0xFFF7F3F9);
+  static const Color lavenderMist = Color(0xFFEEE7F3);
+  static const Color lavenderInk = Color(0xFF786E89);
+  static const Color splashCream = Color(0xFFFFFAF5);
   static const Color coralPrimary = primary;
   static const Color butterSoft = Color(0xFFFFF7DD);
-  static const Color textPrimary = Color(0xFF4A3E39);
-  static const Color textSecondary = Color(0xFF8C817F);
-  static const Color borderSoft = Color(0xFFE8E0ED);
+  static const Color textPrimary = Color(0xFF4D423D);
+  static const Color textSecondary = Color(0xFF857B79);
+  static const Color borderSoft = Color(0xFFE7E0DA);
+  static const Color paper = Color(0xFFFFFBF7);
+  static const Color paperMuted = Color(0xFFF7F1EB);
+  static const Color controlFill = Color(0xFFF2ECE6);
+  static const Color controlActive = Color(0xFFFFFCFA);
+  static const Color dividerSoft = Color(0xFFEBE3DC);
 }
 
 class AppShadows {
@@ -56,17 +65,36 @@ class AppShadows {
     if (isDark) {
       return <BoxShadow>[
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.16),
-          blurRadius: 18,
-          offset: const Offset(0, 8),
+          color: Colors.black.withValues(alpha: 0.12),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
         ),
       ];
     }
     return <BoxShadow>[
       const BoxShadow(
-        color: Color(0x14000000),
-        blurRadius: 18,
-        offset: Offset(0, 8),
+        color: Color(0x0D2F221C),
+        blurRadius: 14,
+        offset: Offset(0, 5),
+      ),
+    ];
+  }
+
+  static List<BoxShadow> button(bool isDark) {
+    if (isDark) {
+      return <BoxShadow>[
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.14),
+          blurRadius: 14,
+          offset: const Offset(0, 5),
+        ),
+      ];
+    }
+    return <BoxShadow>[
+      const BoxShadow(
+        color: Color(0x122F221C),
+        blurRadius: 12,
+        offset: Offset(0, 4),
       ),
     ];
   }
@@ -78,9 +106,9 @@ class AppTypography {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GoogleFonts.quicksand(
       fontSize: 28,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-      letterSpacing: -0.5,
+      letterSpacing: -0.6,
       height: 1.2,
     );
   }
@@ -91,7 +119,7 @@ class AppTypography {
       fontSize: 22,
       fontWeight: FontWeight.w600,
       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
-      letterSpacing: -0.3,
+      letterSpacing: -0.35,
       height: 1.3,
     );
   }
@@ -100,7 +128,7 @@ class AppTypography {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GoogleFonts.quicksand(
       fontSize: 18,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w700,
       color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
       height: 1.3,
     );
@@ -157,9 +185,9 @@ class AppTypography {
   static TextStyle button() {
     return GoogleFonts.quicksand(
       fontSize: 16,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w600,
       color: Colors.white,
-      letterSpacing: 0.5,
+      letterSpacing: 0.2,
     );
   }
 
@@ -189,7 +217,7 @@ class AppTheme {
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.quicksand(
         fontSize: 28,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: AppColors.textPrimaryLight,
       ),
       headlineMedium: GoogleFonts.quicksand(
@@ -219,7 +247,7 @@ class AppTheme {
       ),
       labelLarge: GoogleFonts.quicksand(
         fontSize: 16,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
     ),
@@ -228,18 +256,32 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         textStyle: GoogleFonts.quicksand(
           fontSize: 16,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.textPrimaryLight,
+        backgroundColor: Colors.white.withValues(alpha: 0.65),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        side: const BorderSide(color: AppColors.dividerSoft, width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: GoogleFonts.quicksand(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
     cardTheme: CardThemeData(
       color: AppColors.bgLightCard,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      margin: EdgeInsets.zero,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgLight,
@@ -265,7 +307,7 @@ class AppTheme {
     textTheme: TextTheme(
       headlineLarge: GoogleFonts.quicksand(
         fontSize: 28,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: AppColors.textPrimaryDark,
       ),
       headlineMedium: GoogleFonts.quicksand(
@@ -295,7 +337,7 @@ class AppTheme {
       ),
       labelLarge: GoogleFonts.quicksand(
         fontSize: 16,
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
     ),
@@ -304,18 +346,32 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 15),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         textStyle: GoogleFonts.quicksand(
           fontSize: 16,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.textPrimaryDark,
+        backgroundColor: Colors.white.withValues(alpha: 0.06),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        side: BorderSide(color: Colors.white.withValues(alpha: 0.08), width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: GoogleFonts.quicksand(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
         ),
       ),
     ),
     cardTheme: CardThemeData(
       color: AppColors.bgDarkCard,
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      margin: EdgeInsets.zero,
     ),
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.bgDark,

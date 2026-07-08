@@ -124,17 +124,18 @@ class _HealthTabScrollerState extends State<_HealthTabScroller> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      height: 50,
-      padding: const EdgeInsets.all(4),
+      height: 42,
+      padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: isDark
-            ? AppColors.bgDarkCard.withValues(alpha: 0.9)
-            : const Color(0xFFF4F1EC),
-        borderRadius: BorderRadius.circular(16),
+            ? Colors.white.withValues(alpha: 0.07)
+            : const Color(0xFFF4F1EC).withValues(alpha: 0.96),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : const Color(0xFFE5DFD8),
+              ? Colors.white.withValues(alpha: 0.06)
+              : const Color(0xFFF0E9E2),
+          width: 0.6,
         ),
       ),
       child: AnimatedBuilder(
@@ -148,7 +149,7 @@ class _HealthTabScrollerState extends State<_HealthTabScroller> {
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 1),
               child: Row(
                 children: List<Widget>.generate(widget.labels.length, (index) {
                   final distance = (animation.value - index).abs();
@@ -198,43 +199,49 @@ class _HealthTabPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fillColor = Color.lerp(
-      Colors.transparent,
-      isDark ? const Color(0xFF4A465A) : const Color(0xFFFFFFFF),
-      selectedness,
-    )!;
     final textColor = Color.lerp(
-      isDark ? AppColors.textSecondaryDark : const Color(0xFF7D746D),
-      isDark ? Colors.white : const Color(0xFF403B37),
+      isDark ? Colors.white.withValues(alpha: 0.72) : const Color(0xFF7B7671),
+      isDark ? Colors.white : const Color(0xFF4C4844),
       selectedness,
     )!;
     final borderColor = Color.lerp(
       Colors.transparent,
-      isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFE8E2DB),
+      isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE8E1DA),
       selectedness,
     )!;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(13),
+        borderRadius: BorderRadius.circular(10),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         onTap: onTap,
         child: AnimatedContainer(
           duration: NilicoMotion.chipDuration,
           curve: NilicoMotion.ease,
-          constraints: const BoxConstraints(minHeight: 40),
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          constraints: const BoxConstraints(minHeight: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
-            color: fillColor,
-            borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: borderColor),
+            color: Color.lerp(
+              Colors.transparent,
+              isDark
+                  ? Colors.white.withValues(alpha: 0.12)
+                  : Colors.white.withValues(alpha: 0.84),
+              selectedness,
+            ),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: borderColor, width: 0.7),
           ),
           child: AnimatedDefaultTextStyle(
             duration: NilicoMotion.chipDuration,
             curve: NilicoMotion.ease,
             style: AppTypography.bodySmall(context).copyWith(
               color: textColor,
-              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+              fontSize: 12.5,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+              letterSpacing: -0.15,
+              height: 1.1,
             ),
             child: Text(
               label,

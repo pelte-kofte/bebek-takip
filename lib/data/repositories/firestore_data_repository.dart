@@ -185,33 +185,30 @@ class FirestoreDataRepository implements DataRepository {
       _skip('write:_setWithServerTimestamps');
       return;
     }
-    await _firestore.runTransaction((tx) async {
-      final snap = await tx.get(ref);
-      final existing = snap.data();
-      final existingPayload = Map<String, dynamic>.from(
-        (existing?['data'] as Map?) ?? const <String, dynamic>{},
-      );
-      final incomingPayload = Map<String, dynamic>.from(
-        (payload['data'] as Map?) ?? const <String, dynamic>{},
-      );
-      final existingDeleted =
-          existing?['isDeleted'] == true ||
-          existingPayload['isDeleted'] == true;
-      final incomingDeleted =
-          payload['isDeleted'] == true || incomingPayload['isDeleted'] == true;
-      if (existingDeleted && !incomingDeleted) {
-        _log('Skipping resurrection write for doc=${ref.id}');
-        return;
-      }
-      final data = <String, dynamic>{
-        ...payload,
-        'updatedAt': FieldValue.serverTimestamp(),
-      };
-      if (!snap.exists || snap.data()?['createdAt'] == null) {
-        data['createdAt'] = FieldValue.serverTimestamp();
-      }
-      tx.set(ref, data, SetOptions(merge: true));
-    });
+    final snap = await ref.get();
+    final existing = snap.data();
+    final existingPayload = Map<String, dynamic>.from(
+      (existing?['data'] as Map?) ?? const <String, dynamic>{},
+    );
+    final incomingPayload = Map<String, dynamic>.from(
+      (payload['data'] as Map?) ?? const <String, dynamic>{},
+    );
+    final existingDeleted =
+        existing?['isDeleted'] == true || existingPayload['isDeleted'] == true;
+    final incomingDeleted =
+        payload['isDeleted'] == true || incomingPayload['isDeleted'] == true;
+    if (existingDeleted && !incomingDeleted) {
+      _log('Skipping resurrection write for doc=${ref.id}');
+      return;
+    }
+    final data = <String, dynamic>{
+      ...payload,
+      'updatedAt': FieldValue.serverTimestamp(),
+    };
+    if (!snap.exists || snap.data()?['createdAt'] == null) {
+      data['createdAt'] = FieldValue.serverTimestamp();
+    }
+    await ref.set(data, SetOptions(merge: true));
   }
 
   String _resolveRecordType(Map<String, dynamic> row) {
@@ -907,23 +904,21 @@ class FirestoreDataRepository implements DataRepository {
     if (_isAnonymousOrSignedOut()) return;
     final ref = _userCollection(uid, 'babies').doc(babyId);
     try {
-      await _firestore.runTransaction((tx) async {
-        final snap = await tx.get(ref);
-        if (!snap.exists) return;
-        final data = snap.data()!;
-        // Only write if either field is missing.
-        final hasOwner = data.containsKey('ownerId');
-        final hasMembers = data.containsKey('members');
-        if (hasOwner && hasMembers) return;
-        final patch = <String, dynamic>{};
-        if (!hasOwner) patch['ownerId'] = uid;
-        if (!hasMembers) {
-          patch['members'] = {
-            uid: {'role': 'owner', 'joinedAt': FieldValue.serverTimestamp()},
-          };
-        }
-        tx.set(ref, patch, SetOptions(merge: true));
-      });
+      final snap = await ref.get();
+      if (!snap.exists) return;
+      final data = snap.data()!;
+      // Only write if either field is missing.
+      final hasOwner = data.containsKey('ownerId');
+      final hasMembers = data.containsKey('members');
+      if (hasOwner && hasMembers) return;
+      final patch = <String, dynamic>{};
+      if (!hasOwner) patch['ownerId'] = uid;
+      if (!hasMembers) {
+        patch['members'] = {
+          uid: {'role': 'owner', 'joinedAt': FieldValue.serverTimestamp()},
+        };
+      }
+      await ref.set(patch, SetOptions(merge: true));
       // Also ensure the sharedBabies index entry exists for the owner.
       await _writeSharedBabiesIndexIfMissing(uid, babyId);
     } catch (e) {
@@ -944,15 +939,13 @@ class FirestoreDataRepository implements DataRepository {
         .collection('sharedBabies')
         .doc(babyId);
     try {
-      await _firestore.runTransaction((tx) async {
-        final snap = await tx.get(ref);
-        if (snap.exists) return;
-        tx.set(ref, {
-          'babyId': babyId,
-          'role': 'owner',
-          'addedAt': FieldValue.serverTimestamp(),
-        });
-      });
+      final snap = await ref.get();
+      if (snap.exists) return;
+      await ref.set({
+        'babyId': babyId,
+        'role': 'owner',
+        'addedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
     } catch (e) {
       _log('_writeSharedBabiesIndexIfMissing error babyId=$babyId: $e');
     }

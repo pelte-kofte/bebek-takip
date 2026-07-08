@@ -23,6 +23,8 @@ import '../utils/locale_text_utils.dart';
 import 'premium_screen.dart';
 import '../services/premium_service.dart';
 
+enum TimerCardAccentMode { defaultTone, lavender }
+
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onDataChanged;
 
@@ -738,6 +740,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             lastActivity: '',
                             isActive: _emzirmeAktif,
                             isDark: isDark,
+                            accentMode: TimerCardAccentMode.lavender,
                             activeSide: _emzirmeAktif
                                 ? (_solAktif
                                       ? l10n.left.toUpperCase()
@@ -761,6 +764,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           label: l10n.left.toUpperCase(),
                                           filled: true,
                                           isDark: isDark,
+                                          accentMode:
+                                              TimerCardAccentMode.lavender,
                                           onTap: _startSol,
                                         ),
                                       ),
@@ -770,6 +775,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           label: l10n.right.toUpperCase(),
                                           filled: false,
                                           isDark: isDark,
+                                          accentMode:
+                                              TimerCardAccentMode.lavender,
                                           onTap: _startSag,
                                         ),
                                       ),
@@ -786,9 +793,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             lastActivity: '',
                             isActive: _uykuAktif,
                             isDark: isDark,
+                            accentMode: TimerCardAccentMode.lavender,
                             buttons: _buildTimerActionButton(
                               filled: false,
                               isDark: isDark,
+                              accentMode: TimerCardAccentMode.lavender,
                               onTap: _uykuAktif ? _stopUykuAndSave : _startUyku,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -811,7 +820,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     style: const TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,
-                                      color: Color(0xFF7A749E),
+                                      color: Color(0xFF7F7298),
                                       letterSpacing: 0.5,
                                     ),
                                   ),
@@ -1018,27 +1027,38 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool isActive,
     required bool isDark,
     required Widget buttons,
+    TimerCardAccentMode accentMode = TimerCardAccentMode.defaultTone,
     String? activeSide,
   }) {
+    final isLavender = accentMode == TimerCardAccentMode.lavender;
+    final cardColor = isDark
+        ? AppColors.bgDarkCard.withValues(alpha: 0.88)
+        : (isLavender
+              ? AppColors.lavenderPaper.withValues(alpha: 0.98)
+              : Colors.white.withValues(alpha: 0.9));
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : (isLavender ? AppColors.lavenderMist : const Color(0xFFEFE7E2));
+    final shadowColor = isLavender
+        ? const Color(0x120F061A)
+        : const Color(0x12000000);
+    final accentTint = isLavender
+        ? AppColors.lavenderInk
+        : const Color(0xFFFF998A);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.bgDarkCard.withValues(alpha: 0.88)
-            : Colors.white.withValues(alpha: 0.9),
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.05)
-              : const Color(0xFFEFE7E2),
-        ),
+        border: Border.all(color: borderColor),
         boxShadow: isDark
             ? null
-            : const [
+            : [
                 BoxShadow(
-                  color: Color(0x12000000),
-                  blurRadius: 10,
-                  offset: Offset(0, 2),
+                  color: shadowColor,
+                  blurRadius: isLavender ? 14 : 10,
+                  offset: const Offset(0, 3),
                 ),
               ],
       ),
@@ -1075,15 +1095,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     vertical: 3,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF998A).withValues(alpha: 0.16),
+                    color: accentTint.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     activeSide,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 9,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFFFF998A),
+                      color: accentTint,
                       letterSpacing: 0.35,
                     ),
                   ),
@@ -1113,17 +1133,25 @@ class _HomeScreenState extends State<HomeScreen> {
     required bool filled,
     required bool isDark,
     required VoidCallback? onTap,
+    TimerCardAccentMode accentMode = TimerCardAccentMode.defaultTone,
     String? label,
     Widget? child,
   }) {
+    final isLavender = accentMode == TimerCardAccentMode.lavender;
+    final filledColor = isLavender ? AppColors.lavenderInk : const Color(0xFFFF998A);
+    final subtleSurface = isLavender
+        ? AppColors.lavenderSoft
+        : const Color(0xFFF8F2EE);
     final backgroundColor = filled
-        ? const Color(0xFFFF998A)
-        : (isDark
-              ? Colors.white.withValues(alpha: 0.08)
-              : const Color(0xFFF8F2EE));
+        ? filledColor
+        : (isDark ? Colors.white.withValues(alpha: 0.08) : subtleSurface);
     final foregroundColor = filled
         ? Colors.white
-        : (isDark ? const Color(0xFFFFB4A2) : const Color(0xFFFF998A));
+        : (isDark
+              ? (isLavender
+                    ? AppColors.lavenderSoft
+                    : const Color(0xFFFFB4A2))
+              : (isLavender ? AppColors.lavenderInk : const Color(0xFFFF998A)));
 
     return Material(
       color: backgroundColor,

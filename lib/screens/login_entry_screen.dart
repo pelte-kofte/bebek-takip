@@ -25,6 +25,7 @@ class LoginEntryScreen extends StatefulWidget {
 class _LoginEntryScreenState extends State<LoginEntryScreen> {
   bool _isLoading = false;
   bool _isAppleSigningIn = false;
+  bool _hasScheduledSignedInContinue = false;
 
   // Check if platform supports Apple Sign In (iOS only, not web/Android)
   bool get _supportsAppleSignIn {
@@ -35,6 +36,23 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   // Check if platform supports Google Sign In (not web)
   bool get _supportsGoogleSignIn {
     return !kIsWeb;
+  }
+
+  bool get _isSignedInUser {
+    final user = FirebaseAuth.instance.currentUser;
+    return user != null && !user.isAnonymous;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_isSignedInUser && !_hasScheduledSignedInContinue) {
+      _hasScheduledSignedInContinue = true;
+      Future<void>.delayed(const Duration(milliseconds: 1350), () async {
+        if (!mounted || !_isSignedInUser) return;
+        await _proceedToApp();
+      });
+    }
   }
 
   Future<void> _authenticateWithCredential(AuthCredential credential) async {
@@ -88,7 +106,8 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
       _isAppleSigningIn = true;
     });
     try {
-      final userCredential = await AppleAuthService.instance.signInWithProvider();
+      final userCredential = await AppleAuthService.instance
+          .signInWithProvider();
       if (userCredential == null) return;
       await SyncManager.syncCurrentUserData();
       await _completeSignedInFlow();
@@ -199,6 +218,8 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final isSignedInUser = _isSignedInUser;
 
     return Scaffold(
       body: Stack(
@@ -206,7 +227,7 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
           // Layer 1: Full-screen background image
           Positioned.fill(
             child: Image.asset(
-              'assets/onboarding/login_entry.png',
+              'assets/onboarding/welcome.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -220,9 +241,12 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.15),
                     Colors.black.withValues(alpha: 0.55),
                     Colors.black.withValues(alpha: 0.75),
                   ],
+                  stops: const [0.0, 0.35, 0.55, 0.75, 1.0],
                 ),
               ),
             ),
@@ -247,9 +271,48 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                         children: [
                           const Spacer(),
 
+                          Text(
+                            l10n.appName,
+                            textAlign: TextAlign.center,
+                            style: textTheme.displaySmall?.copyWith(
+                              fontSize: 40,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              letterSpacing: -1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            _sentenceCase(l10n.instantStart),
+                            textAlign: TextAlign.center,
+                            style: textTheme.bodySmall?.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                              letterSpacing: 0.1,
+                              color: const Color(0xFFE6DFDE),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _sentenceCase(l10n.securePrivate),
+                            textAlign: TextAlign.center,
+                            style: textTheme.bodySmall?.copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                              letterSpacing: 0.1,
+                              color: const Color(0xFFE6DFDE),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+
                           // Title
                           Text(
-                            l10n.createYourAccount,
+                            isSignedInUser
+                                ? l10n.welcomeToNilico
+                                : l10n.createYourAccount,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
@@ -262,7 +325,9 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
 
                           // Subtitle
                           Text(
-                            l10n.loginBenefitText,
+                            isSignedInUser
+                                ? l10n.tagline
+                                : l10n.loginBenefitText,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 15,
@@ -275,6 +340,30 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                           // Sign in buttons
                           if (_isLoading)
                             const CircularProgressIndicator(color: Colors.white)
+                          else if (isSignedInUser)
+                            Column(
+                              children: [
+                                SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white.withValues(alpha: 0.92),
+                                    strokeWidth: 2.1,
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  l10n.instantStart,
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.1,
+                                    color: Colors.white.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                              ],
+                            )
                           else
                             Column(
                               children: [
@@ -307,35 +396,37 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                               ],
                             ),
 
-                          const SizedBox(height: 20),
+                          if (!isSignedInUser) ...[
+                            const SizedBox(height: 20),
 
-                          // Skip button
-                          TextButton(
-                            onPressed: _isLoading ? null : _skipLogin,
-                            child: Text(
-                              l10n.continueWithoutLogin,
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.6),
+                            // Skip button
+                            TextButton(
+                              onPressed: _isLoading ? null : _skipLogin,
+                              child: Text(
+                                l10n.continueWithoutLogin,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white.withValues(alpha: 0.6),
+                                ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: 16),
 
-                          const SizedBox(height: 16),
-
-                          // Privacy note
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 24),
-                            child: Text(
-                              l10n.loginOptionalNote,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white.withValues(alpha: 0.45),
+                            // Privacy note
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              child: Text(
+                                l10n.loginOptionalNote,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white.withValues(alpha: 0.45),
+                                ),
                               ),
                             ),
-                          ),
+                          ] else
+                            const SizedBox(height: 40),
                         ],
                       ),
                     ),
@@ -347,6 +438,11 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
         ],
       ),
     );
+  }
+
+  String _sentenceCase(String value) {
+    if (value.isEmpty) return value;
+    return value[0].toUpperCase() + value.substring(1).toLowerCase();
   }
 
   Widget _buildSignInButton({

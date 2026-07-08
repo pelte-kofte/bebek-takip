@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeIn;
-  bool _canTap = false;
+  late Animation<double> _scaleIn;
 
   @override
   void initState() {
@@ -32,34 +32,27 @@ class _SplashScreenState extends State<SplashScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+    _scaleIn = Tween<double>(begin: 0.985, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
+    );
 
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) _fadeController.forward();
     });
 
-    // 2 saniye sonra dokunmaya izin ver
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      if (mounted) {
-        setState(() => _canTap = true);
-      }
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) _goToNextScreen();
     });
   }
 
   void _goToNextScreen() {
-    if (!_canTap) return;
-
-    HapticFeedback.mediumImpact();
-
     final isFirstLaunch = VeriYonetici.isFirstLaunch();
-    final showLoginEntry = !VeriYonetici.isLoginEntryShown();
 
     Widget nextScreen;
     if (isFirstLaunch) {
       nextScreen = const OnboardingScreen();
-    } else if (showLoginEntry) {
-      nextScreen = const LoginEntryScreen();
     } else {
-      nextScreen = const MainScreen();
+      nextScreen = const LoginEntryScreen();
     }
 
     AppNavigator.goToRoot(nextScreen);
@@ -74,167 +67,54 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
 
-    return GestureDetector(
-      onTap: _goToNextScreen,
-      child: Scaffold(
-        body: Stack(
-          fit: StackFit.expand,
-          children: [
-            // Full-screen hero image
-            Image.asset('assets/onboarding/welcome.png', fit: BoxFit.cover),
-
-            // Bottom gradient overlay for readability
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.transparent,
-                      Colors.black.withValues(alpha: 0.15),
-                      Colors.black.withValues(alpha: 0.55),
-                      Colors.black.withValues(alpha: 0.75),
-                    ],
-                    stops: const [0.0, 0.35, 0.55, 0.75, 1.0],
-                  ),
-                ),
-              ),
-            ),
-
-            // Content overlay — bottom-aligned
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 420),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Brand + copy
-                        FadeTransition(
-                          opacity: _fadeIn,
-                          child: Column(
-                            children: [
-                              // App name (text only, no emoji)
-                              Text(
-                                l10n.appName,
-                                style: const TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: -1,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              // Tagline
-                              Text(
-                                l10n.tagline,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white.withValues(alpha: 0.85),
-                                  height: 1.5,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-
-                              // Feature chips (Wrap for small screens)
-                              Wrap(
-                                spacing: 10,
-                                runSpacing: 8,
-                                alignment: WrapAlignment.center,
-                                children: [
-                                  _buildFeatureChip(
-                                    '✓ ${l10n.instantStart}',
-                                  ),
-                                  _buildFeatureChip('✓ ${l10n.securePrivate}'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 32),
-
-                        // CTA button
-                        FadeTransition(
-                          opacity: _fadeIn,
-                          child: AnimatedOpacity(
-                            opacity: _canTap ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 500),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppColors.primary.withValues(
-                                      alpha: 0.4,
-                                    ),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    l10n.tapToStart,
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  const Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-                      ],
+    return Scaffold(
+      backgroundColor: AppColors.splashCream,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: AnimatedBuilder(
+              animation: _fadeController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _fadeIn.value,
+                  child: Transform.scale(scale: _scaleIn.value, child: child),
+                );
+              },
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 340),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.appName,
+                      textAlign: TextAlign.center,
+                      style: textTheme.displaySmall?.copyWith(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -1.2,
+                        color: const Color(0xFF3F3736),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 14),
+                    Text(
+                      l10n.tagline,
+                      textAlign: TextAlign.center,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        height: 1.5,
+                        letterSpacing: 0.1,
+                        color: const Color(0xFF8D8382),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeatureChip(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: Colors.white.withValues(alpha: 0.9),
+          ),
         ),
       ),
     );
@@ -307,17 +187,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }) async {
     await VeriYonetici.setFirstLaunchComplete();
 
-    // Show login entry screen if not shown yet
-    final showLoginEntry = !VeriYonetici.isLoginEntryShown();
-
     if (!mounted) return;
 
     AppNavigator.goToRoot(
-      showLoginEntry
-          ? LoginEntryScreen(
-              showPremiumDiscoveryAfterLogin: showPremiumDiscoveryAfterLogin,
-            )
-          : const MainScreen(),
+      LoginEntryScreen(
+        showPremiumDiscoveryAfterLogin: showPremiumDiscoveryAfterLogin,
+      ),
     );
   }
 

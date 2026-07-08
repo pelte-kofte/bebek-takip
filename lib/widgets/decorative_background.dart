@@ -43,13 +43,9 @@ class DecorativeBackground extends StatelessWidget {
   }
 
   List<Widget> _buildShapes(bool isDark) {
-    const peach = Color(0xFFFFB4A2);
-    const lavender = Color(0xFFE5E0F7);
-    const cream = Color(0xFFFFF8F0);
-
-    // Visible in light mode, subtle in dark mode
-    final primary = isDark ? 0.10 : 0.45;
-    final secondary = isDark ? 0.08 : 0.35;
+    const lavenderPrimary = AppColors.lavenderMist;
+    const lavenderSecondary = AppColors.accentLavender;
+    final blobOpacity = isDark ? 0.055 : 0.115;
 
     switch (preset) {
       case BackgroundPreset.home:
@@ -57,22 +53,26 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -40,
             left: -30,
-            child: _circle(300, lavender, primary),
+            child: _circle(300, lavenderPrimary, blobOpacity),
           ),
           Positioned(
             bottom: -20,
             right: -30,
-            child: _circle(280, peach, secondary),
+            child: _circle(280, lavenderSecondary, blobOpacity),
           ),
         ];
 
       case BackgroundPreset.add:
         return [
-          Positioned(top: -50, right: -60, child: _circle(250, peach, 0.08)),
+          Positioned(
+            top: -50,
+            right: -60,
+            child: _circle(250, lavenderSecondary, blobOpacity),
+          ),
           Positioned(
             bottom: -50,
             left: -60,
-            child: _circle(230, lavender, isDark ? 0.05 : 0.07),
+            child: _circle(230, lavenderPrimary, blobOpacity),
           ),
         ];
 
@@ -81,12 +81,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -30,
             right: -40,
-            child: _circle(280, lavender, primary),
+            child: _circle(280, lavenderPrimary, blobOpacity),
           ),
           Positioned(
             bottom: -40,
             left: -30,
-            child: _circle(260, peach, secondary),
+            child: _circle(260, lavenderSecondary, blobOpacity),
           ),
         ];
 
@@ -95,12 +95,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -40,
             right: -30,
-            child: _circle(280, peach, secondary),
+            child: _circle(280, lavenderSecondary, blobOpacity),
           ),
           Positioned(
             bottom: -40,
             left: -40,
-            child: _circle(260, lavender, primary),
+            child: _circle(260, lavenderPrimary, blobOpacity),
           ),
         ];
 
@@ -109,12 +109,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -30,
             left: -20,
-            child: _circle(300, lavender, primary),
+            child: _circle(300, lavenderPrimary, blobOpacity),
           ),
           Positioned(
             bottom: -60,
             right: -30,
-            child: _circle(280, peach, secondary),
+            child: _circle(280, lavenderSecondary, blobOpacity),
           ),
         ];
 
@@ -123,12 +123,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -30,
             right: -30,
-            child: _circle(300, peach, secondary),
+            child: _circle(300, lavenderSecondary, blobOpacity),
           ),
           Positioned(
             bottom: -40,
             left: -40,
-            child: _circle(280, lavender, primary),
+            child: _circle(280, lavenderPrimary, blobOpacity),
           ),
         ];
 
@@ -137,12 +137,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -50,
             right: -50,
-            child: _circle(240, cream, isDark ? 0.06 : 0.15),
+            child: _circle(240, lavenderSecondary, blobOpacity),
           ),
           Positioned(
             bottom: -40,
             left: -50,
-            child: _circle(220, lavender, isDark ? 0.06 : 0.15),
+            child: _circle(220, lavenderPrimary, blobOpacity),
           ),
         ];
 
@@ -151,12 +151,12 @@ class DecorativeBackground extends StatelessWidget {
           Positioned(
             top: -40,
             right: -40,
-            child: _circle(270, peach, secondary),
+            child: _circle(270, lavenderSecondary, blobOpacity),
           ),
           Positioned(
             bottom: -50,
             left: -40,
-            child: _circle(250, lavender, primary),
+            child: _circle(250, lavenderPrimary, blobOpacity),
           ),
         ];
     }

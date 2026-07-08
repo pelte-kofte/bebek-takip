@@ -21,7 +21,6 @@ class BabyMealsScreen extends StatefulWidget {
 }
 
 class _BabyMealsScreenState extends State<BabyMealsScreen> {
-  static const String _filterAll = 'all';
   static const int _initialRecipeCount = 6;
 
   final BabyMealRecipeService _recipeService = BabyMealRecipeService.instance;
@@ -32,12 +31,13 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
   bool _loading = true;
   bool _loadFailed = false;
   bool _didSearchIngredients = false;
-  String _activeFilter = _filterAll;
+  late String _activeFilter;
   String _ingredientQuery = '';
 
   @override
   void initState() {
     super.initState();
+    _activeFilter = _defaultMealFilterForNow();
     _loadRecipes();
   }
 
@@ -94,7 +94,8 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   String get _safetyText => _isTurkish ? 'Guvenlik Notlari' : 'Safety Notes';
 
-  String get _matcherTitle => _isTurkish ? 'Evde ne var?' : 'What can I make?';
+  String get _matcherTitle =>
+      _isTurkish ? 'Mutfağında neler var?' : "What's in your kitchen?";
 
   String get _matcherSubtitle => _isTurkish
       ? 'Malzemeleri yaz, uygun tarifleri bulalim.'
@@ -174,12 +175,20 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   List<({String key, String label})> _filters() {
     return <({String key, String label})>[
-      (key: _filterAll, label: _isTurkish ? 'Tum' : 'All'),
       (key: 'breakfast', label: _isTurkish ? 'Kahvalti' : 'Breakfast'),
       (key: 'lunch', label: _isTurkish ? 'Ogle' : 'Lunch'),
       (key: 'dinner', label: _isTurkish ? 'Aksam' : 'Dinner'),
       (key: 'snack', label: _isTurkish ? 'Atistirmalik' : 'Snack'),
     ];
+  }
+
+  String _defaultMealFilterForNow() {
+    final now = DateTime.now();
+    final hour = now.hour;
+    if (hour >= 5 && hour <= 10) return 'breakfast';
+    if (hour >= 11 && hour <= 15) return 'lunch';
+    if (hour >= 16 && hour <= 20) return 'dinner';
+    return 'breakfast';
   }
 
   List<BabyMealRecipe> _recipesForCurrentAge() {
@@ -197,9 +206,6 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   List<BabyMealRecipe> _visibleRecipes() {
     final recipes = _recipesForCurrentAge();
-    if (_activeFilter == _filterAll) {
-      return recipes;
-    }
     return recipes
         .where((recipe) => recipe.mealType == _activeFilter)
         .toList(growable: false);
@@ -739,10 +745,10 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
 
   Widget _buildIngredientMatcherCard(bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isDark ? AppColors.bgDarkCard : AppColors.lavenderSoft,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark
               ? AppColors.accentLavender.withValues(alpha: 0.12)
@@ -757,45 +763,20 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceWhite,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  Icons.kitchen_rounded,
-                  color: const Color(0xFF7A749E),
-                  size: 16,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _matcherTitle,
-                      style: AppTypography.h3(context).copyWith(fontSize: 16),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      _matcherSubtitle,
-                      style: AppTypography.bodySmall(context).copyWith(
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : const Color(0xFF866F65),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          Text(
+            _matcherTitle,
+            style: AppTypography.h3(context).copyWith(fontSize: 16),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 2),
+          Text(
+            _matcherSubtitle,
+            style: AppTypography.bodySmall(context).copyWith(
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : const Color(0xFF866F65),
+            ),
+          ),
+          const SizedBox(height: 8),
           TextField(
             controller: _ingredientController,
             onChanged: (value) {
@@ -815,10 +796,6 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 color: isDark
                     ? AppColors.textSecondaryDark
                     : const Color(0xFF9D8478),
-              ),
-              prefixIcon: Icon(
-                Icons.search_rounded,
-                color: AppColors.primary.withValues(alpha: 0.82),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 14,
@@ -950,6 +927,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final ageRecipes = _recipesForCurrentAge();
     final recipes = _visibleRecipes();
     final previewRecipes = _previewRecipes(recipes);
     final todaysRecipe = _todaysRecipe(recipes);
@@ -973,7 +951,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         ),
         const SizedBox(height: 8),
         Expanded(
-          child: (_loadFailed || recipes.isEmpty)
+          child: (_loadFailed || ageRecipes.isEmpty)
               ? _buildStatusState(
                   isDark: isDark,
                   icon: _loadFailed
@@ -1095,20 +1073,28 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           : null,
                     ),
                     const SizedBox(height: 12),
-                    ...previewRecipes.map(
-                      (recipe) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _buildRecipeCard(recipe, isDark),
-                      ),
-                    ),
-                    if (recipes.length > _initialRecipeCount) ...[
-                      const SizedBox(height: 2),
-                      _ViewAllRecipesCard(
-                        label: _viewAllRecipesText,
-                        count: recipes.length,
+                    if (recipes.isEmpty)
+                      _buildStatusState(
                         isDark: isDark,
-                        onTap: () => _openAllRecipes(recipes),
+                        icon: Icons.restaurant_menu_outlined,
+                        message: _emptyText,
+                      )
+                    else ...[
+                      ...previewRecipes.map(
+                        (recipe) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: _buildRecipeCard(recipe, isDark),
+                        ),
                       ),
+                      if (recipes.length > _initialRecipeCount) ...[
+                        const SizedBox(height: 2),
+                        _ViewAllRecipesCard(
+                          label: _viewAllRecipesText,
+                          count: recipes.length,
+                          isDark: isDark,
+                          onTap: () => _openAllRecipes(recipes),
+                        ),
+                      ],
                     ],
                   ],
                 ),

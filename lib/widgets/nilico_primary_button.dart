@@ -54,7 +54,7 @@ class _NilicoPrimaryButtonState extends State<NilicoPrimaryButton> {
         ],
         Text(
           widget.label,
-          style: AppTypography.button().copyWith(fontSize: 18),
+          style: AppTypography.button().copyWith(fontSize: 17),
         ),
       ],
     );
@@ -69,10 +69,10 @@ class _NilicoPrimaryButtonState extends State<NilicoPrimaryButton> {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+        disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.55),
         disabledForegroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
       ),
       child: buttonChild,
@@ -93,8 +93,10 @@ class _NilicoPrimaryButtonState extends State<NilicoPrimaryButton> {
         curve: NilicoMotion.ease,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            boxShadow: AppShadows.card(false),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: AppShadows.button(
+              Theme.of(context).brightness == Brightness.dark,
+            ),
           ),
           child: wrappedButton,
         ),
