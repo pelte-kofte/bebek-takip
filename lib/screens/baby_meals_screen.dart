@@ -952,12 +952,14 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         const SizedBox(height: 8),
         Expanded(
           child: (_loadFailed || ageRecipes.isEmpty)
-              ? _buildStatusState(
-                  isDark: isDark,
-                  icon: _loadFailed
-                      ? Icons.restaurant_menu_outlined
-                      : Icons.soup_kitchen_outlined,
-                  message: _loadFailed ? _loadErrorText : _emptyText,
+              ? NilicoEntrance(
+                  child: _buildStatusState(
+                    isDark: isDark,
+                    icon: _loadFailed
+                        ? Icons.restaurant_menu_outlined
+                        : Icons.soup_kitchen_outlined,
+                    message: _loadFailed ? _loadErrorText : _emptyText,
+                  ),
                 )
               : ListView(
                   padding: EdgeInsets.fromLTRB(
@@ -967,7 +969,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     widget.embedded ? 88 : 24,
                   ),
                   children: [
-                    _buildIngredientMatcherCard(isDark),
+                    NilicoEntrance(child: _buildIngredientMatcherCard(isDark)),
                     if (_didSearchIngredients) ...[
                       const SizedBox(height: 16),
                       Text(
@@ -976,22 +978,30 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                       ),
                       const SizedBox(height: 8),
                       if (_ingredientMatches.isEmpty)
-                        _buildStatusState(
-                          isDark: isDark,
-                          icon: Icons.search_off_rounded,
-                          message: _matcherEmptyText,
+                        NilicoEntrance(
+                          child: _buildStatusState(
+                            isDark: isDark,
+                            icon: Icons.search_off_rounded,
+                            message: _matcherEmptyText,
+                          ),
                         )
                       else
                         ..._ingredientMatches.map(
                           (match) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: _buildMatchCard(match, isDark),
+                            child: NilicoEntrance(
+                              key: ValueKey('match_${match.recipe.id}'),
+                              child: _buildMatchCard(match, isDark),
+                            ),
                           ),
                         ),
                     ],
                     const SizedBox(height: 14),
                     if (todaysRecipe != null) ...[
-                      _buildHeroCard(todaysRecipe, isDark),
+                      NilicoEntrance(
+                        key: ValueKey('hero_${todaysRecipe.id}'),
+                        child: _buildHeroCard(todaysRecipe, isDark),
+                      ),
                       const SizedBox(height: 14),
                     ],
                     SingleChildScrollView(
@@ -1074,16 +1084,21 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     ),
                     const SizedBox(height: 12),
                     if (recipes.isEmpty)
-                      _buildStatusState(
-                        isDark: isDark,
-                        icon: Icons.restaurant_menu_outlined,
-                        message: _emptyText,
+                      NilicoEntrance(
+                        child: _buildStatusState(
+                          isDark: isDark,
+                          icon: Icons.restaurant_menu_outlined,
+                          message: _emptyText,
+                        ),
                       )
                     else ...[
                       ...previewRecipes.map(
                         (recipe) => Padding(
                           padding: const EdgeInsets.only(bottom: 10),
-                          child: _buildRecipeCard(recipe, isDark),
+                          child: NilicoEntrance(
+                            key: ValueKey('recipe_${recipe.id}'),
+                            child: _buildRecipeCard(recipe, isDark),
+                          ),
                         ),
                       ),
                       if (recipes.length > _initialRecipeCount) ...[

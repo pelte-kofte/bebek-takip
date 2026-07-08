@@ -89,8 +89,10 @@ class _NilicoPrimaryButtonState extends State<NilicoPrimaryButton> {
       onTapCancel: () => _setPressed(false),
       child: AnimatedScale(
         scale: _pressed ? 0.98 : 1,
-        duration: NilicoMotion.cardPressDuration,
-        curve: NilicoMotion.ease,
+        duration: _pressed
+            ? NilicoMotion.pressDownDuration
+            : NilicoMotion.pressUpDuration,
+        curve: _pressed ? NilicoMotion.ease : NilicoMotion.gentleSpring,
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),

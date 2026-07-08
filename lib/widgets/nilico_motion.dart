@@ -6,13 +6,17 @@ enum NilicoHapticType { none, selection, light, medium, success }
 class NilicoMotion {
   NilicoMotion._();
 
-  static const Duration cardPressDuration = Duration(milliseconds: 130);
-  static const Duration chipDuration = Duration(milliseconds: 150);
+  static const Duration pressDownDuration = Duration(milliseconds: 100);
+  static const Duration pressUpDuration = Duration(milliseconds: 180);
+  static const Duration chipDuration = Duration(milliseconds: 160);
+  static const Duration tabItemDuration = Duration(milliseconds: 170);
+  static const Duration entranceDuration = Duration(milliseconds: 180);
   static const Duration pageDuration = Duration(milliseconds: 240);
   static const Duration pageReverseDuration = Duration(milliseconds: 200);
   static const Duration sheetDuration = Duration(milliseconds: 360);
   static const Duration sheetReverseDuration = Duration(milliseconds: 280);
   static const Curve ease = Curves.easeOutCubic;
+  static const Curve gentleSpring = Cubic(0.22, 1.0, 0.36, 1.04);
 }
 
 class NilicoHaptics {
@@ -82,8 +86,53 @@ class _NilicoPressableState extends State<NilicoPressable> {
       onLongPress: widget.onLongPress,
       child: AnimatedScale(
         scale: _pressed ? 0.98 : 1,
-        duration: NilicoMotion.cardPressDuration,
+        duration: _pressed
+            ? NilicoMotion.pressDownDuration
+            : NilicoMotion.pressUpDuration,
+        curve: _pressed ? NilicoMotion.ease : NilicoMotion.gentleSpring,
+        child: widget.child,
+      ),
+    );
+  }
+}
+
+class NilicoEntrance extends StatefulWidget {
+  const NilicoEntrance({
+    super.key,
+    required this.child,
+    this.offsetY = 6,
+  });
+
+  final Widget child;
+  final double offsetY;
+
+  @override
+  State<NilicoEntrance> createState() => _NilicoEntranceState();
+}
+
+class _NilicoEntranceState extends State<NilicoEntrance> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() => _visible = true);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSlide(
+      duration: NilicoMotion.entranceDuration,
+      curve: NilicoMotion.ease,
+      offset: _visible ? Offset.zero : Offset(0, widget.offsetY / 100),
+      child: AnimatedOpacity(
+        duration: NilicoMotion.entranceDuration,
         curve: NilicoMotion.ease,
+        opacity: _visible ? 1 : 0,
         child: widget.child,
       ),
     );

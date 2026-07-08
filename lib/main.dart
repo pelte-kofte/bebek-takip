@@ -9,8 +9,9 @@ import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
 import 'screens/add_screen.dart';
 import 'screens/health_screen.dart';
-import 'models/veri_yonetici.dart';
+import 'screens/login_entry_screen.dart';
 import 'screens/splash_screen.dart';
+import 'models/veri_yonetici.dart';
 import 'widgets/add_baby_sheet.dart';
 import 'widgets/nilico_motion.dart';
 import 'theme/app_theme.dart';
@@ -146,7 +147,9 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
         Locale('uk'),
         Locale('es'),
       ],
-      home: const SplashScreen(),
+      home: VeriYonetici.isFirstLaunch()
+          ? const OnboardingScreen()
+          : const LoginEntryScreen(),
     );
   }
 }
@@ -300,29 +303,42 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildNavItem(int index, IconData icon, String label) {
     final isSelected = _selectedIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = AppColors.primary;
+    final inactiveColor = isDark
+        ? AppColors.textMutedDark
+        : AppColors.textMutedLight;
     return GestureDetector(
       onTap: () => _onItemTapped(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            color: isSelected
-                ? AppColors.primary
-                : (isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
-            size: 26,
+          AnimatedScale(
+            scale: isSelected ? 1 : 0.96,
+            duration: NilicoMotion.tabItemDuration,
+            curve: NilicoMotion.ease,
+            child: AnimatedOpacity(
+              duration: NilicoMotion.tabItemDuration,
+              curve: NilicoMotion.ease,
+              opacity: isSelected ? 1 : 0.72,
+              child: Icon(
+                icon,
+                color: isSelected ? activeColor : inactiveColor,
+                size: 26,
+              ),
+            ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: isSelected
-                  ? AppColors.primary
-                  : (isDark
-                        ? AppColors.textMutedDark
-                        : AppColors.textMutedLight),
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          AnimatedOpacity(
+            duration: NilicoMotion.tabItemDuration,
+            curve: NilicoMotion.ease,
+            opacity: isSelected ? 1 : 0.76,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: isSelected ? activeColor : inactiveColor,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
             ),
           ),
         ],

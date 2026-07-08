@@ -67,50 +67,14 @@ class _HealthTabCapsules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _HealthTabScroller(labels: labels);
+    return _HealthSegmentedControl(labels: labels);
   }
 }
 
-class _HealthTabScroller extends StatefulWidget {
-  const _HealthTabScroller({required this.labels});
+class _HealthSegmentedControl extends StatelessWidget {
+  const _HealthSegmentedControl({required this.labels});
 
   final List<String> labels;
-
-  @override
-  State<_HealthTabScroller> createState() => _HealthTabScrollerState();
-}
-
-class _HealthTabScrollerState extends State<_HealthTabScroller> {
-  final ScrollController _scrollController = ScrollController();
-  late final List<GlobalKey> _pillKeys = List<GlobalKey>.generate(
-    widget.labels.length,
-    (_) => GlobalKey(),
-  );
-  int _lastEnsuredIndex = -1;
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _ensureSelectedVisible(int index) {
-    if (_lastEnsuredIndex == index) return;
-    _lastEnsuredIndex = index;
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || !_scrollController.hasClients) return;
-      final pillContext = _pillKeys[index].currentContext;
-      if (pillContext == null) return;
-
-      Scrollable.ensureVisible(
-        pillContext,
-        alignment: 0.5,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,58 +86,95 @@ class _HealthTabScrollerState extends State<_HealthTabScroller> {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark
+        ? AppColors.bgDarkCard.withValues(alpha: 0.34)
+        : AppColors.paperMuted.withValues(alpha: 0.82);
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.05)
+        : AppColors.borderSoft.withValues(alpha: 0.32);
 
-    return Container(
-      height: 42,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.07)
-            : const Color(0xFFF4F1EC).withValues(alpha: 0.96),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark
-              ? Colors.white.withValues(alpha: 0.06)
-              : const Color(0xFFF0E9E2),
-          width: 0.6,
-        ),
-      ),
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, _) {
-          final currentIndex = controller.index;
-          _ensureSelectedVisible(currentIndex);
+    return SizedBox(
+      height: 36,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final segmentWidth = constraints.maxWidth / labels.length;
 
-          return SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: Row(
-                children: List<Widget>.generate(widget.labels.length, (index) {
-                  final distance = (animation.value - index).abs();
-                  final selectedness = (1 - distance).clamp(0.0, 1.0);
-                  final isActive = currentIndex == index;
+          return DecoratedBox(
+            decoration: BoxDecoration(
+              color: baseColor,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: borderColor, width: 0.55),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: AnimatedBuilder(
+                animation: animation,
+                builder: (context, _) {
+                  final currentIndex = controller.index;
+                  final indicatorLeft = animation.value * segmentWidth;
 
-                  return Padding(
-                    key: _pillKeys[index],
-                    padding: EdgeInsets.only(
-                      right: index == widget.labels.length - 1 ? 0 : 4,
-                    ),
-                    child: _HealthTabPill(
-                      label: widget.labels[index],
-                      selectedness: selectedness,
-                      isActive: isActive,
-                      onTap: () {
-                        if (controller.index != index) {
-                          NilicoHaptics.trigger(NilicoHapticType.selection);
-                        }
-                        controller.animateTo(index);
-                      },
-                    ),
+                  return Stack(
+                    children: [
+                      Positioned(
+                        left: indicatorLeft,
+                        top: 2,
+                        width: segmentWidth,
+                        height: 32,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.12)
+                                  : AppColors.controlActive,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.07)
+                                    : Colors.white.withValues(alpha: 0.85),
+                                width: 0.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: isDark
+                                      ? Colors.black.withValues(alpha: 0.16)
+                                      : const Color(
+                                          0x142F221C,
+                                        ).withValues(alpha: 0.10),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: List<Widget>.generate(labels.length, (index) {
+                          final distance = (animation.value - index).abs();
+                          final selectedness = (1 - distance).clamp(0.0, 1.0);
+                          final isActive = currentIndex == index;
+
+                          return Expanded(
+                            child: _HealthSegment(
+                              label: labels[index],
+                              selectedness: selectedness,
+                              isActive: isActive,
+                              onTap: () {
+                                if (controller.index != index) {
+                                  NilicoHaptics.trigger(
+                                    NilicoHapticType.selection,
+                                  );
+                                }
+                                controller.animateTo(index);
+                              },
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
                   );
-                }),
+                },
               ),
             ),
           );
@@ -183,8 +184,8 @@ class _HealthTabScrollerState extends State<_HealthTabScroller> {
   }
 }
 
-class _HealthTabPill extends StatelessWidget {
-  const _HealthTabPill({
+class _HealthSegment extends StatelessWidget {
+  const _HealthSegment({
     required this.label,
     required this.selectedness,
     required this.isActive,
@@ -200,55 +201,44 @@ class _HealthTabPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Color.lerp(
-      isDark ? Colors.white.withValues(alpha: 0.72) : const Color(0xFF7B7671),
-      isDark ? Colors.white : const Color(0xFF4C4844),
-      selectedness,
-    )!;
-    final borderColor = Color.lerp(
-      Colors.transparent,
-      isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE8E1DA),
+      isDark
+          ? AppColors.textSecondaryDark.withValues(alpha: 0.82)
+          : AppColors.textSecondary.withValues(alpha: 0.96),
+      isDark ? AppColors.textPrimaryDark : AppColors.textPrimary,
       selectedness,
     )!;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: onTap,
-        child: AnimatedContainer(
-          duration: NilicoMotion.chipDuration,
-          curve: NilicoMotion.ease,
-          constraints: const BoxConstraints(minHeight: 32),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-          decoration: BoxDecoration(
-            color: Color.lerp(
-              Colors.transparent,
-              isDark
-                  ? Colors.white.withValues(alpha: 0.12)
-                  : Colors.white.withValues(alpha: 0.84),
-              selectedness,
-            ),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: borderColor, width: 0.7),
-          ),
+        child: Center(
           child: AnimatedDefaultTextStyle(
-            duration: NilicoMotion.chipDuration,
-            curve: NilicoMotion.ease,
-            style: AppTypography.bodySmall(context).copyWith(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
               color: textColor,
-              fontSize: 12.5,
-              fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-              letterSpacing: -0.15,
-              height: 1.1,
+              letterSpacing: -0.2,
+              height: 1.0,
             ),
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.visible,
-              softWrap: false,
-              textAlign: TextAlign.center,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
+              height: double.infinity,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ),

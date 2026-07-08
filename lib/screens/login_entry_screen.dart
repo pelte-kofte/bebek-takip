@@ -25,7 +25,6 @@ class LoginEntryScreen extends StatefulWidget {
 class _LoginEntryScreenState extends State<LoginEntryScreen> {
   bool _isLoading = false;
   bool _isAppleSigningIn = false;
-  bool _hasScheduledSignedInContinue = false;
 
   // Check if platform supports Apple Sign In (iOS only, not web/Android)
   bool get _supportsAppleSignIn {
@@ -41,18 +40,6 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
   bool get _isSignedInUser {
     final user = FirebaseAuth.instance.currentUser;
     return user != null && !user.isAnonymous;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isSignedInUser && !_hasScheduledSignedInContinue) {
-      _hasScheduledSignedInContinue = true;
-      Future<void>.delayed(const Duration(milliseconds: 1350), () async {
-        if (!mounted || !_isSignedInUser) return;
-        await _proceedToApp();
-      });
-    }
   }
 
   Future<void> _authenticateWithCredential(AuthCredential credential) async {
@@ -343,15 +330,19 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                           else if (isSignedInUser)
                             Column(
                               children: [
-                                SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white.withValues(alpha: 0.92),
-                                    strokeWidth: 2.1,
+                                _buildSignInButton(
+                                  onTap: () => _proceedToApp(),
+                                  label:
+                                      MaterialLocalizations.of(
+                                        context,
+                                      ).continueButtonLabel,
+                                  backgroundColor: Colors.white,
+                                  textColor: const Color(0xFF2D1A18),
+                                  borderColor: Colors.white.withValues(
+                                    alpha: 0.18,
                                   ),
                                 ),
-                                const SizedBox(height: 14),
+                                const SizedBox(height: 16),
                                 Text(
                                   l10n.instantStart,
                                   textAlign: TextAlign.center,

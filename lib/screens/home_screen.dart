@@ -1063,6 +1063,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -1245,24 +1246,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          Expanded(
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                value,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  height: 1.15,
-                  color: isDark
-                      ? AppColors.textPrimaryDark
-                      : const Color(0xFF1D0E0C),
-                ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              value,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                height: 1.15,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : const Color(0xFF1D0E0C),
               ),
             ),
           ),
+          const SizedBox(height: 2),
+          if (value.trim().isEmpty)
+            const SizedBox(
+              height: 32,
+            )
         ],
       ),
     );

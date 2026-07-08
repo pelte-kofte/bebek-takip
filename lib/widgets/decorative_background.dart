@@ -45,7 +45,7 @@ class DecorativeBackground extends StatelessWidget {
   List<Widget> _buildShapes(bool isDark) {
     const lavenderPrimary = AppColors.lavenderMist;
     const lavenderSecondary = AppColors.accentLavender;
-    final blobOpacity = isDark ? 0.055 : 0.115;
+    final blobOpacity = isDark ? 0.067 : 0.14;
 
     switch (preset) {
       case BackgroundPreset.home:

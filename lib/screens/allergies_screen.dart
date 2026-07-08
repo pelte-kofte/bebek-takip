@@ -5,6 +5,7 @@ import '../models/allergy.dart';
 import '../models/veri_yonetici.dart';
 import '../services/allergy_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 
 class AllergiesScreen extends StatefulWidget {
@@ -502,51 +503,53 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
                 subtitleColor: subtitleColor,
                 compact: widget.embedded,
               ),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 72,
-                      height: 72,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFF1EC),
-                        borderRadius: BorderRadius.circular(24),
+              NilicoEntrance(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF1EC),
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Icon(
+                          Icons.no_food_outlined,
+                          size: 34,
+                          color: subtitleColor.withValues(alpha: 0.7),
+                        ),
                       ),
-                      child: Icon(
-                        Icons.no_food_outlined,
-                        size: 34,
-                        color: subtitleColor.withValues(alpha: 0.7),
+                      const SizedBox(height: 16),
+                      Text(
+                        l10n.noAllergies,
+                        style: AppTypography.h2(
+                          context,
+                        ).copyWith(color: textColor),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.noAllergies,
-                      style: AppTypography.h2(
-                        context,
-                      ).copyWith(color: textColor),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      l10n.noAllergiesSummary,
-                      textAlign: TextAlign.center,
-                      style: AppTypography.bodySmall(
-                        context,
-                      ).copyWith(color: subtitleColor),
-                    ),
-                    const SizedBox(height: 18),
-                    FilledButton.tonalIcon(
-                      onPressed: () => _showAddSheet(context),
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.addAllergy),
-                    ),
-                  ],
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.noAllergiesSummary,
+                        textAlign: TextAlign.center,
+                        style: AppTypography.bodySmall(
+                          context,
+                        ).copyWith(color: subtitleColor),
+                      ),
+                      const SizedBox(height: 18),
+                      FilledButton.tonalIcon(
+                        onPressed: () => _showAddSheet(context),
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.addAllergy),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -575,116 +578,119 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
             }
 
             final allergy = allergies[index - 1];
-            return Dismissible(
+            return NilicoEntrance(
               key: ValueKey(allergy.id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade400,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              confirmDismiss: (_) async {
-                await _confirmDelete(context, allergy);
-                return false; // handled inside _confirmDelete
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: allergy.isActive
-                        ? const Color(0xFFFFE4DA)
-                        : const Color(0xFFEAE4F4),
+              child: Dismissible(
+                key: ValueKey('dismiss_${allergy.id}'),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade400,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  boxShadow: isDark
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+                  child: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: allergy.isActive
-                            ? const Color(0xFFFFF1EC)
-                            : const Color(0xFFF3EFF7),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Icon(
-                        allergy.isActive
-                            ? Icons.health_and_safety_outlined
-                            : Icons.history_toggle_off_rounded,
-                        color: allergy.isActive
-                            ? const Color(0xFFE39A86)
-                            : subtitleColor,
-                      ),
+                confirmDismiss: (_) async {
+                  await _confirmDelete(context, allergy);
+                  return false; // handled inside _confirmDelete
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: allergy.isActive
+                          ? const Color(0xFFFFE4DA)
+                          : const Color(0xFFEAE4F4),
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            allergy.name,
-                            style: AppTypography.h3(context).copyWith(
-                              color: textColor,
-                              decoration: allergy.isActive
-                                  ? null
-                                  : TextDecoration.lineThrough,
+                    boxShadow: isDark
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            allergy.isActive
-                                ? l10n.allergyActive
-                                : l10n.allergyInactive,
-                            style: AppTypography.caption(
-                              context,
-                            ).copyWith(color: subtitleColor),
-                          ),
-                          if (allergy.note != null &&
-                              allergy.note!.isNotEmpty) ...[
-                            const SizedBox(height: 6),
+                          ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: allergy.isActive
+                              ? const Color(0xFFFFF1EC)
+                              : const Color(0xFFF3EFF7),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Icon(
+                          allergy.isActive
+                              ? Icons.health_and_safety_outlined
+                              : Icons.history_toggle_off_rounded,
+                          color: allergy.isActive
+                              ? const Color(0xFFE39A86)
+                              : subtitleColor,
+                        ),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              allergy.note!,
-                              style: AppTypography.body(
+                              allergy.name,
+                              style: AppTypography.h3(context).copyWith(
+                                color: textColor,
+                                decoration: allergy.isActive
+                                    ? null
+                                    : TextDecoration.lineThrough,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              allergy.isActive
+                                  ? l10n.allergyActive
+                                  : l10n.allergyInactive,
+                              style: AppTypography.caption(
                                 context,
                               ).copyWith(color: subtitleColor),
                             ),
+                            if (allergy.note != null &&
+                                allergy.note!.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                allergy.note!,
+                                style: AppTypography.body(
+                                  context,
+                                ).copyWith(color: subtitleColor),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Switch.adaptive(
-                      value: allergy.isActive,
-                      activeThumbColor: const Color(0xFFFFB4A2),
-                      activeTrackColor: const Color(
-                        0xFFFFB4A2,
-                      ).withValues(alpha: 0.4),
-                      onChanged: (value) => _service.toggleAllergyActive(
-                        babyId,
-                        allergy.id,
-                        value,
+                      const SizedBox(width: 12),
+                      Switch.adaptive(
+                        value: allergy.isActive,
+                        activeThumbColor: const Color(0xFFFFB4A2),
+                        activeTrackColor: const Color(
+                          0xFFFFB4A2,
+                        ).withValues(alpha: 0.4),
+                        onChanged: (value) => _service.toggleAllergyActive(
+                          babyId,
+                          allergy.id,
+                          value,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

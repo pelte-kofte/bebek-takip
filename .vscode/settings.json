@@ -2,5 +2,5 @@
     "terminal.integrated.confirmOnKill": "never",
     "chatgpt.openOnStartup": false,
     "chatgpt.commentCodeLensEnabled": true,
-    "cmake.sourceDirectory": "C:/Users/ASUS/Documents/bebek_takip/linux"
+    "cmake.sourceDirectory": "/Users/bekircemkusdemir/Projects/bebek-takip/linux"
 }

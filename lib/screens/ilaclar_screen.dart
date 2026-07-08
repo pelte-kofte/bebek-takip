@@ -7,6 +7,7 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/nilico_badge.dart';
+import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 
 class IlaclarScreen extends StatefulWidget {
@@ -963,28 +964,30 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
       return Stack(
         children: [
           Center(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                32,
-                widget.embedded ? 16 : 32,
-                32,
-                32,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.medication_outlined,
-                    size: 64,
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.noMedications,
-                    style: AppTypography.h3(context),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+            child: NilicoEntrance(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  32,
+                  widget.embedded ? 16 : 32,
+                  32,
+                  32,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.medication_outlined,
+                      size: 64,
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.noMedications,
+                      style: AppTypography.h3(context),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1027,7 +1030,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                         final med = meds[index];
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildMedicationListCard(med, isDark, l10n),
+                          child: NilicoEntrance(
+                            key: ValueKey(med['id'] ?? index),
+                            child: _buildMedicationListCard(med, isDark, l10n),
+                          ),
                         );
                       },
                     ),

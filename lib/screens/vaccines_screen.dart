@@ -8,6 +8,7 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 import 'add_vaccine_screen.dart';
 
@@ -823,9 +824,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _buildBabyInfoCard(isDark),
+                            NilicoEntrance(child: _buildBabyInfoCard(isDark)),
                             const SizedBox(height: 20),
-                            _buildEmptyState(isDark),
+                            NilicoEntrance(child: _buildEmptyState(isDark)),
                           ],
                         ),
                       )
@@ -839,7 +840,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             return Padding(
                               key: const ValueKey('baby_info'),
                               padding: const EdgeInsets.only(bottom: 24),
-                              child: _buildBabyInfoCard(isDark),
+                              child: NilicoEntrance(
+                                key: const ValueKey('baby_info_entrance'),
+                                child: _buildBabyInfoCard(isDark),
+                              ),
                             );
                           }
                           final vaccineIndex = index - 1;
@@ -848,11 +852,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           return Padding(
                             key: ValueKey(vaccine['id'] ?? vaccineIndex),
                             padding: const EdgeInsets.only(bottom: 12),
-                            child: _buildReorderableVaccineCard(
-                              vaccine,
-                              vaccineIndex,
-                              isDark,
-                              isCompleted,
+                            child: NilicoEntrance(
+                              key: ValueKey('vaccine_${vaccine['id'] ?? vaccineIndex}'),
+                              child: _buildReorderableVaccineCard(
+                                vaccine,
+                                vaccineIndex,
+                                isDark,
+                                isCompleted,
+                              ),
                             ),
                           );
                         },
