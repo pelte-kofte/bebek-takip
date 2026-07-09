@@ -9,7 +9,6 @@ import 'screens/activities_screen.dart';
 import 'screens/milestones_screen.dart';
 import 'screens/add_screen.dart';
 import 'screens/health_screen.dart';
-import 'screens/login_entry_screen.dart';
 import 'screens/splash_screen.dart';
 import 'models/veri_yonetici.dart';
 import 'widgets/add_baby_sheet.dart';
@@ -147,9 +146,7 @@ class _BabyTrackerAppState extends State<BabyTrackerApp> {
         Locale('uk'),
         Locale('es'),
       ],
-      home: VeriYonetici.isFirstLaunch()
-          ? const OnboardingScreen()
-          : const LoginEntryScreen(),
+      home: const BrandSplashScreen(),
     );
   }
 }

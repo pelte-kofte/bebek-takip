@@ -6,6 +6,115 @@ import '../theme/app_theme.dart';
 import '../l10n/app_localizations.dart';
 import 'login_entry_screen.dart';
 
+class BrandSplashScreen extends StatefulWidget {
+  const BrandSplashScreen({super.key});
+
+  @override
+  State<BrandSplashScreen> createState() => _BrandSplashScreenState();
+}
+
+class _BrandSplashScreenState extends State<BrandSplashScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _titleOpacity;
+  late final Animation<double> _titleScale;
+  late final Animation<double> _taglineOpacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 980),
+    );
+    _titleOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.0, 0.55, curve: Curves.easeOutCubic),
+    );
+    _titleScale = Tween<double>(begin: 0.985, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.7, curve: Curves.easeOutCubic),
+      ),
+    );
+    _taglineOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.38, 0.82, curve: Curves.easeOut),
+    );
+
+    _controller.forward();
+    _continueAfterSplash();
+  }
+
+  Future<void> _continueAfterSplash() async {
+    await Future<void>.delayed(const Duration(milliseconds: 1320));
+    if (!mounted) return;
+    AppNavigator.goToRoot(
+      VeriYonetici.isFirstLaunch()
+          ? const OnboardingScreen()
+          : const LoginEntryScreen(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      backgroundColor: const Color(0xFFFFFAF5),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FadeTransition(
+                  opacity: _titleOpacity,
+                  child: ScaleTransition(
+                    scale: _titleScale,
+                    child: Text(
+                      l10n.appName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -1.2,
+                        color: Color(0xFF3F3736),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                FadeTransition(
+                  opacity: _taglineOpacity,
+                  child: Text(
+                    l10n.tagline,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5,
+                      letterSpacing: 0.1,
+                      color: Color(0xFF8D8382),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 // ONBOARDING SCREEN
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

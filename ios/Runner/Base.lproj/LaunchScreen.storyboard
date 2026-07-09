@@ -19,31 +19,31 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="14" translatesAutoresizingMaskIntoConstraints="NO" id="nil-stack-view">
-                                <rect key="frame" x="32" y="390" width="358" height="64"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="nil-stack-view">
+                                <rect key="frame" x="32" y="383" width="358" height="79"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nil-title-label">
-                                        <rect key="frame" x="0.0" y="0.0" width="358" height="36"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="358" height="39"/>
                                         <attributedString key="attributedText">
                                             <fragment content="Nilico">
                                                 <attributes>
                                                     <color key="NSColor" red="0.24705882352941178" green="0.21568627450980393" blue="0.21176470588235294" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="40" name="AvenirNext-Bold"/>
-                                                    <number key="NSKern" value="-1.2"/>
+                                                    <font key="NSFont" size="44" name="AvenirNext-DemiBold"/>
+                                                    <number key="NSKern" value="-1.0"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Parenting made simple &amp; memorable." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nil-tagline-label">
-                                        <rect key="frame" x="0.0" y="50" width="358" height="14"/>
+                                        <rect key="frame" x="0.0" y="55" width="358" height="24"/>
                                         <attributedString key="attributedText">
                                             <fragment content="Parenting made simple &amp; memorable.">
                                                 <attributes>
                                                     <color key="NSColor" red="0.55294117647058827" green="0.51372549019607838" blue="0.50980392156862742" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <font key="NSFont" size="14" name="AvenirNext-Medium"/>
+                                                    <font key="NSFont" size="16" name="AvenirNext-Medium"/>
                                                     <number key="NSKern" value="0.1"/>
-                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" minimumLineHeight="21" maximumLineHeight="21"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="center" minimumLineHeight="24" maximumLineHeight="24"/>
                                                 </attributes>
                                             </fragment>
                                         </attributedString>

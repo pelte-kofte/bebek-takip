@@ -207,6 +207,8 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
     final l10n = AppLocalizations.of(context)!;
     final textTheme = Theme.of(context).textTheme;
     final isSignedInUser = _isSignedInUser;
+    const brandTitleColor = Color(0xFF3F3736);
+    const brandTaglineColor = Color(0xFF8D8382);
 
     return Scaffold(
       body: Stack(
@@ -253,173 +255,127 @@ class _LoginEntryScreenState extends State<LoginEntryScreen> {
                     constraints: BoxConstraints(
                       minHeight: constraints.maxHeight,
                     ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        children: [
-                          const Spacer(),
-
-                          Text(
-                            l10n.appName,
-                            textAlign: TextAlign.center,
-                            style: textTheme.displaySmall?.copyWith(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              letterSpacing: -1.0,
-                            ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 12),
+                        Text(
+                          l10n.appName,
+                          textAlign: TextAlign.center,
+                          style: textTheme.displaySmall?.copyWith(
+                            fontSize: 40,
+                            fontWeight: FontWeight.w800,
+                            color: brandTitleColor,
+                            letterSpacing: -1.0,
                           ),
-                          const SizedBox(height: 10),
-                          Text(
-                            _sentenceCase(l10n.instantStart),
-                            textAlign: TextAlign.center,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              height: 1.4,
-                              letterSpacing: 0.1,
-                              color: const Color(0xFFE6DFDE),
-                            ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.tagline,
+                          textAlign: TextAlign.center,
+                          style: textTheme.bodySmall?.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5,
+                            letterSpacing: 0.1,
+                            color: brandTaglineColor,
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _sentenceCase(l10n.securePrivate),
-                            textAlign: TextAlign.center,
-                            style: textTheme.bodySmall?.copyWith(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              height: 1.4,
-                              letterSpacing: 0.1,
-                              color: const Color(0xFFE6DFDE),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Title
-                          Text(
-                            isSignedInUser
-                                ? l10n.welcomeToNilico
-                                : l10n.createYourAccount,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // Subtitle
-                          Text(
-                            isSignedInUser
-                                ? l10n.tagline
-                                : l10n.loginBenefitText,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              height: 1.5,
-                              color: Colors.white.withValues(alpha: 0.75),
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Sign in buttons
-                          if (_isLoading)
-                            const CircularProgressIndicator(color: Colors.white)
-                          else if (isSignedInUser)
-                            Column(
-                              children: [
+                        ),
+                        const Spacer(),
+                        SizedBox(height: constraints.maxHeight * 0.12),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            children: [
+                              Text(
+                                isSignedInUser
+                                    ? l10n.welcomeToNilico
+                                    : l10n.createYourAccount,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                isSignedInUser
+                                    ? _sentenceCase(l10n.securePrivate)
+                                    : l10n.loginBenefitText,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  height: 1.5,
+                                  color: Colors.white.withValues(alpha: 0.75),
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              if (_isLoading)
+                                const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              else if (isSignedInUser)
                                 _buildSignInButton(
                                   onTap: () => _proceedToApp(),
-                                  label:
-                                      MaterialLocalizations.of(
-                                        context,
-                                      ).continueButtonLabel,
+                                  label: MaterialLocalizations.of(
+                                    context,
+                                  ).continueButtonLabel,
                                   backgroundColor: Colors.white,
                                   textColor: const Color(0xFF2D1A18),
                                   borderColor: Colors.white.withValues(
                                     alpha: 0.18,
                                   ),
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    if (_supportsAppleSignIn)
+                                      _buildSignInButton(
+                                        onTap: _isAppleSigningIn
+                                            ? null
+                                            : _signInWithApple,
+                                        icon: Icons.apple,
+                                        label: l10n.signInWithApple,
+                                        backgroundColor: Colors.white,
+                                        textColor: Colors.black,
+                                      ),
+                                    if (_supportsAppleSignIn &&
+                                        _supportsGoogleSignIn)
+                                      const SizedBox(height: 12),
+                                    if (_supportsGoogleSignIn)
+                                      _buildSignInButton(
+                                        onTap: _signInWithGoogle,
+                                        icon: null,
+                                        googleLogo: true,
+                                        label: l10n.signInWithGoogle,
+                                        backgroundColor: Colors.white,
+                                        textColor: const Color(0xFF2D1A18),
+                                      ),
+                                  ],
                                 ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  l10n.instantStart,
-                                  textAlign: TextAlign.center,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.1,
-                                    color: Colors.white.withValues(alpha: 0.7),
+                              if (!isSignedInUser) ...[
+                                const SizedBox(height: 20),
+                                TextButton(
+                                  onPressed: _isLoading ? null : _skipLogin,
+                                  child: Text(
+                                    l10n.continueWithoutLogin,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ],
-                            )
-                          else
-                            Column(
-                              children: [
-                                // Apple Sign In (iOS only)
-                                if (_supportsAppleSignIn)
-                                  _buildSignInButton(
-                                    onTap: _isAppleSigningIn
-                                        ? null
-                                        : _signInWithApple,
-                                    icon: Icons.apple,
-                                    label: l10n.signInWithApple,
-                                    backgroundColor: Colors.white,
-                                    textColor: Colors.black,
-                                  ),
-
-                                if (_supportsAppleSignIn &&
-                                    _supportsGoogleSignIn)
-                                  const SizedBox(height: 12),
-
-                                // Google Sign In
-                                if (_supportsGoogleSignIn)
-                                  _buildSignInButton(
-                                    onTap: _signInWithGoogle,
-                                    icon: null,
-                                    googleLogo: true,
-                                    label: l10n.signInWithGoogle,
-                                    backgroundColor: Colors.white,
-                                    textColor: const Color(0xFF2D1A18),
-                                  ),
-                              ],
-                            ),
-
-                          if (!isSignedInUser) ...[
-                            const SizedBox(height: 20),
-
-                            // Skip button
-                            TextButton(
-                              onPressed: _isLoading ? null : _skipLogin,
-                              child: Text(
-                                l10n.continueWithoutLogin,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white.withValues(alpha: 0.6),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Privacy note
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 24),
-                              child: Text(
-                                l10n.loginOptionalNote,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white.withValues(alpha: 0.45),
-                                ),
-                              ),
-                            ),
-                          ] else
-                            const SizedBox(height: 40),
-                        ],
-                      ),
+                              ] else
+                                const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
