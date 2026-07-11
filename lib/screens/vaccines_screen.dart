@@ -24,13 +24,14 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   List<Map<String, dynamic>> _vaccines = [];
   late final VoidCallback _vaccineListener;
   String _screenBabyId = '';
+  bool _isPersistingReorder = false;
 
   @override
   void initState() {
     super.initState();
     _screenBabyId = VeriYonetici.getActiveBabyId().trim();
     _vaccineListener = () {
-      if (mounted) _loadVaccines();
+      if (mounted && !_isPersistingReorder) _loadVaccines();
     };
     VeriYonetici.vaccineNotifier.addListener(_vaccineListener);
     VeriYonetici.dataNotifier.addListener(_vaccineListener);
@@ -71,7 +72,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
   void _loadVaccines({String? preferredBabyId}) {
     final targetBabyId = _resolveScreenBabyId(preferredBabyId: preferredBabyId);
-    final loaded = VeriYonetici.getAsiKayitlariForBaby(targetBabyId);
+    final loaded = List<Map<String, dynamic>>.of(
+      VeriYonetici.getAsiKayitlariForBaby(targetBabyId),
+    )..sort(_compareVaccinesChronologically);
     _debugLog(
       '_screenBabyId=$targetBabyId loadedIds='
       '${loaded.map((v) => v['id']).join(',')}',
@@ -79,6 +82,22 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     setState(() {
       _vaccines = loaded;
     });
+  }
+
+  int _compareVaccinesChronologically(
+    Map<String, dynamic> a,
+    Map<String, dynamic> b,
+  ) {
+    final aCompleted = a['durum'] == 'uygulandi';
+    final bCompleted = b['durum'] == 'uygulandi';
+    if (aCompleted != bCompleted) return aCompleted ? -1 : 1;
+
+    final aDate = a['tarih'] as DateTime?;
+    final bDate = b['tarih'] as DateTime?;
+    if (aDate == null && bDate == null) return 0;
+    if (aDate == null) return 1;
+    if (bDate == null) return -1;
+    return aDate.compareTo(bDate);
   }
 
   String _getChildAge() {
@@ -94,16 +113,24 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.attention),
-        content: Text(l10n.deleteConfirm),
+        title: Text(l10n.attention, style: AppTypography.dialogTitle(context)),
+        content: Text(
+          l10n.deleteConfirm,
+          style: AppTypography.dialogBody(context),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no),
+            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.yes, style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.yes,
+              style: AppTypography.dialogAction(
+                context,
+              ).copyWith(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -200,7 +227,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return AlertDialog(
-              title: Text(l10n.addVaccineProtocol),
+              title: Text(
+                l10n.addVaccineProtocol,
+                style: AppTypography.dialogTitle(context),
+              ),
               content: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -210,11 +240,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                       items: [
                         DropdownMenuItem(
                           value: 'new',
-                          child: Text(l10n.createNew),
+                          child: Text(
+                            l10n.createNew,
+                            style: AppTypography.body(context),
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 'existing',
-                          child: Text(l10n.chooseExistingMedication),
+                          child: Text(
+                            l10n.chooseExistingMedication,
+                            style: AppTypography.body(context),
+                          ),
                         ),
                       ],
                       onChanged: (v) =>
@@ -224,9 +260,12 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                     if (source == 'new')
                       TextField(
                         controller: nameController,
+                        style: AppTypography.body(context),
                         decoration: InputDecoration(
                           labelText: l10n.medicationName,
                           hintText: l10n.feverReducerHint,
+                          labelStyle: AppTypography.label(context),
+                          hintStyle: AppTypography.bodySmall(context),
                         ),
                       ),
                     if (source == 'existing')
@@ -236,7 +275,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             .map(
                               (m) => DropdownMenuItem<String>(
                                 value: m['id'] as String,
-                                child: Text(m['name'] as String? ?? ''),
+                                child: Text(
+                                  m['name'] as String? ?? '',
+                                  style: AppTypography.body(context),
+                                ),
                               ),
                             )
                             .toList(),
@@ -250,7 +292,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           .map(
                             (h) => DropdownMenuItem<int>(
                               value: h,
-                              child: Text(l10n.beforeHours(h)),
+                              child: Text(
+                                l10n.beforeHours(h),
+                                style: AppTypography.body(context),
+                              ),
                             ),
                           )
                           .toList(),
@@ -264,7 +309,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           .map(
                             (h) => DropdownMenuItem<int>(
                               value: h,
-                              child: Text(l10n.afterHours(h)),
+                              child: Text(
+                                l10n.afterHours(h),
+                                style: AppTypography.body(context),
+                              ),
                             ),
                           )
                           .toList(),
@@ -277,11 +325,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context, false),
-                  child: Text(l10n.cancel),
+                  child: Text(
+                    l10n.cancel,
+                    style: AppTypography.dialogAction(context),
+                  ),
                 ),
                 TextButton(
                   onPressed: () => Navigator.pop(context, true),
-                  child: Text(l10n.save),
+                  child: Text(
+                    l10n.save,
+                    style: AppTypography.dialogAction(context),
+                  ),
                 ),
               ],
             );
@@ -329,9 +383,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     await _scheduleProtocolReminders(protocolMedication);
     if (mounted) {
       setState(() {});
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.vaccineProtocolAdded)));
     }
   }
 
@@ -361,7 +412,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               ),
               ListTile(
                 leading: Icon(Icons.edit_outlined, color: AppColors.primary),
-                title: Text(l10n.edit),
+                title: Text(
+                  l10n.edit,
+                  style: AppTypography.dialogAction(context),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _editVaccine(vaccine);
@@ -372,7 +426,10 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                   Icons.medication_liquid_outlined,
                   color: AppColors.primary,
                 ),
-                title: Text(l10n.addVaccineProtocol),
+                title: Text(
+                  l10n.addVaccineProtocol,
+                  style: AppTypography.dialogAction(context),
+                ),
                 onTap: () {
                   Navigator.pop(context);
                   _addVaccineProtocol(vaccine);
@@ -382,7 +439,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 leading: const Icon(Icons.delete_outline, color: Colors.red),
                 title: Text(
                   l10n.delete,
-                  style: const TextStyle(color: Colors.red),
+                  style: AppTypography.dialogAction(
+                    context,
+                  ).copyWith(color: Colors.red),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -409,7 +468,12 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
       _vaccines.insert(newIndex, item);
     });
     final targetBabyId = _resolveScreenBabyId();
-    await VeriYonetici.saveAsiKayitlariForBaby(targetBabyId, _vaccines);
+    _isPersistingReorder = true;
+    try {
+      await VeriYonetici.saveAsiKayitlariForBaby(targetBabyId, _vaccines);
+    } finally {
+      _isPersistingReorder = false;
+    }
   }
 
   void _initializeDefaultVaccines() async {
@@ -417,16 +481,25 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.loadCalendarTitle),
-        content: Text(l10n.loadCalendarDesc),
+        title: Text(
+          l10n.loadCalendarTitle,
+          style: AppTypography.dialogTitle(context),
+        ),
+        content: Text(
+          l10n.loadCalendarDesc,
+          style: AppTypography.dialogBody(context),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+            child: Text(
+              l10n.cancel,
+              style: AppTypography.dialogAction(context),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.ok),
+            child: Text(l10n.ok, style: AppTypography.dialogAction(context)),
           ),
         ],
       ),
@@ -450,12 +523,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         existingVaccines,
       );
       _loadVaccines(preferredBabyId: targetBabyId);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.vaccinesAdded(newVaccines.length))),
-        );
-      }
     }
   }
 
@@ -527,8 +594,13 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                           color: const Color(0xFFFFDAB9),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Center(
-                          child: Text('🇹🇷', style: TextStyle(fontSize: 24)),
+                        child: Center(
+                          child: Text(
+                            '🇹🇷',
+                            style: AppTypography.body(
+                              context,
+                            ).copyWith(fontSize: 24),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -759,14 +831,6 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
 
                                 if (context.mounted) {
                                   Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        l10n.vaccinesAdded(toAdd.length),
-                                      ),
-                                      backgroundColor: AppColors.accentGreen,
-                                    ),
-                                  );
                                 }
                               }
                             : null,
@@ -853,7 +917,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                             key: ValueKey(vaccine['id'] ?? vaccineIndex),
                             padding: const EdgeInsets.only(bottom: 12),
                             child: NilicoEntrance(
-                              key: ValueKey('vaccine_${vaccine['id'] ?? vaccineIndex}'),
+                              key: ValueKey(
+                                'vaccine_${vaccine['id'] ?? vaccineIndex}',
+                              ),
                               child: _buildReorderableVaccineCard(
                                 vaccine,
                                 vaccineIndex,
@@ -1027,7 +1093,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               children: [
                 Text(
                   _getBabyName(),
-                  style: AppTypography.h3(context).copyWith(fontSize: 17),
+                  style: AppTypography.compactTitle(
+                    context,
+                  ).copyWith(fontSize: 17),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -1050,7 +1118,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
             ),
             child: Text(
               '${_vaccines.length}',
-              style: AppTypography.h3(context).copyWith(fontSize: 15),
+              style: AppTypography.compactTitle(context).copyWith(fontSize: 15),
             ),
           ),
         ],
@@ -1132,31 +1200,15 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: isCompleted
-                    ? const Color(0xFFFFDAB9)
-                    : AppColors.accentPeach.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                Icons.vaccines,
-                color: isCompleted
-                    ? const Color(0xFFFFB4A2)
-                    : AppColors.primary,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     vaccine['ad'],
-                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+                    style: AppTypography.compactTitle(
+                      context,
+                    ).copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1258,7 +1310,9 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 children: [
                   Text(
                     vaccine['ad'],
-                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+                    style: AppTypography.compactTitle(
+                      context,
+                    ).copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1353,7 +1407,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
                 children: [
                   Text(
                     vaccine['ad'],
-                    style: AppTypography.h3(context).copyWith(
+                    style: AppTypography.compactTitle(context).copyWith(
                       fontSize: 16,
                       color: isDark
                           ? AppColors.textSecondaryDark
@@ -1417,7 +1471,7 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
           const SizedBox(height: 20),
           Text(
             l10n.noVaccineRecords,
-            style: AppTypography.h3(context),
+            style: AppTypography.sheetTitle(context),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
@@ -1441,7 +1495,8 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AddVaccineScreen(babyId: _resolveScreenBabyId()),
+            builder: (context) =>
+                AddVaccineScreen(babyId: _resolveScreenBabyId()),
           ),
         );
 

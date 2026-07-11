@@ -510,10 +510,10 @@
   "vaccineName": "Aşı Adı",
   "allLabel": "Tümü",
   "routineFilter": "Rutin",
-  "asNeededFilter": "Gerektikçe",
+  "asNeededFilter": "Gerektiğinde",
   "vaccineProtocolsFilter": "Aşı protokolleri",
   "everyDay": "Every day",
-  "asNeeded": "Gerektikçe",
+  "asNeeded": "Gerektiğinde",
   "vaccineProtocolLabel": "Aşı protokolü",
   "linkedToVaccine": "linked to {vaccine}",
   "@linkedToVaccine": {
@@ -668,10 +668,10 @@
   "alreadySavedRecently": "Zaten az önce kaydedildi",
   "undo": "Geri al",
   "yesterday": "Dün",
-  "notGivenYet": "Henüz verilmedi",
+  "notGivenYet": "Henüz doz kaydı yok",
   "viewHistory": "Geçmişi görüntüle",
-  "noMedicationHistory": "Verilme geçmişi yok",
-  "lastGivenLabel": "Son veriliş: {value}",
+  "noMedicationHistory": "Doz kaydı yok",
+  "lastGivenLabel": "Son doz\n{value}",
   "@lastGivenLabel": {
     "placeholders": {
       "value": {

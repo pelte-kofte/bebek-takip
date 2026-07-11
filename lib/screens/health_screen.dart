@@ -14,9 +14,9 @@ class HealthScreen extends StatelessWidget {
 
   List<String> _tabLabels(BuildContext context, AppLocalizations l10n) {
     return <String>[
-      l10n.allergiesTitle,
       l10n.vaccines,
       l10n.medications,
+      l10n.allergiesTitle,
       Localizations.localeOf(context).languageCode == 'tr'
           ? 'Ek Gıda'
           : 'Meals',
@@ -44,9 +44,9 @@ class HealthScreen extends StatelessWidget {
                 const Expanded(
                   child: TabBarView(
                     children: [
-                      AllergiesScreen(embedded: true),
                       VaccinesScreen(embedded: true),
                       IlaclarScreen(embedded: true),
+                      AllergiesScreen(embedded: true),
                       BabyMealsScreen(embedded: true),
                     ],
                   ),

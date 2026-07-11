@@ -211,14 +211,17 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         l10n.cancel,
-                        style: TextStyle(
+                        style: AppTypography.dialogAction(context).copyWith(
                           color: isDark
                               ? AppColors.textSecondaryDark
                               : const Color(0xFF866F65),
                         ),
                       ),
                     ),
-                    Text(l10n.selectMonth, style: AppTypography.h3(context)),
+                    Text(
+                      l10n.selectMonth,
+                      style: AppTypography.sheetTitle(context),
+                    ),
                     TextButton(
                       onPressed: () {
                         setState(() {
@@ -230,10 +233,9 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       },
                       child: Text(
                         l10n.ok,
-                        style: TextStyle(
-                          color: const Color(0xFFFFB4A2),
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTypography.dialogAction(
+                          context,
+                        ).copyWith(color: const Color(0xFFFFB4A2)),
                       ),
                     ),
                   ],
@@ -253,7 +255,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                     return Center(
                       child: Text(
                         label,
-                        style: TextStyle(
+                        style: AppTypography.body(context).copyWith(
                           fontSize: 18,
                           color: isDark
                               ? AppColors.textPrimaryDark
@@ -312,7 +314,7 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         l10n.cancel,
-                        style: TextStyle(
+                        style: AppTypography.dialogAction(context).copyWith(
                           color: isDark
                               ? AppColors.textSecondaryDark
                               : const Color(0xFF866F65),
@@ -328,10 +330,9 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                       },
                       child: Text(
                         l10n.ok,
-                        style: TextStyle(
-                          color: const Color(0xFFFFB4A2),
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTypography.dialogAction(
+                          context,
+                        ).copyWith(color: const Color(0xFFFFB4A2)),
                       ),
                     ),
                   ],

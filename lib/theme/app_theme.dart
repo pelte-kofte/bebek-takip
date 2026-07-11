@@ -124,6 +124,86 @@ class AppTypography {
     );
   }
 
+  // Semantic Care typography. These tokens intentionally mirror Home's
+  // calmer hierarchy without changing the existing global heading tokens.
+  static TextStyle sheetTitle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+      letterSpacing: -0.2,
+      height: 1.3,
+    );
+  }
+
+  static TextStyle compactTitle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+      height: 1.3,
+    );
+  }
+
+  static TextStyle eyebrow(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      color: isDark
+          ? AppColors.textSecondaryDark
+          : AppColors.textSecondaryLight,
+      letterSpacing: 0.55,
+      height: 1.2,
+    );
+  }
+
+  static TextStyle dataValue(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 28,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+      letterSpacing: -0.7,
+      height: 1,
+    );
+  }
+
+  static TextStyle dialogTitle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+      letterSpacing: -0.2,
+      height: 1.3,
+    );
+  }
+
+  static TextStyle dialogBody(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: isDark
+          ? AppColors.textSecondaryDark
+          : AppColors.textSecondaryLight,
+      height: 1.5,
+    );
+  }
+
+  static TextStyle dialogAction(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GoogleFonts.quicksand(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+      letterSpacing: 0.1,
+    );
+  }
+
   static TextStyle h3(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return GoogleFonts.quicksand(

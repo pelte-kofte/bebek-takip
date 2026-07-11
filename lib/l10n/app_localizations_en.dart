@@ -1534,7 +1534,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get routineFilter => 'Routine';
 
   @override
-  String get asNeededFilter => 'As-needed';
+  String get asNeededFilter => 'When needed';
 
   @override
   String get vaccineProtocolsFilter => 'Vaccine protocols';
@@ -1543,7 +1543,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'As needed';
+  String get asNeeded => 'When needed';
 
   @override
   String get vaccineProtocolLabel => 'Vaccine protocol';
@@ -1765,17 +1765,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
-  String get notGivenYet => 'Not given yet';
+  String get notGivenYet => 'No doses recorded';
 
   @override
   String get viewHistory => 'View history';
 
   @override
-  String get noMedicationHistory => 'No given history';
+  String get noMedicationHistory => 'No doses recorded';
 
   @override
   String lastGivenLabel(String value) {
-    return 'Last given: $value';
+    return 'Last dose\n$value';
   }
 
   @override

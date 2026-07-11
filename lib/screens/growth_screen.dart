@@ -211,9 +211,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                         const SizedBox(width: 6),
                         Text(
                           l10n.list,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                          style: AppTypography.compactTitle(context).copyWith(
                             color: _selectedTab == 0
                                 ? activeColor
                                 : inactiveTextColor,
@@ -264,9 +262,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
                         const SizedBox(width: 6),
                         Text(
                           l10n.chart,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                          style: AppTypography.compactTitle(context).copyWith(
                             color: _selectedTab == 1
                                 ? activeColor
                                 : inactiveTextColor,
@@ -299,7 +295,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
             const SizedBox(height: 16),
             Text(
               l10n.noMeasurements,
-              style: AppTypography.h3(context),
+              style: AppTypography.sheetTitle(context),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -330,7 +326,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
             const SizedBox(height: 20),
             Text(
               l10n.moreDataNeeded,
-              style: AppTypography.h3(context),
+              style: AppTypography.sheetTitle(context),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
@@ -374,9 +370,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 ? null
                 : [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
+                      color: AppColors.primary.withValues(alpha: 0.035),
+                      blurRadius: 12,
+                      offset: const Offset(0, 3),
                     ),
                   ],
           ),
@@ -385,7 +381,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
             children: [
               Text(
                 _formatDate(context, date),
-                style: AppTypography.h3(context).copyWith(fontSize: 16),
+                style: AppTypography.compactTitle(
+                  context,
+                ).copyWith(fontSize: 16),
               ),
               const SizedBox(height: 14),
               Row(
@@ -394,8 +392,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
                     child: _buildMeasurementMetric(
                       isDark: isDark,
                       label: l10n.weight,
-                      value:
-                          '${_formatNumber(context, weight)} ${l10n.kilogramUnit}',
+                      value: _formatNumber(context, weight),
+                      unit: l10n.kilogramUnit,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -403,8 +401,8 @@ class _GrowthScreenState extends State<GrowthScreen> {
                     child: _buildMeasurementMetric(
                       isDark: isDark,
                       label: l10n.height,
-                      value:
-                          '${_formatNumber(context, height)} ${l10n.centimeterUnit}',
+                      value: _formatNumber(context, height),
+                      unit: l10n.centimeterUnit,
                     ),
                   ),
                 ],
@@ -420,6 +418,7 @@ class _GrowthScreenState extends State<GrowthScreen> {
     required bool isDark,
     required String label,
     required String value,
+    required String unit,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -428,31 +427,54 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ? Colors.white.withValues(alpha: 0.04)
             : const Color(0xFFFFF8F0),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : AppColors.borderSoft.withValues(alpha: 0.7),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label.toUpperCase(),
-            style: AppTypography.caption(context).copyWith(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
+            label,
+            style: AppTypography.compactTitle(context).copyWith(
+              fontSize: 12,
               color: isDark
                   ? AppColors.textSecondaryDark
                   : const Color(0xFF9B8F88),
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            value,
-            style: AppTypography.body(context).copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: isDark
-                  ? AppColors.textPrimaryDark
-                  : const Color(0xFF2D1A18),
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Flexible(
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.fade,
+                  softWrap: false,
+                  style: AppTypography.compactTitle(context).copyWith(
+                    fontSize: 18,
+                    letterSpacing: -0.35,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : const Color(0xFF2D1A18),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                unit,
+                style: AppTypography.caption(context).copyWith(
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : const Color(0xFF9B8F88),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -575,9 +597,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
                   child: AnimatedDefaultTextStyle(
                     duration: NilicoMotion.chipDuration,
                     curve: NilicoMotion.ease,
-                    style: TextStyle(
+                    style: AppTypography.caption(context).copyWith(
                       fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       color: _chartMetric == 0 ? lavender : inactiveTextColor,
                     ),
                     child: Text(l10n.height),
@@ -615,9 +637,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
                   child: AnimatedDefaultTextStyle(
                     duration: NilicoMotion.chipDuration,
                     curve: NilicoMotion.ease,
-                    style: TextStyle(
+                    style: AppTypography.caption(context).copyWith(
                       fontSize: 13,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                       color: _chartMetric == 1 ? lavender : inactiveTextColor,
                     ),
                     child: Text(l10n.weight),
@@ -665,9 +687,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
               ? null
               : [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 4),
+                    color: AppColors.primary.withValues(alpha: 0.035),
+                    blurRadius: 12,
+                    offset: const Offset(0, 3),
                   ),
                 ],
         ),
@@ -683,23 +705,37 @@ class _GrowthScreenState extends State<GrowthScreen> {
               child: Icon(icon, color: lineColor, size: 24),
             ),
             const SizedBox(height: 16),
-            Text(
-              '${numberFormat.format(data.first)} $unit',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  numberFormat.format(data.first),
+                  style: AppTypography.dataValue(
+                    context,
+                  ).copyWith(color: textColor),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  unit,
+                  style: AppTypography.bodySmall(
+                    context,
+                  ).copyWith(color: subtitleColor),
+                ),
+              ],
             ),
             const SizedBox(height: 4),
             Text(
               labels.first,
-              style: TextStyle(fontSize: 13, color: subtitleColor),
+              style: AppTypography.caption(
+                context,
+              ).copyWith(fontSize: 13, color: subtitleColor),
             ),
             const SizedBox(height: 16),
             Text(
               emptyChartHint,
-              style: TextStyle(
+              style: AppTypography.caption(context).copyWith(
                 fontSize: 13,
                 color: subtitleColor.withValues(alpha: 0.7),
               ),
@@ -729,9 +765,9 @@ class _GrowthScreenState extends State<GrowthScreen> {
             ? null
             : [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
+                  color: AppColors.primary.withValues(alpha: 0.035),
+                  blurRadius: 12,
+                  offset: const Offset(0, 3),
                 ),
               ],
       ),
@@ -752,20 +788,29 @@ class _GrowthScreenState extends State<GrowthScreen> {
               const SizedBox(width: 12),
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
+                style: AppTypography.compactTitle(
+                  context,
+                ).copyWith(fontSize: 16, color: textColor),
               ),
               const Spacer(),
-              Text(
-                '${numberFormat.format(data.last)} $unit',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: lineColor,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    numberFormat.format(data.last),
+                    style: AppTypography.compactTitle(
+                      context,
+                    ).copyWith(color: lineColor),
+                  ),
+                  const SizedBox(width: 3),
+                  Text(
+                    unit,
+                    style: AppTypography.caption(
+                      context,
+                    ).copyWith(color: lineColor.withValues(alpha: 0.82)),
+                  ),
+                ],
               ),
             ],
           ),
@@ -780,9 +825,11 @@ class _GrowthScreenState extends State<GrowthScreen> {
                 minValue: chartMin,
                 maxValue: chartMax,
                 lineColor: lineColor,
-                labelColor: subtitleColor,
-                gridColor: subtitleColor.withValues(alpha: 0.1),
+                gridColor: subtitleColor.withValues(alpha: 0.07),
                 localeName: localeName,
+                labelStyle: AppTypography.caption(
+                  context,
+                ).copyWith(fontSize: 10, color: subtitleColor),
               ),
             ),
           ),
@@ -798,9 +845,9 @@ class _GrowthChartPainter extends CustomPainter {
   final double minValue;
   final double maxValue;
   final Color lineColor;
-  final Color labelColor;
   final Color gridColor;
   final String localeName;
+  final TextStyle labelStyle;
 
   _GrowthChartPainter({
     required this.data,
@@ -808,9 +855,9 @@ class _GrowthChartPainter extends CustomPainter {
     required this.minValue,
     required this.maxValue,
     required this.lineColor,
-    required this.labelColor,
     required this.gridColor,
     required this.localeName,
+    required this.labelStyle,
   });
 
   @override
@@ -831,11 +878,6 @@ class _GrowthChartPainter extends CustomPainter {
       ..color = gridColor
       ..strokeWidth = 1;
 
-    final labelStyle = TextStyle(
-      color: labelColor,
-      fontSize: 10,
-      fontWeight: FontWeight.w500,
-    );
     final numberFormat = intl.NumberFormat.decimalPatternDigits(
       locale: localeName,
       decimalDigits: 1,
@@ -850,7 +892,8 @@ class _GrowthChartPainter extends CustomPainter {
         text: TextSpan(text: numberFormat.format(val), style: labelStyle),
         textDirection: TextDirection.ltr,
       )..layout();
-      tp.paint(canvas, Offset(leftPad - tp.width - 6, y - tp.height / 2));
+      final labelX = (leftPad - tp.width - 6).clamp(0.0, leftPad).toDouble();
+      tp.paint(canvas, Offset(labelX, y - tp.height / 2));
     }
 
     final linePaint = Paint()
@@ -861,14 +904,7 @@ class _GrowthChartPainter extends CustomPainter {
       ..strokeJoin = StrokeJoin.round;
 
     final fillPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          lineColor.withValues(alpha: 0.25),
-          lineColor.withValues(alpha: 0.02),
-        ],
-      ).createShader(Rect.fromLTWH(leftPad, topPad, chartW, chartH))
+      ..color = lineColor.withValues(alpha: 0.07)
       ..style = PaintingStyle.fill;
 
     final dotPaint = Paint()
@@ -932,10 +968,10 @@ class _GrowthChartPainter extends CustomPainter {
           text: TextSpan(text: labels[i], style: labelStyle),
           textDirection: TextDirection.ltr,
         )..layout();
-        tp.paint(
-          canvas,
-          Offset(points[i].dx - tp.width / 2, topPad + chartH + 6),
-        );
+        final labelX = (points[i].dx - tp.width / 2)
+            .clamp(leftPad, size.width - tp.width)
+            .toDouble();
+        tp.paint(canvas, Offset(labelX, topPad + chartH + 6));
       }
     }
   }
@@ -945,6 +981,7 @@ class _GrowthChartPainter extends CustomPainter {
     return oldDelegate.data != data ||
         oldDelegate.minValue != minValue ||
         oldDelegate.maxValue != maxValue ||
-        oldDelegate.localeName != localeName;
+        oldDelegate.localeName != localeName ||
+        oldDelegate.labelStyle != labelStyle;
   }
 }

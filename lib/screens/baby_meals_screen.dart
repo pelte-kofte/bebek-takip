@@ -480,7 +480,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                           maxLines: 2,
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTypography.h3(
+                          style: AppTypography.sheetTitle(
                             context,
                           ).copyWith(fontSize: 20),
                         ),
@@ -604,7 +604,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                   _todayText,
                   style: AppTypography.caption(context).copyWith(
                     color: AppColors.primary.withValues(alpha: 0.88),
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -628,7 +628,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                         recipe.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: AppTypography.h3(context).copyWith(fontSize: 17),
+                        style: AppTypography.compactTitle(
+                          context,
+                        ).copyWith(fontSize: 17),
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -703,7 +705,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     recipe.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: AppTypography.h3(context).copyWith(fontSize: 16),
+                    style: AppTypography.compactTitle(
+                      context,
+                    ).copyWith(fontSize: 16),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -765,7 +769,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
         children: [
           Text(
             _matcherTitle,
-            style: AppTypography.h3(context).copyWith(fontSize: 16),
+            style: AppTypography.compactTitle(context).copyWith(fontSize: 16),
           ),
           const SizedBox(height: 2),
           Text(
@@ -836,7 +840,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                 _matcherButtonText,
                 style: AppTypography.body(
                   context,
-                ).copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                ).copyWith(color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
           ),
@@ -880,7 +884,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                     children: [
                       Text(
                         recipe.title,
-                        style: AppTypography.h3(context).copyWith(fontSize: 16),
+                        style: AppTypography.compactTitle(
+                          context,
+                        ).copyWith(fontSize: 16),
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -974,7 +980,9 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                       const SizedBox(height: 16),
                       Text(
                         _matcherResultsText,
-                        style: AppTypography.h3(context).copyWith(fontSize: 16),
+                        style: AppTypography.compactTitle(
+                          context,
+                        ).copyWith(fontSize: 16),
                       ),
                       const SizedBox(height: 8),
                       if (_ingredientMatches.isEmpty)
@@ -1077,7 +1085,7 @@ class _BabyMealsScreenState extends State<BabyMealsScreen> {
                                 color: isDark
                                     ? AppColors.textSecondaryDark
                                     : const Color(0xFF866F65),
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w500,
                               ),
                             )
                           : null,
@@ -1222,9 +1230,9 @@ class _MealImageFallback extends StatelessWidget {
           Text(
             imageKey.replaceAll('_', '\n'),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: AppTypography.caption(context).copyWith(
               fontSize: labelSize,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
               color: const Color(0xFF9A6F5C),
               height: 1.05,
             ),
@@ -1270,9 +1278,9 @@ class _MealMetaPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: AppTypography.caption(context).copyWith(
           fontSize: compact ? 11 : 12,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           color:
               textColor ??
               (highlight ? const Color(0xFF7A749E) : const Color(0xFF6F628A)),
@@ -1393,13 +1401,13 @@ class _ViewAllRecipesCard extends StatelessWidget {
                 label,
                 style: AppTypography.body(
                   context,
-                ).copyWith(fontWeight: FontWeight.w700),
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
             ),
             Text(
               '$count',
               style: AppTypography.bodySmall(context).copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
                 color: isDark
                     ? AppColors.textSecondaryDark
                     : const Color(0xFF866F65),
@@ -1459,7 +1467,10 @@ class _DetailSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: AppTypography.h3(context).copyWith(fontSize: 16));
+    return Text(
+      title,
+      style: AppTypography.compactTitle(context).copyWith(fontSize: 16),
+    );
   }
 }
 
@@ -1526,9 +1537,9 @@ class _DetailStep extends StatelessWidget {
             child: Center(
               child: Text(
                 '$index',
-                style: TextStyle(
+                style: AppTypography.caption(context).copyWith(
                   fontSize: 12,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: AppColors.primary,
                 ),
               ),

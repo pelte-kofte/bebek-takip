@@ -4,6 +4,7 @@ import 'package:intl/intl.dart' as intl;
 import '../l10n/app_localizations.dart';
 import '../models/ikonlar.dart';
 import '../models/veri_yonetici.dart';
+import '../theme/app_theme.dart';
 
 class AddGrowthScreen extends StatefulWidget {
   final VoidCallback? onSaved;
@@ -67,34 +68,39 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.growthEntryTitle,
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D1A18),
-                          letterSpacing: -0.5,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.growthEntryTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.h2(context).copyWith(
+                            fontSize: 24,
+                            color: const Color(0xFF2D1A18),
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        l10n.growthEntrySubtitle,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF7A749E),
-                          letterSpacing: 0.2,
+                        const SizedBox(height: 2),
+                        Text(
+                          l10n.growthEntrySubtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.bodySmall(
+                            context,
+                          ).copyWith(color: const Color(0xFF7A749E)),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             Expanded(
               child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,13 +118,10 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                     ),
                     const SizedBox(height: 32),
                     Text(
-                      l10n.growthDateField,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A749E),
-                        letterSpacing: 1.0,
-                      ),
+                      l10n.dateLabel,
+                      style: AppTypography.label(
+                        context,
+                      ).copyWith(color: const Color(0xFF7A749E)),
                     ),
                     const SizedBox(height: 12),
                     GestureDetector(
@@ -129,6 +132,29 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                           firstDate: DateTime(2020),
                           lastDate: DateTime.now(),
                           locale: Localizations.localeOf(context),
+                          builder: (pickerContext, child) {
+                            return Theme(
+                              data: Theme.of(pickerContext).copyWith(
+                                datePickerTheme: DatePickerThemeData(
+                                  headerHeadlineStyle:
+                                      AppTypography.dialogTitle(pickerContext),
+                                  headerHelpStyle: AppTypography.caption(
+                                    pickerContext,
+                                  ),
+                                  weekdayStyle: AppTypography.caption(
+                                    pickerContext,
+                                  ),
+                                  dayStyle: AppTypography.bodySmall(
+                                    pickerContext,
+                                  ),
+                                  yearStyle: AppTypography.bodySmall(
+                                    pickerContext,
+                                  ),
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
                         );
                         if (picked != null) {
                           setState(() => _selectedDate = picked);
@@ -142,9 +168,10 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.borderSoft),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
+                              color: Colors.black.withValues(alpha: 0.025),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             ),
@@ -167,12 +194,14 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                             ),
                             const SizedBox(width: 16),
                             Text(
-                              intl.DateFormat.yMd(localeName).format(_selectedDate),
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF2D1A18),
-                              ),
+                              intl.DateFormat.yMd(
+                                localeName,
+                              ).format(_selectedDate),
+                              style: AppTypography.compactTitle(context)
+                                  .copyWith(
+                                    fontSize: 18,
+                                    color: const Color(0xFF2D1A18),
+                                  ),
                             ),
                             const Spacer(),
                             const Icon(
@@ -186,22 +215,20 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      l10n.growthWeightField,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A749E),
-                        letterSpacing: 1.0,
-                      ),
+                      l10n.weight,
+                      style: AppTypography.label(
+                        context,
+                      ).copyWith(color: const Color(0xFF7A749E)),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderSoft),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Colors.black.withValues(alpha: 0.025),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -214,11 +241,17 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.growthWeightHint,
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF7A749E),
+                          hintStyle: AppTypography.body(context).copyWith(
+                            color: const Color(0xFF7A749E),
                             fontSize: 16,
                           ),
                           border: InputBorder.none,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primary.withValues(alpha: 0.42),
+                            ),
+                          ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 16,
@@ -231,32 +264,33 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                               size: 24,
                             ),
                           ),
+                          suffixText: l10n.kilogramUnit,
+                          suffixStyle: AppTypography.bodySmall(
+                            context,
+                          ).copyWith(color: const Color(0xFF7A749E)),
                         ),
-                        style: const TextStyle(
+                        style: AppTypography.compactTitle(context).copyWith(
                           fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D1A18),
+                          color: const Color(0xFF2D1A18),
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      l10n.growthHeightField,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A749E),
-                        letterSpacing: 1.0,
-                      ),
+                      l10n.height,
+                      style: AppTypography.label(
+                        context,
+                      ).copyWith(color: const Color(0xFF7A749E)),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderSoft),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Colors.black.withValues(alpha: 0.025),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -269,11 +303,17 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.growthHeightHint,
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF7A749E),
+                          hintStyle: AppTypography.body(context).copyWith(
+                            color: const Color(0xFF7A749E),
                             fontSize: 16,
                           ),
                           border: InputBorder.none,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primary.withValues(alpha: 0.42),
+                            ),
+                          ),
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 20,
                             vertical: 16,
@@ -286,32 +326,33 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                               size: 24,
                             ),
                           ),
+                          suffixText: l10n.centimeterUnit,
+                          suffixStyle: AppTypography.bodySmall(
+                            context,
+                          ).copyWith(color: const Color(0xFF7A749E)),
                         ),
-                        style: const TextStyle(
+                        style: AppTypography.compactTitle(context).copyWith(
                           fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2D1A18),
+                          color: const Color(0xFF2D1A18),
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      l10n.growthNotesField,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF7A749E),
-                        letterSpacing: 1.0,
-                      ),
+                      l10n.notesOptional,
+                      style: AppTypography.label(
+                        context,
+                      ).copyWith(color: const Color(0xFF7A749E)),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderSoft),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: Colors.black.withValues(alpha: 0.025),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -322,19 +363,23 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                         maxLines: 3,
                         decoration: InputDecoration(
                           hintText: l10n.growthNotesHint,
-                          hintStyle: TextStyle(
+                          hintStyle: AppTypography.bodySmall(context).copyWith(
                             color: const Color(
                               0xFF7A749E,
                             ).withValues(alpha: 0.6),
-                            fontSize: 14,
                           ),
                           border: InputBorder.none,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(
+                              color: AppColors.primary.withValues(alpha: 0.42),
+                            ),
+                          ),
                           contentPadding: const EdgeInsets.all(20),
                         ),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF2D1A18),
-                        ),
+                        style: AppTypography.bodySmall(
+                          context,
+                        ).copyWith(color: const Color(0xFF2D1A18)),
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -370,12 +415,7 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
                             : Text(
                                 l10n.save,
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                  letterSpacing: 1.0,
-                                ),
+                                style: AppTypography.button(),
                               ),
                       ),
                     ),
@@ -411,8 +451,10 @@ class _AddGrowthScreenState extends State<AddGrowthScreen> {
 
       records.insert(0, {
         'tarih': _selectedDate,
-        'boy': double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
-        'kilo': double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
+        'boy':
+            double.tryParse(_heightController.text.replaceAll(',', '.')) ?? 0,
+        'kilo':
+            double.tryParse(_weightController.text.replaceAll(',', '.')) ?? 0,
         'notlar': _notesController.text,
       });
 

@@ -1505,7 +1505,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get routineFilter => 'Rutin';
 
   @override
-  String get asNeededFilter => 'Gerektikçe';
+  String get asNeededFilter => 'Gerektiğinde';
 
   @override
   String get vaccineProtocolsFilter => 'Aşı protokolleri';
@@ -1514,7 +1514,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get everyDay => 'Every day';
 
   @override
-  String get asNeeded => 'Gerektikçe';
+  String get asNeeded => 'Gerektiğinde';
 
   @override
   String get vaccineProtocolLabel => 'Aşı protokolü';
@@ -1735,17 +1735,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get yesterday => 'Dün';
 
   @override
-  String get notGivenYet => 'Henüz verilmedi';
+  String get notGivenYet => 'Henüz doz kaydı yok';
 
   @override
   String get viewHistory => 'Geçmişi görüntüle';
 
   @override
-  String get noMedicationHistory => 'Verilme geçmişi yok';
+  String get noMedicationHistory => 'Doz kaydı yok';
 
   @override
   String lastGivenLabel(String value) {
-    return 'Son veriliş: $value';
+    return 'Son doz\n$value';
   }
 
   @override

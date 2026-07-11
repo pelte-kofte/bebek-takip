@@ -210,18 +210,28 @@ class _AddScreenState extends State<AddScreen> {
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Discard changes?'),
-        content: const Text(
+        title: Text(
+          'Discard changes?',
+          style: AppTypography.dialogTitle(dialogContext),
+        ),
+        content: Text(
           'You have unsaved changes. Discard them and close?',
+          style: AppTypography.dialogBody(dialogContext),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Continue editing'),
+            child: Text(
+              'Continue editing',
+              style: AppTypography.dialogAction(dialogContext),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Discard'),
+            child: Text(
+              'Discard',
+              style: AppTypography.dialogAction(dialogContext),
+            ),
           ),
         ],
       ),
@@ -412,13 +422,11 @@ class _AddScreenState extends State<AddScreen> {
   Widget _buildSectionEyebrow(String text, bool isDark) {
     return Text(
       text,
-      style: TextStyle(
+      style: AppTypography.eyebrow(context).copyWith(
         fontSize: 10,
-        fontWeight: FontWeight.w700,
         color: isDark
             ? Colors.white.withValues(alpha: 0.6)
             : const Color(0xFF4A3F3F),
-        letterSpacing: 1.2,
       ),
     );
   }
@@ -465,9 +473,8 @@ class _AddScreenState extends State<AddScreen> {
                       value != null ? _formatTime(value) : placeholder,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: AppTypography.dataValue(context).copyWith(
                         fontSize: 22,
-                        fontWeight: FontWeight.w700,
                         color: value != null
                             ? (isDark
                                   ? AppColors.textPrimaryDark
@@ -724,10 +731,7 @@ class _AddScreenState extends State<AddScreen> {
                         children: [
                           if (selectedActivity == 'breastfeeding' ||
                               selectedActivity == 'bottle') ...[
-                            _buildSectionEyebrow(
-                              l10n.selectTime.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.selectTime, isDark),
                             const SizedBox(height: 12),
                             _buildPastelTimeCard(
                               isDark: isDark,
@@ -756,10 +760,7 @@ class _AddScreenState extends State<AddScreen> {
                             const SizedBox(height: 24),
                           ],
                           if (selectedActivity == 'breastfeeding') ...[
-                            _buildSectionEyebrow(
-                              l10n.side.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.side, isDark),
                             const SizedBox(height: 12),
                             _buildFeedingSegmentControl(
                               isDark: isDark,
@@ -776,10 +777,7 @@ class _AddScreenState extends State<AddScreen> {
                                   setState(() => selectedSide = value),
                             ),
                             const SizedBox(height: 24),
-                            _buildSectionEyebrow(
-                              l10n.duration.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.duration, isDark),
                             const SizedBox(height: 12),
                             GestureDetector(
                               onTap: () async {
@@ -808,10 +806,7 @@ class _AddScreenState extends State<AddScreen> {
                             ),
                           ],
                           if (selectedActivity == 'bottle') ...[
-                            _buildSectionEyebrow(
-                              l10n.category.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.category, isDark),
                             const SizedBox(height: 12),
                             _buildFeedingSegmentControl(
                               isDark: isDark,
@@ -829,10 +824,7 @@ class _AddScreenState extends State<AddScreen> {
                             ),
                             const SizedBox(height: 24),
                             if (feedingCategory == 'Solid') ...[
-                              _buildSectionEyebrow(
-                                l10n.whatWasGiven.toUpperCase(),
-                                isDark,
-                              ),
+                              _buildSectionEyebrow(l10n.whatWasGiven, isDark),
                               const SizedBox(height: 12),
                               _buildFeedingCard(
                                 isDark: isDark,
@@ -877,10 +869,7 @@ class _AddScreenState extends State<AddScreen> {
                                 }),
                               ),
                               const SizedBox(height: 24),
-                              _buildSectionEyebrow(
-                                l10n.milkType.toUpperCase(),
-                                isDark,
-                              ),
+                              _buildSectionEyebrow(l10n.milkType, isDark),
                               const SizedBox(height: 12),
                               _buildFeedingSegmentControl(
                                 isDark: isDark,
@@ -968,7 +957,7 @@ class _AddScreenState extends State<AddScreen> {
                                     l10n.totalSleep(_calculateSleepDuration()),
                                     style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: isDark
                                           ? AppColors.textPrimaryDark
                                           : const Color(0xFF4A3F3F),
@@ -978,10 +967,7 @@ class _AddScreenState extends State<AddScreen> {
                               ),
                           ],
                           if (selectedActivity == 'diaper') ...[
-                            _buildSectionEyebrow(
-                              l10n.healthType.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.healthType, isDark),
                             const SizedBox(height: 12),
                             _buildFeedingSegmentControl(
                               isDark: isDark,
@@ -999,10 +985,7 @@ class _AddScreenState extends State<AddScreen> {
                                   setState(() => _diaperType = value),
                             ),
                             const SizedBox(height: 24),
-                            _buildSectionEyebrow(
-                              l10n.healthTime.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.healthTime, isDark),
                             const SizedBox(height: 12),
                             _buildPastelTimeCard(
                               isDark: isDark,
@@ -1027,10 +1010,7 @@ class _AddScreenState extends State<AddScreen> {
                               },
                             ),
                             const SizedBox(height: 24),
-                            _buildSectionEyebrow(
-                              l10n.optionalNotes.toUpperCase(),
-                              isDark,
-                            ),
+                            _buildSectionEyebrow(l10n.optionalNotes, isDark),
                             const SizedBox(height: 12),
                             _buildFeedingCard(
                               isDark: isDark,
@@ -1132,10 +1112,8 @@ class _AddScreenState extends State<AddScreen> {
                                     : Text(
                                         l10n.save,
                                         textAlign: TextAlign.center,
-                                        style: const TextStyle(
+                                        style: AppTypography.button().copyWith(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
                                         ),
                                       ),
                               ),
@@ -1188,7 +1166,7 @@ class _AddScreenState extends State<AddScreen> {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                fontWeight: FontWeight.w600,
                 color: isSelected
                     ? const Color(0xFFFF998A)
                     : isDark
@@ -1253,9 +1231,7 @@ class _AddScreenState extends State<AddScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: groupValue == option.value
-                              ? FontWeight.w700
-                              : FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                           color: groupValue == option.value
                               ? const Color(0xFFB86E5A)
                               : isDark
@@ -1355,9 +1331,7 @@ class _AddScreenState extends State<AddScreen> {
                     children: [
                       TextSpan(
                         text: value,
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                        style: AppTypography.dataValue(context).copyWith(
                           color: isDark
                               ? AppColors.textPrimaryDark
                               : const Color(0xFF4A3F3F),
@@ -1365,9 +1339,8 @@ class _AddScreenState extends State<AddScreen> {
                       ),
                       TextSpan(
                         text: ' $unit',
-                        style: TextStyle(
+                        style: AppTypography.compactTitle(context).copyWith(
                           fontSize: 15,
-                          fontWeight: FontWeight.w600,
                           color: isDark
                               ? Colors.white.withValues(alpha: 0.46)
                               : const Color(0xFF8F8796),

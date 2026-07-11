@@ -2813,7 +2813,7 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'As-needed'**
+  /// **'When needed'**
   String get asNeededFilter;
 
   /// UI text
@@ -2831,7 +2831,7 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'As needed'**
+  /// **'When needed'**
   String get asNeeded;
 
   /// UI text
@@ -3221,7 +3221,7 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'Not given yet'**
+  /// **'No doses recorded'**
   String get notGivenYet;
 
   /// UI text
@@ -3233,13 +3233,13 @@ abstract class AppLocalizations {
   /// UI text
   ///
   /// In en, this message translates to:
-  /// **'No given history'**
+  /// **'No doses recorded'**
   String get noMedicationHistory;
 
   /// No description provided for @lastGivenLabel.
   ///
   /// In en, this message translates to:
-  /// **'Last given: {value}'**
+  /// **'Last dose\n{value}'**
   String lastGivenLabel(String value);
 
   /// No description provided for @close.

@@ -178,7 +178,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         l10n.activities,
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           letterSpacing: 0.8,
                           color: textColor.withValues(alpha: 0.56),
                         ),
@@ -297,7 +297,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 15,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: Color(0xFFFFB4A2),
                           ),
                         ),
@@ -368,7 +368,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: isActive ? FontWeight.w700 : FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0.2,
                     color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
                   ),
@@ -502,65 +502,19 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - OZET
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.summary,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
-                      .withValues(alpha: 0.68),
-                ),
+        _buildCompactSummarySection(
+          isDark: isDark,
+          sectionLabel: l10n.summary,
+          headline: '${kayitlar.length} ${l10n.record}',
+          rows: [
+            if (toplamDakika > 0)
+              (
+                label: l10n.breastfeeding,
+                value: '$toplamDakika ${l10n.minAbbrev}',
               ),
-            ],
-          ),
-        ),
-        // Ozet karti
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFBF5),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${kayitlar.length} ${l10n.record}',
-                style: const TextStyle(
-                  color: Color(0xFF333333),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              if (toplamDakika > 0)
-                _buildSummaryMetricRow(
-                  label: l10n.breastfeeding,
-                  value: '$toplamDakika ${l10n.minAbbrev}',
-                ),
-              if (toplamDakika > 0 && toplamMl > 0) const SizedBox(height: 8),
-              if (toplamMl > 0)
-                _buildSummaryMetricRow(
-                  label: l10n.bottle,
-                  value: '$toplamMl ${l10n.mlAbbrev}',
-                ),
-            ],
-          ),
+            if (toplamMl > 0)
+              (label: l10n.bottle, value: '$toplamMl ${l10n.mlAbbrev}'),
+          ],
         ),
         const SizedBox(height: 24),
 
@@ -573,7 +527,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
                   color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
                       .withValues(alpha: 0.68),
@@ -709,59 +663,15 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - OZET
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.summary,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
-                      .withValues(alpha: 0.68),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Ozet karti
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFBF5),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${kayitlar.length} ${l10n.diaperChange}',
-                style: const TextStyle(
-                  color: Color(0xFF333333),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              _buildSummaryMetricRow(label: l10n.wet, value: '$islak'),
-              const SizedBox(height: 8),
-              _buildSummaryMetricRow(label: l10n.dirty, value: '$kirli'),
-              const SizedBox(height: 8),
-              _buildSummaryMetricRow(label: l10n.both, value: '$ikisi'),
-            ],
-          ),
+        _buildCompactSummarySection(
+          isDark: isDark,
+          sectionLabel: l10n.summary,
+          headline: '${kayitlar.length} ${l10n.diaperChange}',
+          rows: [
+            (label: l10n.wet, value: '$islak'),
+            (label: l10n.dirty, value: '$kirli'),
+            (label: l10n.both, value: '$ikisi'),
+          ],
         ),
         const SizedBox(height: 24),
 
@@ -774,7 +684,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
                   color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
                       .withValues(alpha: 0.68),
@@ -856,65 +766,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
     return Column(
       children: [
-        // Section Header - OZET
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                l10n.summary,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.8,
-                  color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
-                      .withValues(alpha: 0.68),
-                ),
-              ),
-            ],
-          ),
-        ),
-        // Ozet karti
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: const Color(0xFFFFFBF5),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0xFFE5E0F7).withValues(alpha: 0.1),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${l10n.total}: $saat ${l10n.hourAbbrev} $dakika ${l10n.minAbbrev}',
-                style: const TextStyle(
-                  color: Color(0xFF333333),
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-                textAlign: TextAlign.start,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '${kayitlar.length} ${l10n.record}',
-                style: const TextStyle(
-                  color: Color(0xFF7D7689),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+        _buildCompactSummarySection(
+          isDark: isDark,
+          sectionLabel: l10n.summary,
+          headline:
+              '${l10n.total}: $saat ${l10n.hourAbbrev} $dakika ${l10n.minAbbrev}',
+          supportingText: '${kayitlar.length} ${l10n.record}',
         ),
         const SizedBox(height: 24),
 
@@ -927,7 +784,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                 l10n.recentActivities,
                 style: TextStyle(
                   fontSize: 11,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   letterSpacing: 0.8,
                   color: (isDark ? Colors.white : const Color(0xFF1d0e0c))
                       .withValues(alpha: 0.68),
@@ -967,28 +824,116 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     );
   }
 
-  Widget _buildSummaryMetricRow({
-    required String label,
-    required String value,
+  Widget _buildCompactSummarySection({
+    required bool isDark,
+    required String sectionLabel,
+    required String headline,
+    List<({String label, String value})> rows = const [],
+    String? supportingText,
   }) {
-    return Row(
+    final primaryColor = isDark ? Colors.white : const Color(0xFF333333);
+    final secondaryColor = isDark
+        ? Colors.white.withValues(alpha: 0.62)
+        : const Color(0xFF7D7689);
+    final dividerColor = isDark
+        ? Colors.white.withValues(alpha: 0.06)
+        : const Color(0xFF6F625C).withValues(alpha: 0.09);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
           child: Text(
-            label,
-            style: const TextStyle(
-              color: Color(0xFF7D7689),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
+            sectionLabel,
+            style: AppTypography.eyebrow(
+              context,
+            ).copyWith(color: primaryColor.withValues(alpha: 0.56)),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: Color(0xFF333333),
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFBF5),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.06)
+                  : const Color(0xFFE8E0DA),
+              width: 0.75,
+            ),
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.025),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                headline,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.sheetTitle(
+                  context,
+                ).copyWith(color: primaryColor),
+              ),
+              if (supportingText != null) ...[
+                const SizedBox(height: 6),
+                Text(
+                  supportingText,
+                  style: AppTypography.bodySmall(
+                    context,
+                  ).copyWith(fontSize: 13, color: secondaryColor, height: 1.2),
+                ),
+              ],
+              if (rows.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                for (var index = 0; index < rows.length; index++) ...[
+                  SizedBox(
+                    height: 36,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            rows[index].label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.bodySmall(
+                              context,
+                            ).copyWith(color: secondaryColor, height: 1.2),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Text(
+                            rows[index].value,
+                            textAlign: TextAlign.right,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.compactTitle(context).copyWith(
+                              fontSize: 15,
+                              color: primaryColor,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (index < rows.length - 1)
+                    Divider(height: 1, thickness: 0.5, color: dividerColor),
+                ],
+              ],
+            ],
           ),
         ),
       ],
@@ -1032,7 +977,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               title,
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: isDark ? Colors.white : const Color(0xFF4A4458),
               ),
               textAlign: TextAlign.center,
@@ -1080,11 +1025,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         const SizedBox(width: 8),
                         Text(
                           l10n.selectAnotherDate,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
+                          style: AppTypography.button().copyWith(fontSize: 15),
                         ),
                       ],
                     ),
@@ -1170,7 +1111,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         child: Text(
                           title,
                           style: TextStyle(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             fontSize: 15,
                             color: textColor,
                             letterSpacing: -0.1,
@@ -1184,7 +1125,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         time,
                         textAlign: TextAlign.right,
                         style: TextStyle(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                           color: textColor.withValues(alpha: 0.7),
                           fontSize: 13,
                         ),
@@ -1282,7 +1223,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                   secondaryActionLabel,
                                   style: const TextStyle(
                                     fontSize: 11,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w600,
                                     color: Color(0xFFD4897A),
                                   ),
                                 ),
@@ -1659,15 +1600,13 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                 Expanded(
                                   child: Text(
                                     title,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700,
-                                      letterSpacing: -0.2,
-                                      height: 1.1,
-                                      color: isDark
-                                          ? Colors.white
-                                          : const Color(0xFF1C1C1E),
-                                    ),
+                                    style: AppTypography.sheetTitle(context)
+                                        .copyWith(
+                                          height: 1.1,
+                                          color: isDark
+                                              ? Colors.white
+                                              : const Color(0xFF1C1C1E),
+                                        ),
                                   ),
                                 ),
                                 TextButton.icon(
@@ -1774,10 +1713,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                         )
                                       : Text(
                                           l10n.save,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 0.2,
-                                          ),
+                                          style: AppTypography.button(),
                                         ),
                                 ),
                               ),
@@ -1863,7 +1799,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   value,
                   style: TextStyle(
                     fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: isDark ? Colors.white : const Color(0xFF4A3F3F),
                   ),
                 ),
@@ -2076,9 +2012,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                           color: isSelected
                               ? const Color(0xFFB86E5A)
                               : isDark
@@ -2232,7 +2166,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   value,
                   style: TextStyle(
                     fontSize: 24,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: isDark ? Colors.white : const Color(0xFF4A3F3F),
                   ),
                 ),
@@ -2327,7 +2261,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     value,
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: isDark ? Colors.white : const Color(0xFF4A3F3F),
                     ),
                   ),
@@ -2546,7 +2480,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
       selectedType = 'formula';
     }
     int amount = (kayit['miktar'] as int? ?? 0).clamp(0, 500);
-    int solidDuration = (kayit['solidDakika'] as int? ?? 0).clamp(0, 180);
     bool isSaving = false;
 
     final saved = await showModalBottomSheet<bool>(
@@ -2587,7 +2520,6 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     'solidAciklama': noteController.text.isEmpty
                         ? null
                         : noteController.text,
-                    'solidDakika': solidDuration,
                   });
                 } else if (selectedType == 'bottleMilk') {
                   updated.addAll({
@@ -2632,19 +2564,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 20),
-              if (selectedType == 'solid')
-                _buildSheetStepper(
-                  title: l10n.duration,
-                  value: '$solidDuration ${l10n.minAbbrev}',
-                  onDecrease: () => setModalState(
-                    () => solidDuration = (solidDuration - 5).clamp(0, 180),
-                  ),
-                  onIncrease: () => setModalState(
-                    () => solidDuration = (solidDuration + 5).clamp(0, 180),
-                  ),
-                )
-              else
+              if (selectedType != 'solid') ...[
+                const SizedBox(height: 20),
                 _buildFeedingSheetStepper(
                   title: l10n.amount,
                   value: '$amount ${l10n.mlAbbrev}',
@@ -2654,8 +2575,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                   onIncrease: () =>
                       setModalState(() => amount = (amount + 10).clamp(0, 500)),
                 ),
+              ],
               if (selectedType == 'solid') ...[
-                const SizedBox(height: 14),
+                const SizedBox(height: 20),
                 _buildSheetTextField(
                   controller: noteController,
                   hintText: l10n.solidFoodHint,
@@ -3011,25 +2933,32 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           l10n.delete,
-          style: TextStyle(color: isDark ? Colors.white : Colors.black),
+          style: AppTypography.dialogTitle(
+            context,
+          ).copyWith(color: isDark ? Colors.white : Colors.black),
         ),
         content: Text(
           l10n.deleteConfirm,
-          style: TextStyle(
-            color: isDark ? Colors.grey.shade300 : Colors.black87,
-          ),
+          style: AppTypography.dialogBody(
+            context,
+          ).copyWith(color: isDark ? Colors.grey.shade300 : Colors.black87),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+            child: Text(
+              l10n.cancel,
+              style: AppTypography.dialogAction(context),
+            ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: Text(
               l10n.delete,
-              style: const TextStyle(color: Colors.white),
+              style: AppTypography.dialogAction(
+                context,
+              ).copyWith(color: Colors.white),
             ),
           ),
         ],

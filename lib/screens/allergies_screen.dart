@@ -199,13 +199,6 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
                                     );
                                     if (ctx.mounted) {
                                       Navigator.pop(ctx);
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(l10n.allergyAdded),
-                                        ),
-                                      );
                                     }
                                   } catch (error) {
                                     setSheetState(() => isSaving = false);
@@ -263,9 +256,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         vertical: compact ? 12 : 14,
       ),
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.bgDarkCard
-            : AppColors.lavenderSoft,
+        color: isDark ? AppColors.bgDarkCard : AppColors.lavenderSoft,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isDark
@@ -302,7 +293,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
                   l10n.allergyTipTitle,
                   style: AppTypography.label(
                     context,
-                  ).copyWith(color: textColor, fontWeight: FontWeight.w700),
+                  ).copyWith(color: textColor, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -334,13 +325,13 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           l10n.deleteAllergy,
-          style: AppTypography.h2(context).copyWith(
+          style: AppTypography.dialogTitle(context).copyWith(
             color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
           ),
         ),
         content: Text(
           allergy.name,
-          style: AppTypography.body(context).copyWith(
+          style: AppTypography.dialogBody(context).copyWith(
             color: isDark
                 ? AppColors.textSecondaryDark
                 : const Color(0xFF7A749E),
@@ -349,13 +340,16 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            child: Text(
+              l10n.cancel,
+              style: AppTypography.dialogAction(context),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
               l10n.delete,
-              style: AppTypography.label(
+              style: AppTypography.dialogAction(
                 context,
               ).copyWith(color: Colors.red.shade400),
             ),
@@ -647,7 +641,7 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
                           children: [
                             Text(
                               allergy.name,
-                              style: AppTypography.h3(context).copyWith(
+                              style: AppTypography.sheetTitle(context).copyWith(
                                 color: textColor,
                                 decoration: allergy.isActive
                                     ? null

@@ -89,16 +89,24 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(l10n.attention),
-        content: Text(l10n.deleteConfirm),
+        title: Text(l10n.attention, style: AppTypography.dialogTitle(context)),
+        content: Text(
+          l10n.deleteConfirm,
+          style: AppTypography.dialogBody(context),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no),
+            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.yes, style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l10n.yes,
+              style: AppTypography.dialogAction(
+                context,
+              ).copyWith(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -159,7 +167,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
       if (mounted) setState(() {});
     });
 
-    final l10n = AppLocalizations.of(context)!;
     final dailyTimes = _dailyTimes(medication);
     final scheduled = dailyTimes.isNotEmpty ? dailyTimes.first : null;
     final result = await VeriYonetici.markIlacDozKaydiIfAbsent(
@@ -181,18 +188,6 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     }
     HapticFeedback.selectionClick();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.savedMessage),
-        action: SnackBarAction(
-          label: l10n.undo,
-          onPressed: () async {
-            await VeriYonetici.deleteIlacDozKaydi(result.logId);
-            if (mounted) setState(() {});
-          },
-        ),
-      ),
-    );
     setState(() {});
   }
 
@@ -415,12 +410,12 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     ).formatTimeOfDay(TimeOfDay.fromDateTime(lastGivenAt));
 
     if (target == today) {
-      return '${l10n.today} $timeText';
+      return '${l10n.today} • $timeText';
     }
     if (target == today.subtract(const Duration(days: 1))) {
-      return '${l10n.yesterday} $timeText';
+      return '${l10n.yesterday} • $timeText';
     }
-    return '${formatLocalizedDate(context, lastGivenAt)} $timeText';
+    return '${formatLocalizedDate(context, lastGivenAt)} • $timeText';
   }
 
   Future<void> _cancelRemindersForMedication(Map<String, dynamic> med) async {
@@ -527,14 +522,20 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     l10n.medicationSetReminder,
-                    style: AppTypography.h3(context),
+                    style: AppTypography.sheetTitle(context),
                   ),
-                  subtitle: Text(med['name']?.toString() ?? ''),
+                  subtitle: Text(
+                    med['name']?.toString() ?? '',
+                    style: AppTypography.bodySmall(context),
+                  ),
                 ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.access_time_rounded),
-                  title: Text(l10n.reminderTime),
+                  title: Text(
+                    l10n.reminderTime,
+                    style: AppTypography.body(context),
+                  ),
                   trailing: Text(
                     MaterialLocalizations.of(
                       context,
@@ -553,7 +554,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                 ),
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.repeatDaily),
+                  title: Text(
+                    l10n.repeatDaily,
+                    style: AppTypography.body(context),
+                  ),
                   value: repeatDaily,
                   onChanged: (value) =>
                       setSheetState(() => repeatDaily = value),
@@ -564,7 +568,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                   child: FilledButton.icon(
                     onPressed: () => Navigator.pop(ctx, true),
                     icon: const Icon(Icons.notifications_active_outlined),
-                    label: Text(l10n.medicationSetReminder),
+                    label: Text(
+                      l10n.medicationSetReminder,
+                      style: AppTypography.button(),
+                    ),
                   ),
                 ),
               ],
@@ -809,7 +816,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                             children: [
                               Text(
                                 med['name']?.toString() ?? '',
-                                style: AppTypography.h3(
+                                style: AppTypography.sheetTitle(
                                   context,
                                 ).copyWith(fontSize: 20),
                               ),
@@ -903,7 +910,10 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                             borderRadius: BorderRadius.circular(18),
                           ),
                         ),
-                        child: Text(primaryLabel),
+                        child: Text(
+                          primaryLabel,
+                          style: AppTypography.button(),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -983,7 +993,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                     const SizedBox(height: 16),
                     Text(
                       l10n.noMedications,
-                      style: AppTypography.h3(context),
+                      style: AppTypography.sheetTitle(context),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -1185,7 +1195,9 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                     children: [
                       Text(
                         med['name'] ?? '',
-                        style: AppTypography.h3(context).copyWith(fontSize: 17),
+                        style: AppTypography.compactTitle(
+                          context,
+                        ).copyWith(fontSize: 17),
                       ),
                       const SizedBox(height: 8),
                       Wrap(
@@ -1252,7 +1264,7 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
                       progressText,
                       style: AppTypography.caption(context).copyWith(
                         color: AppColors.primary,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -1312,7 +1324,9 @@ class RoutineMedicationCard extends StatelessWidget {
             Expanded(
               child: Text(
                 name,
-                style: AppTypography.h3(context).copyWith(fontSize: 16),
+                style: AppTypography.compactTitle(
+                  context,
+                ).copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(width: 8),
@@ -1368,7 +1382,7 @@ class RoutineMedicationCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(13),
                   ),
-                  textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                  textStyle: AppTypography.dialogAction(context),
                 ),
                 icon: const Icon(Icons.notifications_none_rounded, size: 17),
                 label: Text(secondaryButtonLabel),
@@ -1419,7 +1433,9 @@ class AsNeededMedicationCard extends StatelessWidget {
             Expanded(
               child: Text(
                 name,
-                style: AppTypography.h3(context).copyWith(fontSize: 16),
+                style: AppTypography.compactTitle(
+                  context,
+                ).copyWith(fontSize: 16),
               ),
             ),
             const SizedBox(width: 8),
@@ -1435,7 +1451,7 @@ class AsNeededMedicationCard extends StatelessWidget {
           asNeededLabel,
           style: AppTypography.caption(
             context,
-          ).copyWith(color: AppColors.primary, fontWeight: FontWeight.w700),
+          ).copyWith(color: AppColors.primary, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Text(
@@ -1477,7 +1493,7 @@ class AsNeededMedicationCard extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(13),
                   ),
-                  textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                  textStyle: AppTypography.dialogAction(context),
                 ),
                 icon: const Icon(Icons.notifications_none_rounded, size: 17),
                 label: Text(secondaryButtonLabel),
@@ -1503,7 +1519,9 @@ class _MedicationTypeBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return NilicoBadge(
       label: typeBadge,
-      variant: isMedication ? NilicoBadgeVariant.status : NilicoBadgeVariant.type,
+      variant: isMedication
+          ? NilicoBadgeVariant.status
+          : NilicoBadgeVariant.type,
     );
   }
 }
@@ -1836,16 +1854,22 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.medicationSetRemindersTitle),
-        content: Text(l10n.medicationSetRemindersBody),
+        title: Text(
+          l10n.medicationSetRemindersTitle,
+          style: AppTypography.dialogTitle(context),
+        ),
+        content: Text(
+          l10n.medicationSetRemindersBody,
+          style: AppTypography.dialogBody(context),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.no),
+            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.yes),
+            child: Text(l10n.yes, style: AppTypography.dialogAction(context)),
           ),
         ],
       ),
@@ -1954,6 +1978,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
+              style: AppTypography.body(context),
               decoration: _inputDecoration(isDark),
             ),
             const SizedBox(height: 16),
@@ -2061,6 +2086,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: _dosageController,
+              style: AppTypography.body(context),
               decoration: _inputDecoration(isDark),
             ),
             const SizedBox(height: 16),
@@ -2068,6 +2094,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
             const SizedBox(height: 8),
             TextField(
               controller: _notesController,
+              style: AppTypography.body(context),
               maxLines: 3,
               decoration: _inputDecoration(isDark),
             ),
@@ -2076,7 +2103,10 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
               contentPadding: EdgeInsets.zero,
-              title: Text(_isActive ? l10n.active : l10n.inactive),
+              title: Text(
+                _isActive ? l10n.active : l10n.inactive,
+                style: AppTypography.body(context),
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -2103,7 +2133,7 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
                           ),
                         ),
                       )
-                    : Text(l10n.save),
+                    : Text(l10n.save, style: AppTypography.button()),
               ),
             ),
           ],

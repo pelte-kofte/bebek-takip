@@ -672,10 +672,10 @@
   "vaccineName": "Vaccine Name",
   "allLabel": "All",
   "routineFilter": "Routine",
-  "asNeededFilter": "As-needed",
+  "asNeededFilter": "When needed",
   "vaccineProtocolsFilter": "Vaccine protocols",
   "everyDay": "Every day",
-  "asNeeded": "As needed",
+  "asNeeded": "When needed",
   "vaccineProtocolLabel": "Vaccine protocol",
   "linkedToVaccine": "linked to {vaccine}",
   "@linkedToVaccine": {
@@ -830,10 +830,10 @@
   "alreadySavedRecently": "Already saved a moment ago",
   "undo": "Undo",
   "yesterday": "Yesterday",
-  "notGivenYet": "Not given yet",
+  "notGivenYet": "No doses recorded",
   "viewHistory": "View history",
-  "noMedicationHistory": "No given history",
-  "lastGivenLabel": "Last given: {value}",
+  "noMedicationHistory": "No doses recorded",
+  "lastGivenLabel": "Last dose\n{value}",
   "@lastGivenLabel": {
     "placeholders": {
       "value": {
