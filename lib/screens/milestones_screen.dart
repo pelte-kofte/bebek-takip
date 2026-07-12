@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart'
+    show kDebugMode, kIsWeb, kProfileMode, setEquals;
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -20,16 +21,63 @@ import '../widgets/nilico_motion.dart';
 Widget buildPlatformImage(
   String path, {
   BoxFit fit = BoxFit.cover,
+  int? cacheWidth,
+  int? cacheHeight,
+  bool animateFirstFrame = false,
   Widget Function(BuildContext, Object, StackTrace?)? errorBuilder,
 }) {
   final isNetwork = path.startsWith('http://') || path.startsWith('https://');
+  final Widget image;
   if (kIsWeb || isNetwork) {
     // On web, ImagePicker returns blob URLs that work with Image.network
-    return Image.network(path, fit: fit, errorBuilder: errorBuilder);
+    image = Image.network(
+      path,
+      fit: fit,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      frameBuilder: animateFirstFrame ? _memoryImageFrameBuilder : null,
+      errorBuilder: errorBuilder,
+    );
   } else {
     // On mobile/desktop, use File
-    return Image.file(File(path), fit: fit, errorBuilder: errorBuilder);
+    image = Image.file(
+      File(path),
+      fit: fit,
+      cacheWidth: cacheWidth,
+      cacheHeight: cacheHeight,
+      filterQuality: FilterQuality.medium,
+      gaplessPlayback: true,
+      frameBuilder: animateFirstFrame ? _memoryImageFrameBuilder : null,
+      errorBuilder: errorBuilder,
+    );
   }
+  return image;
+}
+
+Widget _memoryImageFrameBuilder(
+  BuildContext context,
+  Widget child,
+  int? frame,
+  bool wasSynchronouslyLoaded,
+) {
+  if (wasSynchronouslyLoaded) return child;
+  final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+  return Stack(
+    fit: StackFit.expand,
+    children: [
+      const ColoredBox(color: Color(0xFFF3EEE9)),
+      AnimatedOpacity(
+        opacity: frame == null ? 0 : 1,
+        duration: reduceMotion
+            ? Duration.zero
+            : const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        child: child,
+      ),
+    ],
+  );
 }
 
 String? resolveMilestonePhotoSource(Map<String, dynamic> milestone) {
@@ -39,11 +87,7 @@ String? resolveMilestonePhotoSource(Map<String, dynamic> milestone) {
   ];
   for (final candidate in localCandidates) {
     if (candidate.isEmpty) continue;
-    final isNetwork =
-        candidate.startsWith('http://') || candidate.startsWith('https://');
-    if (kIsWeb || isNetwork || File(candidate).existsSync()) {
-      return candidate;
-    }
+    return candidate;
   }
   final remote = milestone['photoUrl']?.toString().trim() ?? '';
   if (remote.isNotEmpty) return remote;
@@ -66,6 +110,48 @@ Future<String?> showMemoryIllustrationStyleSheet(BuildContext context) {
   );
 }
 
+Future<bool> showMemoryDeleteConfirmation(BuildContext context) async {
+  final l10n = AppLocalizations.of(context)!;
+  return await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          backgroundColor: AppColors.paper,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Text(
+            l10n.memoryDeleteTitle,
+            style: AppTypography.dialogTitle(dialogContext),
+          ),
+          content: Text(
+            l10n.memoryDeleteMessage,
+            style: AppTypography.dialogBody(dialogContext),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                l10n.cancel,
+                style: AppTypography.dialogAction(
+                  dialogContext,
+                ).copyWith(color: AppColors.textSecondary),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                l10n.delete,
+                style: AppTypography.dialogAction(
+                  dialogContext,
+                ).copyWith(color: const Color(0xFFD45D5D)),
+              ),
+            ),
+          ],
+        ),
+      ) ??
+      false;
+}
+
 class MilestonesScreen extends StatefulWidget {
   const MilestonesScreen({super.key});
 
@@ -76,7 +162,7 @@ class MilestonesScreen extends StatefulWidget {
 enum _MemoryFilter { all, photos, illustrated }
 
 class _MilestonesScreenState extends State<MilestonesScreen> {
-  List<Map<String, dynamic>> _milestones = [];
+  late List<Map<String, dynamic>> _milestones;
   _MemoryFilter _filter = _MemoryFilter.all;
   late final VoidCallback _dataListener;
   final IllustrationRequestService _illustrationRequestService =
@@ -87,11 +173,19 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   @override
   void initState() {
     super.initState();
+    final hydrationWatch = Stopwatch()..start();
+    _milestones = VeriYonetici.getMilestones();
+    if (kDebugMode) {
+      debugPrint(
+        '[MemoriesTiming] cached-list-available '
+        '${hydrationWatch.elapsedMicroseconds / 1000}ms '
+        'count=${_milestones.length}',
+      );
+    }
     _dataListener = () {
       if (mounted) _loadMilestones();
     };
     VeriYonetici.dataNotifier.addListener(_dataListener);
-    _loadMilestones();
     _requestSubscription = _illustrationRequestService.watchMyRequests().listen(
       (requests) {
         if (!mounted) return;
@@ -105,6 +199,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             )
             .map((request) => request.memoryId)
             .toSet();
+        if (setEquals(generatingIds, _generatingMemoryIds)) return;
         setState(() => _generatingMemoryIds = generatingIds);
       },
     );
@@ -118,16 +213,31 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   void _loadMilestones() {
-    setState(() {
-      _milestones = VeriYonetici.getMilestones();
-      if (kDebugMode) {
-        final top = _milestones
-            .take(3)
-            .map((e) => (e['date'] as DateTime?)?.toIso8601String() ?? '-')
-            .toList();
-        debugPrint('[MilestonesScreen] Top3 memory dates after load=$top');
+    final fresh = VeriYonetici.getMilestones();
+    if (_sameMilestoneSnapshot(_milestones, fresh)) return;
+    setState(() => _milestones = fresh);
+  }
+
+  bool _sameMilestoneSnapshot(
+    List<Map<String, dynamic>> current,
+    List<Map<String, dynamic>> fresh,
+  ) {
+    if (current.length != fresh.length) return false;
+    for (var i = 0; i < current.length; i++) {
+      final a = current[i];
+      final b = fresh[i];
+      if (a['id'] != b['id'] ||
+          a['updatedAt'] != b['updatedAt'] ||
+          a['title'] != b['title'] ||
+          a['date'] != b['date'] ||
+          a['note'] != b['note'] ||
+          a['photoPath'] != b['photoPath'] ||
+          a['photoUrl'] != b['photoUrl'] ||
+          a['illustrationUrl'] != b['illustrationUrl']) {
+        return false;
       }
-    });
+    }
+    return true;
   }
 
   void _showAddMilestoneSheet() {
@@ -180,40 +290,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   }
 
   Future<void> _deleteMilestone(Map<String, dynamic> milestone) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFFFFFBF5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.memoryDeleteTitle,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        content: Text(
-          l10n.memoryDeleteMessage,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              l10n.delete,
-              style: TextStyle(color: Color(0xFFFF6B6B)),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirm = await showMemoryDeleteConfirmation(context);
 
     if (confirm == true) {
       NilicoHaptics.trigger(NilicoHapticType.medium);
@@ -243,19 +320,36 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
   Widget _buildFilterBar() {
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 2, 24, 0),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.fromLTRB(24, 4, 24, 0),
+      child: Container(
+        height: 38,
+        padding: const EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: AppColors.controlFill.withValues(alpha: 0.78),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.borderSoft.withValues(alpha: 0.55),
+          ),
+        ),
         child: Row(
           children: [
-            _buildFilterChip(l10n.memoriesFilterAll, _MemoryFilter.all),
-            const SizedBox(width: 8),
-            _buildFilterChip(l10n.memoriesFilterPhotos, _MemoryFilter.photos),
-            const SizedBox(width: 8),
-            _buildFilterChip(
-              l10n.memoriesFilterIllustrated,
-              _MemoryFilter.illustrated,
+            Expanded(
+              child: _buildFilterSegment(
+                l10n.memoriesFilterAll,
+                _MemoryFilter.all,
+              ),
+            ),
+            Expanded(
+              child: _buildFilterSegment(
+                l10n.memoriesFilterPhotos,
+                _MemoryFilter.photos,
+              ),
+            ),
+            Expanded(
+              child: _buildFilterSegment(
+                l10n.memoriesFilterIllustrated,
+                _MemoryFilter.illustrated,
+              ),
             ),
           ],
         ),
@@ -263,7 +357,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     );
   }
 
-  Widget _buildFilterChip(String label, _MemoryFilter filter) {
+  Widget _buildFilterSegment(String label, _MemoryFilter filter) {
     final isSelected = _filter == filter;
     return NilicoPressable(
       onTap: () {
@@ -275,30 +369,34 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       child: AnimatedContainer(
         duration: NilicoMotion.chipDuration,
         curve: NilicoMotion.ease,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 6),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFFFFB4A2).withValues(alpha: 0.12)
-              : Colors.white.withValues(alpha: 0.72),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFFB4A2)
-                : const Color(0xFFE5E0F7),
-            width: 1,
-          ),
+              ? AppColors.controlActive.withValues(alpha: 0.98)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(9),
+          boxShadow: isSelected
+              ? const [
+                  BoxShadow(
+                    color: Color(0x0D2F221C),
+                    blurRadius: 5,
+                    offset: Offset(0, 1),
+                  ),
+                ]
+              : null,
         ),
         child: AnimatedDefaultTextStyle(
           duration: NilicoMotion.chipDuration,
           curve: NilicoMotion.ease,
           style: TextStyle(
             fontSize: 12,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
             color: isSelected
-                ? const Color(0xFFFFB4A2)
-                : const Color(0xFF4A3E39).withValues(alpha: 0.6),
+                ? AppColors.textPrimary
+                : AppColors.textSecondary.withValues(alpha: 0.78),
           ),
-          child: Text(label),
+          child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis),
         ),
       ),
     );
@@ -313,20 +411,20 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     if (!isReady && !isGenerating) return const SizedBox.shrink();
 
     final bgColor = isReady
-        ? const Color(0xFF9C88CC).withValues(alpha: onPhoto ? 0.85 : 0.13)
-        : const Color(0xFFFFB4A2).withValues(alpha: onPhoto ? 0.85 : 0.13);
+        ? const Color(0xFFF5F0F8).withValues(alpha: onPhoto ? 0.92 : 1)
+        : const Color(0xFFFFF3ED).withValues(alpha: onPhoto ? 0.92 : 1);
     final borderColor = isReady
         ? const Color(0xFF9C88CC).withValues(alpha: onPhoto ? 0.0 : 0.3)
         : const Color(0xFFFFB4A2).withValues(alpha: onPhoto ? 0.0 : 0.3);
-    final textColor = onPhoto
-        ? Colors.white
-        : (isReady ? const Color(0xFF9C88CC) : const Color(0xFFFFB4A2));
+    final textColor = isReady
+        ? const Color(0xFF75688F)
+        : const Color(0xFF9A675A);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(100),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: borderColor),
       ),
       child: Row(
@@ -334,20 +432,20 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         children: [
           if (isGenerating)
             SizedBox(
-              width: 9,
-              height: 9,
+              width: 8,
+              height: 8,
               child: CircularProgressIndicator(
                 strokeWidth: 1.5,
                 color: textColor,
               ),
             )
           else
-            Icon(Icons.auto_awesome_rounded, size: 10, color: textColor),
-          const SizedBox(width: 4),
+            Icon(Icons.auto_awesome_rounded, size: 9, color: textColor),
+          const SizedBox(width: 3),
           Text(
             isReady ? l10n.illustrationReady : l10n.illustrationGenerating,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: FontWeight.w600,
               color: textColor,
             ),
@@ -389,19 +487,39 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           ),
         ),
         floatingActionButton: _milestones.isNotEmpty
-            ? Padding(
-                padding: const EdgeInsets.only(right: 8, bottom: 8),
-                child: FloatingActionButton.extended(
-                  onPressed: _showAddMilestoneSheet,
-                  backgroundColor: const Color(0xFFFFB4A2),
-                  elevation: 4,
-                  icon: const Icon(Icons.add, color: Colors.white, size: 18),
-                  label: Text(
-                    AppLocalizations.of(context)!.addMemory,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 14,
+            ? Semantics(
+                button: true,
+                label: AppLocalizations.of(context)!.addMemory,
+                child: NilicoPressable(
+                  onTap: _showAddMilestoneSheet,
+                  haptic: NilicoHapticType.selection,
+                  child: Container(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x122F221C),
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.add, color: Colors.white, size: 18),
+                        const SizedBox(width: 7),
+                        Text(
+                          AppLocalizations.of(context)!.addMemory,
+                          style: AppTypography.button().copyWith(
+                            color: Colors.white,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -428,66 +546,53 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 96,
-              height: 96,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
                 color: const Color(0xFFE5E0F7).withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(48),
+                borderRadius: BorderRadius.circular(24),
               ),
               child: const Center(
                 child: Icon(
                   Icons.auto_awesome,
-                  size: 44,
+                  size: 30,
                   color: Color(0xFFFFB4A2),
                 ),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 22),
             Text(
               AppLocalizations.of(context)!.memoriesEmptyTitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: titleColor,
-                height: 1.3,
-              ),
+              style: AppTypography.h2(
+                context,
+              ).copyWith(fontSize: 20, color: titleColor, height: 1.3),
             ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.memoriesEmptySubtitle,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                color: subtitleColor,
-                height: 1.5,
-              ),
+              style: AppTypography.body(
+                context,
+              ).copyWith(fontSize: 14, color: subtitleColor, height: 1.5),
             ),
-            const SizedBox(height: 36),
-            GestureDetector(
+            const SizedBox(height: 28),
+            NilicoPressable(
               onTap: _showAddMilestoneSheet,
               child: Container(
+                constraints: const BoxConstraints(minHeight: 48),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 14,
+                  horizontal: 22,
+                  vertical: 12,
                 ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFB4A2),
-                  borderRadius: BorderRadius.circular(100),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFFB4A2).withValues(alpha: 0.25),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
                   AppLocalizations.of(context)!.addFirstMemory,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                  style: AppTypography.button().copyWith(
+                    fontSize: 14,
                     color: Colors.white,
                   ),
                 ),
@@ -519,6 +624,14 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
     return LayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = _gridColumnCount(constraints.maxWidth);
+        final tileWidth =
+            (constraints.maxWidth - 48 - (crossAxisCount - 1) * 12) /
+            crossAxisCount;
+        final thumbnailPixels =
+            (tileWidth * MediaQuery.devicePixelRatioOf(context)).ceil().clamp(
+              240,
+              900,
+            );
         return GridView.builder(
           padding: const EdgeInsets.fromLTRB(24, 8, 24, 104),
           physics: const BouncingScrollPhysics(),
@@ -529,31 +642,28 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
             childAspectRatio: _gridChildAspectRatio(crossAxisCount),
           ),
           itemCount: filtered.length,
-          itemBuilder: (context, index) => _buildMilestoneCard(filtered[index]),
+          itemBuilder: (context, index) => _buildMilestoneCard(
+            filtered[index],
+            thumbnailPixels: thumbnailPixels,
+          ),
         );
       },
     );
   }
 
   int _gridColumnCount(double width) {
-    if (_filter == _MemoryFilter.photos) {
-      return width >= 390 ? 3 : 2;
-    }
-    return 2;
+    return width < 300 ? 1 : 2;
   }
 
   double _gridChildAspectRatio(int crossAxisCount) {
-    switch (_filter) {
-      case _MemoryFilter.photos:
-        return 0.92;
-      case _MemoryFilter.illustrated:
-        return crossAxisCount == 2 ? 0.78 : 0.82;
-      case _MemoryFilter.all:
-        return crossAxisCount == 2 ? 0.84 : 0.88;
-    }
+    if (crossAxisCount == 1) return 1.35;
+    return _filter == _MemoryFilter.photos ? 0.82 : 0.76;
   }
 
-  Widget _buildMilestoneCard(Map<String, dynamic> milestone) {
+  Widget _buildMilestoneCard(
+    Map<String, dynamic> milestone, {
+    required int thumbnailPixels,
+  }) {
     final photoSource = resolveMilestonePhotoSource(milestone);
     final hasPhoto = photoSource != null && photoSource.isNotEmpty;
     final illustrationUrl = (milestone['illustrationUrl'] ?? '')
@@ -565,9 +675,6 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
         !hasIllustration &&
         memoryId.isNotEmpty &&
         _generatingMemoryIds.contains(memoryId);
-    final note = (milestone['note'] ?? '').toString();
-    final isPhotoGrid = _filter == _MemoryFilter.photos;
-    final showCaptionBlock = !isPhotoGrid || !hasPhoto;
     final title = (milestone['title'] ?? '').toString();
     final date = _formatDate(milestone['date'] as DateTime);
 
@@ -577,266 +684,198 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.96),
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: AppColors.borderSoft.withValues(alpha: 0.72),
+            color: AppColors.borderSoft.withValues(alpha: 0.62),
           ),
-          boxShadow: AppShadows.card(false),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0A2F221C),
+              blurRadius: 10,
+              offset: Offset(0, 3),
+            ),
+          ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(22),
-          child: Stack(
+          borderRadius: BorderRadius.circular(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (hasPhoto)
-                          Hero(
-                            tag: 'memory-image-${milestone['id']}',
-                            child: buildPlatformImage(
-                              photoSource,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) =>
-                                  Container(
-                                    color: const Color(0xFFEDE7F8),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.image_not_supported_outlined,
-                                        color: Color(0xFFFFB4A2),
-                                        size: 28,
-                                      ),
-                                    ),
-                                  ),
-                            ),
-                          )
-                        else
-                          Container(
-                            color: const Color(0xFFFFF7F1),
-                            padding: const EdgeInsets.all(14),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.photo_library_outlined,
-                                size: 28,
-                                color: const Color(
-                                  0xFFFFB4A2,
-                                ).withValues(alpha: 0.72),
-                              ),
-                            ),
-                          ),
-                        if (hasPhoto)
-                          Positioned.fill(
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.black.withValues(alpha: 0.04),
-                                    Colors.transparent,
-                                    Colors.black.withValues(alpha: 0.36),
-                                  ],
-                                  stops: const [0, 0.45, 1],
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (hasPhoto)
+                      Hero(
+                        tag: 'memory-image-${milestone['id']}',
+                        child: buildPlatformImage(
+                          photoSource,
+                          fit: BoxFit.cover,
+                          cacheWidth: thumbnailPixels,
+                          cacheHeight: thumbnailPixels,
+                          animateFirstFrame: true,
+                          errorBuilder: (context, error, stackTrace) {
+                            final remote = (milestone['photoUrl'] ?? '')
+                                .toString()
+                                .trim();
+                            if (remote.isNotEmpty && remote != photoSource) {
+                              return buildPlatformImage(
+                                remote,
+                                fit: BoxFit.cover,
+                                cacheWidth: thumbnailPixels,
+                                cacheHeight: thumbnailPixels,
+                                animateFirstFrame: true,
+                              );
+                            }
+                            return const ColoredBox(
+                              color: Color(0xFFF3EEE9),
+                              child: Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Color(0xFF9A8F88),
+                                  size: 24,
                                 ),
                               ),
-                            ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      ColoredBox(
+                        color: const Color(0xFFFFF7F1),
+                        child: Center(
+                          child: Icon(
+                            Icons.photo_library_outlined,
+                            size: 26,
+                            color: AppColors.primary.withValues(alpha: 0.7),
                           ),
-                        if (hasIllustration || isGenerating)
-                          Positioned(
-                            left: 10,
-                            bottom: hasPhoto && !showCaptionBlock ? 10 : null,
-                            top: hasPhoto && showCaptionBlock ? 10 : null,
-                            child: _buildIllustrationBadge(
-                              isReady: hasIllustration,
-                              isGenerating: isGenerating,
-                              onPhoto: hasPhoto,
-                            ),
-                          ),
-                        if (hasPhoto && !showCaptionBlock)
-                          Positioned(
-                            left: 12,
-                            right: 12,
-                            bottom: 10,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  title,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                    height: 1.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  date,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white.withValues(alpha: 0.88),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  if (showCaptionBlock)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF4A3E39),
-                              height: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            date,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w500,
-                              color: const Color(
-                                0xFF4A3E39,
-                              ).withValues(alpha: 0.5),
-                            ),
-                          ),
-                          if (note.isNotEmpty &&
-                              _filter != _MemoryFilter.photos) ...[
-                            const SizedBox(height: 6),
-                            Text(
-                              note,
-                              maxLines: _filter == _MemoryFilter.illustrated
-                                  ? 3
-                                  : 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: const Color(
-                                  0xFF4A3E39,
-                                ).withValues(alpha: 0.66),
-                                height: 1.35,
-                              ),
-                            ),
-                          ],
-                        ],
+                        ),
                       ),
+                    if (hasIllustration || isGenerating)
+                      Positioned(
+                        left: 8,
+                        top: 8,
+                        child: _buildIllustrationBadge(
+                          isReady: hasIllustration,
+                          isGenerating: isGenerating,
+                          onPhoto: hasPhoto,
+                        ),
+                      ),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: _buildMemoryMenu(milestone, hasPhoto: hasPhoto),
                     ),
-                ],
+                  ],
+                ),
               ),
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    color: hasPhoto
-                        ? Colors.white.withValues(alpha: 0.8)
-                        : const Color(0xFFFFFBF5).withValues(alpha: 0.96),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_horiz,
-                      size: 16,
-                      color: const Color(0xFF4A3E39).withValues(alpha: 0.54),
+              Container(
+                width: double.infinity,
+                color: AppColors.paper,
+                padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.compactTitle(
+                        context,
+                      ).copyWith(fontSize: 13, height: 1.22),
                     ),
-                    padding: EdgeInsets.zero,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    const SizedBox(height: 4),
+                    Text(
+                      date,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodySmall(context).copyWith(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textSecondary.withValues(alpha: 0.72),
+                      ),
                     ),
-                    color: const Color(0xFFFFFBF5),
-                    onSelected: (value) {
-                      switch (value) {
-                        case 'edit':
-                          _showEditMilestoneSheet(milestone);
-                        case 'share':
-                          _shareMilestone(milestone);
-                        case 'delete':
-                          _deleteMilestone(milestone);
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.edit_outlined,
-                              size: 18,
-                              color: Color(0xFF4A3E39),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              AppLocalizations.of(context)!.edit,
-                              style: const TextStyle(color: Color(0xFF4A3E39)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'share',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.share_outlined,
-                              size: 18,
-                              color: Color(0xFF4A3E39),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              AppLocalizations.of(context)!.share,
-                              style: const TextStyle(color: Color(0xFF4A3E39)),
-                            ),
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.delete_outline,
-                              size: 18,
-                              color: Color(0xFFFF6B6B),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              AppLocalizations.of(context)!.delete,
-                              style: const TextStyle(color: Color(0xFFFF6B6B)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildMemoryMenu(
+    Map<String, dynamic> milestone, {
+    required bool hasPhoto,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
+    return SizedBox(
+      width: 44,
+      height: 44,
+      child: PopupMenuButton<String>(
+        padding: EdgeInsets.zero,
+        icon: Container(
+          width: 28,
+          height: 28,
+          decoration: BoxDecoration(
+            color: hasPhoto
+                ? AppColors.paper.withValues(alpha: 0.82)
+                : AppColors.paper.withValues(alpha: 0.96),
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Icon(
+            Icons.more_horiz,
+            size: 16,
+            color: AppColors.textPrimary.withValues(alpha: 0.58),
+          ),
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        color: AppColors.paper,
+        onSelected: (value) {
+          switch (value) {
+            case 'edit':
+              _showEditMilestoneSheet(milestone);
+            case 'share':
+              _shareMilestone(milestone);
+            case 'delete':
+              _deleteMilestone(milestone);
+          }
+        },
+        itemBuilder: (context) => [
+          _memoryMenuItem('edit', Icons.edit_outlined, l10n.edit),
+          _memoryMenuItem('share', Icons.share_outlined, l10n.share),
+          _memoryMenuItem(
+            'delete',
+            Icons.delete_outline,
+            l10n.delete,
+            destructive: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _memoryMenuItem(
+    String value,
+    IconData icon,
+    String label, {
+    bool destructive = false,
+  }) {
+    final color = destructive ? const Color(0xFFD45D5D) : AppColors.textPrimary;
+    return PopupMenuItem<String>(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 10),
+          Text(
+            label,
+            style: AppTypography.body(
+              context,
+            ).copyWith(fontSize: 14, fontWeight: FontWeight.w500, color: color),
+          ),
+        ],
       ),
     );
   }
@@ -939,6 +978,14 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
     if (_isSaving) return;
     if (_titleController.text.isEmpty) return;
 
+    final timing = Stopwatch()..start();
+    final traceId = 'memory-add-${DateTime.now().microsecondsSinceEpoch}';
+    if (kDebugMode || kProfileMode) {
+      debugPrint(
+        '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+        'id=$traceId event=save-button-tap total_us=0 mode=add',
+      );
+    }
     setState(() => _isSaving = true);
     try {
       final milestones = VeriYonetici.getMilestones();
@@ -950,19 +997,49 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
         'photoPath': _photoPath,
       });
 
-      await VeriYonetici.saveMilestones(milestones);
+      final modelSaveStep = Stopwatch()..start();
+      await VeriYonetici.saveMilestones(milestones, traceId: traceId);
+      if (kDebugMode || kProfileMode) {
+        debugPrint(
+          '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+          'id=$traceId event=await-model-save-end '
+          'step_us=${modelSaveStep.elapsedMicroseconds} '
+          'total_us=${timing.elapsedMicroseconds}',
+        );
+      }
       if (!mounted) return;
       widget.onSaved();
+      if (kDebugMode) {
+        debugPrint(
+          '[MemoriesTiming] save-to-list-update '
+          '${timing.elapsedMilliseconds}ms',
+        );
+      }
       NilicoHaptics.trigger(NilicoHapticType.success);
 
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        if (kDebugMode || kProfileMode) {
+          debugPrint(
+            '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+            'id=$traceId event=navigator-pop '
+            'total_us=${timing.elapsedMicroseconds}',
+          );
+        }
+        Navigator.pop(context);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (kDebugMode) {
+            debugPrint(
+              '[MemoriesTiming] save-to-navigation-frame '
+              '${timing.elapsedMilliseconds}ms',
+            );
+          }
+        });
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.errorWithMessage(e.toString()),
-            ),
+            content: Text(AppLocalizations.of(context)!.saveFailedTryAgain),
           ),
         );
       }
@@ -984,35 +1061,6 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
       backgroundColor: const Color(0xFFFFFBF5),
       body: Stack(
         children: [
-          // Decorative blurred circles
-          Positioned(
-            top: MediaQuery.of(context).size.height * 0.1,
-            right: -MediaQuery.of(context).size.width * 0.1,
-            child: IgnorePointer(
-              child: Container(
-                width: 256,
-                height: 256,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).size.height * 0.2,
-            left: -MediaQuery.of(context).size.width * 0.15,
-            child: IgnorePointer(
-              child: Container(
-                width: 320,
-                height: 320,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.3),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
           // Main content
           SafeArea(
             child: Column(
@@ -1028,28 +1076,25 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Close button
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.close,
-                            color: const Color(
-                              0xFF4A3E39,
-                            ).withValues(alpha: 0.6),
-                            size: 20,
+                      Semantics(
+                        button: true,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: AppColors.paperMuted,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Icon(
+                              Icons.close,
+                              color: const Color(
+                                0xFF4A3E39,
+                              ).withValues(alpha: 0.6),
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),
@@ -1058,13 +1103,13 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                         l10n.addMemory,
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                           color: Color(0xFF4A3E39),
                           letterSpacing: -0.5,
                         ),
                       ),
                       // Spacer for alignment
-                      const SizedBox(width: 40),
+                      const SizedBox(width: 44),
                     ],
                   ),
                 ),
@@ -1086,28 +1131,20 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                             GestureDetector(
                               onTap: _pickPhoto,
                               child: AspectRatio(
-                                aspectRatio: 1,
+                                aspectRatio: 4 / 3,
                                 child: Container(
                                   width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFE5E0F7),
-                                    borderRadius: BorderRadius.circular(32),
+                                    color: AppColors.paperMuted,
+                                    borderRadius: BorderRadius.circular(20),
                                     border: Border.all(
-                                      color: Colors.white,
-                                      width: 4,
+                                      color: AppColors.borderSoft,
                                     ),
-                                    boxShadow: const [
-                                      BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 8,
-                                        offset: Offset(0, 4),
-                                      ),
-                                    ],
                                   ),
                                   child: _photoPath != null
                                       ? ClipRRect(
                                           borderRadius: BorderRadius.circular(
-                                            28,
+                                            19,
                                           ),
                                           child: buildPlatformImage(
                                             _photoPath!,
@@ -1134,14 +1171,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                                       color: Colors.white.withValues(
                                         alpha: 0.9,
                                       ),
-                                      borderRadius: BorderRadius.circular(100),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 8,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
+                                      borderRadius: BorderRadius.circular(14),
                                     ),
                                     child: Icon(
                                       Icons.edit,
@@ -1227,13 +1257,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
+                              border: Border.all(color: AppColors.borderSoft),
                             ),
                             child: Row(
                               children: [
@@ -1320,17 +1344,11 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                   onTap: _isSaving ? null : _saveMilestone,
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    constraints: const BoxConstraints(minHeight: 50),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFB4A2),
-                      borderRadius: BorderRadius.circular(100),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: _isSaving
                         ? const SizedBox(
@@ -1353,7 +1371,7 @@ class _AddMilestoneScreenState extends State<AddMilestoneScreen> {
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
                           ),
@@ -1505,6 +1523,14 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
     if (_isSaving) return;
     if (_titleController.text.isEmpty) return;
 
+    final timing = Stopwatch()..start();
+    final traceId = 'memory-edit-${DateTime.now().microsecondsSinceEpoch}';
+    if (kDebugMode || kProfileMode) {
+      debugPrint(
+        '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+        'id=$traceId event=save-button-tap total_us=0 mode=edit',
+      );
+    }
     setState(() => _isSaving = true);
     try {
       final milestones = VeriYonetici.getMilestones();
@@ -1520,19 +1546,33 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
           'note': _noteController.text,
           'photoPath': _photoPath,
         };
-        await VeriYonetici.saveMilestones(milestones);
+        final modelSaveStep = Stopwatch()..start();
+        await VeriYonetici.saveMilestones(milestones, traceId: traceId);
+        if (kDebugMode || kProfileMode) {
+          debugPrint(
+            '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+            'id=$traceId event=await-model-save-end '
+            'step_us=${modelSaveStep.elapsedMicroseconds} '
+            'total_us=${timing.elapsedMicroseconds}',
+          );
+        }
       }
 
       if (!mounted) return;
       widget.onSaved();
+      if (kDebugMode || kProfileMode) {
+        debugPrint(
+          '[MemorySaveTrace] ts=${DateTime.now().toIso8601String()} '
+          'id=$traceId event=navigator-pop '
+          'total_us=${timing.elapsedMicroseconds}',
+        );
+      }
       Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.errorWithMessage(e.toString()),
-            ),
+            content: Text(AppLocalizations.of(context)!.saveFailedTryAgain),
           ),
         );
       }
@@ -1544,40 +1584,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
   }
 
   Future<void> _deleteMilestone() async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFFFFFBF5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.memoryDeleteTitle,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        content: Text(
-          l10n.memoryDeleteMessage,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              l10n.delete,
-              style: TextStyle(color: Color(0xFFFF6B6B)),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirm = await showMemoryDeleteConfirmation(context);
 
     if (confirm == true) {
       final milestones = VeriYonetici.getMilestones();
@@ -1626,17 +1633,11 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 6,
-                        ),
-                      ],
+                      color: AppColors.paperMuted,
+                      borderRadius: BorderRadius.circular(14),
                     ),
                     child: Icon(
                       Icons.close,
@@ -1649,15 +1650,15 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                   l10n.editMemory,
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                     color: Color(0xFF4A3E39),
                   ),
                 ),
                 GestureDetector(
                   onTap: _deleteMilestone,
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 44,
+                    height: 44,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFF6B6B).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
@@ -1691,23 +1692,14 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                         GestureDetector(
                           onTap: _pickPhoto,
                           child: Container(
-                            height: 120,
+                            height: 180,
                             width: double.infinity,
                             margin: const EdgeInsets.only(bottom: 20),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFE5E0F7,
-                                  ).withValues(alpha: 0.5),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              borderRadius: BorderRadius.circular(18),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(18),
                               child: buildPlatformImage(
                                 _photoPath!,
                                 fit: BoxFit.cover,
@@ -1781,7 +1773,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: const Color(0xFFE5E0F7),
-                            width: 2,
+                            width: 1,
                           ),
                         ),
                         child: Row(
@@ -1961,7 +1953,7 @@ class _EditMilestoneSheetState extends State<EditMilestoneSheet> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.white,
                               ),
                             ),
@@ -2097,7 +2089,7 @@ class _SharePreviewSheet extends StatelessWidget {
                         title,
                         style: const TextStyle(
                           fontSize: 17,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
                           color: Color(0xFF4A3E39),
                         ),
                       ),
@@ -2257,40 +2249,7 @@ class MilestoneDetailScreen extends StatelessWidget {
   }
 
   Future<void> _deleteMemory(BuildContext context) async {
-    final l10n = AppLocalizations.of(context)!;
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFFFFFBF5),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.memoryDeleteTitle,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        content: Text(
-          l10n.memoryDeleteMessage,
-          style: TextStyle(color: Color(0xFF4A3E39)),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              l10n.cancel,
-              style: TextStyle(
-                color: const Color(0xFF4A3E39).withValues(alpha: 0.6),
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              l10n.delete,
-              style: TextStyle(color: Color(0xFFFF6B6B)),
-            ),
-          ),
-        ],
-      ),
-    );
+    final confirm = await showMemoryDeleteConfirmation(context);
 
     if (confirm == true) {
       NilicoHaptics.trigger(NilicoHapticType.medium);
@@ -2314,35 +2273,6 @@ class MilestoneDetailScreen extends StatelessWidget {
       backgroundColor: const Color(0xFFFFFBF5),
       body: Stack(
         children: [
-          // Decorative background circles
-          Positioned(
-            top: -100,
-            right: -100,
-            child: IgnorePointer(
-              child: Container(
-                width: 300,
-                height: 300,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -150,
-            left: -150,
-            child: IgnorePointer(
-              child: Container(
-                width: 400,
-                height: 400,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE5E0F7).withValues(alpha: 0.15),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ),
-          ),
           // Main content
           SafeArea(
             child: Column(
@@ -2358,18 +2288,11 @@ class MilestoneDetailScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () => Navigator.pop(context),
                         child: Container(
-                          width: 40,
-                          height: 40,
+                          width: 44,
+                          height: 44,
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                            color: AppColors.paperMuted,
+                            borderRadius: BorderRadius.circular(14),
                           ),
                           child: Icon(
                             Icons.arrow_back,
@@ -2389,15 +2312,8 @@ class MilestoneDetailScreen extends StatelessWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.05),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+                            color: AppColors.paperMuted,
+                            borderRadius: BorderRadius.circular(14),
                           ),
                           child: Icon(
                             Icons.more_horiz,
@@ -2491,38 +2407,41 @@ class MilestoneDetailScreen extends StatelessWidget {
                             width: double.infinity,
                             constraints: const BoxConstraints(maxHeight: 400),
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(24),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFE5E0F7,
-                                  ).withValues(alpha: 0.4),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 8),
-                                ),
-                              ],
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(24),
+                              borderRadius: BorderRadius.circular(20),
                               child: Hero(
                                 tag: 'memory-image-${milestone['id']}',
                                 child: buildPlatformImage(
                                   photoSource,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(
-                                        height: 200,
-                                        color: const Color(
-                                          0xFFE5E0F7,
-                                        ).withValues(alpha: 0.3),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.image_not_supported,
-                                            size: 48,
-                                            color: Color(0xFF4A3E39),
-                                          ),
+                                  errorBuilder: (context, error, stackTrace) {
+                                    final remote = (milestone['photoUrl'] ?? '')
+                                        .toString()
+                                        .trim();
+                                    if (remote.isNotEmpty &&
+                                        remote != photoSource) {
+                                      return buildPlatformImage(
+                                        remote,
+                                        fit: BoxFit.cover,
+                                        animateFirstFrame: true,
+                                      );
+                                    }
+                                    return Container(
+                                      height: 200,
+                                      color: const Color(
+                                        0xFFE5E0F7,
+                                      ).withValues(alpha: 0.3),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.image_not_supported,
+                                          size: 48,
+                                          color: Color(0xFF4A3E39),
                                         ),
                                       ),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -2532,12 +2451,9 @@ class MilestoneDetailScreen extends StatelessWidget {
                         // Title
                         Text(
                           title,
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4A3E39),
-                            height: 1.2,
-                          ),
+                          style: AppTypography.h1(
+                            context,
+                          ).copyWith(fontSize: 24),
                         ),
                         const SizedBox(height: 8),
                         // Date
@@ -2570,12 +2486,14 @@ class MilestoneDetailScreen extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.8),
-                              borderRadius: BorderRadius.circular(20),
+                              color: AppColors.paperMuted.withValues(
+                                alpha: 0.7,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: const Color(
-                                  0xFFE5E0F7,
-                                ).withValues(alpha: 0.5),
+                                color: AppColors.borderSoft.withValues(
+                                  alpha: 0.65,
+                                ),
                               ),
                             ),
                             child: Text(

@@ -732,6 +732,7 @@ class FirestoreDataRepository implements DataRepository {
           });
         }
       } else if (type == 'milestone') {
+        final createdAt = _toDateTime(row['createdAt'], fallback: updatedAt);
         if (isDeleted) {
           milestones.add({
             'id': id,
@@ -739,6 +740,7 @@ class FirestoreDataRepository implements DataRepository {
             'date': _toDateTime(data['date'] ?? data['tarih'] ?? updatedAt),
             'isDeleted': true,
             'deletedAt': deletedAt,
+            'createdAt': createdAt,
             'updatedAt': updatedAt,
             'localUpdatedAt': updatedAt,
           });
@@ -751,6 +753,7 @@ class FirestoreDataRepository implements DataRepository {
             'photoPath': data['photoLocalPath'] ?? data['photoPath'],
             'photoStoragePath': data['photoStoragePath'],
             'photoUrl': data['photoUrl'],
+            'createdAt': createdAt,
             'updatedAt': updatedAt,
             'localUpdatedAt': updatedAt,
           });

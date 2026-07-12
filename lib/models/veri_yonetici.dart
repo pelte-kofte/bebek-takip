@@ -192,6 +192,27 @@ class VeriYonetici {
     }
   }
 
+  static void _memorySaveTrace(
+    String traceId,
+    String event, {
+    Stopwatch? total,
+    Stopwatch? step,
+    String? detail,
+  }) {
+    if (!kDebugMode && !kProfileMode) return;
+    debugPrint(
+      <String>[
+        '[MemorySaveTrace]',
+        'ts=${DateTime.now().toIso8601String()}',
+        'id=$traceId',
+        'event=$event',
+        if (step != null) 'step_us=${step.elapsedMicroseconds}',
+        if (total != null) 'total_us=${total.elapsedMicroseconds}',
+        if (detail != null && detail.isNotEmpty) detail,
+      ].join(' '),
+    );
+  }
+
   static bool _canSyncWithCloud({
     required String operation,
     required String skipMessage,
@@ -806,15 +827,37 @@ class VeriYonetici {
     return null;
   }
 
-  static Future<bool> _isSharedBabyUsingCloudTruth(String babyId) async {
+  static Future<bool> _isSharedBabyUsingCloudTruth(
+    String babyId, {
+    String? traceId,
+    Stopwatch? traceTotal,
+  }) async {
     if (babyId.isEmpty) return false;
     if (isBabyVisiblyShared(babyId)) {
       _cacheSharedBabyTruth(babyId, true);
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'shared-truth-visible-cache',
+          total: traceTotal,
+          detail: 'baby_id=$babyId shared=true',
+        );
+      }
       return true;
     }
 
     final cached = _sharedBabyTruthCacheEntryFor(babyId);
-    if (cached != null) return cached.isShared;
+    if (cached != null) {
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'shared-truth-ttl-cache',
+          total: traceTotal,
+          detail: 'baby_id=$babyId shared=${cached.isShared}',
+        );
+      }
+      return cached.isShared;
+    }
 
     final uid = _currentUid;
     if (uid == null || uid.isEmpty) return false;
@@ -822,10 +865,28 @@ class VeriYonetici {
     if (user == null || user.isAnonymous) return false;
 
     try {
+      final firestoreRead = Stopwatch()..start();
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-shared-truth-firestore-start',
+          total: traceTotal,
+          detail: 'baby_id=$babyId',
+        );
+      }
       final snap = await FirebaseFirestore.instance
           .collection('babies')
           .doc(babyId)
           .get();
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-shared-truth-firestore-end',
+          total: traceTotal,
+          step: firestoreRead,
+          detail: 'baby_id=$babyId exists=${snap.exists}',
+        );
+      }
       if (!snap.exists) {
         _cacheSharedBabyTruth(babyId, false);
         return false;
@@ -872,9 +933,26 @@ class VeriYonetici {
     required String babyId,
     required String activityType,
     required bool createdNewRecord,
+    String? traceId,
+    Stopwatch? traceTotal,
   }) async {
     if (!createdNewRecord || babyId.isEmpty) return;
-    if (!await _isSharedBabyUsingCloudTruth(babyId)) return;
+    final truthStep = Stopwatch()..start();
+    final isShared = await _isSharedBabyUsingCloudTruth(
+      babyId,
+      traceId: traceId,
+      traceTotal: traceTotal,
+    );
+    if (traceId != null) {
+      _memorySaveTrace(
+        traceId,
+        'await-notification-shared-truth-end',
+        total: traceTotal,
+        step: truthStep,
+        detail: 'shared=$isShared',
+      );
+    }
+    if (!isShared) return;
 
     final babyName = _babies
         .firstWhere(
@@ -885,6 +963,14 @@ class VeriYonetici {
         .name;
 
     try {
+      final functionStep = Stopwatch()..start();
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-shared-activity-function-start',
+          total: traceTotal,
+        );
+      }
       await FirebaseFunctions.instance
           .httpsCallable('notifySharedActivity')
           .call<Map<String, dynamic>>({
@@ -892,6 +978,14 @@ class VeriYonetici {
             'activityType': activityType,
             'babyName': babyName,
           });
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-shared-activity-function-end',
+          total: traceTotal,
+          step: functionStep,
+        );
+      }
     } catch (e, st) {
       _log(
         '_notifySharedActivityIfNeeded failed '
@@ -925,11 +1019,37 @@ class VeriYonetici {
     bool? isSharedBaby,
     Future<void> Function(Object error, StackTrace st)? onSharedSyncFailure,
     Duration timeout = _bestEffortWriteTimeout,
+    String? traceId,
+    Stopwatch? traceTotal,
   }) async {
-    final shared = isSharedBaby ?? await _isSharedBabyUsingCloudTruth(babyId);
+    final shared =
+        isSharedBaby ??
+        await _isSharedBabyUsingCloudTruth(
+          babyId,
+          traceId: traceId,
+          traceTotal: traceTotal,
+        );
     if (shared) {
       try {
+        final criticalStep = Stopwatch()..start();
+        if (traceId != null) {
+          _memorySaveTrace(
+            traceId,
+            'await-shared-critical-sync-start',
+            total: traceTotal,
+            detail: 'label=$label',
+          );
+        }
         await sync();
+        if (traceId != null) {
+          _memorySaveTrace(
+            traceId,
+            'await-shared-critical-sync-end',
+            total: traceTotal,
+            step: criticalStep,
+            detail: 'label=$label',
+          );
+        }
       } catch (e, st) {
         _log('Shared sync failed label=$label babyId=$babyId error=$e');
         if (kDebugMode) {
@@ -941,6 +1061,14 @@ class VeriYonetici {
         rethrow;
       }
       return;
+    }
+    if (traceId != null) {
+      _memorySaveTrace(
+        traceId,
+        'cloud-sync-scheduled-background',
+        total: traceTotal,
+        detail: 'label=$label shared=false',
+      );
     }
     _scheduleBestEffortCloudWrite(sync, label: label, timeout: timeout);
   }
@@ -1390,6 +1518,10 @@ class VeriYonetici {
             data['date'] ?? data['tarih'] ?? updatedAt,
           ),
           'photoPath': data['photoLocalPath'] ?? data['photoPath'],
+          'createdAt': _sharedDocDateTime(
+            row['createdAt'],
+            fallback: updatedAt,
+          ),
           'updatedAt': updatedAt,
           'localUpdatedAt': updatedAt,
           'isDeleted': isDeleted,
@@ -1930,20 +2062,45 @@ class VeriYonetici {
     }());
   }
 
-  static Future<void> _syncMemoryPhotosAfterSave() async {
-    if (_canSyncWithCloud(
-      operation: '_syncMemoryPhotosAfterSave',
-      skipMessage:
-          '[Sync] skip immediate photo storage sync: user is anonymous',
-    )) {
-      await _syncPhotosWithStorageBestEffort();
-      return;
-    }
+  static Future<void> _syncMemoryPhotosAfterSave({
+    String? traceId,
+    Stopwatch? traceTotal,
+  }) async {
+    // The record is already durable in the local store before this point.
+    // Uploading every pending photo can take seconds and must not hold the
+    // add/edit UI open. The existing uploader is idempotent and persists the
+    // resulting URL before its follow-up cloud write, so it is safe to run as
+    // the same bounded best-effort task used by startup refresh.
     _scheduleBestEffortCloudWrite(
-      _syncPhotosWithStorageBestEffort,
+      () async {
+        final step = Stopwatch()..start();
+        if (traceId != null) {
+          _memorySaveTrace(
+            traceId,
+            'background-photo-sync-start',
+            total: traceTotal,
+          );
+        }
+        await _syncPhotosWithStorageBestEffort();
+        if (traceId != null) {
+          _memorySaveTrace(
+            traceId,
+            'background-photo-sync-end',
+            total: traceTotal,
+            step: step,
+          );
+        }
+      },
       label: 'photo storage sync',
       timeout: _bestEffortPhotoStorageTimeout,
     );
+    if (traceId != null) {
+      _memorySaveTrace(
+        traceId,
+        'photo-sync-scheduled-background',
+        total: traceTotal,
+      );
+    }
   }
 
   static Future<void> _syncPhotosWithStorageBestEffort() async {
@@ -2520,8 +2677,21 @@ class VeriYonetici {
     return byId.values.toList();
   }
 
-  static Future<void> _syncActiveBabyMemoriesToCloud({String? babyId}) async {
+  static Future<void> _syncActiveBabyMemoriesToCloud({
+    String? babyId,
+    String? traceId,
+    Stopwatch? traceTotal,
+  }) async {
+    final repairStep = Stopwatch()..start();
     await _repairMissingIdsAndPersistIfNeeded();
+    if (traceId != null) {
+      _memorySaveTrace(
+        traceId,
+        'await-repair-missing-ids-end',
+        total: traceTotal,
+        step: repairStep,
+      );
+    }
     final targetBabyId = babyId ?? _activeBabyId;
     final uid = _currentUid;
     if (uid == null || uid.isEmpty || targetBabyId.isEmpty) return;
@@ -2533,6 +2703,15 @@ class VeriYonetici {
     }
     try {
       final memories = _memoryDocsForBaby(targetBabyId);
+      final cloudWriteStep = Stopwatch()..start();
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-idempotent-memory-cloud-write-start',
+          total: traceTotal,
+          detail: 'count=${memories.length}',
+        );
+      }
       await _withIdempotentCloudWrite(
         'memories:$uid:$targetBabyId',
         memories,
@@ -2544,12 +2723,27 @@ class VeriYonetici {
           );
         },
       );
+      if (traceId != null) {
+        _memorySaveTrace(
+          traceId,
+          'await-idempotent-memory-cloud-write-end',
+          total: traceTotal,
+          step: cloudWriteStep,
+          detail: 'count=${memories.length}',
+        );
+      }
     } catch (e, st) {
       _log('_syncActiveBabyMemoriesToCloud failed babyId=$targetBabyId: $e');
       if (kDebugMode) {
         _log('_syncActiveBabyMemoriesToCloud stack: $st');
       }
-      if (await _isSharedBabyUsingCloudTruth(targetBabyId)) rethrow;
+      if (await _isSharedBabyUsingCloudTruth(
+        targetBabyId,
+        traceId: traceId,
+        traceTotal: traceTotal,
+      )) {
+        rethrow;
+      }
     }
   }
 
@@ -4478,37 +4672,59 @@ class VeriYonetici {
 
   // ============ MILESTONES ============
 
+  static DateTime _milestoneCreatedAt(Map<String, dynamic> row) {
+    final explicit = _sharedDocOptionalDateTime(row['createdAt']);
+    if (explicit != null) return explicit;
+
+    final id = (row['id'] ?? '').toString();
+    if (id.length == 13) {
+      final milliseconds = int.tryParse(id);
+      if (milliseconds != null) {
+        return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+      }
+    }
+
+    return _sharedDocOptionalDateTime(row['updatedAt']) ??
+        _sharedDocOptionalDateTime(row['localUpdatedAt']) ??
+        _sharedDocOptionalDateTime(row['date']) ??
+        DateTime.fromMillisecondsSinceEpoch(0);
+  }
+
   static List<Map<String, dynamic>> _loadMilestones() {
     try {
       final data = _getLocalString('milestones');
       if (data == null || data.isEmpty) return [];
       final list = jsonDecode(data) as List;
-      return list
-          .map(
-            (e) => Map<String, dynamic>.from({
-              'id': (e['id'] ?? '').toString(),
-              'title': e['title'],
-              'date': DateTime.parse(e['date']),
-              'note': e['note'],
-              'photoPath': e['photoPath'],
-              'photoStoragePath': e['photoStoragePath'],
-              'photoUrl': e['photoUrl'],
-              'photoStyle': e['photoStyle'] ?? 'softIllustration',
-              'illustrationUrl': e['illustrationUrl'],
-              'babyId': e['babyId'] ?? _activeBabyId,
-              'updatedAt': e['updatedAt'] != null
-                  ? DateTime.parse(e['updatedAt'])
-                  : DateTime.parse(e['date']),
-              'localUpdatedAt': e['localUpdatedAt'] != null
-                  ? DateTime.parse(e['localUpdatedAt'])
-                  : DateTime.parse(e['date']),
-              'isDeleted': e['isDeleted'] == true,
-              'deletedAt': e['deletedAt'] != null
-                  ? DateTime.parse(e['deletedAt'])
-                  : null,
-            }),
-          )
-          .toList();
+      return list.map((e) {
+        final date = DateTime.parse(e['date']);
+        final updatedAt = e['updatedAt'] != null
+            ? DateTime.parse(e['updatedAt'])
+            : date;
+        final row = Map<String, dynamic>.from({
+          'id': (e['id'] ?? '').toString(),
+          'title': e['title'],
+          'date': date,
+          'note': e['note'],
+          'photoPath': e['photoPath'],
+          'photoStoragePath': e['photoStoragePath'],
+          'photoUrl': e['photoUrl'],
+          'photoStyle': e['photoStyle'] ?? 'softIllustration',
+          'illustrationUrl': e['illustrationUrl'],
+          'babyId': e['babyId'] ?? _activeBabyId,
+          'updatedAt': updatedAt,
+          'localUpdatedAt': e['localUpdatedAt'] != null
+              ? DateTime.parse(e['localUpdatedAt'])
+              : DateTime.parse(e['date']),
+          'isDeleted': e['isDeleted'] == true,
+          'deletedAt': e['deletedAt'] != null
+              ? DateTime.parse(e['deletedAt'])
+              : null,
+        });
+        row['createdAt'] = e['createdAt'] != null
+            ? DateTime.parse(e['createdAt'])
+            : _milestoneCreatedAt(row);
+        return row;
+      }).toList();
     } catch (e) {
       return [];
     }
@@ -4521,10 +4737,12 @@ class VeriYonetici {
         .toList();
 
     rows.sort((a, b) {
-      final ad =
+      final adValue =
           a['date'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
-      final bd =
+      final bdValue =
           b['date'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final ad = DateTime.utc(adValue.year, adValue.month, adValue.day);
+      final bd = DateTime.utc(bdValue.year, bdValue.month, bdValue.day);
       final byDate = bd.compareTo(ad);
       if (byDate != 0) return byDate;
 
@@ -4534,6 +4752,11 @@ class VeriYonetici {
           b['updatedAt'] as DateTime? ?? DateTime.fromMillisecondsSinceEpoch(0);
       final byUpdated = bu.compareTo(au);
       if (byUpdated != 0) return byUpdated;
+
+      final ac = _milestoneCreatedAt(a);
+      final bc = _milestoneCreatedAt(b);
+      final byCreated = bc.compareTo(ac);
+      if (byCreated != 0) return byCreated;
 
       return (b['id']?.toString() ?? '').compareTo(a['id']?.toString() ?? '');
     });
@@ -4550,13 +4773,37 @@ class VeriYonetici {
   }
 
   static Future<void> saveMilestones(
-    List<Map<String, dynamic>> milestones,
-  ) async {
+    List<Map<String, dynamic>> milestones, {
+    String? traceId,
+  }) async {
+    final timing = Stopwatch()..start();
+    final saveTraceId =
+        traceId ?? 'memory-model-${DateTime.now().microsecondsSinceEpoch}';
+    _memorySaveTrace(saveTraceId, 'model-save-start', total: timing);
     final targetBabyId = _activeBabyId;
-    final isSharedBaby = await _isSharedBabyUsingCloudTruth(targetBabyId);
+    final sharedTruthStep = Stopwatch()..start();
+    _memorySaveTrace(saveTraceId, 'await-shared-truth-start', total: timing);
+    final isSharedBaby = await _isSharedBabyUsingCloudTruth(
+      targetBabyId,
+      traceId: saveTraceId,
+      traceTotal: timing,
+    );
+    _memorySaveTrace(
+      saveTraceId,
+      'await-shared-truth-end',
+      total: timing,
+      step: sharedTruthStep,
+      detail: 'shared=$isSharedBaby',
+    );
     final rollbackBundle = isSharedBaby ? _currentCoreBundle() : null;
     final now = DateTime.now();
     final prepared = <Map<String, dynamic>>[];
+    final existingById = <String, Map<String, dynamic>>{
+      for (final row in _milestones.where(
+        (row) => row['babyId'] == targetBabyId,
+      ))
+        (row['id'] ?? '').toString(): row,
+    };
     final beforeIds = _activeIdsFromRows(
       _milestones
           .where((r) => r['babyId'] == targetBabyId)
@@ -4564,9 +4811,20 @@ class VeriYonetici {
     );
     for (final r in milestones) {
       r['babyId'] = targetBabyId;
-      _ensureStableIdForRow(r, entity: 'milestone');
-      r['updatedAt'] = now;
-      r['localUpdatedAt'] = now;
+      final id = _ensureStableIdForRow(r, entity: 'milestone');
+      final existing = existingById[id];
+      final changed =
+          existing == null ||
+          _rowComparableSignature(existing) != _rowComparableSignature(r);
+      final createdAt = existing == null ? now : _milestoneCreatedAt(existing);
+      final updatedAt = changed
+          ? now
+          : _sharedDocOptionalDateTime(existing['updatedAt']) ?? createdAt;
+      r['createdAt'] = createdAt;
+      r['updatedAt'] = updatedAt;
+      r['localUpdatedAt'] = changed
+          ? now
+          : _sharedDocOptionalDateTime(existing['localUpdatedAt']) ?? updatedAt;
       r['isDeleted'] = false;
       r['deletedAt'] = null;
       if ((r['photoPath'] ?? '').toString().trim().isEmpty) {
@@ -4603,7 +4861,23 @@ class VeriYonetici {
         now: now,
       ),
     );
+    final localPersistStep = Stopwatch()..start();
+    _memorySaveTrace(saveTraceId, 'await-local-persist-start', total: timing);
     await _persistMilestonesToLocalStore();
+    _memorySaveTrace(
+      saveTraceId,
+      'await-local-persist-end',
+      total: timing,
+      step: localPersistStep,
+      detail: 'durable=true count=${prepared.length}',
+    );
+    final cloudSyncStep = Stopwatch()..start();
+    _memorySaveTrace(
+      saveTraceId,
+      'await-cloud-consistency-start',
+      total: timing,
+      detail: 'shared=$isSharedBaby',
+    );
     await _syncSharedCriticalOrBestEffort(
       babyId: targetBabyId,
       label: 'milestone sync',
@@ -4614,15 +4888,58 @@ class VeriYonetici {
               rollbackBundle,
               reason: 'rollback:milestone-sync',
             ),
-      sync: () => _syncActiveBabyMemoriesToCloud(babyId: targetBabyId),
+      sync: () => _syncActiveBabyMemoriesToCloud(
+        babyId: targetBabyId,
+        traceId: saveTraceId,
+        traceTotal: timing,
+      ),
+      traceId: saveTraceId,
+      traceTotal: timing,
+    );
+    _memorySaveTrace(
+      saveTraceId,
+      'await-cloud-consistency-end',
+      total: timing,
+      step: cloudSyncStep,
+      detail: 'shared=$isSharedBaby',
     );
     final afterIds = _activeIdsFromRows(prepared);
+    final notificationStep = Stopwatch()..start();
+    _memorySaveTrace(
+      saveTraceId,
+      'await-shared-notification-start',
+      total: timing,
+      detail: 'created=${afterIds.difference(beforeIds).isNotEmpty}',
+    );
     await _notifySharedActivityIfNeeded(
       babyId: targetBabyId,
       activityType: 'milestone',
       createdNewRecord: afterIds.difference(beforeIds).isNotEmpty,
+      traceId: saveTraceId,
+      traceTotal: timing,
     );
-    await _syncMemoryPhotosAfterSave();
+    _memorySaveTrace(
+      saveTraceId,
+      'await-shared-notification-end',
+      total: timing,
+      step: notificationStep,
+    );
+    final photoScheduleStep = Stopwatch()..start();
+    _memorySaveTrace(saveTraceId, 'await-photo-schedule-start', total: timing);
+    await _syncMemoryPhotosAfterSave(traceId: saveTraceId, traceTotal: timing);
+    _memorySaveTrace(
+      saveTraceId,
+      'await-photo-schedule-end',
+      total: timing,
+      step: photoScheduleStep,
+      detail: 'upload_awaited=false',
+    );
+    _memorySaveTrace(
+      saveTraceId,
+      'model-save-end',
+      total: timing,
+      detail: 'photo_sync=background',
+    );
     if (deletedRowsWithPhotos.isNotEmpty) {
       final rowsToDelete = deletedRowsWithPhotos;
       _scheduleBestEffortCloudWrite(
@@ -4680,6 +4997,7 @@ class VeriYonetici {
             'photoStyle': e['photoStyle'] ?? 'softIllustration',
             'illustrationUrl': e['illustrationUrl'],
             'babyId': e['babyId'],
+            'createdAt': _milestoneCreatedAt(e).toIso8601String(),
             'updatedAt': (e['updatedAt'] as DateTime?)?.toIso8601String(),
             'localUpdatedAt': (e['localUpdatedAt'] as DateTime?)
                 ?.toIso8601String(),

@@ -21,21 +21,10 @@ class AddVaccineScreen extends StatefulWidget {
 class _AddVaccineScreenState extends State<AddVaccineScreen> {
   final _nameController = TextEditingController();
   final _notesController = TextEditingController();
-  String _selectedPeriod = 'Doğumda';
   String _selectedStatus = 'bekleniyor';
   DateTime? _selectedDate;
   bool _isSaving = false;
   late final String _targetBabyId;
-
-  final List<String> _periods = [
-    'Doğumda',
-    '2. Ay',
-    '4. Ay',
-    '6. Ay',
-    '12. Ay',
-    '18. Ay',
-    '24. Ay',
-  ];
 
   @override
   void initState() {
@@ -47,7 +36,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     if (widget.vaccine != null) {
       _nameController.text = widget.vaccine!['ad'] ?? '';
       _notesController.text = widget.vaccine!['notlar'] ?? '';
-      _selectedPeriod = widget.vaccine!['donem'] ?? 'Doğumda';
       _selectedStatus = widget.vaccine!['durum'] ?? 'bekleniyor';
       _selectedDate = widget.vaccine!['tarih'];
     }
@@ -93,7 +81,9 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             'vaccine_${DateTime.now().microsecondsSinceEpoch}',
         'babyId': targetBabyId,
         'ad': _nameController.text.trim(),
-        'donem': _selectedPeriod,
+        // Keep the legacy field compatible without exposing period as editable
+        // vaccine data. Calendar dates are the scheduling source of truth.
+        'donem': widget.vaccine?['donem'] ?? '',
         'durum': _selectedStatus,
         'tarih': _selectedDate,
         'notlar': _notesController.text.trim(),
@@ -156,121 +146,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
         setState(() => _isSaving = false);
       }
     }
-  }
-
-  /// Returns true if the selected period is a custom one (not in presets)
-  bool get _isCustomPeriod {
-    return !_periods.contains(_selectedPeriod) && _selectedPeriod != 'Doğumda';
-  }
-
-  String _monthLabel(AppLocalizations l10n, int month) {
-    if (month == 0) return l10n.birth;
-    return l10n.monthNumber(month);
-  }
-
-  void _showCustomMonthPicker() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
-    int selectedMonth = 0;
-
-    // Try to parse current custom period if any (e.g., "3. Ay" -> 3)
-    if (_isCustomPeriod) {
-      selectedMonth = parseVaccineMonth(_selectedPeriod) ?? 0;
-    }
-
-    HapticFeedback.lightImpact();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: SizedBox(
-          height: 300,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        l10n.cancel,
-                        style: AppTypography.dialogAction(context).copyWith(
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : const Color(0xFF866F65),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      l10n.selectMonth,
-                      style: AppTypography.sheetTitle(context),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedPeriod = selectedMonth == 0
-                              ? 'Doğumda'
-                              : '$selectedMonth. Ay';
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        l10n.ok,
-                        style: AppTypography.dialogAction(
-                          context,
-                        ).copyWith(color: const Color(0xFFFFB4A2)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: CupertinoPicker(
-                  scrollController: FixedExtentScrollController(
-                    initialItem: selectedMonth,
-                  ),
-                  itemExtent: 40,
-                  onSelectedItemChanged: (index) {
-                    selectedMonth = index;
-                  },
-                  children: List.generate(61, (index) {
-                    final label = _monthLabel(l10n, index);
-                    return Center(
-                      child: Text(
-                        label,
-                        style: AppTypography.body(context).copyWith(
-                          fontSize: 18,
-                          color: isDark
-                              ? AppColors.textPrimaryDark
-                              : AppColors.textPrimaryLight,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 
   void _selectDate() {
@@ -380,8 +255,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildNameField(isDark),
-                          const SizedBox(height: 24),
-                          _buildPeriodSelector(isDark),
                           const SizedBox(height: 24),
                           _buildStatusSelector(isDark),
 
@@ -499,145 +372,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildPeriodSelector(bool isDark) {
-    final l10n = AppLocalizations.of(context)!;
-    // Build the list of chips to display
-    final List<Widget> chips = [];
-
-    // Add preset period chips
-    for (final period in _periods) {
-      final isSelected = _selectedPeriod == period;
-      chips.add(
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _selectedPeriod = period;
-            });
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? const Color(0xFFFFB4A2)
-                  : (isDark
-                        ? AppColors.bgDarkCard.withValues(alpha: 0.9)
-                        : Colors.white.withValues(alpha: 0.9)),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isSelected
-                    ? const Color(0xFFFFB4A2)
-                    : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-              ),
-              boxShadow: [
-                if (isSelected)
-                  BoxShadow(
-                    color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-              ],
-            ),
-            child: Text(
-              localizedPeriodLabel(l10n, period),
-              style: AppTypography.label(context).copyWith(
-                color: isSelected
-                    ? Colors.white
-                    : (isDark
-                          ? AppColors.textPrimaryDark
-                          : AppColors.textPrimaryLight),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Add custom period chip if a non-preset month is selected
-    if (_isCustomPeriod) {
-      chips.add(
-        GestureDetector(
-          onTap: _showCustomMonthPicker,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFB4A2),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFFFB4A2)),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Text(
-              localizedPeriodLabel(l10n, _selectedPeriod),
-              style: AppTypography.label(
-                context,
-              ).copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Add custom month button
-    chips.add(
-      GestureDetector(
-        onTap: _showCustomMonthPicker,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.bgDarkCard.withValues(alpha: 0.9)
-                : Colors.white.withValues(alpha: 0.9),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
-              style: BorderStyle.solid,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.add, size: 16, color: const Color(0xFFFFB4A2)),
-              const SizedBox(width: 4),
-              Text(
-                l10n.otherMonth,
-                style: AppTypography.label(context).copyWith(
-                  color: const Color(0xFFFFB4A2),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 12),
-          child: Text(
-            l10n.period,
-            style: AppTypography.label(context).copyWith(
-              color: isDark
-                  ? AppColors.textSecondaryDark
-                  : const Color(0xFF866F65),
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        Wrap(spacing: 8, runSpacing: 8, children: chips),
       ],
     );
   }

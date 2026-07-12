@@ -334,10 +334,6 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
   Future<void> _onExplorePremium() async {
     if (!mounted) return;
     await PremiumScreen.show(context);
-    // After returning, premium state may have changed. If the user just
-    // purchased, _isPremium (from PremiumService) is already true — trigger
-    // a rebuild so the button label and CTA update immediately.
-    if (mounted) setState(() {});
   }
 
   Future<void> _shareIllustration() async {
@@ -382,7 +378,7 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
 
   // ---- build ---------------------------------------------------------------
 
-  Widget _buildCurrentState() {
+  Widget _buildCurrentState(bool isPremium) {
     // Shared-baby gate: illustration generation is owner-only regardless of
     // premium status. Show a locked state before any other branch.
     if (_isSharedBaby && _sheetState == _SheetState.upsell) {
@@ -397,8 +393,8 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
         return _UpsellContent(
           key: const ValueKey('upsell'),
           loadingCredits: _loadingCredits,
-          isPremium: _isPremium,
-          onPrimary: _isPremium ? _onCreateIllustration : _onExplorePremium,
+          isPremium: isPremium,
+          onPrimary: isPremium ? _onCreateIllustration : _onExplorePremium,
           onDismiss: () => Navigator.pop(context),
         );
       case _SheetState.loading:
@@ -455,21 +451,24 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
               top: false,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(28, 12, 28, 24),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 260),
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  layoutBuilder: (currentChild, previousChildren) => Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      ...previousChildren,
-                      ...?switch (currentChild) {
-                        null => null,
-                        final child => [child],
-                      },
-                    ],
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: PremiumService.instance.isPremiumNotifier,
+                  builder: (context, isPremium, _) => AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 260),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    layoutBuilder: (currentChild, previousChildren) => Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        ...previousChildren,
+                        ...?switch (currentChild) {
+                          null => null,
+                          final child => [child],
+                        },
+                      ],
+                    ),
+                    child: _buildCurrentState(isPremium),
                   ),
-                  child: _buildCurrentState(),
                 ),
               ),
             ),
