@@ -22,7 +22,7 @@ import 'invitation_inbox_screen.dart';
 import 'shared_parenting_screen.dart';
 import '../widgets/illustration_upsell_sheet.dart';
 import '../widgets/nilico_badge.dart';
-import '../widgets/nilico_section_header.dart';
+import '../widgets/nilico_modal.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -169,88 +169,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required TimeOfDay currentValue,
     required Function(TimeOfDay) onSelected,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     var tempTime = currentValue;
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      AppLocalizations.of(context)!.cancel,
-                      style: TextStyle(
-                        color: isDark
-                            ? AppColors.textSecondaryDark
-                            : const Color(0xFF866F65),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: isDark
-                          ? AppColors.textPrimaryDark
-                          : const Color(0xFF2D1A18),
-                    ),
-                  ),
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      onSelected(tempTime);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.ok,
-                      style: TextStyle(
-                        color: Color(0xFFFF998A),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 220,
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
-                use24hFormat: true,
-                initialDateTime: DateTime(
-                  0,
-                  1,
-                  1,
-                  currentValue.hour,
-                  currentValue.minute,
-                ),
-                onDateTimeChanged: (dateTime) {
-                  tempTime = TimeOfDay(
-                    hour: dateTime.hour,
-                    minute: dateTime.minute,
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
+      builder: (context) => NilicoPickerSheet(
+        title: title,
+        cancelLabel: AppLocalizations.of(context)!.cancel,
+        confirmLabel: AppLocalizations.of(context)!.ok,
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () {
+          onSelected(tempTime);
+          Navigator.pop(context);
+        },
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: true,
+          initialDateTime: DateTime(
+            0,
+            1,
+            1,
+            currentValue.hour,
+            currentValue.minute,
+          ),
+          onDateTimeChanged: (dateTime) {
+            tempTime = TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+          },
         ),
       ),
     );
@@ -259,13 +205,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
+    final cardColor = isDark ? AppColors.bgDarkCard : AppColors.paper;
     final textColor = isDark
         ? AppColors.textPrimaryDark
-        : const Color(0xFF2D1A18);
+        : AppColors.textPrimary;
     final subtitleColor = isDark
         ? AppColors.textSecondaryDark
-        : const Color(0xFF7A749E);
+        : AppColors.textSecondary;
     final l10n = AppLocalizations.of(context)!;
 
     return DecorativeBackground(
@@ -277,32 +223,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 14, 24, 14),
+                padding: const EdgeInsets.fromLTRB(24, 18, 24, 16),
                 child: Row(
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: Container(
-                        width: 38,
-                        height: 38,
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
                           color: cardColor,
-                          borderRadius: BorderRadius.circular(13),
+                          borderRadius: BorderRadius.circular(11),
                           border: Border.all(
-                            color: subtitleColor.withValues(alpha: 0.08),
+                            color: subtitleColor.withValues(alpha: 0.05),
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.035),
-                              blurRadius: 14,
-                              offset: const Offset(0, 6),
+                              color: Colors.black.withValues(alpha: 0.018),
+                              blurRadius: 6,
+                              offset: const Offset(0, 1),
                             ),
                           ],
                         ),
                         child: Icon(
                           Icons.arrow_back,
-                          color: textColor,
-                          size: 20,
+                          color: textColor.withValues(alpha: 0.82),
+                          size: 18,
                         ),
                       ),
                     ),
@@ -312,20 +258,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           l10n.settings,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: textColor,
-                            letterSpacing: -0.35,
-                          ),
+                          style: AppTypography.h2(
+                            context,
+                          ).copyWith(color: textColor),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           l10n.appPreferences,
-                          style: TextStyle(
+                          style: AppTypography.bodySmall(context).copyWith(
                             fontSize: 13,
                             color: subtitleColor,
-                            letterSpacing: 0.2,
+                            letterSpacing: 0.1,
                           ),
                         ),
                       ],
@@ -337,27 +280,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
               // Content
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 6, 24, 28),
+                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // PREMIUM Section
+                      _buildSectionHeader('Premium', subtitleColor),
+                      const SizedBox(height: 10),
                       _buildPremiumSection(cardColor, textColor, subtitleColor),
-                      const SizedBox(height: 12),
-                      _buildBuyIllustrationsSection(
-                        cardColor,
-                        textColor,
-                        subtitleColor,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // SHARED PARENTING Section
-                      _buildSharedParentingSection(
-                        cardColor,
-                        textColor,
-                        subtitleColor,
-                      ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
 
                       // PENDING INVITATIONS Section (conditional)
                       _buildPendingInvitationsSection(
@@ -365,15 +296,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         textColor,
                         subtitleColor,
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 26),
 
                       // HESAP Section
                       _buildAccountSection(cardColor, textColor, subtitleColor),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 26),
 
                       // GÖRÜNÜM Section
                       _buildSectionHeader(l10n.appearance, subtitleColor),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
@@ -394,8 +325,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               subtitleColor: subtitleColor,
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
+                              color: subtitleColor.withValues(alpha: 0.075),
+                              height: 20,
                             ),
                             _buildActionTile(
                               icon: Icons.language,
@@ -418,21 +349,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 26),
 
                       // BİLDİRİMLER Section
                       _buildSectionHeader(l10n.notifications, subtitleColor),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
                           children: [
                             _buildSwitchTile(
                               icon: Icons.restaurant,
-                              iconBgColor: const Color(0xFFFFE5E0),
-                              iconColor: const Color(0xFFFFB4A2),
+                              iconBgColor: const Color(0xFFE9E6E3),
+                              iconColor: subtitleColor,
                               title: l10n.feedingReminder,
-                              subtitle: _feedingReminderEnabled ? '' : l10n.off,
+                              subtitle: '',
                               value: _feedingReminderEnabled,
                               onChanged: _toggleFeedingReminder,
                               textColor: textColor,
@@ -462,28 +393,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           }
                                         },
                                       ),
-                                      bgColor: const Color(
-                                        0xFFFFB4A2,
-                                      ).withValues(alpha: 0.14),
-                                      fgColor: const Color(0xFFE08F78),
-                                      borderColor: const Color(
-                                        0xFFFFB4A2,
-                                      ).withValues(alpha: 0.18),
+                                      bgColor: subtitleColor.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      fgColor: subtitleColor.withValues(
+                                        alpha: 0.82,
+                                      ),
+                                      borderColor: subtitleColor.withValues(
+                                        alpha: 0.09,
+                                      ),
                                     )
                                   : null,
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
+                              color: subtitleColor.withValues(alpha: 0.075),
+                              height: 18,
                             ),
                             _buildSwitchTile(
                               icon: Icons.lightbulb_outline_rounded,
-                              iconBgColor: const Color(0xFFFFF0D9),
-                              iconColor: const Color(0xFFDAA520),
+                              iconBgColor: const Color(0xFFE9E6E3),
+                              iconColor: subtitleColor,
                               title: l10n.dailyTip,
-                              subtitle: _dailyTipReminderEnabled
-                                  ? ''
-                                  : l10n.off,
+                              subtitle: '',
                               value: _dailyTipReminderEnabled,
                               onChanged: _toggleDailyTipReminder,
                               textColor: textColor,
@@ -515,26 +446,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           }
                                         },
                                       ),
-                                      bgColor: const Color(
-                                        0xFFFFF0D9,
-                                      ).withValues(alpha: 0.95),
-                                      fgColor: const Color(0xFFDAA520),
-                                      borderColor: const Color(
-                                        0xFFDAA520,
-                                      ).withValues(alpha: 0.16),
+                                      bgColor: subtitleColor.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      fgColor: subtitleColor.withValues(
+                                        alpha: 0.82,
+                                      ),
+                                      borderColor: subtitleColor.withValues(
+                                        alpha: 0.09,
+                                      ),
                                     )
                                   : null,
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
+                              color: subtitleColor.withValues(alpha: 0.075),
+                              height: 18,
                             ),
                             _buildSwitchTile(
                               icon: Icons.baby_changing_station,
-                              iconBgColor: const Color(0xFFE5E0F7),
+                              iconBgColor: const Color(0xFFE9E6E3),
                               iconColor: subtitleColor,
                               title: l10n.diaperReminder,
-                              subtitle: _diaperReminderEnabled ? '' : l10n.off,
+                              subtitle: '',
                               value: _diaperReminderEnabled,
                               onChanged: _toggleDiaperReminder,
                               textColor: textColor,
@@ -564,12 +497,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                           }
                                         },
                                       ),
-                                      bgColor: const Color(
-                                        0xFFE5E0F7,
-                                      ).withValues(alpha: 0.38),
-                                      fgColor: subtitleColor,
+                                      bgColor: subtitleColor.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      fgColor: subtitleColor.withValues(
+                                        alpha: 0.82,
+                                      ),
                                       borderColor: subtitleColor.withValues(
-                                        alpha: 0.12,
+                                        alpha: 0.09,
                                       ),
                                     )
                                   : null,
@@ -577,11 +512,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
                       // VERİ YÖNETİMİ Section
                       _buildSectionHeader(l10n.dataManagement, subtitleColor),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
@@ -604,16 +539,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               },
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
+                              color: subtitleColor.withValues(alpha: 0.075),
+                              height: 20,
                             ),
                             _buildActionTile(
                               icon: Icons.delete_outline,
-                              iconBgColor: const Color(0xFFFFE5E0),
-                              iconColor: Colors.red.shade400,
+                              iconBgColor: const Color(0xFFEDE5E3),
+                              iconColor: const Color(0xFF9A665F),
                               title: l10n.deleteAllDataTitle,
                               subtitle: l10n.deleteAllDataSubtitle,
-                              textColor: Colors.red.shade400,
+                              textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () => _showDeleteDialog(
                                 isDark,
@@ -624,11 +559,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
                       // HAKKINDA Section
                       _buildSectionHeader(l10n.about, subtitleColor),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
@@ -640,8 +575,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               subtitleColor,
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 24,
+                              color: subtitleColor.withValues(alpha: 0.065),
+                              height: 22,
                             ),
                             _buildInfoTile(
                               l10n.developer,
@@ -652,30 +587,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
                       _buildSectionHeader(l10n.legalSection, subtitleColor),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       _buildCard(
                         cardColor: cardColor,
                         child: Column(
                           children: [
                             _buildLegalTile(
-                              icon: Icons.description_outlined,
                               title: l10n.termsOfUse,
-                              subtitle: l10n.termsOfUseSubtitle,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () => _openInAppUrl(TERMS_URL),
                             ),
                             Divider(
-                              color: subtitleColor.withValues(alpha: 0.1),
-                              height: 16,
+                              color: subtitleColor.withValues(alpha: 0.055),
+                              height: 12,
                             ),
                             _buildLegalTile(
-                              icon: Icons.privacy_tip_outlined,
                               title: l10n.privacyPolicy,
-                              subtitle: l10n.privacyPolicySubtitle,
                               textColor: textColor,
                               subtitleColor: subtitleColor,
                               onTap: () => _openInAppUrl(PRIVACY_URL),
@@ -685,9 +616,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       // DEBUG section (only in debug builds)
                       if (kDebugMode) ...[
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 26),
                         _buildSectionHeader(l10n.debug, subtitleColor),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
                         _buildCard(
                           cardColor: cardColor,
                           child: Column(
@@ -726,8 +657,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 },
                               ),
                               Divider(
-                                color: subtitleColor.withValues(alpha: 0.1),
-                                height: 24,
+                                color: subtitleColor.withValues(alpha: 0.075),
+                                height: 20,
                               ),
                               _buildActionTile(
                                 icon: Icons.notifications_active,
@@ -781,10 +712,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildSectionHeader(String title, Color subtitleColor) {
-    return NilicoSectionHeader(
-      title: title,
-      mode: NilicoSectionHeaderMode.eyebrow,
-      titleColor: subtitleColor,
+    return Text(
+      title.toUpperCase(),
+      style: AppTypography.eyebrow(context).copyWith(
+        color: subtitleColor.withValues(alpha: 0.86),
+        fontWeight: FontWeight.w600,
+        letterSpacing: 0.8,
+      ),
     );
   }
 
@@ -799,219 +733,87 @@ class _SettingsScreenState extends State<SettingsScreen> {
       builder: (context, isPremium, _) {
         return _buildCard(
           cardColor: cardColor,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => PremiumScreen.show(context),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E0F7),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.auto_awesome_rounded,
-                    color: Color(0xFF9C88CC),
-                    size: 22,
-                  ),
+          child: Column(
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => PremiumScreen.show(context),
+                child: _buildSettingsRow(
+                  icon: Icons.auto_awesome_rounded,
+                  iconBgColor: const Color(0xFFE9E5EB),
+                  iconColor: const Color(0xFF817887),
+                  title: 'Premium',
+                  subtitle: isPremium ? l10n.premiumIsActive : '',
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
+                  trailing: isPremium
+                      ? NilicoBadge(
+                          label: l10n.active,
+                          variant: NilicoBadgeVariant.premium,
+                        )
+                      : null,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Premium',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        isPremium
-                            ? l10n.premiumIsActive
-                            : l10n.premiumFeatureTeaser,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: isPremium
-                              ? const Color(0xFF9C88CC)
-                              : subtitleColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (isPremium)
-                  NilicoBadge(
-                    label: l10n.active,
-                    variant: NilicoBadgeVariant.premium,
-                  )
-                else
-                  Icon(Icons.chevron_right, color: subtitleColor, size: 24),
-              ],
-            ),
+              ),
+              _buildGroupDivider(subtitleColor),
+              _buildBuyIllustrationsSection(textColor, subtitleColor),
+              _buildGroupDivider(subtitleColor),
+              _buildSharedParentingSection(textColor, subtitleColor),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildSharedParentingSection(
-    Color cardColor,
-    Color textColor,
-    Color subtitleColor,
-  ) {
+  Widget _buildSharedParentingSection(Color textColor, Color subtitleColor) {
     final l10n = AppLocalizations.of(context)!;
-    return _buildCard(
-      cardColor: cardColor,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () async {
-          final user = FirebaseAuth.instance.currentUser;
-          if (user == null || user.isAnonymous) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context)!.signInToUseSharedParenting,
-                ),
-              ),
-            );
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const LoginEntryScreen()),
-            );
-            return;
-          }
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const SharedParentingScreen()),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null || user.isAnonymous) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.signInToUseSharedParenting)),
           );
-        },
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFDCEFF7),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.people_rounded,
-                color: Color(0xFF6AADCF),
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        l10n.spTitle,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: textColor,
-                        ),
-                      ),
-                      if (!PremiumService.instance.isPremium) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFB4A2),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'Premium',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    PremiumService.instance.isPremium
-                        ? l10n.spGateTitle
-                        : l10n.availableWithPremium,
-                    style: TextStyle(fontSize: 13, color: subtitleColor),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: subtitleColor, size: 24),
-          ],
-        ),
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginEntryScreen()),
+          );
+          return;
+        }
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const SharedParentingScreen()),
+        );
+      },
+      child: _buildSettingsRow(
+        icon: Icons.people_outline_rounded,
+        iconBgColor: const Color(0xFFE4E9EB),
+        iconColor: const Color(0xFF718087),
+        title: l10n.spTitle,
+        subtitle: '',
+        textColor: textColor,
+        subtitleColor: subtitleColor,
+        isSecondary: true,
       ),
     );
   }
 
-  Widget _buildBuyIllustrationsSection(
-    Color cardColor,
-    Color textColor,
-    Color subtitleColor,
-  ) {
+  Widget _buildBuyIllustrationsSection(Color textColor, Color subtitleColor) {
     final l10n = AppLocalizations.of(context)!;
-    return _buildCard(
-      cardColor: cardColor,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => IllustrationUpsellSheet.showPurchase(context),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF1EC),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.shopping_bag_outlined,
-                color: Color(0xFFFFB4A2),
-                size: 22,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.buyIllustrations,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: textColor,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    l10n.buyIllustrationsSubtitle,
-                    style: TextStyle(fontSize: 13, color: subtitleColor),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.chevron_right, color: subtitleColor, size: 24),
-          ],
-        ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => IllustrationUpsellSheet.showPurchase(context),
+      child: _buildSettingsRow(
+        icon: Icons.image_outlined,
+        iconBgColor: const Color(0xFFEDE8E4),
+        iconColor: const Color(0xFF8A7B72),
+        title: l10n.buyIllustrations,
+        subtitle: '',
+        textColor: textColor,
+        subtitleColor: subtitleColor,
+        isSecondary: true,
       ),
     );
   }
@@ -1040,64 +842,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     builder: (_) => const InvitationInboxScreen(),
                   ),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFEDEB),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          const Icon(
-                            Icons.mail_rounded,
-                            color: Color(0xFFFFB4A2),
-                            size: 22,
-                          ),
-                          Positioned(
-                            right: 6,
-                            top: 6,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFFB4A2),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.pendingInvitationsTitle,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: textColor,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            l10n.pendingInvitationsSubtitle,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: subtitleColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.chevron_right, color: subtitleColor, size: 24),
-                  ],
+                child: _buildSettingsRow(
+                  icon: Icons.mail_outline_rounded,
+                  iconBgColor: const Color(0xFFEDE5E3),
+                  iconColor: const Color(0xFF926F69),
+                  title: l10n.pendingInvitationsTitle,
+                  subtitle: l10n.pendingInvitationsSubtitle,
+                  textColor: textColor,
+                  subtitleColor: subtitleColor,
                 ),
               ),
             ),
@@ -1161,61 +913,65 @@ class _SettingsScreenState extends State<SettingsScreen> {
       actionTextColor = Colors.white;
     } else {
       final identity = user.email ?? user.displayName ?? l10n.user;
-      titleText = l10n.signedInAs(identity);
+      titleText = user.displayName ?? l10n.account;
       detailText = identity;
       actionIcon = Icons.logout;
       actionLabel = l10n.signOut;
-      actionBgColor = const Color(0xFFFFE5E0);
-      actionTextColor = Colors.red.shade400;
+      actionBgColor = subtitleColor.withValues(alpha: 0.07);
+      actionTextColor = textColor.withValues(alpha: 0.78);
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(l10n.account, subtitleColor),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _buildCard(
           cardColor: cardColor,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // User status row
               Row(
                 children: [
                   Container(
-                    width: 44,
-                    height: 44,
+                    width: 29,
+                    height: 29,
                     decoration: BoxDecoration(
                       color: isSignedInProviderUser
-                          ? const Color(0xFFE8F5E9)
-                          : const Color(0xFFE5E0F7),
-                      borderRadius: BorderRadius.circular(12),
+                          ? const Color(0xFFE4E9E5).withValues(alpha: 0.65)
+                          : const Color(0xFFE9E5EB).withValues(alpha: 0.60),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       isSignedInProviderUser
                           ? Icons.verified_user
                           : Icons.person_outline,
                       color: isSignedInProviderUser
-                          ? const Color(0xFF4CAF50)
+                          ? const Color(0xFF6F7F73)
                           : subtitleColor,
-                      size: 22,
+                      size: 15,
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           titleText,
-                          style: TextStyle(fontSize: 13, color: subtitleColor),
+                          style: AppTypography.compactTitle(
+                            context,
+                          ).copyWith(fontSize: 15, color: textColor),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           detailText,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: textColor,
+                          style: AppTypography.bodySmall(context).copyWith(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w500,
+                            color: subtitleColor.withValues(alpha: 0.82),
+                            height: 1.3,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -1223,7 +979,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           const SizedBox(height: 2),
                           Text(
                             l10n.backupSyncComingSoon,
-                            style: TextStyle(
+                            style: AppTypography.caption(context).copyWith(
                               fontSize: 11,
                               color: subtitleColor.withValues(alpha: 0.7),
                             ),
@@ -1234,7 +990,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
               // Sign In / Sign Out button
               GestureDetector(
                 onTap: () async {
@@ -1245,24 +1001,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }
                 },
                 child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  width: isSignedInProviderUser ? null : double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isSignedInProviderUser ? 10 : 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: actionBgColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: subtitleColor.withValues(alpha: 0.10),
+                    ),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: isSignedInProviderUser
+                        ? MainAxisSize.min
+                        : MainAxisSize.max,
+                    mainAxisAlignment: isSignedInProviderUser
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.center,
                     children: [
-                      Icon(actionIcon, color: actionTextColor, size: 20),
-                      const SizedBox(width: 8),
+                      Icon(actionIcon, color: actionTextColor, size: 15),
+                      const SizedBox(width: 7),
                       Text(
                         actionLabel,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: actionTextColor,
-                        ),
+                        style: AppTypography.compactTitle(
+                          context,
+                        ).copyWith(fontSize: 14, color: actionTextColor),
                       ),
                     ],
                   ),
@@ -1318,16 +1083,104 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildCard({required Color cardColor, required Widget child}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
       decoration: BoxDecoration(
         color: cardColor,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.borderSoft),
-        boxShadow: AppShadows.card(false),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark
+              ? AppColors.textSecondaryDark.withValues(alpha: 0.07)
+              : AppColors.borderSoft.withValues(alpha: 0.52),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.055 : 0.016),
+            blurRadius: 6,
+            offset: const Offset(0, 1),
+          ),
+        ],
       ),
       child: child,
+    );
+  }
+
+  Widget _buildGroupDivider(Color subtitleColor) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 46),
+      child: Divider(
+        color: subtitleColor.withValues(alpha: 0.075),
+        height: 18,
+        thickness: 0.6,
+      ),
+    );
+  }
+
+  Widget _buildSettingsRow({
+    required IconData icon,
+    required Color iconBgColor,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required Color textColor,
+    required Color subtitleColor,
+    Widget? trailing,
+    bool isSecondary = false,
+  }) {
+    return Row(
+      children: [
+        if (isSecondary) const SizedBox(width: 4),
+        Container(
+          width: isSecondary ? 24 : 29,
+          height: isSecondary ? 24 : 29,
+          decoration: BoxDecoration(
+            color: iconBgColor.withValues(alpha: isSecondary ? 0.26 : 0.36),
+            borderRadius: BorderRadius.circular(isSecondary ? 7 : 8),
+          ),
+          child: Icon(
+            icon,
+            color: iconColor.withValues(alpha: isSecondary ? 0.56 : 0.66),
+            size: isSecondary ? 13 : 15,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: AppTypography.compactTitle(context).copyWith(
+                  fontSize: isSecondary ? 14 : 15,
+                  color: isSecondary
+                      ? textColor.withValues(alpha: 0.76)
+                      : textColor,
+                ),
+              ),
+              if (subtitle.isNotEmpty) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTypography.bodySmall(
+                    context,
+                  ).copyWith(fontSize: 12.5, color: subtitleColor, height: 1.3),
+                ),
+              ],
+            ],
+          ),
+        ),
+        if (trailing != null) ...[const SizedBox(width: 8), trailing],
+        if (trailing == null) ...[
+          const SizedBox(width: 8),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: subtitleColor.withValues(alpha: isSecondary ? 0.38 : 0.48),
+            size: 19,
+          ),
+        ],
+      ],
     );
   }
 
@@ -1344,16 +1197,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Widget? trailing,
   }) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 42,
-          height: 42,
+          width: 29,
+          height: 29,
           decoration: BoxDecoration(
-            color: iconBgColor,
-            borderRadius: BorderRadius.circular(14),
+            color: iconBgColor.withValues(alpha: 0.32),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: iconColor, size: 22),
+          child: Icon(icon, color: iconColor.withValues(alpha: 0.62), size: 15),
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -1362,36 +1215,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Text(
                 title,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
+                style: AppTypography.compactTitle(
+                  context,
+                ).copyWith(fontSize: 15, color: textColor),
               ),
               if (subtitle.isNotEmpty) ...[
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 12.5, color: subtitleColor),
+                  style: AppTypography.bodySmall(
+                    context,
+                  ).copyWith(fontSize: 12.5, color: subtitleColor, height: 1.3),
                 ),
               ],
             ],
           ),
         ),
-        if (trailing != null) ...[const SizedBox(width: 10), trailing],
-        const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            color: iconBgColor.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: subtitleColor.withValues(alpha: 0.08)),
-          ),
-          child: Switch(
+        if (trailing != null) ...[const SizedBox(width: 7), trailing],
+        const SizedBox(width: 6),
+        Transform.scale(
+          scale: 0.76,
+          alignment: Alignment.centerRight,
+          child: CupertinoSwitch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: const Color(0xFFFFB4A2),
-            activeTrackColor: const Color(0xFFFFB4A2).withValues(alpha: 0.3),
+            activeTrackColor: const Color(0xFFB78F87),
+            inactiveTrackColor: subtitleColor.withValues(alpha: 0.16),
           ),
         ),
       ],
@@ -1408,8 +1257,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 36,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        height: 28,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: bgColor,
           borderRadius: BorderRadius.circular(999),
@@ -1418,18 +1267,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.schedule_rounded, size: 15, color: fgColor),
-            const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
                 color: fgColor,
-                fontWeight: FontWeight.w700,
-                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
               ),
             ),
-            const SizedBox(width: 4),
-            Icon(Icons.expand_more_rounded, size: 16, color: fgColor),
+            const SizedBox(width: 3),
+            Icon(Icons.expand_more_rounded, size: 14, color: fgColor),
           ],
         ),
       ),
@@ -1449,40 +1296,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: iconBgColor,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: iconColor, size: 22),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: textColor,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  subtitle,
-                  style: TextStyle(fontSize: 12.5, color: subtitleColor),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right_rounded, color: subtitleColor, size: 20),
-        ],
+      child: _buildSettingsRow(
+        icon: icon,
+        iconBgColor: iconBgColor,
+        iconColor: iconColor,
+        title: title,
+        subtitle: subtitle,
+        textColor: textColor,
+        subtitleColor: subtitleColor,
       ),
     );
   }
@@ -1493,60 +1314,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Color textColor,
     Color subtitleColor,
   ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: TextStyle(fontSize: 14, color: subtitleColor)),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: textColor,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTypography.bodySmall(
+              context,
+            ).copyWith(fontSize: 14, color: subtitleColor),
           ),
-        ),
-      ],
+          Text(
+            value,
+            style: AppTypography.compactTitle(
+              context,
+            ).copyWith(fontSize: 14, color: textColor.withValues(alpha: 0.88)),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildLegalTile({
-    required IconData icon,
     required String title,
-    required String subtitle,
     required Color textColor,
     required Color subtitleColor,
     required VoidCallback onTap,
   }) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: subtitleColor.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Icon(icon, color: subtitleColor, size: 20),
-      ),
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: textColor,
-        ),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(fontSize: 12.5, color: subtitleColor),
+        style: AppTypography.compactTitle(
+          context,
+        ).copyWith(fontSize: 14, color: textColor.withValues(alpha: 0.72)),
       ),
       trailing: Icon(
         Icons.chevron_right_rounded,
-        color: subtitleColor,
-        size: 20,
+        color: subtitleColor.withValues(alpha: 0.34),
+        size: 18,
       ),
       onTap: onTap,
-      visualDensity: const VisualDensity(vertical: -3),
+      visualDensity: const VisualDensity(vertical: -4),
     );
   }
 
@@ -1558,6 +1368,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final currentCode = BabyTrackerApp.of(context)?.localeCode ?? 'en';
+    const selectableCodes = <String>['tr', 'en'];
     if (kDebugMode) {
       const sampleTr = 'Türkçe';
       const sampleEs = 'Español';
@@ -1567,52 +1378,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => NilicoSheetFrame(
+        padding: const EdgeInsets.fromLTRB(22, 12, 22, 12),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(l10n.language, style: AppTypography.sheetTitle(ctx)),
+            ),
             const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: subtitleColor.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.language,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-            const SizedBox(height: 8),
-            ...LocaleService.supportedCodes.map((code) {
+            ...selectableCodes.map((code) {
               final isSelected = code == currentCode;
               return ListTile(
-                leading: Icon(
-                  isSelected
-                      ? Icons.radio_button_checked
-                      : Icons.radio_button_off,
-                  color: isSelected ? const Color(0xFFFFB4A2) : subtitleColor,
-                ),
+                minTileHeight: 48,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 2),
                 title: Text(
                   LocaleService.labelForCode(l10n, code),
-                  style: TextStyle(
+                  style: AppTypography.body(ctx).copyWith(
                     fontSize: 16,
-                    fontWeight: isSelected
-                        ? FontWeight.w600
-                        : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: textColor,
                   ),
                 ),
+                trailing: isSelected
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: AppColors.primaryDark,
+                        size: 21,
+                      )
+                    : const SizedBox(width: 21),
                 onTap: () async {
                   Navigator.pop(ctx);
                   await BabyTrackerApp.of(context)?.setLocale(code);
@@ -1629,7 +1425,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               );
             }),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
           ],
         ),
       ),
@@ -1637,56 +1433,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showDeleteDialog(bool isDark, Color textColor, Color subtitleColor) {
-    final cardColor = isDark ? AppColors.bgDarkCard : Colors.white;
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFE5E0),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.warning_amber_rounded,
-                color: Colors.red.shade400,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.attention,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          AppLocalizations.of(context)!.deleteAllDataWarning,
-          style: TextStyle(fontSize: 15, color: subtitleColor),
-        ),
+      builder: (context) => NilicoDialog(
+        title: Text(AppLocalizations.of(context)!.attention),
+        content: Text(AppLocalizations.of(context)!.deleteAllDataWarning),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context),
-            child: Text(
-              AppLocalizations.of(context)!.cancel,
-              style: TextStyle(
-                color: subtitleColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            label: AppLocalizations.of(context)!.cancel,
           ),
-          GestureDetector(
-            onTap: () async {
+          NilicoDialogAction(
+            onPressed: () async {
               await VeriYonetici.verileriTemizle();
               if (!context.mounted) return;
               Navigator.pop(context);
@@ -1697,20 +1455,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               );
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.red.shade400,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.delete,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            label: AppLocalizations.of(context)!.delete,
+            destructive: true,
           ),
         ],
       ),

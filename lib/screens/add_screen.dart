@@ -14,6 +14,7 @@ import '../l10n/app_localizations.dart';
 import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/event_datetime_utils.dart';
+import '../widgets/nilico_modal.dart';
 
 class _AddScreenSnapshot {
   const _AddScreenSnapshot({
@@ -209,29 +210,20 @@ class _AddScreenState extends State<AddScreen> {
     final shouldDiscard = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          'Discard changes?',
-          style: AppTypography.dialogTitle(dialogContext),
-        ),
-        content: Text(
+      builder: (dialogContext) => NilicoDialog(
+        title: const Text('Discard changes?'),
+        content: const Text(
           'You have unsaved changes. Discard them and close?',
-          style: AppTypography.dialogBody(dialogContext),
         ),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(
-              'Continue editing',
-              style: AppTypography.dialogAction(dialogContext),
-            ),
+            label: 'Continue editing',
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(
-              'Discard',
-              style: AppTypography.dialogAction(dialogContext),
-            ),
+            label: 'Discard',
+            destructive: true,
           ),
         ],
       ),
@@ -249,81 +241,32 @@ class _AddScreenState extends State<AddScreen> {
   /// Shows a Cupertino-style time picker in a bottom sheet
   Future<TimeOfDay?> _showCupertinoTimePicker(TimeOfDay initialTime) async {
     TimeOfDay selectedTime = initialTime;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
     final result = await showModalBottomSheet<TimeOfDay>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: 280,
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Header with Done button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      l10n.cancel,
-                      style: TextStyle(
-                        color: const Color(0xFF866F65),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, selectedTime),
-                    child: Text(
-                      l10n.ok,
-                      style: TextStyle(
-                        color: const Color(0xFFFF998A),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Cupertino Time Picker
-            Expanded(
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
-                use24hFormat: true,
-                initialDateTime: DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                  initialTime.hour,
-                  initialTime.minute,
-                ),
-                onDateTimeChanged: (DateTime dateTime) {
-                  selectedTime = TimeOfDay(
-                    hour: dateTime.hour,
-                    minute: dateTime.minute,
-                  );
-                },
-              ),
-            ),
-          ],
+      builder: (context) => NilicoPickerSheet(
+        cancelLabel: l10n.cancel,
+        confirmLabel: l10n.ok,
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () => Navigator.pop(context, selectedTime),
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: true,
+          initialDateTime: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            initialTime.hour,
+            initialTime.minute,
+          ),
+          onDateTimeChanged: (DateTime dateTime) {
+            selectedTime = TimeOfDay(
+              hour: dateTime.hour,
+              minute: dateTime.minute,
+            );
+          },
         ),
       ),
     );
@@ -565,68 +508,22 @@ class _AddScreenState extends State<AddScreen> {
     Duration initialDuration,
   ) async {
     Duration selectedDuration = initialDuration;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
 
     final result = await showModalBottomSheet<Duration>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: 280,
-        decoration: BoxDecoration(
-          color: isDark ? AppColors.bgDarkCard : AppColors.bgLightCard,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      l10n.cancel,
-                      style: TextStyle(
-                        color: const Color(0xFF866F65),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, selectedDuration),
-                    child: Text(
-                      l10n.ok,
-                      style: TextStyle(
-                        color: const Color(0xFFFF998A),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm,
-                initialTimerDuration: initialDuration,
-                onTimerDurationChanged: (Duration duration) {
-                  selectedDuration = duration;
-                },
-              ),
-            ),
-          ],
+      builder: (context) => NilicoPickerSheet(
+        cancelLabel: l10n.cancel,
+        confirmLabel: l10n.ok,
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () => Navigator.pop(context, selectedDuration),
+        child: CupertinoTimerPicker(
+          mode: CupertinoTimerPickerMode.hm,
+          initialTimerDuration: initialDuration,
+          onTimerDurationChanged: (Duration duration) {
+            selectedDuration = duration;
+          },
         ),
       ),
     );

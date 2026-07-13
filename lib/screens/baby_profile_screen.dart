@@ -7,6 +7,7 @@ import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_modal.dart';
 import 'allergies_screen.dart';
 import 'growth_screen.dart';
 import 'vaccines_screen.dart';
@@ -111,88 +112,30 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     }
   }
 
-  void _showPhotoOptions(bool isDark) {
+  void _showPhotoOptions() {
     final l10n = AppLocalizations.of(context)!;
-    final cardColor = isDark ? AppColors.bgDarkCard : const Color(0xFFFFFBF5);
-    final textColor = isDark
-        ? AppColors.textPrimaryDark
-        : const Color(0xFF2D1A18);
-    final subtitleColor = isDark
-        ? AppColors.textSecondaryDark
-        : const Color(0xFF7A749E);
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+      builder: (ctx) => NilicoSheetFrame(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 16),
-              decoration: BoxDecoration(
-                color: subtitleColor.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            ListTile(
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFFE5E0F7).withValues(alpha: 0.12)
-                      : const Color(0xFFE5E0F7),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.photo_library_outlined,
-                  color: subtitleColor,
-                  size: 20,
-                ),
-              ),
-              title: Text(
-                l10n.changePhoto,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
-              ),
+            NilicoActionSheetRow(
+              icon: Icons.photo_library_outlined,
+              label: l10n.changePhoto,
               onTap: () {
                 Navigator.pop(ctx);
                 _pickPhoto();
               },
             ),
             if (_hasPhoto)
-              ListTile(
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFE5E0),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red.shade300,
-                    size: 20,
-                  ),
-                ),
-                title: Text(
-                  l10n.removePhoto,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.red.shade300,
-                  ),
-                ),
+              NilicoActionSheetRow(
+                icon: Icons.delete_outline,
+                label: l10n.removePhoto,
+                destructive: true,
                 onTap: () {
                   Navigator.pop(ctx);
                   setState(() {
@@ -201,7 +144,6 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                   });
                 },
               ),
-            SizedBox(height: MediaQuery.of(ctx).padding.bottom + 12),
           ],
         ),
       ),
@@ -296,7 +238,7 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                       GestureDetector(
                         onTap: () {
                           if (_hasPhoto) {
-                            _showPhotoOptions(isDark);
+                            _showPhotoOptions();
                           } else {
                             _pickPhoto();
                           }
@@ -837,7 +779,9 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      AppLocalizations.of(context)!.deleteBabyBtn,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.deleteBabyBtn,
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
@@ -848,7 +792,9 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      AppLocalizations.of(context)!.deleteBabySubtitle,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.deleteBabySubtitle,
                                       style: TextStyle(
                                         fontSize: 13,
                                         color: subtitleColor,
@@ -928,45 +874,16 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
     final babyName = _nameController.text.trim();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.red.shade400.withValues(alpha: 0.15)
-                    : const Color(0xFFFFE5E0),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.warning_amber_rounded,
-                color: isDark ? Colors.red.shade300 : Colors.red.shade400,
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              AppLocalizations.of(context)!.attention,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ],
-        ),
+      builder: (ctx) => NilicoDialog(
+        title: Text(AppLocalizations.of(context)!.attention),
         content: RichText(
           text: TextSpan(
-            style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
+            style: AppTypography.dialogBody(context),
             children: [
               TextSpan(text: AppLocalizations.of(context)!.onlyThisBabyPrefix),
               TextSpan(
                 text: babyName,
-                style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+                style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               TextSpan(
                 text:
@@ -979,15 +896,12 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              AppLocalizations.of(context)!.cancel,
-              style: TextStyle(color: subtitleColor, fontSize: 15),
-            ),
+            label: AppLocalizations.of(context)!.cancel,
           ),
-          GestureDetector(
-            onTap: () async {
+          NilicoDialogAction(
+            onPressed: () async {
               final dialogNavigator = Navigator.of(ctx);
               final messenger = ScaffoldMessenger.of(context);
               await VeriYonetici.verileriTemizle();
@@ -1002,21 +916,8 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                 ),
               );
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.red.shade300 : Colors.red.shade400,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Text(
-                AppLocalizations.of(context)!.delete,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            label: AppLocalizations.of(context)!.delete,
+            destructive: true,
           ),
         ],
       ),
@@ -1039,33 +940,18 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
       context: context,
       barrierDismissible: !isSubmitting,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            AppLocalizations.of(context)!.deleteBabyTitle,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-          ),
+        builder: (ctx, setDialogState) => NilicoDialog(
+          title: Text(AppLocalizations.of(context)!.deleteBabyTitle),
           content: Text(
             AppLocalizations.of(context)!.deleteBabyDialogContent(babyName),
-            style: TextStyle(fontSize: 14, color: subtitleColor, height: 1.5),
           ),
           actions: [
-            TextButton(
+            NilicoDialogAction(
               onPressed: isSubmitting ? null : () => Navigator.pop(ctx),
-              child: Text(
-                AppLocalizations.of(context)!.cancel,
-                style: TextStyle(color: subtitleColor, fontSize: 15),
-              ),
+              label: AppLocalizations.of(context)!.cancel,
             ),
-            GestureDetector(
-              onTap: isSubmitting
+            NilicoDialogAction(
+              onPressed: isSubmitting
                   ? null
                   : () async {
                       final dialogNavigator = Navigator.of(ctx);
@@ -1081,7 +967,11 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                           setState(() => _isDeletingBaby = false);
                           messenger.showSnackBar(
                             SnackBar(
-                              content: Text(AppLocalizations.of(context)!.babyCouldNotBeDeleted),
+                              content: Text(
+                                AppLocalizations.of(
+                                  context,
+                                )!.babyCouldNotBeDeleted,
+                              ),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -1095,7 +985,11 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
                       if (!result.deleted) {
                         messenger.showSnackBar(
                           SnackBar(
-                            content: Text(AppLocalizations.of(context)!.babyCouldNotBeDeleted),
+                            content: Text(
+                              AppLocalizations.of(
+                                context,
+                              )!.babyCouldNotBeDeleted,
+                            ),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -1126,35 +1020,9 @@ class _BabyProfileScreenState extends State<BabyProfileScreen> {
 
                       Navigator.pop(context, true);
                     },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.red.shade300 : Colors.red.shade400,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: isSubmitting
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Colors.white,
-                          ),
-                        ),
-                      )
-                    : Text(
-                        AppLocalizations.of(context)!.delete,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-              ),
+              label: AppLocalizations.of(context)!.delete,
+              destructive: true,
+              loading: isSubmitting,
             ),
           ],
         ),

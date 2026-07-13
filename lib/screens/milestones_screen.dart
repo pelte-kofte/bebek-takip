@@ -15,6 +15,7 @@ import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
 import '../widgets/illustration_upsell_sheet.dart';
+import '../widgets/nilico_modal.dart';
 import '../widgets/nilico_motion.dart';
 
 /// Platform-aware image widget that works on both web and mobile
@@ -114,37 +115,18 @@ Future<bool> showMemoryDeleteConfirmation(BuildContext context) async {
   final l10n = AppLocalizations.of(context)!;
   return await showDialog<bool>(
         context: context,
-        builder: (dialogContext) => AlertDialog(
-          backgroundColor: AppColors.paper,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Text(
-            l10n.memoryDeleteTitle,
-            style: AppTypography.dialogTitle(dialogContext),
-          ),
-          content: Text(
-            l10n.memoryDeleteMessage,
-            style: AppTypography.dialogBody(dialogContext),
-          ),
+        builder: (dialogContext) => NilicoDialog(
+          title: Text(l10n.memoryDeleteTitle),
+          content: Text(l10n.memoryDeleteMessage),
           actions: [
-            TextButton(
+            NilicoDialogAction(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text(
-                l10n.cancel,
-                style: AppTypography.dialogAction(
-                  dialogContext,
-                ).copyWith(color: AppColors.textSecondary),
-              ),
+              label: l10n.cancel,
             ),
-            TextButton(
+            NilicoDialogAction(
               onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text(
-                l10n.delete,
-                style: AppTypography.dialogAction(
-                  dialogContext,
-                ).copyWith(color: const Color(0xFFD45D5D)),
-              ),
+              label: l10n.delete,
+              destructive: true,
             ),
           ],
         ),
@@ -780,9 +762,11 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTypography.compactTitle(
-                        context,
-                      ).copyWith(fontSize: 13, height: 1.22),
+                      style: AppTypography.compactTitle(context).copyWith(
+                        fontSize: 13,
+                        height: 1.22,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -792,7 +776,7 @@ class _MilestonesScreenState extends State<MilestonesScreen> {
                       style: AppTypography.bodySmall(context).copyWith(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.textSecondary.withValues(alpha: 0.72),
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -2263,6 +2247,21 @@ class MilestoneDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark ? AppColors.bgDark : AppColors.paper;
+    final surfaceColor = isDark ? AppColors.bgDarkCard : AppColors.paper;
+    final mutedSurfaceColor = isDark
+        ? AppColors.bgDarkSurface
+        : AppColors.paperMuted;
+    final textPrimary = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimary;
+    final textSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : AppColors.borderSoft;
     final photoSource = resolveMilestonePhotoSource(milestone);
     final hasPhoto = photoSource != null && photoSource.isNotEmpty;
     final title = milestone['title'] ?? '';
@@ -2270,7 +2269,7 @@ class MilestoneDetailScreen extends StatelessWidget {
     final note = milestone['note'] ?? '';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFBF5),
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           // Main content
@@ -2291,14 +2290,12 @@ class MilestoneDetailScreen extends StatelessWidget {
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: AppColors.paperMuted,
+                            color: mutedSurfaceColor,
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: Icon(
                             Icons.arrow_back,
-                            color: const Color(
-                              0xFF4A3E39,
-                            ).withValues(alpha: 0.7),
+                            color: textSecondary,
                             size: 20,
                           ),
                         ),
@@ -2312,21 +2309,19 @@ class MilestoneDetailScreen extends StatelessWidget {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.paperMuted,
+                            color: mutedSurfaceColor,
                             borderRadius: BorderRadius.circular(14),
                           ),
                           child: Icon(
                             Icons.more_horiz,
-                            color: const Color(
-                              0xFF4A3E39,
-                            ).withValues(alpha: 0.7),
+                            color: textSecondary,
                             size: 20,
                           ),
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        color: const Color(0xFFFFFBF5),
+                        color: surfaceColor,
                         onSelected: (value) {
                           switch (value) {
                             case 'edit':
@@ -2345,12 +2340,12 @@ class MilestoneDetailScreen extends StatelessWidget {
                                 Icon(
                                   Icons.edit_outlined,
                                   size: 18,
-                                  color: Color(0xFF4A3E39),
+                                  color: textPrimary,
                                 ),
                                 SizedBox(width: 10),
                                 Text(
                                   AppLocalizations.of(context)!.edit,
-                                  style: TextStyle(color: Color(0xFF4A3E39)),
+                                  style: TextStyle(color: textPrimary),
                                 ),
                               ],
                             ),
@@ -2362,12 +2357,12 @@ class MilestoneDetailScreen extends StatelessWidget {
                                 Icon(
                                   Icons.share_outlined,
                                   size: 18,
-                                  color: Color(0xFF4A3E39),
+                                  color: textPrimary,
                                 ),
                                 SizedBox(width: 10),
                                 Text(
                                   AppLocalizations.of(context)!.share,
-                                  style: TextStyle(color: Color(0xFF4A3E39)),
+                                  style: TextStyle(color: textPrimary),
                                 ),
                               ],
                             ),
@@ -2430,14 +2425,12 @@ class MilestoneDetailScreen extends StatelessWidget {
                                     }
                                     return Container(
                                       height: 200,
-                                      color: const Color(
-                                        0xFFE5E0F7,
-                                      ).withValues(alpha: 0.3),
-                                      child: const Center(
+                                      color: mutedSurfaceColor,
+                                      child: Center(
                                         child: Icon(
                                           Icons.image_not_supported,
                                           size: 48,
-                                          color: Color(0xFF4A3E39),
+                                          color: textSecondary,
                                         ),
                                       ),
                                     );
@@ -2453,7 +2446,7 @@ class MilestoneDetailScreen extends StatelessWidget {
                           title,
                           style: AppTypography.h1(
                             context,
-                          ).copyWith(fontSize: 24),
+                          ).copyWith(fontSize: 24, color: textPrimary),
                         ),
                         const SizedBox(height: 8),
                         // Date
@@ -2462,20 +2455,14 @@ class MilestoneDetailScreen extends StatelessWidget {
                             Icon(
                               Icons.calendar_today_outlined,
                               size: 16,
-                              color: const Color(
-                                0xFF4A3E39,
-                              ).withValues(alpha: 0.5),
+                              color: textSecondary,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               formatDate(date, includeYear: true),
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: const Color(
-                                  0xFF4A3E39,
-                                ).withValues(alpha: 0.6),
-                              ),
+                              style: AppTypography.body(
+                                context,
+                              ).copyWith(fontSize: 15, color: textSecondary),
                             ),
                           ],
                         ),
@@ -2486,24 +2473,16 @@ class MilestoneDetailScreen extends StatelessWidget {
                             width: double.infinity,
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: AppColors.paperMuted.withValues(
-                                alpha: 0.7,
-                              ),
+                              color: mutedSurfaceColor,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: AppColors.borderSoft.withValues(
-                                  alpha: 0.65,
-                                ),
-                              ),
+                              border: Border.all(color: borderColor),
                             ),
                             child: Text(
                               note,
-                              style: TextStyle(
+                              style: AppTypography.body(context).copyWith(
                                 fontSize: 16,
                                 height: 1.6,
-                                color: const Color(
-                                  0xFF4A3E39,
-                                ).withValues(alpha: 0.8),
+                                color: textPrimary,
                               ),
                             ),
                           ),
@@ -2575,6 +2554,16 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final surfaceColor = isDark
+        ? AppColors.bgDarkSurface
+        : Colors.white.withValues(alpha: 0.8);
+    final textSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondary;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : const Color(0xFFE5E0F7);
     final illustrationUrl = (_milestone['illustrationUrl'] ?? '')
         .toString()
         .trim();
@@ -2597,7 +2586,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF4A3E39).withValues(alpha: 0.5),
+                  color: textSecondary,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -2613,7 +2602,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
                     if (progress == null) return child;
                     return Container(
                       height: 200,
-                      color: const Color(0xFFE5E0F7),
+                      color: surfaceColor,
                       child: const Center(
                         child: CircularProgressIndicator(
                           color: Color(0xFFFFB4A2),
@@ -2625,7 +2614,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
                   errorBuilder: (_, _, _) => Container(
                     height: 200,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE5E0F7).withValues(alpha: 0.4),
+                      color: surfaceColor,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Center(
@@ -2641,10 +2630,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
               const SizedBox(height: 8),
               Text(
                 l10n.illustrationTapToView,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: const Color(0xFF4A3E39).withValues(alpha: 0.4),
-                ),
+                style: TextStyle(fontSize: 12, color: textSecondary),
               ),
             ],
           ),
@@ -2661,9 +2647,9 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.8),
+            color: surfaceColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE5E0F7)),
+            border: Border.all(color: borderColor),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -2679,7 +2665,7 @@ class _IllustrationSectionState extends State<_IllustrationSection> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF4A3E39).withValues(alpha: 0.7),
+                  color: textSecondary,
                 ),
               ),
             ],

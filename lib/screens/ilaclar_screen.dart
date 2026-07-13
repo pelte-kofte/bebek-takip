@@ -7,6 +7,7 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/nilico_badge.dart';
+import '../widgets/nilico_modal.dart';
 import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 
@@ -88,25 +89,18 @@ class _IlaclarScreenState extends State<IlaclarScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.attention, style: AppTypography.dialogTitle(context)),
-        content: Text(
-          l10n.deleteConfirm,
-          style: AppTypography.dialogBody(context),
-        ),
+      builder: (context) => NilicoDialog(
+        title: Text(l10n.attention),
+        content: Text(l10n.deleteConfirm),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
+            label: l10n.no,
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              l10n.yes,
-              style: AppTypography.dialogAction(
-                context,
-              ).copyWith(color: Colors.red),
-            ),
+            label: l10n.yes,
+            destructive: true,
           ),
         ],
       ),
@@ -1853,23 +1847,17 @@ class _MedicationFormScreenState extends State<_MedicationFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(
-          l10n.medicationSetRemindersTitle,
-          style: AppTypography.dialogTitle(context),
-        ),
-        content: Text(
-          l10n.medicationSetRemindersBody,
-          style: AppTypography.dialogBody(context),
-        ),
+      builder: (dialogContext) => NilicoDialog(
+        title: Text(l10n.medicationSetRemindersTitle),
+        content: Text(l10n.medicationSetRemindersBody),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
+            label: l10n.no,
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.yes, style: AppTypography.dialogAction(context)),
+            label: l10n.yes,
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import '../models/baby.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import 'add_baby_sheet.dart';
+import 'nilico_modal.dart';
 import 'nilico_motion.dart';
 
 class BabySwitcherSheet extends StatelessWidget {
@@ -19,34 +20,16 @@ class BabySwitcherSheet extends StatelessWidget {
     final babies = _dedupeById(VeriYonetici.getBabies());
     final activeBabyId = VeriYonetici.getActiveBabyId();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+    return NilicoSheetFrame(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle bar
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(top: 12, bottom: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          // Title
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
-            child: Text(
-              l10n.selectBaby,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : const Color(0xFF2D1A18),
-              ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: NilicoSheetHeader(
+              title: l10n.selectBaby,
+              onClose: () => Navigator.pop(context),
             ),
           ),
           // Baby list
@@ -61,7 +44,7 @@ class BabySwitcherSheet extends StatelessWidget {
           const SizedBox(height: 8),
           // Add baby button
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 4),
             child: SizedBox(
               width: double.infinity,
               child: TextButton.icon(
@@ -69,8 +52,8 @@ class BabySwitcherSheet extends StatelessWidget {
                 icon: const Icon(Icons.add, color: Color(0xFFFFB4A2)),
                 label: Text(
                   '+ ${l10n.newBabyAdd}',
-                  style: const TextStyle(
-                    color: Color(0xFFFFB4A2),
+                  style: AppTypography.body(context).copyWith(
+                    color: AppColors.primaryDark,
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                   ),
@@ -78,7 +61,6 @@ class BabySwitcherSheet extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
         ],
       ),
     );
@@ -127,9 +109,8 @@ class BabySwitcherSheet extends StatelessWidget {
               child: Center(
                 child: Text(
                   baby.name.isNotEmpty ? baby.name[0].toUpperCase() : '?',
-                  style: TextStyle(
+                  style: AppTypography.sheetTitle(context).copyWith(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
                     color: isActive
                         ? const Color(0xFFFFB4A2)
                         : (isDark
@@ -150,9 +131,8 @@ class BabySwitcherSheet extends StatelessWidget {
                       Flexible(
                         child: Text(
                           baby.name,
-                          style: TextStyle(
+                          style: AppTypography.body(context).copyWith(
                             fontSize: 16,
-                            fontWeight: FontWeight.w600,
                             color: isDark
                                 ? Colors.white
                                 : const Color(0xFF2D1A18),
@@ -185,7 +165,7 @@ class BabySwitcherSheet extends StatelessWidget {
                   ),
                   Text(
                     formatLocalizedAge(context, baby.birthDate),
-                    style: TextStyle(
+                    style: AppTypography.bodySmall(context).copyWith(
                       fontSize: 13,
                       color: (isDark ? Colors.white : const Color(0xFF2D1A18))
                           .withValues(alpha: 0.5),

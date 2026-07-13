@@ -9,7 +9,9 @@ import '../widgets/nilico_motion.dart';
 import 'add_growth_screen.dart';
 
 class GrowthScreen extends StatefulWidget {
-  const GrowthScreen({super.key});
+  const GrowthScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<GrowthScreen> createState() => _GrowthScreenState();
@@ -115,38 +117,40 @@ class _GrowthScreenState extends State<GrowthScreen> {
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.bgDarkCard : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.06)
-                    : AppColors.primary.withValues(alpha: 0.1),
+          if (!widget.embedded) ...[
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.bgDarkCard : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.06)
+                      : AppColors.primary.withValues(alpha: 0.1),
+                ),
+                boxShadow: isDark
+                    ? null
+                    : [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
               ),
-              boxShadow: isDark
-                  ? null
-                  : [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.chevron_left,
-                color: AppColors.primary,
-                size: 24,
+              child: IconButton(
+                icon: Icon(
+                  Icons.chevron_left,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.pop(context),
               ),
-              padding: EdgeInsets.zero,
-              onPressed: () => Navigator.pop(context),
             ),
-          ),
-          const SizedBox(width: 16),
+            const SizedBox(width: 16),
+          ],
           Text(l10n.growthTracking, style: AppTypography.h1(context)),
         ],
       ),

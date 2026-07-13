@@ -7,6 +7,7 @@ import '../models/veri_yonetici.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_modal.dart';
 
 class AddVaccineScreen extends StatefulWidget {
   final Map<String, dynamic>? vaccine;
@@ -149,7 +150,6 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
   }
 
   void _selectDate() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     DateTime tempDate = _selectedDate ?? DateTime.now();
     final lastDate = _selectedStatus == 'bekleniyor'
@@ -159,75 +159,25 @@ class _AddVaccineScreenState extends State<AddVaccineScreen> {
     HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: SizedBox(
-          height: 300,
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.06)
-                          : const Color(0xFFFFB4A2).withValues(alpha: 0.1),
-                    ),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text(
-                        l10n.cancel,
-                        style: AppTypography.dialogAction(context).copyWith(
-                          color: isDark
-                              ? AppColors.textSecondaryDark
-                              : const Color(0xFF866F65),
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedDate = tempDate;
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        l10n.ok,
-                        style: AppTypography.dialogAction(
-                          context,
-                        ).copyWith(color: const Color(0xFFFFB4A2)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: tempDate.isAfter(lastDate)
-                      ? lastDate
-                      : tempDate,
-                  minimumDate: DateTime(2020),
-                  maximumDate: lastDate,
-                  onDateTimeChanged: (date) {
-                    tempDate = date;
-                  },
-                ),
-              ),
-            ],
-          ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => NilicoPickerSheet(
+        cancelLabel: l10n.cancel,
+        confirmLabel: l10n.ok,
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () {
+          setState(() {
+            _selectedDate = tempDate;
+          });
+          Navigator.pop(context);
+        },
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.date,
+          initialDateTime: tempDate.isAfter(lastDate) ? lastDate : tempDate,
+          minimumDate: DateTime(2020),
+          maximumDate: lastDate,
+          onDateTimeChanged: (date) {
+            tempDate = date;
+          },
         ),
       ),
     );

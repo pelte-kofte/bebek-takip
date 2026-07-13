@@ -20,6 +20,21 @@ import '../services/premium_service.dart'
 
 enum _SheetState { upsell, loading, result, error, outOfCredits }
 
+String _illustrationCreditLabel(
+  AppLocalizations l10n,
+  UserIllustrationCredits credits,
+) {
+  final monthly = credits.monthlyRemaining;
+  final purchased = credits.purchasedCreditsRemaining;
+  if (purchased > 0 && monthly == 0) {
+    return l10n.illCreditsLeft(purchased);
+  }
+  return l10n.illMonthlyCredits(
+    monthly,
+    UserIllustrationCredits.monthlyIncludedLimit,
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Public entry point
 // ---------------------------------------------------------------------------
@@ -417,11 +432,15 @@ class _IllustrationUpsellSheetState extends State<IllustrationUpsellSheet>
           onClose: () => Navigator.pop(context),
         );
       case _SheetState.outOfCredits:
-        return _OutOfCreditsContent(
+        return StreamBuilder<UserIllustrationCredits>(
           key: const ValueKey('out-of-credits'),
-          purchasingPackId: _purchasingPackId,
-          onBuyPack: _onBuyPack,
-          onDismiss: () => Navigator.pop(context),
+          stream: _service.watchMyCredits(),
+          builder: (context, snapshot) => _OutOfCreditsContent(
+            credits: snapshot.data,
+            purchasingPackId: _purchasingPackId,
+            onBuyPack: _onBuyPack,
+            onDismiss: () => Navigator.pop(context),
+          ),
         );
     }
   }
@@ -816,7 +835,7 @@ class _PackOption {
   final String productId;
   final String label;
   final String sublabel;
-  final String price;
+  final String? price;
   final String? badge;
   final bool emphasized;
 
@@ -830,43 +849,42 @@ class _PackOption {
   });
 }
 
-class _OutOfCreditsContent extends StatelessWidget {
+class _OutOfCreditsContent extends StatefulWidget {
+  final UserIllustrationCredits? credits;
   final String? purchasingPackId;
   final void Function(String productId) onBuyPack;
   final VoidCallback onDismiss;
 
   const _OutOfCreditsContent({
-    super.key,
+    required this.credits,
     required this.purchasingPackId,
     required this.onBuyPack,
     required this.onDismiss,
   });
 
   @override
+  State<_OutOfCreditsContent> createState() => _OutOfCreditsContentState();
+}
+
+class _OutOfCreditsContentState extends State<_OutOfCreditsContent> {
+  late Future<Map<String, String>> _pricesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _pricesFuture = PremiumService.instance
+        .loadIllustrationPackLocalizedPrices();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final packs = [
-      _PackOption(
-        productId: 'illustration_credits_3',
-        label: l10n.illPackQuickLabel,
-        sublabel: l10n.illPackQuickSub,
-        price: r'$1.99',
-      ),
-      _PackOption(
-        productId: 'illustration_credits_10',
-        label: l10n.illPackBestLabel,
-        sublabel: l10n.illPackBestSub,
-        price: r'$4.99',
-        badge: l10n.illPackMostPopular,
-        emphasized: true,
-      ),
-      _PackOption(
-        productId: 'illustration_credits_25',
-        label: l10n.illPackLoversLabel,
-        sublabel: l10n.illPackLoversSub,
-        price: r'$9.99',
-      ),
-    ];
+    final credits = widget.credits;
+    final creditTitle = credits == null
+        ? null
+        : credits.canGenerate
+        ? _illustrationCreditLabel(l10n, credits)
+        : l10n.illOutOfTitle;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -875,16 +893,23 @@ class _OutOfCreditsContent extends StatelessWidget {
         const SizedBox(height: 24),
         _SparkleIcon(),
         const SizedBox(height: 20),
-        Text(
-          l10n.illOutOfTitle,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF4A3E39),
-            height: 1.3,
+        if (creditTitle == null)
+          const SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          )
+        else
+          Text(
+            creditTitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF4A3E39),
+              height: 1.3,
+            ),
           ),
-        ),
         const SizedBox(height: 10),
         Text(
           l10n.illOutOfDesc,
@@ -896,19 +921,62 @@ class _OutOfCreditsContent extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        for (final pack in packs) ...[
-          _PackTile(
-            pack: pack,
-            loading: purchasingPackId == pack.productId,
-            disabled:
-                purchasingPackId != null && purchasingPackId != pack.productId,
-            onTap: () => onBuyPack(pack.productId),
-          ),
-          const SizedBox(height: 10),
-        ],
+        FutureBuilder<Map<String, String>>(
+          future: _pricesFuture,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text(
+                l10n.genericErrorRetry,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, color: Color(0xFF8A7C75)),
+              );
+            }
+            final prices = snapshot.data ?? const <String, String>{};
+            final packs = [
+              _PackOption(
+                productId: 'illustration_credits_3',
+                label: l10n.illPackQuickLabel,
+                sublabel: l10n.illPackQuickSub,
+                price: prices['illustration_credits_3'],
+              ),
+              _PackOption(
+                productId: 'illustration_credits_10',
+                label: l10n.illPackBestLabel,
+                sublabel: l10n.illPackBestSub,
+                price: prices['illustration_credits_10'],
+                badge: l10n.illPackMostPopular,
+                emphasized: true,
+              ),
+              _PackOption(
+                productId: 'illustration_credits_25',
+                label: l10n.illPackLoversLabel,
+                sublabel: l10n.illPackLoversSub,
+                price: prices['illustration_credits_25'],
+              ),
+            ];
+            return Column(
+              children: [
+                for (final pack in packs) ...[
+                  _PackTile(
+                    pack: pack,
+                    loading:
+                        widget.purchasingPackId == pack.productId ||
+                        pack.price == null,
+                    disabled:
+                        pack.price == null ||
+                        (widget.purchasingPackId != null &&
+                            widget.purchasingPackId != pack.productId),
+                    onTap: () => widget.onBuyPack(pack.productId),
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ],
+            );
+          },
+        ),
         const SizedBox(height: 6),
         TextButton(
-          onPressed: purchasingPackId != null ? null : onDismiss,
+          onPressed: widget.purchasingPackId != null ? null : widget.onDismiss,
           child: Text(
             l10n.maybeLater,
             style: const TextStyle(
@@ -1031,7 +1099,7 @@ class _PackTile extends StatelessWidget {
                 )
               else
                 Text(
-                  pack.price,
+                  pack.price!,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
@@ -1184,21 +1252,10 @@ class _IllustrationCreditChipState extends State<IllustrationCreditChip> {
         final credits = snapshot.data;
         if (credits == null) return const SizedBox.shrink();
 
-        final monthly = credits.monthlyRemaining;
-        final purchased = credits.purchasedCreditsRemaining;
         final total =
             credits.monthlyRemaining + credits.purchasedCreditsRemaining;
         final isEmpty = total == 0;
-
-        final String label;
-        if (purchased > 0 && monthly == 0) {
-          label = l10n.illCreditsLeft(purchased);
-        } else {
-          label = l10n.illMonthlyCredits(
-            monthly,
-            UserIllustrationCredits.monthlyIncludedLimit,
-          );
-        }
+        final label = _illustrationCreditLabel(l10n, credits);
 
         final color = isEmpty
             ? const Color(0xFFF59E0B) // amber warning

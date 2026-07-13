@@ -23,6 +23,18 @@ import '../utils/locale_text_utils.dart';
 import 'premium_screen.dart';
 import '../services/premium_service.dart';
 
+String _dailyTipDisplayLabel(BuildContext context, String value) {
+  if (Localizations.localeOf(context).languageCode != 'en') return value;
+  return value
+      .toLowerCase()
+      .split(' ')
+      .map((word) {
+        if (word.isEmpty) return word;
+        return '${word[0].toUpperCase()}${word.substring(1)}';
+      })
+      .join(' ');
+}
+
 enum TimerCardAccentMode { defaultTone, lavender }
 
 const double _homeCardRadius = 20;
@@ -1537,7 +1549,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    l10n.dailyTip,
+                    _dailyTipDisplayLabel(context, l10n.dailyTip),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,

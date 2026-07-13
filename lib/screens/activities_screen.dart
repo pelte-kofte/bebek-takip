@@ -8,11 +8,13 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import '../theme/app_theme.dart';
 import '../models/veri_yonetici.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_modal.dart';
 import '../l10n/app_localizations.dart';
 import 'allergies_screen.dart';
+import 'baby_meals_screen.dart';
 import '../utils/event_datetime_utils.dart';
 
-enum ActivityType { mama, bez, uyku }
+enum ActivityType { mama, bez, uyku, meals }
 
 enum _CareEditType { feeding, nursing, diaper, sleep }
 
@@ -35,6 +37,7 @@ class ActivitiesScreen extends StatefulWidget {
 class _ActivitiesScreenState extends State<ActivitiesScreen> {
   DateTime _selectedDate = DateTime.now();
   late ActivityType _activeType;
+  late bool _hasOpenedMeals;
   bool _loggedNursingSeparatorSample = false;
   String get _currentUid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
@@ -48,6 +51,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
   void initState() {
     super.initState();
     _activeType = widget.initialTab ?? ActivityType.mama;
+    _hasOpenedMeals = _activeType == ActivityType.meals;
   }
 
   @override
@@ -129,6 +133,9 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : const Color(0xFF333333);
     final l10n = AppLocalizations.of(context)!;
+    final mealsLabel = Localizations.localeOf(context).languageCode == 'tr'
+        ? 'Ek Gıda'
+        : 'Meals';
 
     return DecorativeBackground(
       preset: BackgroundPreset.activities,
@@ -218,6 +225,14 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                             ActivityType.uyku,
                           ),
                         ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: _buildCompactTab(
+                            Icons.restaurant_menu_outlined,
+                            mealsLabel,
+                            ActivityType.meals,
+                          ),
+                        ),
                       ],
                     );
                   },
@@ -226,9 +241,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
               // Icerik (scrollable, Expanded ile kalan alani doldurur)
               Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: _buildActiveContent(),
+                child: IndexedStack(
+                  index: _activeType == ActivityType.meals ? 1 : 0,
+                  sizing: StackFit.expand,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: _activeType == ActivityType.meals
+                          ? const SizedBox(
+                              key: ValueKey('care_meals_placeholder'),
+                            )
+                          : _buildActiveContent(),
+                    ),
+                    _hasOpenedMeals
+                        ? const BabyMealsScreen(embedded: true)
+                        : const SizedBox.shrink(),
+                  ],
                 ),
               ),
             ],
@@ -338,7 +366,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => setState(() => _activeType = type),
+        onTap: () => _selectActivityType(type),
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
@@ -352,20 +380,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
               width: 1,
             ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
+                ),
+                const SizedBox(width: 8),
+                Text(
                   label,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: false,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -373,12 +402,22 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                     color: isActive ? const Color(0xFFFFB4A2) : unselectedFg,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  void _selectActivityType(ActivityType type) {
+    if (_activeType == type) return;
+    setState(() {
+      _activeType = type;
+      if (type == ActivityType.meals) {
+        _hasOpenedMeals = true;
+      }
+    });
   }
 
   Widget _buildActiveContent() {
@@ -399,6 +438,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
           key: const ValueKey('uyku'),
           child: _buildUykuList(),
         );
+      case ActivityType.meals:
+        return const SizedBox(key: ValueKey('care_meals'));
     }
   }
 
@@ -1430,7 +1471,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     final media = MediaQuery.of(sheetContext);
-    final sheetColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final sheetColor = isDark ? AppColors.bgDarkCard : AppColors.paper;
     return SafeArea(
       top: false,
       child: AnimatedPadding(
@@ -1585,8 +1626,8 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              width: 56,
-                              height: 6,
+                              width: 40,
+                              height: 4,
                               margin: const EdgeInsets.only(bottom: 14),
                               decoration: BoxDecoration(
                                 color: isDark
@@ -1623,25 +1664,12 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                                     foregroundColor: isDark
                                         ? AppColors.textSecondaryDark
                                         : const Color(0xFF8A8494),
-                                    backgroundColor: isDark
-                                        ? Colors.white.withValues(alpha: 0.04)
-                                        : Colors.white.withValues(alpha: 0.56),
+                                    backgroundColor: Colors.transparent,
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
                                       vertical: 10,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                      side: BorderSide(
-                                        color: isDark
-                                            ? Colors.white.withValues(
-                                                alpha: 0.06,
-                                              )
-                                            : const Color(
-                                                0xFFEEDFD9,
-                                              ).withValues(alpha: 0.92),
-                                      ),
-                                    ),
+                                    minimumSize: const Size(44, 44),
                                   ),
                                   label: Text(
                                     l10n.cancel,
@@ -1667,22 +1695,7 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
                             DecoratedBox(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(18),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(
-                                      0xFFE39A86,
-                                    ).withValues(alpha: isDark ? 0.16 : 0.24),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.white.withValues(
-                                      alpha: isDark ? 0.0 : 0.32,
-                                    ),
-                                    blurRadius: 12,
-                                    offset: const Offset(0, -2),
-                                  ),
-                                ],
+                                boxShadow: const [],
                               ),
                               child: SizedBox(
                                 width: double.infinity,
@@ -2846,75 +2859,27 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
     final result = await showModalBottomSheet<TimeOfDay>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: 280,
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFBF5),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            // Header with Done button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      l10n.cancel,
-                      style: const TextStyle(
-                        color: Color(0xFF866F65),
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, selectedTime),
-                    child: Text(
-                      l10n.ok,
-                      style: const TextStyle(
-                        color: Color(0xFFFF998A),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            // Cupertino Time Picker
-            Expanded(
-              child: CupertinoDatePicker(
-                mode: CupertinoDatePickerMode.time,
-                use24hFormat: true,
-                initialDateTime: DateTime(
-                  DateTime.now().year,
-                  DateTime.now().month,
-                  DateTime.now().day,
-                  initialTime.hour,
-                  initialTime.minute,
-                ),
-                onDateTimeChanged: (DateTime dateTime) {
-                  selectedTime = TimeOfDay(
-                    hour: dateTime.hour,
-                    minute: dateTime.minute,
-                  );
-                },
-              ),
-            ),
-          ],
+      builder: (context) => NilicoPickerSheet(
+        cancelLabel: l10n.cancel,
+        confirmLabel: l10n.ok,
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () => Navigator.pop(context, selectedTime),
+        child: CupertinoDatePicker(
+          mode: CupertinoDatePickerMode.time,
+          use24hFormat: true,
+          initialDateTime: DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            initialTime.hour,
+            initialTime.minute,
+          ),
+          onDateTimeChanged: (DateTime dateTime) {
+            selectedTime = TimeOfDay(
+              hour: dateTime.hour,
+              minute: dateTime.minute,
+            );
+          },
         ),
       ),
     );
@@ -2924,42 +2889,21 @@ class _ActivitiesScreenState extends State<ActivitiesScreen> {
 
   /// Shows a Cupertino-style duration picker in a bottom sheet
   Future<bool?> _showDeleteConfirm() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.delete,
-          style: AppTypography.dialogTitle(
-            context,
-          ).copyWith(color: isDark ? Colors.white : Colors.black),
-        ),
-        content: Text(
-          l10n.deleteConfirm,
-          style: AppTypography.dialogBody(
-            context,
-          ).copyWith(color: isDark ? Colors.grey.shade300 : Colors.black87),
-        ),
+      builder: (context) => NilicoDialog(
+        title: Text(l10n.delete),
+        content: Text(l10n.deleteConfirm),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              l10n.cancel,
-              style: AppTypography.dialogAction(context),
-            ),
+            label: l10n.cancel,
           ),
-          ElevatedButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(
-              l10n.delete,
-              style: AppTypography.dialogAction(
-                context,
-              ).copyWith(color: Colors.white),
-            ),
+            label: l10n.delete,
+            destructive: true,
           ),
         ],
       ),
@@ -2981,13 +2925,7 @@ class _SheetGlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 }
 

@@ -247,6 +247,22 @@ class PremiumService {
 
   // ── Illustration pack purchase ─────────────────────────────────────────
 
+  /// Returns storefront-formatted prices for the configured illustration
+  /// packs. This is display metadata only; purchasing still goes through
+  /// [purchaseIllustrationPack].
+  Future<Map<String, String>> loadIllustrationPackLocalizedPrices() async {
+    await init();
+    final paywall = await Adapty().getPaywall(
+      placementId: _kIllustrationPacksPlacementId,
+    );
+    final products = await Adapty().getPaywallProducts(paywall: paywall);
+    return <String, String>{
+      for (final product in products)
+        if ((product.price.localizedString ?? '').trim().isNotEmpty)
+          product.vendorProductId: product.price.localizedString!.trim(),
+    };
+  }
+
   /// Purchase a one-time illustration credit pack by its store product ID.
   ///
   /// Product IDs: `illustration_credits_3`, `illustration_credits_10`,
@@ -267,7 +283,9 @@ class PremiumService {
     }
 
     // ── Step 1: fetch paywall placement ─────────────────────────────────
-    _log('[pack 1/4] getPaywall placement=$_kIllustrationPacksPlacementId productId=$productId');
+    _log(
+      '[pack 1/4] getPaywall placement=$_kIllustrationPacksPlacementId productId=$productId',
+    );
     final AdaptyPaywall paywall;
     try {
       paywall = await Adapty().getPaywall(
@@ -310,7 +328,9 @@ class PremiumService {
     }
 
     if (products.isEmpty) {
-      _log('[pack 2/4] zero products returned for placement $_kIllustrationPacksPlacementId');
+      _log(
+        '[pack 2/4] zero products returned for placement $_kIllustrationPacksPlacementId',
+      );
       throw const IllustrationPackPurchaseException(
         'No products are configured for illustration packs. '
         'Please try again later.',
@@ -319,11 +339,9 @@ class PremiumService {
 
     // ── Step 3: match vendorProductId ────────────────────────────────────
     _log('[pack 3/4] matching vendorProductId=$productId');
-    final AdaptyPaywallProduct? product =
-        products.cast<AdaptyPaywallProduct?>().firstWhere(
-          (p) => p?.vendorProductId == productId,
-          orElse: () => null,
-        );
+    final AdaptyPaywallProduct? product = products
+        .cast<AdaptyPaywallProduct?>()
+        .firstWhere((p) => p?.vendorProductId == productId, orElse: () => null);
 
     if (product == null) {
       _log(
@@ -338,7 +356,9 @@ class PremiumService {
     _log('[pack 3/4] matched OK vendorProductId=${product.vendorProductId}');
 
     // ── Step 4: trigger StoreKit purchase sheet ──────────────────────────
-    _log('[pack 4/4] calling makePurchase vendorProductId=${product.vendorProductId}');
+    _log(
+      '[pack 4/4] calling makePurchase vendorProductId=${product.vendorProductId}',
+    );
     try {
       await Adapty().makePurchase(product: product);
       _log('[pack 4/4] purchase succeeded: $productId');
@@ -430,7 +450,10 @@ class _PremiumPaywallObserver implements AdaptyUIPaywallsEventsObserver {
   }
 
   @override
-  void paywallViewDidSelectProduct(AdaptyUIPaywallView view, String productId) {}
+  void paywallViewDidSelectProduct(
+    AdaptyUIPaywallView view,
+    String productId,
+  ) {}
 
   @override
   void paywallViewDidStartPurchase(

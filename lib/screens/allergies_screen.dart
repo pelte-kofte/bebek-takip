@@ -5,6 +5,7 @@ import '../models/allergy.dart';
 import '../models/veri_yonetici.dart';
 import '../services/allergy_service.dart';
 import '../theme/app_theme.dart';
+import '../widgets/nilico_modal.dart';
 import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 
@@ -314,45 +315,23 @@ class _AllergiesScreenState extends State<AllergiesScreen> {
 
   Future<void> _confirmDelete(BuildContext context, Allergy allergy) async {
     final l10n = AppLocalizations.of(context)!;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final babyId = _babyId;
     if (babyId == null) return;
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          l10n.deleteAllergy,
-          style: AppTypography.dialogTitle(context).copyWith(
-            color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D1A18),
-          ),
-        ),
-        content: Text(
-          allergy.name,
-          style: AppTypography.dialogBody(context).copyWith(
-            color: isDark
-                ? AppColors.textSecondaryDark
-                : const Color(0xFF7A749E),
-          ),
-        ),
+      builder: (ctx) => NilicoDialog(
+        title: Text(l10n.deleteAllergy),
+        content: Text(allergy.name),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(
-              l10n.cancel,
-              style: AppTypography.dialogAction(context),
-            ),
+            label: l10n.cancel,
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              l10n.delete,
-              style: AppTypography.dialogAction(
-                context,
-              ).copyWith(color: Colors.red.shade400),
-            ),
+            label: l10n.delete,
+            destructive: true,
           ),
         ],
       ),

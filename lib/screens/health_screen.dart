@@ -5,7 +5,7 @@ import '../theme/app_theme.dart';
 import '../widgets/decorative_background.dart';
 import '../widgets/nilico_motion.dart';
 import 'allergies_screen.dart';
-import 'baby_meals_screen.dart';
+import 'growth_screen.dart';
 import 'ilaclar_screen.dart';
 import 'vaccines_screen.dart';
 
@@ -14,12 +14,10 @@ class HealthScreen extends StatelessWidget {
 
   List<String> _tabLabels(BuildContext context, AppLocalizations l10n) {
     return <String>[
+      l10n.growth,
       l10n.vaccines,
       l10n.medications,
       l10n.allergiesTitle,
-      Localizations.localeOf(context).languageCode == 'tr'
-          ? 'Ek Gıda'
-          : 'Meals',
     ];
   }
 
@@ -44,10 +42,10 @@ class HealthScreen extends StatelessWidget {
                 const Expanded(
                   child: TabBarView(
                     children: [
-                      VaccinesScreen(embedded: true),
-                      IlaclarScreen(embedded: true),
-                      AllergiesScreen(embedded: true),
-                      BabyMealsScreen(embedded: true),
+                      _HealthTabPage(child: GrowthScreen(embedded: true)),
+                      _HealthTabPage(child: VaccinesScreen(embedded: true)),
+                      _HealthTabPage(child: IlaclarScreen(embedded: true)),
+                      _HealthTabPage(child: AllergiesScreen(embedded: true)),
                     ],
                   ),
                 ),
@@ -57,6 +55,27 @@ class HealthScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _HealthTabPage extends StatefulWidget {
+  const _HealthTabPage({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_HealthTabPage> createState() => _HealthTabPageState();
+}
+
+class _HealthTabPageState extends State<_HealthTabPage>
+    with AutomaticKeepAliveClientMixin<_HealthTabPage> {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
   }
 }
 
@@ -232,12 +251,14 @@ class _HealthSegment extends StatelessWidget {
               height: double.infinity,
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-                textAlign: TextAlign.center,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),

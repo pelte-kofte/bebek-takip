@@ -8,6 +8,7 @@ import '../services/reminder_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
 import '../widgets/decorative_background.dart';
+import '../widgets/nilico_modal.dart';
 import '../widgets/nilico_motion.dart';
 import '../widgets/nilico_primary_button.dart';
 import 'add_vaccine_screen.dart';
@@ -112,25 +113,18 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.attention, style: AppTypography.dialogTitle(context)),
-        content: Text(
-          l10n.deleteConfirm,
-          style: AppTypography.dialogBody(context),
-        ),
+      builder: (context) => NilicoDialog(
+        title: Text(l10n.attention),
+        content: Text(l10n.deleteConfirm),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no, style: AppTypography.dialogAction(context)),
+            label: l10n.no,
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(
-              l10n.yes,
-              style: AppTypography.dialogAction(
-                context,
-              ).copyWith(color: Colors.red),
-            ),
+            label: l10n.yes,
+            destructive: true,
           ),
         ],
       ),
@@ -387,69 +381,47 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
   }
 
   void _showVaccineOptions(Map<String, dynamic> vaccine) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? AppColors.bgDarkCard : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              ListTile(
-                leading: Icon(Icons.edit_outlined, color: AppColors.primary),
-                title: Text(
-                  l10n.edit,
-                  style: AppTypography.dialogAction(context),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _editVaccine(vaccine);
-                },
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.medication_liquid_outlined,
-                  color: AppColors.primary,
-                ),
-                title: Text(
-                  l10n.addVaccineProtocol,
-                  style: AppTypography.dialogAction(context),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _addVaccineProtocol(vaccine);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.delete_outline, color: Colors.red),
-                title: Text(
-                  l10n.delete,
-                  style: AppTypography.dialogAction(
-                    context,
-                  ).copyWith(color: Colors.red),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _deleteVaccine(vaccine);
-                },
-              ),
-            ],
-          ),
+      backgroundColor: Colors.transparent,
+      builder: (context) => NilicoSheetFrame(
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            NilicoActionSheetRow(
+              icon: Icons.edit_outlined,
+              label: l10n.edit,
+              onTap: () {
+                Navigator.pop(context);
+                _editVaccine(vaccine);
+              },
+            ),
+            NilicoActionSheetRow(
+              icon: Icons.medication_liquid_outlined,
+              label: l10n.addVaccineProtocol,
+              onTap: () {
+                Navigator.pop(context);
+                _addVaccineProtocol(vaccine);
+              },
+            ),
+            Divider(
+              height: 1,
+              indent: 10,
+              endIndent: 10,
+              color: Theme.of(context).dividerColor.withValues(alpha: 0.18),
+            ),
+            NilicoActionSheetRow(
+              icon: Icons.delete_outline,
+              label: l10n.delete,
+              destructive: true,
+              onTap: () {
+                Navigator.pop(context);
+                _deleteVaccine(vaccine);
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -480,26 +452,17 @@ class _VaccinesScreenState extends State<VaccinesScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(
-          l10n.loadCalendarTitle,
-          style: AppTypography.dialogTitle(context),
-        ),
-        content: Text(
-          l10n.loadCalendarDesc,
-          style: AppTypography.dialogBody(context),
-        ),
+      builder: (context) => NilicoDialog(
+        title: Text(l10n.loadCalendarTitle),
+        content: Text(l10n.loadCalendarDesc),
         actions: [
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              l10n.cancel,
-              style: AppTypography.dialogAction(context),
-            ),
+            label: l10n.cancel,
           ),
-          TextButton(
+          NilicoDialogAction(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.ok, style: AppTypography.dialogAction(context)),
+            label: l10n.ok,
           ),
         ],
       ),

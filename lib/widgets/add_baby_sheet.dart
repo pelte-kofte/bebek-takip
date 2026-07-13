@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart'
     show CupertinoDatePicker, CupertinoDatePickerMode;
 import '../l10n/app_localizations.dart';
 import '../models/veri_yonetici.dart';
+import '../theme/app_theme.dart';
 import '../utils/locale_text_utils.dart';
+import 'nilico_modal.dart';
 import 'nilico_motion.dart';
 
 class AddBabySheet extends StatefulWidget {
@@ -68,69 +70,53 @@ class _AddBabySheetState extends State<AddBabySheet> {
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         DateTime selected = _birthDate;
-        return Container(
-          height: 280,
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text(
-                        l10n.cancel,
-                        style: TextStyle(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.6)
-                              : const Color(0xFF866F65),
-                          fontSize: 16,
+        return NilicoSheetFrame(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: SizedBox(
+            height: 232,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(
+                          l10n.cancel,
+                          style: AppTypography.dialogAction(ctx).copyWith(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : const Color(0xFF866F65),
+                          ),
                         ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() => _birthDate = selected);
-                        Navigator.pop(ctx);
-                      },
-                      child: Text(
-                        l10n.ok,
-                        style: TextStyle(
-                          color: Color(0xFFFF998A),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
+                      TextButton(
+                        onPressed: () {
+                          setState(() => _birthDate = selected);
+                          Navigator.pop(ctx);
+                        },
+                        child: Text(
+                          l10n.ok,
+                          style: AppTypography.dialogAction(
+                            ctx,
+                          ).copyWith(color: AppColors.primaryDark),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  maximumDate: DateTime.now(),
-                  initialDateTime: _birthDate,
-                  onDateTimeChanged: (d) => selected = d,
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    maximumDate: DateTime.now(),
+                    initialDateTime: _birthDate,
+                    onDateTimeChanged: (d) => selected = d,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -147,134 +133,100 @@ class _AddBabySheetState extends State<AddBabySheet> {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E2A) : const Color(0xFFFFFBF5),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
+      child: NilicoSheetFrame(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Handle bar
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(top: 12, bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
+            NilicoSheetHeader(
+              title: l10n.newBabyAdd,
+              onClose: () => Navigator.pop(context),
             ),
-            // Title
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 20),
-              child: Text(
-                l10n.newBabyAdd,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: textColor,
-                ),
-              ),
-            ),
+            const SizedBox(height: 18),
             // Name field
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: TextField(
-                controller: _nameController,
-                textCapitalization: TextCapitalization.words,
-                style: TextStyle(color: textColor, fontSize: 16),
-                decoration: InputDecoration(
-                  hintText: l10n.babyNameHint,
-                  hintStyle: TextStyle(color: textColor.withValues(alpha: 0.4)),
-                  filled: true,
-                  fillColor: isDark
-                      ? Colors.white.withValues(alpha: 0.08)
-                      : const Color(0xFFEBE8FF).withValues(alpha: 0.3),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
+            TextField(
+              controller: _nameController,
+              textCapitalization: TextCapitalization.words,
+              style: AppTypography.body(context).copyWith(color: textColor),
+              decoration: InputDecoration(
+                hintText: l10n.babyNameHint,
+                hintStyle: AppTypography.body(
+                  context,
+                ).copyWith(color: textColor.withValues(alpha: 0.4)),
+                filled: true,
+                fillColor: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : const Color(0xFFEBE8FF).withValues(alpha: 0.3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
               ),
             ),
             const SizedBox(height: 16),
             // Birth date picker
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: GestureDetector(
-                onTap: _pickDate,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.08)
-                        : const Color(0xFFEBE8FF).withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.cake_outlined,
-                        color: textColor.withValues(alpha: 0.5),
-                        size: 20,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        formatLocalizedDate(context, _birthDate),
-                        style: TextStyle(fontSize: 16, color: textColor),
-                      ),
-                    ],
-                  ),
+            GestureDetector(
+              onTap: _pickDate,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : const Color(0xFFEBE8FF).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.cake_outlined,
+                      color: textColor.withValues(alpha: 0.5),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      formatLocalizedDate(context, _birthDate),
+                      style: AppTypography.body(
+                        context,
+                      ).copyWith(color: textColor),
+                    ),
+                  ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
             // Save button
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _saving ? null : _save,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFB4A2),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFFB4A2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: _saving
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          ),
-                        )
-                      : Text(
-                          l10n.save,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                ),
+                child: _saving
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
                           ),
                         ),
-                ),
+                      )
+                    : Text(l10n.save, style: AppTypography.button()),
               ),
             ),
-            SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
           ],
         ),
       ),
